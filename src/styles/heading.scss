@@ -1,0 +1,27 @@
+.heading {
+  @apply flex items-center relative;
+
+  &:hover,
+  .heading-anchor:hover {
+    .heading-anchor {
+      @apply opacity-100;
+    }
+  }
+
+  .heading-anchor {
+    @apply i-mdi-link-variant inline-block;
+    @apply absolute;
+    left: -1.5em;
+    width: 1.5em;
+    margin-top: calc(0.3em - 0.1rem);
+    font-size: 1rem;
+
+    @media (min-width: 48em) {
+      font-size: calc(0.25em + 0.75rem);
+    }
+
+    @media (min-width: 1024px) {
+      @apply opacity-0;
+    }
+  }
+}

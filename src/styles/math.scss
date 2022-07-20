@@ -1,0 +1,11 @@
+.math-inline {
+  @apply mx-0.2;
+}
+
+.math-display {
+  @apply overflow-auto;
+
+  .katex-display > .katex > .katex-html {
+    @apply flex justify-center;
+  }
+}

@@ -1,0 +1,132 @@
+.article-style {
+  @apply font-main break-words hyphens-auto text-justify;
+
+  * * {
+    @apply text-initial sm:text-justify;
+  }
+
+  blockquote {
+    @apply font-kai;
+  }
+
+  p {
+    @apply overflow-auto;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  ul,
+  ol,
+  blockquote {
+    @apply my-6;
+  }
+
+  a {
+    @apply text-link;
+    &:hover {
+      @apply text-hover underline;
+    }
+    &:active {
+      @apply text-active;
+    }
+  }
+
+  h1 {
+    @apply text-8 font-bold;
+    @apply b-b-3 b-gray-2 dark:b-gray-9;
+  }
+  h2 {
+    @apply text-7 font-bold;
+    @apply b-b-2 b-gray-2 dark:b-gray-9;
+  }
+  h3 {
+    @apply text-6 font-bold;
+  }
+  h4 {
+    @apply text-5;
+  }
+
+  blockquote {
+    @apply bg-area shadow-sm;
+    @apply px-6 overflow-auto b-l-6 b-gray-4 dark:b-gray-11;
+
+    blockquote {
+      @apply bg-nested b-gray-3 dark:b-gray-10 shadow;
+    }
+  }
+
+  ul {
+    @apply list-disc-outside;
+  }
+  ol {
+    @apply list-decimal-outside;
+  }
+  ul,
+  ol {
+    @apply pl-8;
+
+    ul {
+      @apply list-circle;
+    }
+    ol {
+      @apply list-roman;
+    }
+
+    ul,
+    ol {
+      ul {
+        @apply list-square;
+      }
+      ol {
+        @apply list-alpha;
+      }
+    }
+
+    p,
+    ul,
+    ol {
+      @apply my-0;
+    }
+
+    li {
+      @apply my-1;
+    }
+  }
+
+  hr {
+    @apply b-t-2 b-t-dashed b-gray-5 dark:b-gray-9;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
+
+  :not(pre) > code {
+    @apply inline-block bg-area b-1 b-gray-3 dark:b-gray-11 rd-1 p-0.5 m-0.5 text-3.5 min-w-6 text-center;
+  }
+
+  table {
+    th,
+    td {
+      @apply py-1 px-3 b-2 b-light-7 dark:b-dark-0;
+    }
+    th {
+      @apply bg-light-4 dark:bg-dark-8;
+    }
+    tbody > tr {
+      &:nth-child(odd) {
+        @apply bg-light-2 dark:bg-dark-6;
+      }
+      &:nth-child(even) {
+        @apply bg-light-0 dark:bg-dark-4;
+      }
+    }
+  }
+}

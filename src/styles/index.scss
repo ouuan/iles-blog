@@ -1,0 +1,33 @@
+@import "variables";
+
+html {
+  @apply text-text bg-bg scroll-smooth;
+}
+
+* {
+  text-underline-offset: 0.3em;
+}
+
+.flex > [class*="i-mdi-"] {
+  @apply shrink-0;
+}
+
+// https://github.com/ElMassimo/iles/issues/150
+.flex > ile-root {
+  @apply flex;
+}
+
+span.exact-matched {
+  @apply bg-#FFD30D dark:bg-#625000;
+  @apply text-text;
+}
+span.fuzzy-matched {
+  @apply bg-#FFED9F dark:bg-#453900;
+  @apply text-text;
+}
+
+@import "article";
+@import "code";
+@import "math";
+@import "heading";
+@import "print";

@@ -1,0 +1,9 @@
+@media print {
+  * {
+    box-shadow: none !important;
+  }
+
+  svg {
+    color: initial;
+  }
+}
