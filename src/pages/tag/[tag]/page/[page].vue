@@ -47,6 +47,6 @@ const props = defineProps<{
   tag: string;
 }>();
 
-const { site } = usePage();
-useHead({ title: `标签: ${props.tag} - 第${props.pageIndex}页 - ${site.title}` });
+const page = usePage();
+page.frontmatter.title = `标签: ${props.tag} - 第${props.pageIndex}页`;
 </script>

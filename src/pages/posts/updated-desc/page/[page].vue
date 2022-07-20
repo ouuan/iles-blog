@@ -34,7 +34,6 @@ const props = defineProps<{
   pageIndex: number;
 }>();
 
-const { site } = usePage();
-
-useHead({ title: `文章列表: 最近修改 - 第${props.pageIndex}页 - ${site.title}` });
+const page = usePage();
+page.frontmatter.title = `文章列表：最近修改 - 第${props.pageIndex}页`;
 </script>
