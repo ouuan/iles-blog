@@ -42,6 +42,8 @@
           <img
             alt="CC BY-SA 4.0 License Picture"
             src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+            width="88"
+            height="31"
           >
         </a>
       </span>
