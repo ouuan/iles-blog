@@ -147,10 +147,11 @@ function search() {
       }
       const { value } = match;
       if (!value) return;
-      let indices: ReadonlyArray<[number, number]> = match.indices.filter(
+      let indices: [number, number][] = match.indices.filter(
         ([start, end]) => value.slice(start, end + 1) === pattern.value,
       );
-      if (indices.length === 0) indices = match.indices;
+      if (indices.length === 0) indices = match.indices.slice();
+      indices.sort((lhs, rhs) => lhs[0] - rhs[0]);
       let parts: MatchPart[] = [];
       let last = match.key === 'title' ? 0 : Math.max(0, indices[0][0] - 30);
       indices.forEach(([start, end]) => {
