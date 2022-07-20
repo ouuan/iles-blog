@@ -1,3 +1,7 @@
+<page>
+title: 404 Not Found
+</page>
+
 <template layout="base">
   <div class="mt-20 flex flex-col items-center gap-6">
     <span class="text-3xl">404 Not Found</span>

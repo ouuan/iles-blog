@@ -42,8 +42,11 @@ export default definePageComponent({
 </script>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   pageIndex: number;
   tag: string;
 }>();
+
+const { site } = usePage();
+useHead({ title: `标签: ${props.tag} - 第${props.pageIndex}页 - ${site.title}` });
 </script>

@@ -1,3 +1,7 @@
+<page>
+title: 搜索
+</page>
+
 <template layout="base">
   <fuse-search
     client:load

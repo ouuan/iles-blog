@@ -26,7 +26,10 @@ export default definePageComponent({
 </script>
 
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   tag: string;
 }>();
+
+const { site } = usePage();
+useHead({ title: `标签: ${props.tag} - ${site.title}` });
 </script>
