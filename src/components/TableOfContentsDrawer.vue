@@ -5,6 +5,7 @@
     aria-labelledby="__toc-title"
     role="dialog"
     :style="{ right: tocRight }"
+    :aria-hidden="!displayToc"
   >
     <table-of-contents-common
       :headings="headings"
