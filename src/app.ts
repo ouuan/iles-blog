@@ -16,11 +16,7 @@ export default defineApp({
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
       link: [
-        {
-          rel: 'apple-touch-icon',
-          sizes: '180x180',
-          href: '/apple-touch-icon.png',
-        },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
           rel: 'icon',
           type: 'image/png',
@@ -33,19 +29,9 @@ export default defineApp({
           sizes: '16x16',
           href: '/favicon-16x16.png',
         },
-        {
-          rel: 'manifest',
-          href: '/site.webmanifest',
-        },
-        {
-          rel: 'mask-icon',
-          href: '/safari-pinned-tab.svg',
-          color: '#a07e5b',
-        },
-        {
-          rel: 'canonical',
-          href: computed(() => new URL(meta.href, site.url).href),
-        },
+        { rel: 'manifest', href: '/site.webmanifest' },
+        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#a07e5b' },
+        { rel: 'canonical', href: computed(() => new URL(meta.href, site.url).href) },
         {
           rel: 'feed',
           type: 'application/rss+xml',
@@ -58,31 +44,17 @@ export default defineApp({
           href: '/feed.atom',
           title: `Atom Feed - ${site.title}`,
         },
-        {
-          rel: 'dns-prefetch',
-          href: 'https://plausible.ouuan.moe',
-        },
-        {
-          rel: 'preconnect',
-          href: 'https://blog-visitor-count.ouuan.moe',
-        },
-        {
-          rel: 'stylesheet',
-          href: '/fonts/katex/index.css',
-        },
-        {
-          rel: 'stylesheet',
-          href: '/fonts/noto-serif-sc/index.css',
-        },
-        {
-          rel: 'stylesheet',
-          href: '/fonts/lxgw-wenkai/index.css',
-        },
+        { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
+        { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
+        { rel: 'stylesheet', href: '/fonts/katex/index.css' },
+        { rel: 'stylesheet', href: '/fonts/noto-serif-sc/index.css' },
+        { rel: 'stylesheet', href: '/fonts/lxgw-wenkai/index.css' },
       ],
       meta: [
         { property: 'author', content: site.author },
         { property: 'keywords', content: computed(() => frontmatter.tags || 'blog') },
         { property: 'twitter:creator', content: '@ouuan' },
+        { property: 'og:image', content: new URL('/android-chrome-512x512.png', site.url).href },
       ],
     };
   },

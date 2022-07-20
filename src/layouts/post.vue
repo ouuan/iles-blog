@@ -56,4 +56,22 @@
 <script setup lang="ts">
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
+
+useHead({
+  meta: [
+    { name: 'og:type', content: 'article' },
+    { name: 'article:published_time', content: page.frontmatter.date.toISOString() },
+    { name: 'article:modified_time', content: page.frontmatter.lastUpdated.toISOString() },
+    { name: 'article:author', content: page.site.author },
+  ],
+});
+
+if (Array.isArray(page.frontmatter.tags)) {
+  useHead({
+    meta: page.frontmatter.tags.map((tag) => ({
+      name: 'article:tag',
+      content: tag,
+    })),
+  });
+}
 </script>
