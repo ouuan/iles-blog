@@ -13,7 +13,7 @@
       >
         <span class="i-mdi-tag-outline inline-block" />
         <a
-          :href="`/tag/${tag}`"
+          :href="`/tag/${encodeURIComponent(encodeURIComponent(tag))}`"
           class="hover:underline mx-1"
         >
           {{ tag }}
