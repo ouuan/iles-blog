@@ -5,7 +5,10 @@
       :key="post.meta.href"
       class="standard-card"
     >
-      <article>
+      <article
+        itemscope
+        itemtype="http://schema.org/Article"
+      >
         <post-head
           v-if="index < 3"
           client:load
@@ -20,7 +23,10 @@
           :filename="post.meta.filename"
           :frontmatter="post.frontmatter"
         />
-        <section class="article-style">
+        <section
+          class="article-style"
+          itemprop="abstract"
+        >
           <component
             :is="post"
             excerpt

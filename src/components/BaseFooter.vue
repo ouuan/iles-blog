@@ -1,6 +1,13 @@
 <template>
-  <footer class="flex flex-col items-center text-footer bg-card p-6 gap-1">
-    <span class="flex items-center">
+  <footer
+    class="flex flex-col items-center text-footer bg-card p-6 gap-1"
+    itemscope
+    itemtype="http://schema.org/WPFooter"
+  >
+    <span
+      class="flex items-center"
+      itemprop="copyrightNotice"
+    >
       <span>© {{ yearString }}</span>
       <span class="i-mdi-heart mx-1 inline-block text-red dark:text-red-7" />
       <span>{{ author }}</span>

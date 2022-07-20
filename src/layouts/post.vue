@@ -1,14 +1,35 @@
 <template layout="base">
   <div class="flex">
     <div class="grow m-3 standard-card">
-      <article>
+      <article
+        itemscope
+        itemtype="http://schema.org/Article"
+      >
+        <div
+          class="hidden"
+          itemprop="author"
+          itemscope
+          itemtype="http://schema.org/Person"
+        >
+          <meta
+            itemprop="name"
+            :content="page.site.author"
+          >
+          <meta
+            itemprop="url"
+            :content="page.site.authorLink"
+          >
+        </div>
         <post-head
           client:load
           :href="page.meta.href"
           :filename="page.meta.filename"
           :frontmatter="page.frontmatter"
         />
-        <section class="article-style">
+        <section
+          class="article-style"
+          itemprop="articleBody"
+        >
           <slot />
         </section>
         <div class="article-style">

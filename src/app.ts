@@ -10,6 +10,10 @@ export default defineApp({
   head({ frontmatter, site, meta }) {
     return {
       htmlAttrs: { lang: 'zh-CN' },
+      bodyAttrs: {
+        itemscope: '',
+        itemtype: 'http://schema.org/WebPage',
+      },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
       link: [
         {

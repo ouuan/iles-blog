@@ -1,6 +1,9 @@
 <template>
   <div class="article-style my-5">
-    <div class="flex justify-center flex-wrap-reverse gap-x-3 leading-8 mb-2">
+    <div
+      class="flex justify-center flex-wrap-reverse gap-x-3 leading-8 mb-2"
+      itemprop="copyrightNotice"
+    >
       <span class="truncate">
         文章链接:
         <a
@@ -22,6 +25,7 @@
         <a
           rel="license"
           href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
+          itemprop="license"
         >CC BY-SA 4.0</a>
         许可协议进行授权，未满足
         <span

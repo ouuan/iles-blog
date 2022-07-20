@@ -1,5 +1,9 @@
 <template>
-  <header class="bg-card shadow print:hidden">
+  <header
+    class="bg-card shadow print:hidden"
+    itemscope
+    itemtype="http://schema.org/WPHeader"
+  >
     <div
       class="container-margin px-3 whitespace-nowrap
              flex flex-wrap sm:flex-nowrap justify-center"

@@ -19,7 +19,11 @@
           class="hover:underline"
           :href="`https://github.com/${site.repo}/blob/${site.branch}/${filename}?plain=1`"
         >
-          <time :datetime="formatISO(frontmatter.date)">
+          <time
+            :datetime="formatISO(frontmatter.date)"
+            itemscope
+            itemprop="dateCreated"
+          >
             {{ format(frontmatter.date, 'yyyy-MM-dd') }}
             <relative-time :date="frontmatter.date" />
           </time>
@@ -35,7 +39,11 @@
           :class="frontmatter.commitHash && 'hover:underline'"
           :href="frontmatter.commitHash && `https://github.com/${site.repo}/commit/${frontmatter.commitHash}`"
         >
-          <time :datetime="formatISO(frontmatter.lastUpdated)">
+          <time
+            :datetime="formatISO(frontmatter.lastUpdated)"
+            itemscope
+            itemprop="dateModified"
+          >
             {{ format(frontmatter.lastUpdated, 'yyyy-MM-dd') }}
             <relative-time :date="frontmatter.lastUpdated" />
           </time>
