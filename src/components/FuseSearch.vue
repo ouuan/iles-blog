@@ -10,7 +10,7 @@
         <input
           id="__search_keywords"
           v-model="params.q"
-          class="w-full p-1 bg-card"
+          class="w-full p-1 bg-card rd-1"
           type="text"
           placeholder="关键词"
         >
