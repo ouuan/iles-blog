@@ -1,6 +1,7 @@
 <template>
   <giscus-comments-inner
     client:only
+    class="print:hidden"
     :term="page.frontmatter.title"
   />
 </template>
