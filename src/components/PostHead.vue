@@ -14,7 +14,7 @@
         class="flex items-center"
         :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss')}`"
       >
-        <span class="i-mdi-calendar-blank inline-block mr-1" />
+        <span class="i-mdi-calendar-blank mr-1" />
         <a
           class="hover:underline"
           :href="`https://github.com/${site.repo}/blob/${site.branch}/${filename}?plain=1`"
@@ -33,7 +33,7 @@
         class="flex items-center"
         :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}`"
       >
-        <span class="i-mdi-calendar-edit inline-block mr-1" />
+        <span class="i-mdi-calendar-edit mr-1" />
         <component
           :is="frontmatter.commitHash ? 'a' : 'span'"
           :class="frontmatter.commitHash && 'hover:underline'"
@@ -60,7 +60,7 @@
           :title="`标签: ${tag}`"
           class="flex items-center"
         >
-          <span class="i-mdi-tag-outline inline-block mr-1" />
+          <span class="i-mdi-tag-outline mr-1" />
           <a
             :href="`/tag/${encodeURIComponent(encodeURIComponent(tag))}`"
             class="hover:underline"

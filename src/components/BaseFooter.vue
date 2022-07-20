@@ -9,7 +9,7 @@
       itemprop="copyrightNotice"
     >
       <span>© {{ yearString }}</span>
-      <span class="i-mdi-heart mx-1 inline-block text-red dark:text-red-7" />
+      <span class="i-mdi-heart mx-1 text-red dark:text-red-7" />
       <span>{{ author }}</span>
     </span>
     <span>
@@ -30,12 +30,12 @@
           class="underline"
           href="https://github.com/ouuan"
         >ouuan</a></span>
-      <span class="inline-block i-mdi-circle-small" />
+      <span class="i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog"
       >Source Code</a>
-      <span class="inline-block i-mdi-circle-small" />
+      <span class="i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog/discussions"

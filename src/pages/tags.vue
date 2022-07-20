@@ -15,7 +15,7 @@ title: 标签列表
         class="flex items-center"
         :style="{ fontSize: `${Math.log(tagCountMap.get(tag) || 1) / 3 + 0.95}rem` }"
       >
-        <span class="i-mdi-tag-outline inline-block" />
+        <span class="i-mdi-tag-outline" />
         <a
           :href="`/tag/${encodeURIComponent(encodeURIComponent(tag))}`"
           class="hover:underline mx-1"

@@ -18,7 +18,7 @@
     aria-controls="__toc-drawer"
     @click="displayToc = true"
   >
-    <div class="i-mdi-menu" />
+    <span class="i-mdi-menu" />
   </button>
   <div
     v-show="displayToc"

@@ -7,18 +7,18 @@
       aria-label="回到顶部"
       @click="scrollToTop"
     >
-      <div class="btt-icon text-xl i-mdi-chevron-double-up" />
-      <div class="btt-percent hidden">
-        <div class="flex justify-center">
-          <div class="text-xs i-mdi-chevron-double-up" />
-        </div>
-        <div
+      <span class="btt-icon text-xl i-mdi-chevron-double-up" />
+      <span class="btt-percent hidden">
+        <span class="flex justify-center">
+          <span class="text-xs i-mdi-chevron-double-up" />
+        </span>
+        <span
           class="text-sm"
           :aria-label="`阅读进度 ${scrollPercent}`"
         >
           {{ scrollPercent }}
-        </div>
-      </div>
+        </span>
+      </span>
     </button>
     <button
       v-else
@@ -27,18 +27,18 @@
       aria-label="前往底部"
       @click="scrollToBottom"
     >
-      <div class="btt-icon text-xl i-mdi-chevron-double-down" />
-      <div class="btt-percent hidden">
-        <div
+      <span class="btt-icon text-xl i-mdi-chevron-double-down" />
+      <span class="btt-percent hidden">
+        <span
           class="text-sm"
           :aria-label="`阅读进度 ${scrollPercent}`"
         >
           {{ scrollPercent }}
-        </div>
-        <div class="flex justify-center">
-          <div class="text-xs i-mdi-chevron-double-down" />
-        </div>
-      </div>
+        </span>
+        <span class="flex justify-center">
+          <span class="text-xs i-mdi-chevron-double-down" />
+        </span>
+      </span>
     </button>
   </template>
 </template>

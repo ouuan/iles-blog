@@ -10,7 +10,7 @@
         :class="node.current && 'text-link'"
         :href="`#${node.slug}`"
       >
-        <span :class="`inline-block absolute top-1.2 left--4 ${icon(node)}`" />
+        <span :class="`absolute top-1.2 left--4 ${icon(node)}`" />
         <span>{{ node.title }}</span>
       </a>
       <div

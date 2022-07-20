@@ -5,10 +5,10 @@
   >
     <button
       title="切换暗色模式"
-      class="hover:text-hover hover:bg-bghover p-2"
+      class="hover:text-hover hover:bg-bghover p-2 flex items-center"
       @click="showMenu = !showMenu"
     >
-      <div class="text-xl i-mdi-theme-light-dark" />
+      <span class="text-xl i-mdi-theme-light-dark" />
     </button>
     <div
       v-show="showMenu"
@@ -24,7 +24,7 @@
             :class="['flex items-center p-1', theme === key && 'text-hover']"
             @click="theme = key"
           >
-            <div :class="[icon[key], 'inline-block mr-1']" />
+            <span :class="[icon[key], 'mr-1']" />
             <span>{{ name[key] }}</span>
           </button>
         </li>

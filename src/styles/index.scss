@@ -12,6 +12,10 @@ html {
   @apply shrink-0;
 }
 
+span[class*="i-mdi-"] {
+  @apply inline-block;
+}
+
 // https://github.com/ElMassimo/iles/issues/150
 .flex > ile-root {
   @apply flex;

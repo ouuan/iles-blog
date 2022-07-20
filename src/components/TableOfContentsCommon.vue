@@ -8,12 +8,12 @@
         文章目录
       </div>
       <button
-        class="px-2 text-xl xl:hidden"
+        class="px-2 text-xl xl:hidden flex items-center"
         aria-label="关闭目录"
         aria-controls="__toc-drawer"
         @click="emit('close')"
       >
-        <div class="i-mdi-close" />
+        <span class="i-mdi-close" />
       </button>
     </div>
     <div>

@@ -38,7 +38,7 @@
             :href="post.meta.href"
           >
             <span>阅读更多</span>
-            <span class="inline-block i-mdi-chevron-double-right" />
+            <span class="i-mdi-chevron-double-right" />
           </a>
         </div>
       </article>

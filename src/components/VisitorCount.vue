@@ -3,14 +3,14 @@
     class="flex items-center"
     title="访问量"
   >
-    <span class="i-mdi-eye-outline inline-block mr-1" />
+    <span class="i-mdi-eye-outline mr-1" />
     <span
       v-if="Number.isInteger(visitorCount)"
       class="text-sm"
     >
       {{ visitorCount }}
     </span>
-    <div
+    <span
       v-else
       class="i-mdi-loading motion-safe:animate-spin"
     />

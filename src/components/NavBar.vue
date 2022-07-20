@@ -44,7 +44,7 @@
             href="/search"
             title="搜索"
           >
-            <div class="text-xl i-mdi-magnify" />
+            <span class="text-xl i-mdi-magnify" />
           </a>
         </li>
         <li class="flex items-stretch justify-center">
@@ -53,7 +53,7 @@
             href="/feed.xml"
             title="RSS 订阅"
           >
-            <div class="text-xl i-mdi-rss" />
+            <span class="text-xl i-mdi-rss" />
           </a>
         </li>
         <li class="flex">

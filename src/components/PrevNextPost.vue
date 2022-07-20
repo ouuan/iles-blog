@@ -9,7 +9,7 @@
       class="flex-1 flex items-center gap-1"
       aria-label="上一篇"
     >
-      <span class="inline-block i-mdi-chevron-left" />
+      <span class="i-mdi-chevron-left" />
       <span>{{ prevPost.frontmatter.title }}</span>
     </a>
     <a
@@ -19,7 +19,7 @@
       aria-label="下一篇"
     >
       <span>{{ nextPost.frontmatter.title }}</span>
-      <span class="inline-block i-mdi-chevron-right" />
+      <span class="i-mdi-chevron-right" />
     </a>
   </nav>
 </template>

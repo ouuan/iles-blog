@@ -8,21 +8,21 @@
       title="复制到剪贴板"
       class="b-gray-8 text-light-9"
     >
-      <div class="i-mdi-content-copy" />
+      <span class="i-mdi-content-copy" />
     </div>
     <div
       v-else-if="state === 'success'"
       title="复制成功"
       class="b-success text-success"
     >
-      <div class="i-mdi-check" />
+      <span class="i-mdi-check" />
     </div>
     <div
       v-else
       title="复制失败"
       class="b-error text-error"
     >
-      <div class="i-mdi-alert-circle-outline" />
+      <span class="i-mdi-alert-circle-outline" />
     </div>
   </button>
 </template>
