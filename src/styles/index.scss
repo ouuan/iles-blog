@@ -30,6 +30,10 @@ span.fuzzy-matched {
   @apply text-text;
 }
 
+html body {
+  @apply visible;
+}
+
 @import "article";
 @import "code";
 @import "math";

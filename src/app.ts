@@ -15,6 +15,7 @@ export default defineApp({
         itemtype: 'http://schema.org/WebPage',
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
+      style: [{ children: 'body { visibility: hidden; }' }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
