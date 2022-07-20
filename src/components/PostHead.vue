@@ -1,6 +1,9 @@
 <template>
   <header>
-    <h1 class="mt-6 mb-3 text-8 text-center">
+    <h1
+      class="mt-6 mb-3 text-8 text-center"
+      itemprop="headline"
+    >
       <a
         class="post-title relative font-main"
         :href="href"

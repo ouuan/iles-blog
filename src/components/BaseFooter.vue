@@ -4,13 +4,14 @@
     itemscope
     itemtype="http://schema.org/WPFooter"
   >
-    <span
-      class="flex items-center"
-      itemprop="copyrightNotice"
-    >
-      <span>© {{ yearString }}</span>
-      <span class="i-mdi-heart mx-1 text-red dark:text-red-7" />
-      <span>{{ author }}</span>
+    <span class="flex items-center">
+      <span>©</span>
+      &nbsp;
+      <span itemprop="copyrightYear">{{ yearString }}</span>
+      &nbsp;
+      <span class="i-mdi-heart text-red dark:text-red-7" />
+      &nbsp;
+      <span itemprop="copyrightHolder">{{ author }}</span>
     </span>
     <span>
       Powered by

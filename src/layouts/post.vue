@@ -2,6 +2,7 @@
   <div class="flex">
     <div class="grow m-3 standard-card">
       <article
+        itemprop="mainEntity"
         itemscope
         itemtype="http://schema.org/Article"
       >
