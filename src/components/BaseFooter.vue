@@ -11,7 +11,13 @@
       &nbsp;
       <span class="i-mdi-heart text-red dark:text-red-7" />
       &nbsp;
-      <span itemprop="copyrightHolder">{{ author }}</span>
+      <span
+        itemprop="copyrightHolder"
+        itemscope
+        itemtype="http://schema.org/Person"
+      >
+        <span itemprop="name">{{ author }}</span>
+      </span>
     </span>
     <span>
       Powered by
