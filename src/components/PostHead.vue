@@ -21,7 +21,6 @@
         >
           <time
             :datetime="formatISO(frontmatter.date)"
-            itemscope
             itemprop="dateCreated"
           >
             {{ format(frontmatter.date, 'yyyy-MM-dd') }}
@@ -41,7 +40,6 @@
         >
           <time
             :datetime="formatISO(frontmatter.lastUpdated)"
-            itemscope
             itemprop="dateModified"
           >
             {{ format(frontmatter.lastUpdated, 'yyyy-MM-dd') }}
