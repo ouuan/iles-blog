@@ -6,7 +6,10 @@
     itemscope
     itemtype="http://schema.org/WPSideBar"
   >
-    <table-of-contents-common :headings="headings" />
+    <table-of-contents-common
+      :headings="headings"
+      :drawer="false"
+    />
   </aside>
 </template>
 

@@ -8,14 +8,14 @@
       class="container-margin px-3 whitespace-nowrap
              flex flex-wrap sm:flex-nowrap justify-center"
     >
-      <h1 class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">
+      <div class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">
         <a
           class="p-3 hover:bg-bghover font-main text-xl flex items-center"
           href="/"
         >
           <span>ouuan's blog</span>
         </a>
-      </h1>
+      </div>
       <nav class="flex">
         <ul class="flex">
           <nav-bar-item

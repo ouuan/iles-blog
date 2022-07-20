@@ -8,6 +8,7 @@
   >
     <table-of-contents-common
       :headings="headings"
+      drawer
       @close="displayToc = false"
     />
   </div>

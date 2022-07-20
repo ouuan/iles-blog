@@ -8,7 +8,8 @@
         文章目录
       </div>
       <button
-        class="px-2 text-xl xl:hidden flex items-center"
+        v-if="drawer"
+        class="px-2 text-xl flex items-center"
         aria-label="关闭目录"
         aria-controls="__toc-drawer"
         @click="emit('close')"
@@ -50,6 +51,7 @@ import { TOCNode } from '~/types';
 
 const props = defineProps<{
   headings: Heading[];
+  drawer: boolean;
 }>();
 const emit = defineEmits<{
   (e: 'close'): void,
