@@ -8,14 +8,14 @@
         class="btn btn-normal px-2"
         href="javascript:history.go(-1);"
       >
-        <span class="inline-block i-mdi-chevron-left relative top-0.2" />
+        <span class="inline-block i-mdi-chevron-left" />
         <span class="mr-1">回到上一页</span>
       </a>
       <a
         class="btn btn-normal px-2"
         href="/"
       >
-        <span class="inline-block i-mdi-home relative top-0.2" />
+        <span class="inline-block i-mdi-home" />
         <span class="mx-1">返回首页</span>
       </a>
     </div>

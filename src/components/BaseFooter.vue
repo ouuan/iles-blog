@@ -23,12 +23,12 @@
           class="underline"
           href="https://github.com/ouuan"
         >ouuan</a></span>
-      <span class="inline-block i-mdi-circle-small relative top-0.2" />
+      <span class="inline-block i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog"
       >Source Code</a>
-      <span class="inline-block i-mdi-circle-small relative top-0.2" />
+      <span class="inline-block i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog/discussions"

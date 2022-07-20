@@ -22,7 +22,6 @@
         <input
           v-model="showAll"
           type="checkbox"
-          class="relative top-0.4"
         >
       </label>
     </div>

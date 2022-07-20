@@ -9,7 +9,7 @@
       :aria-disabled="!hasPrevPage"
       aria-label="前往第一页"
     >
-      <span class="inline-block i-mdi-chevron-double-left relative top-0.2" />
+      <span class="inline-block i-mdi-chevron-double-left" />
     </a>
     <a
       :href="hasPrevPage ? `${hrefPrefix}/${currentPage - 1}` : undefined"
@@ -17,7 +17,7 @@
       :aria-disabled="!hasPrevPage"
       aria-label="前往上一页"
     >
-      <span class="inline-block i-mdi-chevron-left relative top-0.2" />
+      <span class="inline-block i-mdi-chevron-left" />
       <span class="mr-1 hidden sm:inline-block">上一页</span>
     </a>
     <div
@@ -61,7 +61,7 @@
       aria-label="前往下一页"
     >
       <span class="ml-1 hidden sm:inline-block">下一页</span>
-      <span class="inline-block i-mdi-chevron-right relative top-0.2" />
+      <span class="inline-block i-mdi-chevron-right" />
     </a>
     <a
       :href="hasNextPage ? `${hrefPrefix}/${pageCount}` : undefined"
@@ -69,7 +69,7 @@
       :aria-disabled="!hasNextPage"
       aria-label="前往最后一页"
     >
-      <span class="inline-block i-mdi-chevron-double-right relative top-0.2" />
+      <span class="inline-block i-mdi-chevron-double-right" />
     </a>
   </nav>
 </template>
