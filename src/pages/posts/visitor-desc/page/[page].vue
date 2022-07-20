@@ -8,7 +8,7 @@
       sort="visitor-desc"
       :page-index="pageIndex"
       href-prefix="/posts/visitor-desc/page"
-      title="文章列表：最多访问"
+      title="文章列表: 最多访问"
       :description="`排名更新于 ${format(new Date(), 'yyyy-MM-dd')}，非实时更新，所以可能与当前实际访问量排名有小的出入`"
       display-visitor
     />
@@ -37,5 +37,5 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表：最多访问 - 第${props.pageIndex}页`;
+page.frontmatter.title = `文章列表: 最多访问 - 第${props.pageIndex}页`;
 </script>

@@ -8,7 +8,7 @@
       sort="created-desc"
       :page-index="pageIndex"
       href-prefix="/posts/created-desc/page"
-      title="文章列表：最新创建"
+      title="文章列表: 最新创建"
     />
   </div>
 </template>
@@ -34,5 +34,5 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表：最新创建 - 第${props.pageIndex}页`;
+page.frontmatter.title = `文章列表: 最新创建 - 第${props.pageIndex}页`;
 </script>

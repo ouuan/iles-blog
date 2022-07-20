@@ -9,7 +9,7 @@
       :page-index="pageIndex"
       href-prefix="/posts/updated-desc/page"
       display-time="lastUpdated"
-      title="文章列表：最近修改"
+      title="文章列表: 最近修改"
     />
   </div>
 </template>
@@ -35,5 +35,5 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表：最近修改 - 第${props.pageIndex}页`;
+page.frontmatter.title = `文章列表: 最近修改 - 第${props.pageIndex}页`;
 </script>
