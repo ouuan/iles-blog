@@ -101,8 +101,10 @@ withDefaults(defineProps<{
   transition-timing-function: ease-out;
 }
 
-.post-title:hover::before {
-  left: 0;
-  right: 0;
+@media (prefers-reduced-motion: no-preference) {
+  .post-title:hover::before {
+    left: 0;
+    right: 0;
+  }
 }
 </style>
