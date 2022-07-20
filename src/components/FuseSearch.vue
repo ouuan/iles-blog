@@ -88,7 +88,7 @@
       class="standard-card"
     >
       <p class="my-3">
-        请输入关键词进行搜索 😊
+        请输入关键词进行搜索
       </p>
     </div>
   </div>
