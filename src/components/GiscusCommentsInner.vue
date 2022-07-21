@@ -22,9 +22,6 @@
 import GiscusComponent from '@giscus/vue';
 import { computed, ref } from 'vue';
 
-import { IMetadataMessage } from '~/types/giscus/types/giscus';
-import { Reaction } from '~/types/giscus/reactions';
-
 import useTheme from '~/composables/useTheme';
 import site from '~/site';
 
@@ -44,13 +41,13 @@ const positiveReacted = ref(false);
 window.addEventListener('message', (event) => {
   if (event.origin !== 'https://giscus.app') return;
   if (!(typeof event.data === 'object' && event.data.giscus)) return;
-  const data: IMetadataMessage = event.data.giscus;
-  positiveReacted.value = Boolean(([
+  const data = event.data.giscus;
+  positiveReacted.value = Boolean([
     'THUMBS_UP',
     'LAUGH',
     'HOORAY',
     'HEART',
     'ROCKET',
-  ] as Reaction[]).find((reaction) => data.discussion.reactions[reaction].viewerHasReacted));
+  ].find((reaction) => data.discussion.reactions[reaction].viewerHasReacted));
 });
 </script>

@@ -1,3 +1,0 @@
-[submodule "third-party/giscus"]
-	path = third-party/giscus
-	url = https://github.com/giscus/giscus
