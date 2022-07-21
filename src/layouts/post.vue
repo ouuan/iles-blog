@@ -4,7 +4,7 @@
       <article
         itemprop="mainEntity"
         itemscope
-        itemtype="https://schema.org/Article"
+        itemtype="https://schema.org/BlogPosting"
       >
         <div
           class="hidden"

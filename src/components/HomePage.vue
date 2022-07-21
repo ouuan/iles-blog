@@ -7,7 +7,7 @@
     >
       <article
         itemscope
-        itemtype="https://schema.org/Article"
+        itemtype="https://schema.org/BlogPosting"
       >
         <post-head
           v-if="index < 3"

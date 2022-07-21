@@ -4,7 +4,10 @@ title: 标签列表
 
 <template layout="base">
   <div class="m-3 standard-card">
-    <h1 class="mt-3 text-6 font-bold font-main">
+    <h1
+      class="mt-3 text-6 font-bold font-main"
+      itemprop="headline"
+    >
       标签列表
     </h1>
     <div class="flex flex-wrap items-baseline gap-3 my-3">

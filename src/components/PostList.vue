@@ -3,6 +3,7 @@
     <h1
       class="text-6 font-bold font-main"
       :title="description"
+      itemprop="headline"
     >
       {{ title }}
     </h1>
@@ -13,6 +14,8 @@
       v-for="post of posts"
       :key="post.meta.href"
       class="flex items-center gap-1 relative hover:left-2"
+      itemscope
+      itemtype="https://schema.org/BlogPosting"
     >
       <time
         class="text-footer"
@@ -20,10 +23,14 @@
         :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
           format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss')
         }`"
+        :itemprop="displayTime === 'date' ? 'dateCreated' : 'dateModified'"
       >
         {{ format(post.frontmatter[displayTime], 'yyyy-MM-dd') }}
       </time>
-      <span class="article-style">
+      <span
+        class="article-style"
+        itemprop="headline"
+      >
         <a
           class="text-lg inline-block pl-2"
           :href="post.meta.href"
