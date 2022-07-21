@@ -12,12 +12,6 @@
       v-else
       class="flex justify-center gap-6 relative"
     >
-      <button
-        v-if="clickToOpen"
-        class="absolute w-full h-full z-1"
-        title="点击关闭赞赏信息"
-        @click="opened = false"
-      />
       <figure class="flex-1 flex flex-col gap-3 items-center">
         <Picture
           alt="微信赞赏码"
