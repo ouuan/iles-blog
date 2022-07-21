@@ -1,5 +1,9 @@
 {
   "origins": [
     "https://ouuan.moe"
+  ],
+  "originsRegex": [
+    "http://localhost:[0-9]+",
+    "https://([a-f0-9]{8}\\.)?ouuan-iles-blog.pages.dev"
   ]
 }
