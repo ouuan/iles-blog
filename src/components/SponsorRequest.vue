@@ -15,14 +15,14 @@
       <figure class="flex-1 flex flex-col gap-3 items-center">
         <Picture
           alt="微信赞赏码"
-          src="@/images/wechat-donate.png?preset=post"
+          src="@/images/wechat-donate.png?preset=half"
         />
         <figcaption>微信打赏</figcaption>
       </figure>
       <figure class="flex-1 flex flex-col gap-3 items-center">
         <Picture
           alt="支付宝收款码"
-          src="@/images/alipay-donate.png?preset=post"
+          src="@/images/alipay-donate.png?preset=half"
         />
         <figcaption>支付宝打赏</figcaption>
       </figure>

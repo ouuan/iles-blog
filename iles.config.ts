@@ -7,7 +7,7 @@ import { defineConfig } from 'iles';
 import excerpt from '@islands/excerpt';
 import feed from '@islands/feed';
 import headings from '@islands/headings';
-import images, { hdPreset } from '@islands/images';
+import images, { widthPreset } from '@islands/images';
 import prism from '@islands/prism';
 import { simpleGit } from 'simple-git';
 import got from 'got';
@@ -20,8 +20,19 @@ export default defineConfig({
     feed(),
     headings(),
     images({
-      post: hdPreset({
-        widths: [440, 758],
+      half: widthPreset({
+        widths: [290, 435, 580, 770],
+        sizes: '40vw',
+        density: 1.6,
+        formats: {
+          webp: { quality: 80 },
+          original: {},
+        },
+      }),
+      normal: widthPreset({
+        widths: [720, 1080, 1440, 1920],
+        sizes: '90vw',
+        density: 1.6,
         formats: {
           webp: { quality: 80 },
           original: {},
@@ -65,7 +76,7 @@ export default defineConfig({
   },
   markdown: {
     withImageSrc(src) {
-      if (!src.includes('?')) return `${src}?preset=post`;
+      if (!src.includes('?')) return `${src}?preset=normal`;
       return src;
     },
     remarkPlugins: ['remark-gfm', 'remark-math'],
