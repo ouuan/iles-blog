@@ -47,7 +47,7 @@ const name = {
 } as const;
 
 const icon = {
-  auto: 'i-mdi-cellphone md:i-mdi-monitor',
+  auto: 'i-mdi-cellphone md:i-mdi-tablet lg:i-mdi-monitor',
   light: 'i-mdi-white-balance-sunny',
   dark: 'i-mdi-weather-night',
 } as const;
