@@ -1,9 +1,15 @@
 <template>
-  <giscus-comments-inner
-    client:only
+  <div
     class="print:hidden"
-    :term="page.frontmatter.title"
-  />
+    itemprop="comment"
+    itemscope
+    itemtype="http://schema.org/Comment"
+  >
+    <giscus-comments-inner
+      client:only
+      :term="page.frontmatter.title"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

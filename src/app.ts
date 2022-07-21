@@ -6,13 +6,21 @@ import 'uno.css';
 
 import '~/styles/index.scss';
 
+function pageType(href: string) {
+  if (href === '/about') return 'About';
+  if (href === '/search') return 'SearchResults';
+  if (href.startsWith('/posts') || href.startsWith('/tag')) return 'Collection';
+  if (href.startsWith('/post/')) return 'Item';
+  return 'Web';
+}
+
 export default defineApp({
   head({ frontmatter, site, meta }) {
     return {
       htmlAttrs: { lang: 'zh-CN' },
       bodyAttrs: {
         itemscope: '',
-        itemtype: 'http://schema.org/WebPage',
+        itemtype: computed(() => `http://schema.org/${pageType(meta.href)}Page`),
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
       style: [{ children: 'body { visibility: hidden; }' }],
