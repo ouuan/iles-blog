@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { TOCNode } from '~/types';
+import TOCNode from '~/types/TOCNode';
 
 const props = defineProps<{
   nodes: TOCNode[];

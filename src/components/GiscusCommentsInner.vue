@@ -1,4 +1,8 @@
 <template>
+  <sponsor-request
+    v-if="positiveReacted"
+    click-to-open
+  />
   <giscus-component
     :repo="site.repo"
     :repo-id="site.giscusRepoId"
@@ -6,7 +10,7 @@
     mapping="specific"
     :term="term"
     reactions-enabled="1"
-    emit-metadata="0"
+    emit-metadata="1"
     input-position="top"
     :theme="theme"
     lang="zh-CN"
@@ -16,7 +20,10 @@
 
 <script setup lang="ts">
 import GiscusComponent from '@giscus/vue';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+
+import { IMetadataMessage } from '~/types/giscus/types/giscus';
+import { Reaction } from '~/types/giscus/reactions';
 
 import useTheme from '~/composables/useTheme';
 import site from '~/site';
@@ -27,4 +34,19 @@ defineProps<{
 
 const colorMode = useTheme();
 const theme = computed(() => (colorMode.value === 'auto' ? 'preferred_color_scheme' : colorMode.value));
+
+const positiveReacted = ref(false);
+
+window.addEventListener('message', (event) => {
+  if (event.origin !== 'https://giscus.app') return;
+  if (!(typeof event.data === 'object' && event.data.giscus)) return;
+  const data: IMetadataMessage = event.data.giscus;
+  positiveReacted.value = Boolean(([
+    'THUMBS_UP',
+    'LAUGH',
+    'HOORAY',
+    'HEART',
+    'ROCKET',
+  ] as Reaction[]).find((reaction) => data.discussion.reactions[reaction].viewerHasReacted));
+});
 </script>

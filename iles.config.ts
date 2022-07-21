@@ -21,7 +21,7 @@ export default defineConfig({
     headings(),
     images({
       post: hdPreset({
-        widths: [440, 758, 992, 1200],
+        widths: [440, 758],
         formats: {
           avif: { quality: 80 },
           webp: { quality: 80 },

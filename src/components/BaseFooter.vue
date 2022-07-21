@@ -4,12 +4,18 @@
     itemscope
     itemtype="https://schema.org/WPFooter"
   >
-    <span class="flex items-center">
+    <span class="flex">
       <span>©</span>
       &nbsp;
       <span itemprop="copyrightYear">{{ yearString }}</span>
       &nbsp;
-      <span class="i-mdi-heart text-red dark:text-red-7" />
+      <a
+        class="flex items-center"
+        href="/sponsor"
+        title="赞赏支持"
+      >
+        <span class="i-mdi-heart text-red dark:text-red-7" />
+      </a>
       &nbsp;
       <span
         itemprop="copyrightHolder"

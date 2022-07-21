@@ -1,4 +1,4 @@
-export interface TOCNode {
+export default interface TOCNode {
   level: number;
   title: string;
   slug: string;

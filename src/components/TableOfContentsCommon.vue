@@ -47,7 +47,7 @@ import {
   useWindowSize,
   watchThrottled,
 } from '@vueuse/core';
-import { TOCNode } from '~/types';
+import TOCNode from '~/types/TOCNode';
 
 const props = defineProps<{
   headings: Heading[];
