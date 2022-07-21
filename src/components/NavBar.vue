@@ -2,7 +2,7 @@
   <header
     class="bg-card shadow print:hidden"
     itemscope
-    itemtype="http://schema.org/WPHeader"
+    itemtype="https://schema.org/WPHeader"
   >
     <div
       class="container-margin px-3 whitespace-nowrap

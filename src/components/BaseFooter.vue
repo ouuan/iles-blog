@@ -2,7 +2,7 @@
   <footer
     class="flex flex-col items-center text-footer bg-card p-6 gap-1"
     itemscope
-    itemtype="http://schema.org/WPFooter"
+    itemtype="https://schema.org/WPFooter"
   >
     <span class="flex items-center">
       <span>©</span>
@@ -14,7 +14,7 @@
       <span
         itemprop="copyrightHolder"
         itemscope
-        itemtype="http://schema.org/Person"
+        itemtype="https://schema.org/Person"
       >
         <span itemprop="name">{{ author }}</span>
       </span>

@@ -20,7 +20,7 @@ export default defineApp({
       htmlAttrs: { lang: 'zh-CN' },
       bodyAttrs: {
         itemscope: '',
-        itemtype: computed(() => `http://schema.org/${pageType(meta.href)}Page`),
+        itemtype: computed(() => `https://schema.org/${pageType(meta.href)}Page`),
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
       style: [{ children: 'body { visibility: hidden; }' }],

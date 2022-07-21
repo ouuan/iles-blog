@@ -4,7 +4,7 @@
     aria-labelledby="__toc-title"
     style="max-height: calc(100vh - 10rem);"
     itemscope
-    itemtype="http://schema.org/WPSideBar"
+    itemtype="https://schema.org/WPSideBar"
   >
     <table-of-contents-common
       :headings="headings"

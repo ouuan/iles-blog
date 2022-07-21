@@ -4,7 +4,7 @@
     class="container-margin py-6 min-h-100vh"
     itemprop="mainContentOfPage"
     itemscope
-    itemtype="http://schema.org/WebPageElement"
+    itemtype="https://schema.org/WebPageElement"
   >
     <slot />
   </main>

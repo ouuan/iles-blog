@@ -3,7 +3,7 @@
     class="print:hidden"
     itemprop="comment"
     itemscope
-    itemtype="http://schema.org/Comment"
+    itemtype="https://schema.org/Comment"
   >
     <giscus-comments-inner
       client:only

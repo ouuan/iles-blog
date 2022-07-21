@@ -4,13 +4,13 @@
       <article
         itemprop="mainEntity"
         itemscope
-        itemtype="http://schema.org/Article"
+        itemtype="https://schema.org/Article"
       >
         <div
           class="hidden"
           itemprop="author"
           itemscope
-          itemtype="http://schema.org/Person"
+          itemtype="https://schema.org/Person"
         >
           <meta
             itemprop="name"
