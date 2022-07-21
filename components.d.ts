@@ -20,6 +20,7 @@ declare module '@vue/runtime-core' {
     Island: typeof import('./node_modules/.pnpm/iles@0.8.0_sass@1.53.0/node_modules/iles/dist/client/app/components/Island.vue')['default']
     LatexPostProcess: typeof import('./src/components/LatexPostProcess.vue')['default']
     MicrodataAuthor: typeof import('./src/components/MicrodataAuthor.vue')['default']
+    MicrodataMainEntityOfPage: typeof import('./src/components/MicrodataMainEntityOfPage.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
     PaginationBar: typeof import('./src/components/PaginationBar.vue')['default']
