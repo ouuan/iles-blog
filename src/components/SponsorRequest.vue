@@ -41,3 +41,9 @@ withDefaults(defineProps<{
 
 const opened = ref(false);
 </script>
+
+<style lang="scss" scoped>
+:deep(picture), :deep(img) {
+  @apply w-full;
+}
+</style>
