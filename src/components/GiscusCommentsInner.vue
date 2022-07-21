@@ -4,9 +4,9 @@
     click-to-open
   />
   <giscus-component
-    :repo="site.repo"
-    :repo-id="site.giscusRepoId"
-    :category-id="site.giscusCategoryId"
+    :repo="repo"
+    :repo-id="repoId"
+    :category-id="categoryId"
     mapping="specific"
     :term="term"
     reactions-enabled="1"
@@ -27,6 +27,10 @@ import { Reaction } from '~/types/giscus/reactions';
 
 import useTheme from '~/composables/useTheme';
 import site from '~/site';
+
+const repo: `${string}/${string}` = import.meta.env.DEV ? 'ouuan/giscus-test' : site.repo;
+const repoId = import.meta.env.DEV ? 'R_kgDOHsXSjg' : site.giscusRepoId;
+const categoryId = import.meta.env.DEV ? 'DIC_kwDOHsXSjs4CQWK2' : site.giscusCategoryId;
 
 defineProps<{
   term: string;
