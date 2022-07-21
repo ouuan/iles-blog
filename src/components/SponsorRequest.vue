@@ -14,7 +14,7 @@
     >
       <button
         v-if="clickToOpen"
-        class="absolute w-full h-full"
+        class="absolute w-full h-full z-1"
         title="点击关闭赞赏信息"
         @click="opened = false"
       />
