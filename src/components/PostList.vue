@@ -17,6 +17,7 @@
       itemscope
       itemtype="https://schema.org/BlogPosting"
     >
+      <microdata-author />
       <time
         class="text-footer"
         :datetime="formatISO(post.frontmatter[displayTime])"

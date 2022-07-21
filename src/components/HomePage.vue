@@ -9,6 +9,7 @@
         itemscope
         itemtype="https://schema.org/BlogPosting"
       >
+        <microdata-author />
         <post-head
           v-if="index < 3"
           client:load

@@ -6,21 +6,7 @@
         itemscope
         itemtype="https://schema.org/BlogPosting"
       >
-        <div
-          class="hidden"
-          itemprop="author"
-          itemscope
-          itemtype="https://schema.org/Person"
-        >
-          <meta
-            itemprop="name"
-            :content="page.site.author"
-          >
-          <meta
-            itemprop="url"
-            :content="page.site.authorLink"
-          >
-        </div>
+        <microdata-author />
         <post-head
           client:load
           :href="page.meta.href"
