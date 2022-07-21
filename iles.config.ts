@@ -23,7 +23,6 @@ export default defineConfig({
       post: hdPreset({
         widths: [440, 758],
         formats: {
-          avif: { quality: 80 },
           webp: { quality: 80 },
           original: {},
         },
