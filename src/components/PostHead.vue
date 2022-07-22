@@ -8,8 +8,9 @@
         class="post-title relative font-main"
         :href="href"
       >
-        <slot name="title" />
-        <span class="[&:nth-child(2)]:hidden">{{ frontmatter.title }}</span>
+        <slot name="title">
+          {{ frontmatter.title }}
+        </slot>
       </a>
     </h1>
     <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 text-sm">

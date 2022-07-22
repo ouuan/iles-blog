@@ -48,14 +48,12 @@
             :tag-matched="result.tagMatched"
           >
             <template #title>
-              <span>
-                <span
-                  v-for="(part, index) of result.titleParts"
-                  :key="index"
-                  :class="part.type !== 'miss' && `${part.type}-matched`"
-                  :title="`${part.type} match`"
-                >{{ part.content }}</span>
-              </span>
+              <span
+                v-for="(part, index) of result.titleParts"
+                :key="index"
+                :class="part.type !== 'miss' && `${part.type}-matched`"
+                :title="`${part.type} match`"
+              >{{ part.content }}</span>
             </template>
           </post-head>
           <pre class="mt-6 mb-3 max-h-80vh overflow-auto whitespace-pre-wrap"><span
