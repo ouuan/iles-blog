@@ -51,7 +51,13 @@
           </time>
         </component>
       </span>
-      <visitor-count :href="href" />
+      <span
+        class="flex items-center"
+        title="访问量"
+      >
+        <span class="i-mdi-eye-outline mr-1" />
+        <visitor-count :href="href" />
+      </span>
       <span
         v-if="frontmatter.tags"
         :class="['flex flex-wrap gap-x-2 gap-y-1', tagMatched && 'fuzzy-matched']"

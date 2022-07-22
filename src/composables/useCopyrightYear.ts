@@ -1,6 +1,7 @@
 export default function useCopyrightYear() {
   const { site } = usePage();
-  const { startYear } = site;
-  const year = new Date().getFullYear();
-  return year === startYear ? `${startYear}` : `${startYear} - ${year}`;
+  const { startedAt } = site;
+  const startYear = startedAt.getFullYear();
+  const currentYear = new Date().getFullYear();
+  return currentYear === startYear ? `${currentYear}` : `${startYear} - ${currentYear}`;
 }

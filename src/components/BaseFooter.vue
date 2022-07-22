@@ -1,14 +1,12 @@
 <template>
   <footer
-    class="flex flex-col items-center text-footer bg-card p-6 gap-1"
+    class="flex flex-col text-footer bg-card p-6 gap-1"
     itemscope
     itemtype="https://schema.org/WPFooter"
   >
-    <span class="flex">
-      <span>©</span>
-      &nbsp;
+    <div class="flex flex-wrap justify-center gap-x-1">
+      <span>Copyright ©</span>
       <span itemprop="copyrightYear">{{ yearString }}</span>
-      &nbsp;
       <a
         class="flex items-center"
         href="/sponsor"
@@ -16,7 +14,6 @@
       >
         <span class="i-mdi-heart text-red dark:text-red-7" />
       </a>
-      &nbsp;
       <span
         itemprop="copyrightHolder"
         itemscope
@@ -24,36 +21,32 @@
       >
         <span itemprop="name">{{ author }}</span>
       </span>
-    </span>
-    <span>
-      Powered by
+    </div>
+    <footer-dynamic-part client:load />
+    <div class="flex justify-center items-center flex-wrap gap-x-1">
+      基于
       <a
         class="underline"
         href="https://github.com/ElMassimo/iles"
       >îles</a>
-      and
+      及
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog/blob/master/package.json"
-      >many more</a>
-    </span>
-    <span class="flex justify-center items-center flex-wrap">
-      <span>Designed by
-        <a
-          class="underline"
-          href="https://github.com/ouuan"
-        >ouuan</a></span>
+      >很多其他项目</a>
+      <span class="i-mdi-circle-small" />
+      <span>由 ouuan 设计/制作</span>
       <span class="i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog"
-      >Source Code</a>
+      >源代码</a>
       <span class="i-mdi-circle-small" />
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog/discussions"
       >Discussions</a>
-    </span>
+    </div>
   </footer>
 </template>
 
