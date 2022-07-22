@@ -40,14 +40,14 @@ const positiveReacted = ref(false);
 
 window.addEventListener('message', (event) => {
   if (event.origin !== 'https://giscus.app') return;
-  if (!(typeof event.data === 'object' && event.data.giscus)) return;
-  const data = event.data.giscus;
+  const reactions = event.data?.giscus?.discussion?.reactions;
+  if (typeof reactions !== 'object') return;
   positiveReacted.value = Boolean([
     'THUMBS_UP',
     'LAUGH',
     'HOORAY',
     'HEART',
     'ROCKET',
-  ].find((reaction) => data.discussion.reactions[reaction].viewerHasReacted));
+  ].find((reaction) => reactions[reaction].viewerHasReacted));
 });
 </script>
