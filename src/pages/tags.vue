@@ -20,7 +20,7 @@ title: 标签列表
       >
         <span class="i-mdi-tag-outline" />
         <a
-          :href="`/tag/${encodeURIComponent(encodeURIComponent(tag))}`"
+          :href="`/tag/${tag}`"
           class="hover:underline mx-1"
         >
           {{ tag }}

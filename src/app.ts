@@ -1,5 +1,6 @@
 import { defineApp } from 'iles';
 import { computed } from 'vue';
+import assert from 'assert';
 import '@unocss/reset/tailwind.css';
 import 'prism-themes/themes/prism-gruvbox-dark.min.css';
 import 'uno.css';
@@ -16,6 +17,7 @@ function pageType(href: string) {
 
 export default defineApp({
   head({ frontmatter, site, route }) {
+    route.path.split('/').forEach((part) => assert.equal(part, encodeURIComponent(part)));
     return {
       htmlAttrs: { lang: 'zh-CN' },
       bodyAttrs: {

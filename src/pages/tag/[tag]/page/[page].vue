@@ -4,7 +4,7 @@
       sort="created-desc"
       :filter="(post) => post.tags?.includes(tag)"
       :page-index="pageIndex"
-      :href-prefix="`/tag/${encodeURIComponent(encodeURIComponent(tag))}/page`"
+      :href-prefix="`/tag/${tag}/page`"
       :title="`标签: ${tag}`"
     />
   </div>
