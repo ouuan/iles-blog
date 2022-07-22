@@ -18,3 +18,22 @@
     content="zh-CN"
   >
 </template>
+
+<script setup lang="ts">
+import { watch } from 'vue';
+
+const { route } = usePage();
+
+function checkRoute() {
+  route.path.split('/').forEach((part) => {
+    if (part !== encodeURIComponent(part)) {
+      const error = `Route is not URI-encoding-invariable: ${route.path}`;
+      if (import.meta.env.DEV) alert(error);
+      throw new Error(error);
+    }
+  });
+}
+
+checkRoute();
+watch(route, checkRoute);
+</script>
