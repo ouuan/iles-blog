@@ -28,6 +28,7 @@ function checkRoute() {
   route.path.split('/').forEach((part) => {
     if (part !== encodeURIComponent(part)) {
       const error = `Route is not URI-encoding-invariable: ${route.path}`;
+      // eslint-disable-next-line no-alert
       if (import.meta.env.DEV) alert(error);
       throw new Error(error);
     }
