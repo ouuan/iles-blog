@@ -15,12 +15,12 @@ function pageType(href: string) {
 }
 
 export default defineApp({
-  head({ frontmatter, site, meta }) {
+  head({ frontmatter, site, route }) {
     return {
       htmlAttrs: { lang: 'zh-CN' },
       bodyAttrs: {
         itemscope: '',
-        itemtype: computed(() => `https://schema.org/${pageType(meta.href)}Page`),
+        itemtype: computed(() => `https://schema.org/${pageType(route.path)}Page`),
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
       style: [{ children: 'body { visibility: hidden; }' }],
@@ -40,7 +40,7 @@ export default defineApp({
         },
         { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#a07e5b' },
-        { rel: 'canonical', href: computed(() => new URL(meta.href, site.url).href) },
+        { rel: 'canonical', href: computed(() => new URL(route.path, site.url).href) },
         {
           rel: 'feed',
           type: 'application/rss+xml',
