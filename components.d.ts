@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     BackToTop: typeof import('./src/components/BackToTop.vue')['default']
     BaseFooter: typeof import('./src/components/BaseFooter.vue')['default']
     BaseLayout: typeof import('./src/layouts/base.vue')['default']
+    Card: typeof import('./src/components/Card.vue')['default']
     CopyButton: typeof import('./src/components/CopyButton.vue')['default']
     CopyButtonAdder: typeof import('./src/components/CopyButtonAdder.vue')['default']
     CopyrightNotice: typeof import('./src/components/CopyrightNotice.vue')['default']
