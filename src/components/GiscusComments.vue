@@ -1,6 +1,6 @@
 <template>
   <div
-    class="print:hidden"
+    class="print:hidden my-3"
     itemprop="comment"
     itemscope
     itemtype="https://schema.org/Comment"
@@ -20,10 +20,6 @@ useHead({
     {
       rel: 'preconnect',
       href: 'https://giscus.app',
-    },
-    {
-      rel: 'dns-prefetch',
-      href: 'https://github.githubassets.com',
     },
     {
       rel: 'dns-prefetch',

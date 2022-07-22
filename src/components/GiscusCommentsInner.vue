@@ -3,7 +3,20 @@
     v-if="positiveReacted"
     click-to-open
   />
+  <div
+    v-if="!loaded"
+    class="flex justify-center items-center gap-2"
+  >
+    <span>
+      <a
+        class="text-link hover:text-hover active:text-active"
+        :href="`https://github.com/${repo}/discussions/categories/comments?discussions_q=${term}`"
+      >评论</a>加载中…
+    </span>
+    <span class="i-mdi-loading motion-safe:animate-spin" />
+  </div>
   <giscus-component
+    v-show="loaded"
     :repo="repo"
     :repo-id="repoId"
     :category-id="categoryId"
@@ -36,18 +49,23 @@ defineProps<{
 const colorMode = useTheme();
 const theme = computed(() => (colorMode.value === 'auto' ? 'preferred_color_scheme' : colorMode.value));
 
+const loaded = ref(false);
 const positiveReacted = ref(false);
 
 window.addEventListener('message', (event) => {
   if (event.origin !== 'https://giscus.app') return;
-  const reactions = event.data?.giscus?.discussion?.reactions;
-  if (typeof reactions !== 'object') return;
-  positiveReacted.value = Boolean([
-    'THUMBS_UP',
-    'LAUGH',
-    'HOORAY',
-    'HEART',
-    'ROCKET',
-  ].find((reaction) => reactions[reaction].viewerHasReacted));
+  const giscus = event.data?.giscus;
+  if (typeof giscus !== 'object') return;
+  loaded.value = true;
+  const reactions = giscus.discussion?.reactions;
+  if (typeof reactions === 'object') {
+    positiveReacted.value = Boolean([
+      'THUMBS_UP',
+      'LAUGH',
+      'HOORAY',
+      'HEART',
+      'ROCKET',
+    ].find((reaction) => reactions[reaction].viewerHasReacted));
+  }
 });
 </script>
