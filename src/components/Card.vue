@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/no-v-html -->
+
 <template>
   <component
     :is="fold ? 'details' : 'div'"
@@ -8,7 +10,10 @@
       :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
     >
       <span :class="['text-5', icon[type]]" />
-      <span class="truncate font-bold">{{ title || defaultTitle[type] }}</span>
+      <span
+        class="truncate font-bold"
+        v-html="title || defaultTitle[type]"
+      />
       <span
         v-if="fold"
         class="grow flex justify-end"
