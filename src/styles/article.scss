@@ -89,11 +89,9 @@
 
     p,
     ul,
-    ol {
-      @apply my-0;
-    }
-
-    li {
+    ol,
+    li,
+    blockquote {
       @apply my-1;
     }
   }
@@ -129,5 +127,9 @@
         @apply bg-light-0 dark:bg-dark-4;
       }
     }
+  }
+
+  del {
+    @apply opacity-80;
   }
 }

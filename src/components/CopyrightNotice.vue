@@ -1,7 +1,7 @@
 <template>
-  <div class="article-style my-5">
+  <div class="my-6 flex flex-col gap-3">
     <div
-      class="flex justify-center flex-wrap-reverse gap-x-3 leading-8 mb-2"
+      class="flex justify-center flex-wrap-reverse gap-x-3"
       itemprop="copyrightNotice"
     >
       <span class="truncate">
@@ -25,6 +25,7 @@
         <a
           rel="license"
           href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
+          class="text-link hover:underline hover:text-hover active:text-active"
           itemprop="license"
         >CC BY-SA 4.0</a>
         许可协议进行授权，未满足
