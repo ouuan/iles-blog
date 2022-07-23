@@ -22,7 +22,15 @@
         <span itemprop="name">{{ author }}</span>
       </span>
     </div>
-    <footer-dynamic-part client:load />
+    <div class="flex flex-wrap justify-center items-center gap-x-1">
+      <span>文章总大小 {{ filesize(totalSize, { standard: 'iec', precision: 3 }) }}</span>
+      <span class="i-mdi-circle-small" />
+      <span>
+        共有
+        <visitor-count client:load />
+        位访客
+      </span>
+    </div>
     <div class="flex justify-center items-center flex-wrap gap-x-1">
       基于
       <a
@@ -51,9 +59,20 @@
 </template>
 
 <script setup lang="ts">
+import filesize from 'filesize';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
+
+const docs = useDocuments<unknown>('~/pages/{post/**/*,about}.{md,mdx}');
+const totalSize = (await Promise.all(docs.value.map(async (doc) => {
+  if (import.meta.env.SSR) {
+    const { readFile } = await import('fs/promises');
+    const buffer = await readFile(doc.meta.filename);
+    return buffer.byteLength;
+  }
+  return 0;
+}))).reduce((acc, size) => acc + size, 0);
 </script>
