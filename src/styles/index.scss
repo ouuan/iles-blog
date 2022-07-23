@@ -1,7 +1,7 @@
 @import "variables";
 
 html {
-  @apply text-text bg-bg scroll-smooth;
+  @apply text-text bg-bg motion-safe:scroll-smooth;
 }
 
 * {
