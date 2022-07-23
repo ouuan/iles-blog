@@ -61,13 +61,13 @@
       <span
         v-if="frontmatter.tags"
         :class="['flex flex-wrap gap-x-2 gap-y-1', tagMatched && 'fuzzy-matched']"
-        itemprop="keywords"
       >
         <span
           v-for="tag of frontmatter.tags"
           :key="tag"
           :title="`标签: ${tag}`"
           class="flex items-center"
+          itemprop="keywords"
         >
           <span class="i-mdi-tag-outline mr-1" />
           <a
