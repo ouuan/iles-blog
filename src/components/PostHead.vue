@@ -99,24 +99,14 @@ withDefaults(defineProps<{
 <style lang="scss" scoped>
 .post-title::before {
   content: '';
-  position: absolute;
-  height: 1px;
-  bottom: -5px;
-  left: 51%;
-  right: 51%;
-  background: var(--text-color);
+  @apply absolute h-1px bottom--5px left-1/2 right-1/2;
+  @apply bg-text;
   transition-property: left, right;
-  transition-timing-function: ease-out;
+  @apply ease-out motion-safe:duration-200;
 }
 
 .post-title:hover::before {
   left: 0;
   right: 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .post-title::before {
-    transition-duration: .2s;
-  }
 }
 </style>
