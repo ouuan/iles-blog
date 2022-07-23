@@ -128,6 +128,8 @@ interface MatchPart {
   content: string;
 }
 
+const CONTEXT_LENGTH = 50;
+
 function search() {
   if (!pattern.value) return null;
   return fuse.search(pattern.value, {
@@ -151,16 +153,22 @@ function search() {
       if (indices.length === 0) indices = match.indices.slice();
       indices.sort((lhs, rhs) => lhs[0] - rhs[0]);
       let parts: MatchPart[] = [];
-      let last = match.key === 'title' ? 0 : Math.max(0, indices[0][0] - 30);
+      let last = match.key === 'title' ? 0 : Math.max(0, indices[0][0] - CONTEXT_LENGTH);
       indices.forEach(([start, end]) => {
-        parts.push({ type: 'miss', content: value.slice(last, start) });
+        if (start - last > CONTEXT_LENGTH * 3) {
+          parts.push({ type: 'miss', content: value.slice(last, last + CONTEXT_LENGTH) });
+          parts.push({ type: 'miss', content: '\n\n……\n\n' });
+          parts.push({ type: 'miss', content: value.slice(start - CONTEXT_LENGTH, start) });
+        } else {
+          parts.push({ type: 'miss', content: value.slice(last, start) });
+        }
         const content = value.slice(start, end + 1);
         parts.push({ type: content === pattern.value ? 'exact' : 'fuzzy', content });
         last = end + 1;
       });
       parts.push({
         type: 'miss',
-        content: value.slice(last, match.key === 'title' ? value.length : last + 30),
+        content: value.slice(last, match.key === 'title' ? value.length : last + CONTEXT_LENGTH),
       });
       parts = parts.filter(({ content }) => content);
       if (match.key === 'title') {
