@@ -1,0 +1,58 @@
+---
+title: Btrfs Quota 以及 Timeshift 导致的系统无响应问题解决过程记录
+date: 2022-07-23T12:08:17+08:00
+tags:
+-   btrfs
+-   Arch Linux
+-   问题解决记录
+---
+
+记录一下之前困扰我近一年的 [Btrfs](https://wiki.archlinux.org/title/Btrfs) 快照导致的系统无响应问题。
+
+<Excerpt />
+
+## 系统无响应的具体表现
+
+每次整点时有概率出现，在一分钟左右的时间内，和磁盘写入相关的操作都会卡死，例如直接和文件操作相关的保存文件，或者会写入 `~/.zsh_history` 的在终端输入命令，以及打开新的 GUI 应用等等，基本上就是整个系统完全卡死。
+
+另外，我有观察到，在笔记本不使用外接电源时这一问题表现地更为严重，即更容易被察觉到、每次卡住的时间更长。
+
+## 最初解决问题的尝试
+
+遇到问题后不久，我就怀疑上了一些每小时自动运行的任务，包括 [Timeshift](https://github.com/linuxmint/timeshift) 的快照以及一些自己写的 crontab。
+
+最值得怀疑的就是 Timeshift 的快照了，然而，当时我曾经尝试过暂时关闭自动快照，但问题似乎没有得到解决，具体原因已不可考了。当时我还在一个群里提出了这个猜想，然后群友说快照是原子级操作，不应该卡住，我感觉很有道理，就在很长时间内没有怀疑自动快照的问题了。
+
+后来我又尝试着关闭各种 crontab，当然也没有解决问题。
+
+有想过在整点时用 `htop` 查看进程信息，但由于卡住时运行不了命令（当然可以关闭终端的历史记录，但关了也不见得不卡，而且我懒啊x），需要提前打开 `htop`，而且也不是每小时都会遇到这个问题，看到了进程信息也不一定能找到问题所在，最后也没有成功。
+
+当时自然也尝试过各种搜索，至于为什么没有搜索到或者注意到 [Freeze issues with BTRFS and Timeshift](https://forum.manjaro.org/t/freeze-issues-with-btrfs-and-timeshift/22005) 也不可考了，可能是搜索关键词不对吧，毕竟当时我一定程度上排除了对快照的怀疑。
+
+由于问题的严重程度和是否外接电源有关，我甚至一度怀疑过是硬件问题，想换电脑（
+
+## 最终问题的解决
+
+在被这一问题困扰了大半年后，我又忍不住想搜索解决方法，这一次很快就搜到了 [Freeze issues with BTRFS and Timeshift](https://forum.manjaro.org/t/freeze-issues-with-btrfs-and-timeshift/22005)，然后按里面说的禁用了 quota: `sudo btrfs quota disable /`。
+
+但过了几天，我发现问题又出现了，以为这个方法不管用。
+
+后来又过了一段时间，我又忍不了了，再仔细阅读了一下，发现这个 thread 里有提到 Timeshift 会自动打开 quota，要修改 Timeshift 的设置才行。至此，问题解决。
+
+<Card title="关于 Brtfs Quota">
+
+[Btrfs quota](https://wiki.archlinux.org/title/Btrfs#Quota) 主要用于快速查看每个 subvolume 的磁盘用量（可以用 [btrfs-du](https://github.com/nachoparker/btrfs-du) 查看），如果没有启用的话，每次查看就需要几十秒的时间来重新扫描。
+
+但是，这一功能有很多 [已知问题](https://btrfs.wiki.kernel.org/index.php/Quota_support#Known_issues)（当然也包括本文描述的这个），所以目前不建议启用。
+
+</Card>
+
+## 后记: Timeshift 已修复此问题
+
+实际上，Timeshift 已在我自己解决问题前不久就修复了这一问题: [Fix #865, #839, #680: Do not create or remove Qgroups when snapshots are created or removed](https://github.com/linuxmint/timeshift/commit/8d77b18fe7b725c11baefe721633561d755b3630)
+
+虽然 [Timeshift 在 5 月 29 日就发布了修复](https://github.com/linuxmint/timeshift/releases/tag/v22.06.1)，但是 [archlinuxcn 在 7 月 1 日才更新](https://github.com/archlinuxcn/repo/commits/master/archlinuxcn/timeshift)，于是我“有幸”在 Timeshift 更新的前一天自己解决了问题 🙃...
+
+![消息记录，发于 6 月 30 日: 前段时间听说关 quota 可以解决这个问题，但关了之后还是经常卡。今天才发现 timeshift 里设置了开 quota，得把 timeshift 的自动开 quota 关了才行 🌚 需要观察几天是否还会整点卡](~/images/2022/07/btrfs-quota-timeshift-message-screenshot.png)
+
+其实我还是写这篇博客的时候想看一眼 Timeshift 的 quota 设置发现没有这个设置项了才知道 Timeshift 已经修了...

@@ -132,4 +132,8 @@
   del {
     @apply opacity-80 hover:opacity-100;
   }
+
+  p > picture:only-child {
+    @apply flex justify-center;
+  }
 }
