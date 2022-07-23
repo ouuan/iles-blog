@@ -60,17 +60,18 @@
 
 <script setup lang="ts">
 import filesize from 'filesize';
+import { usePosts } from '~/composables/usePosts';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
 
-const docs = useDocuments<unknown>('~/pages/{post/**/*,about}.{md,mdx}');
-const totalSize = (await Promise.all(docs.value.map(async (doc) => {
+const posts = usePosts();
+const totalSize = (await Promise.all(posts.value.map(async (post) => {
   if (import.meta.env.SSR) {
     const { readFile } = await import('fs/promises');
-    const buffer = await readFile(doc.meta.filename);
+    const buffer = await readFile(post.meta.filename);
     return buffer.byteLength;
   }
   return 0;
