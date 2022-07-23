@@ -78,7 +78,7 @@ module.exports = {
 
     'vue/component-name-in-template-casing': ['error', 'kebab-case', {
       registeredComponentsOnly: false,
-      ignores: ['Picture', 'Head'],
+      ignores: ['Picture', 'Head', 'Card'],
     }],
 
     'vue/multi-word-component-names': 0,

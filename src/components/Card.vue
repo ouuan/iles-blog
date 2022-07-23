@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 withDefaults(defineProps<{
-  type?: 'note' | 'warn' | 'alert' | 'hint';
+  type?: 'note' | 'info' | 'warn' | 'alert' | 'hint';
   fold?: boolean;
   title?: string;
 }>(), {
@@ -40,6 +40,7 @@ withDefaults(defineProps<{
 
 const boxClasses = {
   note: 'bg-blue-1 dark:bg-blue-9 b-blue',
+  info: 'bg-blue-1 dark:bg-blue-9 b-blue',
   warn: 'bg-orange-1 dark:bg-orange-9 b-orange',
   alert: 'bg-red-1 dark:bg-red-9 b-red-5',
   hint: 'bg-green-2 dark:bg-green-9 b-green-5',
@@ -47,6 +48,7 @@ const boxClasses = {
 
 const defaultTitle = {
   note: 'Note',
+  info: 'Info',
   warn: 'Warning',
   alert: 'Alert',
   hint: 'Hint',
@@ -54,6 +56,7 @@ const defaultTitle = {
 
 const icon = {
   note: 'i-mdi-pencil text-blue',
+  info: 'i-mdi-info-circle-outline text-blue',
   warn: 'i-mdi-alert-outline text-orange',
   alert: 'i-mdi-alert-circle-outline text-red',
   hint: 'i-mdi-lightbulb-outline text-green',
