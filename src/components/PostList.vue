@@ -17,8 +17,7 @@
       itemscope
       itemtype="https://schema.org/BlogPosting"
     >
-      <microdata-main-entity-of-page :href="post.meta.href" />
-      <microdata-author />
+      <post-microdata :post="post" />
       <time
         class="text-footer"
         :datetime="formatISO(post.frontmatter[displayTime])"

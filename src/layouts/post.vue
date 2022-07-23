@@ -6,7 +6,7 @@
         itemscope
         itemtype="https://schema.org/BlogPosting"
       >
-        <microdata-author />
+        <post-microdata :post="page" />
         <post-head
           client:load
           :href="page.meta.href"

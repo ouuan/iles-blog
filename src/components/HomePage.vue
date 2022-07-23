@@ -9,8 +9,7 @@
         itemscope
         itemtype="https://schema.org/BlogPosting"
       >
-        <microdata-main-entity-of-page :href="post.meta.href" />
-        <microdata-author />
+        <post-microdata :post="post" />
         <post-head
           v-if="index < 3"
           client:load
