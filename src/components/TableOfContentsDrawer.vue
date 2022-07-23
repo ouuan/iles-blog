@@ -52,6 +52,6 @@ onKeyStroke('Escape', () => {
   --toc-width: calc(min(24rem, 60vw));
   width: var(--toc-width);
   transition-property: right, width;
-  @apply ease-out duration-240;
+  @apply ease-out motion-safe:duration-240;
 }
 </style>
