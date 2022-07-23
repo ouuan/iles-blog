@@ -16,7 +16,10 @@
     <span class="i-mdi-loading motion-safe:animate-spin" />
   </div>
   <giscus-component
-    :class="loading && 'opacity-0 absolute'"
+    :style="loading && {
+      opacity: 0,
+      position: 'absolute',
+    }"
     :aria-hidden="loading"
     :repo="repo"
     :repo-id="repoId"
