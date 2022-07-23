@@ -19,7 +19,6 @@ declare module '@vue/runtime-core' {
     GiscusCommentsInner: typeof import('./src/components/GiscusCommentsInner.vue')['default']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
     Island: typeof import('./node_modules/.pnpm/iles@0.8.0_sass@1.53.0/node_modules/iles/dist/client/app/components/Island.vue')['default']
-    LatexPostProcess: typeof import('./src/components/LatexPostProcess.vue')['default']
     MicrodataAuthor: typeof import('./src/components/MicrodataAuthor.vue')['default']
     MicrodataMainEntityOfPage: typeof import('./src/components/MicrodataMainEntityOfPage.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
@@ -41,6 +40,7 @@ declare module '@vue/runtime-core' {
     TableOfContentsDrawer: typeof import('./src/components/TableOfContentsDrawer.vue')['default']
     TableOfContentsNode: typeof import('./src/components/TableOfContentsNode.vue')['default']
     TableOfContentsSidebar: typeof import('./src/components/TableOfContentsSidebar.vue')['default']
+    TextJustifyFix: typeof import('./src/components/TextJustifyFix.vue')['default']
     ThemeSwitcher: typeof import('./src/components/ThemeSwitcher.vue')['default']
     VisitorCount: typeof import('./src/components/VisitorCount.vue')['default']
   }

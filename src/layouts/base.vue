@@ -12,7 +12,7 @@
   <back-to-top client:idle />
   <copy-button-adder />
   <plausible-trigger />
-  <latex-post-process />
+  <text-justify-fix />
   <meta
     itemprop="inLanguage"
     content="zh-CN"

@@ -5,7 +5,9 @@
 <script client:load lang="ts">
 // eslint-disable-next-line import/prefer-default-export
 export function onLoad() {
-  Array.from(document.getElementsByClassName('math-inline')).forEach((node) => {
+  const math = Array.from(document.getElementsByClassName('math-inline'));
+  const code = Array.from(document.querySelectorAll(':not(pre) > code'));
+  math.concat(code).forEach((node) => {
     if (node.parentElement) {
       if (node.getBoundingClientRect().width
           > node.parentElement.getBoundingClientRect().width / 3) {
