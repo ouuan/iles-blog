@@ -17,7 +17,7 @@
         <span class="i-mdi-close" />
       </button>
     </div>
-    <div>
+    <div v-if="!isPlain">
       <label class="ml-auto flex gap-1 items-center">
         <span>显示全部</span>
         <input
@@ -63,6 +63,7 @@ const { height: windowHeight } = useWindowSize();
 const showAll = ref(false);
 
 const tocRoot = ref<any>();
+const isPlain = ref(true);
 
 function getTocNodes() {
   let minDistance = Infinity;
@@ -103,6 +104,7 @@ function getTocNodes() {
     parent: null,
   };
   let currentParent = root;
+  let plain = true;
   props.headings.forEach(({ level, title, slug }) => {
     while (level <= currentParent.level && currentParent.parent) {
       currentParent = currentParent.parent;
@@ -127,8 +129,10 @@ function getTocNodes() {
       }
     }
     currentParent.children.push(newNode);
+    if (currentParent.parent) plain = false;
     currentParent = newNode;
   });
+  isPlain.value = plain;
   return root.children;
 }
 const nodes = ref(getTocNodes());
