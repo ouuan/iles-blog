@@ -10,6 +10,7 @@ mkdir -p "src/images/$(date +%Y/%m)"
 echo "---
 title: $1
 date: $(date -Iseconds)
+image: 
 tags:
 -   
 ---

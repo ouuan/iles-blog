@@ -75,9 +75,13 @@ export default defineConfig({
     }
   },
   markdown: {
-    withImageSrc(src) {
-      if (!src.includes('?')) return `${src}?preset=normal`;
-      return src;
+    withImageSrc(src, file) {
+      const prefix = /^[@~]/.test(src) ? '' : file.path
+        .replace(__dirname, '')
+        .replace('/src/pages/post', '@/images')
+        .replace(/[^/]+$/, '');
+      const suffix = src.includes('?') ? '' : '?preset=normal';
+      return `${prefix}${src}${suffix}`;
     },
     remarkPlugins: ['remark-gfm', 'remark-math'],
     rehypePlugins: ['rehype-katex'],
