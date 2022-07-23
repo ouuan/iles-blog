@@ -1,0 +1,46 @@
+---
+title: 'display: none 与 loading="lazy"'
+date: 2022-07-23T21:29:04+08:00
+image: /images/2022/07/comments-loading-light.png
+tags:
+  - CSS
+  - Web
+  - 问题解决记录
+---
+
+同时使用 `display: none` 和 `loading="lazy"` 可能会让内容永远加载不出来。
+
+<p class="dark:hidden">![截图：评论加载中](comments-loading-light.png)</p>
+<p class="hidden dark:block">![截图：评论加载中](comments-loading-dark.png)</p>
+
+<Excerpt />
+
+## 问题背景
+
+虽然 [giscus](https://giscus.app/) 自带一个加载页面，但首先这个加载页面自身就有可能加载很久才显示，而且这个自带的加载页面没有任何有效信息，所以我自己写了一个加载页面，附上了 Discussions 链接。
+
+我使用的是 giscus 的 [giscus-to-parent `message` events](https://github.com/giscus/giscus/blob/main/ADVANCED-USAGE.md#giscus-to-parent-message-events) 功能来检测 giscus 已加载，而这和 giscus 显示在页面上有一定的时间间隔，所以在检测到加载好之前需要先把 giscus 隐藏起来。因为是用的 Vue，很自然地就是用 `v-show` 让 giscus 加载好再显示。
+
+除此之外，本着“不用白不用”的精神，我还启用了 giscus 的 lazy load（本质上是 `<iframe>` 的 `loading="lazy"`）。
+
+并且，我使用的是 Firefox，上述配置在 Firefox 上是没有问题的。
+
+## 问题的发现与解决
+
+一位群友告诉我评论加载不出来，于是我试了一下各个浏览器，在第二次（为什么是第二次呢，不懂）试 Chrome 的时候发现没加载出来。
+
+console 没有任何报错；查看 DOM，发现 `<iframe>` 里面是空的，幸好我还记得自己用了 lazy load，所以很快就明白了问题所在：Chrome 比较“聪明”，看到 `display: none;` 就懒了，没加载这个 `<iframe>`。
+
+把 `v-show` 换成 `opacity-0 absolute` 就解决了问题。
+
+但最后还有点小插曲，因为这个 `opacity-0` 在 SSR 的时候是没有的，没被 [UnoCSS](https://github.com/unocss/unocss) 扫描到，就挂了，最后换成了 inline style。
+
+## 后记
+
+这件事告诉我们，~~有好的群友~~在不同浏览器上多测试几遍是非常重要的。
+
+~~这点事值得发博客吗；当然是博客太空了随便水一篇~~
+
+P.S. 虽然问题的解决很简单，但还是浅搜了一下看看有没有什么 best practice。倒是没搜到什么有用的，但是搜到一个有趣的（
+
+<div class="flex justify-center mt--6">[![论坛截图：麻烦提供下代码片段。你们已经是成熟的开发团队了，要学会自己复现bug。](reproduce-yourself.png)](https://developers.weixin.qq.com/community/develop/doc/0006ec11c48ec072b6e7b79975b000)</div>

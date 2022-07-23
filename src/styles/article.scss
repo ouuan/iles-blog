@@ -135,5 +135,9 @@
 
   p > picture:only-child {
     @apply flex justify-center;
+
+    img {
+      @apply b-1 b-gray-1 dark:b-gray-13 my-0;
+    }
   }
 }
