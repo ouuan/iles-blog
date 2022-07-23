@@ -4,7 +4,7 @@
     click-to-open
   />
   <div
-    v-if="!loaded"
+    v-if="loading"
     class="flex justify-center items-center gap-2"
   >
     <span>
@@ -16,7 +16,8 @@
     <span class="i-mdi-loading motion-safe:animate-spin" />
   </div>
   <giscus-component
-    v-show="loaded"
+    :class="loading && 'opacity-0 absolute'"
+    :aria-hidden="loading"
     :repo="repo"
     :repo-id="repoId"
     :category-id="categoryId"
@@ -49,14 +50,14 @@ defineProps<{
 const colorMode = useTheme();
 const theme = computed(() => (colorMode.value === 'auto' ? 'preferred_color_scheme' : colorMode.value));
 
-const loaded = ref(false);
+const loading = ref(true);
 const positiveReacted = ref(false);
 
 window.addEventListener('message', (event) => {
   if (event.origin !== 'https://giscus.app') return;
   const giscus = event.data?.giscus;
   if (typeof giscus !== 'object') return;
-  loaded.value = true;
+  loading.value = false;
   const reactions = giscus.discussion?.reactions;
   if (typeof reactions === 'object') {
     positiveReacted.value = Boolean([
