@@ -23,7 +23,10 @@ export default defineApp({
         itemtype: computed(() => `https://schema.org/${pageType(route.path)}Page`),
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
-      style: [{ children: 'body { visibility: hidden; }' }],
+      style: [{
+        type: 'text/css',
+        children: 'body { visibility: hidden; }',
+      }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
@@ -60,9 +63,10 @@ export default defineApp({
         { rel: 'stylesheet', href: '/fonts/lxgw-wenkai/index.css' },
       ],
       meta: [
-        { property: 'author', content: site.author },
-        { property: 'keywords', content: computed(() => frontmatter.tags || 'blog') },
-        { property: 'twitter:creator', content: '@ouuan' },
+        { name: 'author', content: site.author },
+        { name: 'keywords', content: computed(() => frontmatter.tags || 'blog') },
+        { name: 'twitter:creator', content: '@ouuan' },
+        { name: 'twitter:card', content: 'summary' },
         { property: 'og:image', content: new URL('/android-chrome-512x512.png', site.url).href },
       ],
     };
