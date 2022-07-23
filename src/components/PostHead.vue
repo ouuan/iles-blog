@@ -1,11 +1,11 @@
 <template>
   <header>
     <h1
-      class="relative post-title mt-6 mb-3 text-8 text-center"
+      class="mt-6 mb-3 text-8 text-center"
       itemprop="headline"
     >
       <a
-        class="font-main"
+        class="relative inline-block post-title font-main"
         :href="href"
       >
         <slot name="title">
@@ -99,7 +99,7 @@ withDefaults(defineProps<{
 <style lang="scss" scoped>
 .post-title::before {
   content: '';
-  @apply absolute h-1px bottom--5px left-1/2 right-1/2;
+  @apply absolute h-1px bottom--5px left-51% right-51%;
   @apply bg-text;
   transition-property: left, right;
   @apply ease-out motion-safe:duration-200;
