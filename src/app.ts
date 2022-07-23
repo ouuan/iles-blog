@@ -67,7 +67,12 @@ export default defineApp({
         { name: 'keywords', content: computed(() => frontmatter.tags || 'blog') },
         { name: 'twitter:creator', content: '@ouuan' },
         { name: 'twitter:card', content: 'summary' },
-        { property: 'og:image', content: new URL('/android-chrome-512x512.png', site.url).href },
+        {
+          property: 'og:image',
+          content: computed(
+            () => new URL(frontmatter.image || '/android-chrome-512x512.png', site.url).href,
+          ),
+        },
       ],
     };
   },
