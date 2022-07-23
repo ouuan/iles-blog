@@ -1,11 +1,11 @@
 <template>
   <header>
     <h1
-      class="mt-6 mb-3 text-8 text-center"
+      class="relative post-title mt-6 mb-3 text-8 text-center"
       itemprop="headline"
     >
       <a
-        class="post-title relative font-main"
+        class="font-main"
         :href="href"
       >
         <slot name="title">
@@ -105,15 +105,18 @@ withDefaults(defineProps<{
   left: 51%;
   right: 51%;
   background: var(--text-color);
-  transition-duration: .2s;
   transition-property: left, right;
   transition-timing-function: ease-out;
 }
 
+.post-title:hover::before {
+  left: 0;
+  right: 0;
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .post-title:hover::before {
-    left: 0;
-    right: 0;
+  .post-title::before {
+    transition-duration: .2s;
   }
 }
 </style>
