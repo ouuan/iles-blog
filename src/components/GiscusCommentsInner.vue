@@ -32,6 +32,7 @@
     :theme="theme"
     lang="zh-CN"
     loading="lazy"
+    strict="1"
   />
 </template>
 
