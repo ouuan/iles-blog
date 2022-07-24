@@ -1,9 +1,9 @@
 :root {
-  --default-main-font: 'Noto Serif SC', 'Source Han Serif SC', 'Noto Serif SC Web Font', var(--default-sans-font);
+  --default-main-font: 'Noto Serif SC', 'Source Han Serif SC', 'Source Han Serif CN', '思源宋体', 'Noto Serif SC Web Font', var(--default-sans-font);
   --default-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --default-mono-font: DejaVu Sans Mono, Noto Sans Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   --default-serif-font: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --default-kai-font: 'LXGW WenKai', var(--default-main-font);
+  --default-kai-font: 'LXGW WenKai', 'LXGW WenKai Lite', '霞鹜文楷', 'LXGW WenKai Web Font', var(--default-main-font);
 }
 
 @mixin lightVariables {

@@ -58,9 +58,9 @@ export default defineApp({
         },
         { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
         { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
-        { rel: 'stylesheet', href: '/fonts/katex/index.css' },
-        { rel: 'stylesheet', href: '/fonts/noto-serif-sc/index.css' },
-        { rel: 'stylesheet', href: '/fonts/lxgw-wenkai/index.css' },
+        { rel: 'stylesheet', href: '/fonts/katex/katex.css' },
+        { rel: 'stylesheet', href: '/fonts/noto-serif-sc/NotoSerifSC.css' },
+        { rel: 'stylesheet', href: '/fonts/lxgw-wenkai/LXGWWenKai.css' },
       ],
       meta: [
         { name: 'author', content: site.author },
