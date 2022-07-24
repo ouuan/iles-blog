@@ -20,7 +20,7 @@ const data = await Promise.all(docs.value.map(async (doc) => {
   if (import.meta.env.SSR) {
     const { readFile } = await import('fs/promises');
     const buffer = await readFile(doc.meta.filename);
-    content = buffer.toString().replace(/.*---.*---\s*/s, '').replace(/<Excerpt ?\/>/, '');
+    content = buffer.toString().replace(/.*?---.*?---\s*/s, '').replace(/<Excerpt ?\/>/, '');
   }
   return { title, tags, content };
 }));
