@@ -176,9 +176,9 @@ function search() {
         } else {
           parts.push({ type: 'miss', content: value.slice(last, start) });
         }
-        const content = value.slice(start, end + 1);
+        const content = value.slice(Math.max(last, start), end + 1);
         parts.push({ type: content === pattern.value ? 'exact' : 'fuzzy', content });
-        last = end + 1;
+        last = Math.max(last, end + 1);
       });
       parts.push({
         type: 'miss',
