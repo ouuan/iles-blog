@@ -3,7 +3,7 @@
     box-shadow: none !important;
   }
 
-  svg {
-    color: initial;
+  :root {
+    --text-color: initial !important;
   }
 }
