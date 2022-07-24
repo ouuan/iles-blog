@@ -108,7 +108,9 @@
   }
 
   :not(pre) > code {
-    @apply inline-block bg-area b-1 b-gray-3 dark:b-gray-11 rd-1 p-0.5 m-0.5 text-3.5 min-w-6 text-center;
+    @apply inline-block whitespace-pre;
+    @apply bg-area b-1 b-gray-3 dark:b-gray-11 rd-1 p-0.5 m-0.5;
+    @apply text-3.5 min-w-6 text-center;
   }
 
   table {
