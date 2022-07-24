@@ -1,7 +1,7 @@
 <template>
   <nav
     v-if="currentPostIndex !== -1"
-    class="my-3 flex justify-between gap-6 sm:text-justify"
+    class="my-3 flex justify-between gap-6 sm:text-justify print:hidden"
   >
     <a
       v-if="prevPost"
