@@ -148,7 +148,7 @@ function search() {
       const { value } = match;
       if (!value) return;
       let indices: [number, number][] = match.indices.filter(
-        ([start, end]) => value.slice(start, end + 1) === pattern.value,
+        ([start, end]) => value.slice(start, end + 1).toLowerCase() === pattern.value.toLowerCase(),
       );
       if (indices.length === 0) indices = match.indices.slice();
       indices.sort((lhs, rhs) => lhs[0] - rhs[0]);
