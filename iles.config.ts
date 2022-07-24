@@ -14,7 +14,7 @@ import got from 'got';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
-  turbo: true,
+  turbo: false,
   modules: [
     excerpt(),
     feed(),
