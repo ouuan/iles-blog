@@ -22,12 +22,10 @@ span[class*="i-mdi-"] {
 }
 
 span.exact-matched {
-  @apply bg-#FFD30D dark:bg-#625000;
-  @apply text-text;
+  @apply bg-#FFD30D dark:bg-#5A4900;
 }
 span.fuzzy-matched {
-  @apply bg-#FFED9F dark:bg-#453900;
-  @apply text-text;
+  @apply bg-#FFEB93 dark:bg-#4C3E00 text-gray-10 dark:text-gray-4;
 }
 
 html body {

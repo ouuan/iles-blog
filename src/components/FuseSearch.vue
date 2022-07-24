@@ -51,16 +51,16 @@
               <span
                 v-for="(part, index) of result.titleParts"
                 :key="index"
-                :class="part.type !== 'miss' && `${part.type}-matched`"
-                :title="`${part.type} match`"
+                :class="CLASS[part.type]"
+                :title="TITLE[part.type]"
               >{{ part.content }}</span>
             </template>
           </post-head>
           <pre class="mt-6 mb-3 max-h-80vh overflow-auto whitespace-pre-wrap"><span
-          v-for="(part, index) of result.contentParts"
-          :key="index"
-          :class="part.type !== 'miss' && `${part.type}-matched`"
-          :title="`${part.type} match`"
+            v-for="(part, index) of result.contentParts"
+            :key="index"
+            :class="CLASS[part.type]"
+            :title="TITLE[part.type]"
           >{{ part.content }}</span></pre>
         </div>
         <div
@@ -124,9 +124,23 @@ const params = useUrlSearchParams('history');
 const pattern = computed(() => (Array.isArray(params.q) ? params.q.join(' ') : params.q)?.trim());
 
 interface MatchPart {
-  type: 'miss' | 'exact' | 'fuzzy';
+  type: 'miss' | 'exact' | 'fuzzy' | 'ellipsis';
   content: string;
 }
+
+const TITLE = {
+  miss: '未匹配',
+  fuzzy: '模糊匹配（或使用了高级搜索语法）',
+  exact: '精确匹配',
+  ellipsis: '省略',
+};
+
+const CLASS = {
+  miss: 'text-footer',
+  ellipsis: 'text-footer',
+  fuzzy: 'fuzzy-matched',
+  exact: 'exact-matched',
+};
 
 const CONTEXT_LENGTH = 50;
 
@@ -157,7 +171,7 @@ function search() {
       indices.forEach(([start, end]) => {
         if (start - last > CONTEXT_LENGTH * 3) {
           parts.push({ type: 'miss', content: value.slice(last, last + CONTEXT_LENGTH) });
-          parts.push({ type: 'miss', content: '\n\n……\n\n' });
+          parts.push({ type: 'ellipsis', content: '\n\n……\n\n' });
           parts.push({ type: 'miss', content: value.slice(start - CONTEXT_LENGTH, start) });
         } else {
           parts.push({ type: 'miss', content: value.slice(last, start) });
