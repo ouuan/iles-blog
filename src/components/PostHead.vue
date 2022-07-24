@@ -13,7 +13,7 @@
         </slot>
       </a>
     </h1>
-    <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 text-sm">
+    <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 md:text-sm">
       <span
         class="flex items-center"
         :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss')}`"
@@ -60,7 +60,7 @@
       </span>
       <span
         v-if="frontmatter.tags"
-        :class="['flex flex-wrap gap-x-2 gap-y-1', tagMatched && 'fuzzy-matched']"
+        :class="['flex flex-wrap justify-center gap-x-2 gap-y-1', tagMatched && 'fuzzy-matched']"
       >
         <span
           v-for="tag of frontmatter.tags"
