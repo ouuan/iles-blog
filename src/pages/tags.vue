@@ -5,7 +5,7 @@ title: 标签列表
 <template layout="base">
   <div class="m-3 standard-card">
     <h1
-      class="mt-3 text-6 font-bold font-main"
+      class="mt-3 text-6 font-bold font-serif"
       itemprop="headline"
     >
       标签列表

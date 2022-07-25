@@ -6,7 +6,7 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
 <template layout="base">
   <div class="m-3 standard-card">
     <h1
-      class="my-3 text-6 font-bold font-main"
+      class="my-3 text-6 font-bold font-serif"
       itemprop="headline"
     >
       赞赏支持

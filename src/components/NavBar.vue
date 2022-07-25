@@ -10,7 +10,7 @@
     >
       <div class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">
         <a
-          class="p-3 hover:bg-bghover font-main text-xl flex items-center"
+          class="p-3 hover:bg-bghover font-serif text-xl flex items-center"
           href="/"
         >
           <span>ouuan's blog</span>

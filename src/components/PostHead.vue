@@ -5,7 +5,7 @@
       itemprop="headline"
     >
       <a
-        class="relative inline-block post-title font-main"
+        class="relative inline-block post-title font-serif"
         :href="href"
       >
         <slot name="title">

@@ -1,7 +1,7 @@
 <template>
   <div class="my-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
     <h1
-      class="text-6 font-bold font-main"
+      class="text-6 font-bold font-serif"
       :title="description"
       itemprop="headline"
     >

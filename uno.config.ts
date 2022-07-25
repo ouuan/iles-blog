@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   rules: [
     [
-      /^font-(main|serif|sans|mono|kai)$/,
+      /^font-(serif|sans|mono|kai)$/,
       ([, type]) => ({ 'font-family': `var(--default-${type}-font)` }),
     ],
   ],
