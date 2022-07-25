@@ -1,7 +1,7 @@
 <template>
   <template v-if="display">
     <button
-      v-if="scrollY >= windowHeight / 2"
+      v-if="toTop"
       class="btt-btn floating-button bottom-10"
       title="回到顶部"
       aria-label="回到顶部"
@@ -55,10 +55,12 @@ const { y: scrollY } = useWindowScroll();
 const { height: windowHeight } = useWindowSize();
 
 const display = ref(false);
+const toTop = ref(false);
 const scrollPercent = ref('');
 
 watchThrottled([windowHeight, scrollY], () => {
   display.value = document.body.scrollHeight >= windowHeight.value * 1.5;
+  toTop.value = scrollY.value >= windowHeight.value / 2;
   const percent = (scrollY.value / (document.body.scrollHeight - windowHeight.value)) * 100;
   scrollPercent.value = `${percent.toFixed(0)}%`;
 }, { throttle: 100 });
