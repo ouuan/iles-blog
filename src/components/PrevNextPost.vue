@@ -3,24 +3,32 @@
     v-if="currentPostIndex !== -1"
     class="my-3 flex justify-between gap-6 sm:text-justify print:hidden"
   >
-    <a
+    <div
       v-if="prevPost"
-      :href="prevPost.meta.href"
-      class="flex-1 flex items-center gap-1"
-      aria-label="上一篇"
+      class="flex-1 flex"
     >
-      <span class="i-mdi-chevron-left" />
-      <span>{{ prevPost.frontmatter.title }}</span>
-    </a>
-    <a
+      <a
+        class="flex items-center gap-1"
+        :href="prevPost.meta.href"
+        aria-label="上一篇"
+      >
+        <span class="i-mdi-chevron-left" />
+        <span>{{ prevPost.frontmatter.title }}</span>
+      </a>
+    </div>
+    <div
       v-if="nextPost"
-      :href="nextPost.meta.href"
-      class="flex-1 flex justify-end items-center gap-1"
-      aria-label="下一篇"
+      class="flex-1 flex justify-end"
     >
-      <span>{{ nextPost.frontmatter.title }}</span>
-      <span class="i-mdi-chevron-right" />
-    </a>
+      <a
+        class="flex items-center gap-1"
+        :href="nextPost.meta.href"
+        aria-label="下一篇"
+      >
+        <span>{{ nextPost.frontmatter.title }}</span>
+        <span class="i-mdi-chevron-right" />
+      </a>
+    </div>
   </nav>
 </template>
 
