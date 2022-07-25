@@ -8,7 +8,7 @@
       class="flex-1 flex"
     >
       <a
-        class="flex items-center gap-1"
+        class="flex items-center gap-1 hover:text-hover"
         :href="prevPost.meta.href"
         aria-label="上一篇"
       >
@@ -21,7 +21,7 @@
       class="flex-1 flex justify-end"
     >
       <a
-        class="flex items-center gap-1"
+        class="flex items-center gap-1 hover:text-hover"
         :href="nextPost.meta.href"
         aria-label="下一篇"
       >
