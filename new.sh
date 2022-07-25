@@ -8,7 +8,7 @@ mkdir -p "$(dirname "$filename")"
 mkdir -p "src/images/$(date +%Y/%m)"
 
 echo "---
-title: $1
+title: 
 date: $(date -Iseconds)
 image: 
 tags:
