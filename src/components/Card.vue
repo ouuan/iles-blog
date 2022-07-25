@@ -11,7 +11,7 @@
     >
       <span :class="['text-5', icon[type]]" />
       <span
-        class="truncate font-bold"
+        class="font-bold"
         v-html="title || defaultTitle[type]"
       />
       <span
