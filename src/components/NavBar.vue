@@ -57,7 +57,7 @@
           </a>
         </li>
         <li class="flex">
-          <theme-switcher client:load />
+          <theme-switcher client:idle />
         </li>
       </ul>
     </div>
