@@ -59,11 +59,16 @@ const toTop = ref(false);
 const scrollPercent = ref('');
 
 watchThrottled([windowHeight, scrollY], () => {
-  display.value = document.body.scrollHeight >= windowHeight.value * 1.5;
-  toTop.value = scrollY.value >= windowHeight.value / 2;
-  const percent = (scrollY.value / (document.body.scrollHeight - windowHeight.value)) * 100;
-  scrollPercent.value = `${percent.toFixed(0)}%`;
-}, { throttle: 100 });
+  if (!import.meta.env.SSR) {
+    display.value = document.body.scrollHeight >= windowHeight.value * 1.5;
+    toTop.value = scrollY.value >= windowHeight.value / 2;
+    const percent = (scrollY.value / (document.body.scrollHeight - windowHeight.value)) * 100;
+    scrollPercent.value = `${percent.toFixed(0)}%`;
+  }
+}, {
+  immediate: true,
+  throttle: 100,
+});
 
 function scrollToTop() {
   window.scrollTo({
