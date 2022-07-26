@@ -39,7 +39,8 @@ Licensed under CC BY-SA 4.0`,
 
   const items = usePosts({
     filter: (post) => (tag ? post.frontmatter.tags.includes(tag) : true),
-  }).value.slice(0, 10).map<FeedItem>((post) => ({
+    pageIndex: 1,
+  }).value.map<FeedItem>((post) => ({
     title: post.frontmatter.title,
     id: new URL(post.href, url).href,
     link: new URL(post.href, url).href,
