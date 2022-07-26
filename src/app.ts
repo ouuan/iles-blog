@@ -23,12 +23,27 @@ export default defineApp({
         itemtype: computed(() => `https://schema.org/${pageType(route.path)}Page`),
       },
       title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
-      style: [{
-        type: 'text/css',
+      style: [{ // hide when theme not set
+        children: 'html:not(.dark):not(.light) { visibility: hidden; }',
+      }, { // hide when CSS not loaded
         children: 'body { visibility: hidden; }',
       }],
-      noscript: [{
-        children: '<style type="text/css">html body { visibility: visible; }</style>',
+      script: [{
+        children: `(() => {
+let dark;
+try {
+  const theme = localStorage && localStorage.getItem('vueuse-color-scheme');
+  if (theme === 'dark') dark = true;
+  else if (theme === 'light') dark = false;
+  else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+} catch (e) {
+  dark = false;
+}
+document.documentElement.classList.add(dark ? 'dark' : 'light');
+})()`,
+      }],
+      noscript: [{ // remove restriction on theme not set
+        children: '<style>html { visibility: visible !important; }</style>',
       }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },

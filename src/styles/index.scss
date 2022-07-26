@@ -28,10 +28,8 @@ span.fuzzy-matched {
   @apply bg-#FFEB93 dark:bg-#4C3E00 text-gray-10 dark:text-gray-4;
 }
 
-.dark, .light {
-  body {
-    @apply visible;
-  }
+html body {
+  @apply visible;
 }
 
 .dark {
