@@ -32,4 +32,22 @@ const props = defineProps<{
 
 const page = usePage();
 page.frontmatter.title = `标签: ${props.tag}`;
+
+const title = `标签: ${props.tag} - ${page.site.title}`;
+useHead({
+  link: [
+    {
+      rel: 'feed',
+      type: 'application/rss+xml',
+      href: `/tag/${props.tag}/feed.xml`,
+      title: `RSS Feed - ${title}`,
+    },
+    {
+      rel: 'feed',
+      type: 'application/atom+xml',
+      href: `/tag/${props.tag}/feed.atom`,
+      title: `Atom Feed - ${title}`,
+    },
+  ],
+});
 </script>
