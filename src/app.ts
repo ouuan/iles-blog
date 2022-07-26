@@ -27,6 +27,9 @@ export default defineApp({
         type: 'text/css',
         children: 'body { visibility: hidden; }',
       }],
+      noscript: [{
+        children: '<style type="text/css">html body { visibility: visible; }</style>',
+      }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
