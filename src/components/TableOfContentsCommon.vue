@@ -41,10 +41,11 @@
 
 <script setup lang="ts">
 import { Heading } from '@islands/headings';
-import { ref, nextTick } from 'vue';
+import { ref } from 'vue';
 import {
   useWindowScroll,
   useWindowSize,
+  watchDebounced,
   watchThrottled,
 } from '@vueuse/core';
 import TOCNode from '~/types/TOCNode';
@@ -64,6 +65,7 @@ const showAll = ref(false);
 
 const tocRoot = ref<any>();
 const isPlain = ref(true);
+const lastCurrentSlug = ref('');
 
 function getTocNodes() {
   let minDistance = Infinity;
@@ -79,20 +81,7 @@ function getTocNodes() {
       }
     });
   }
-
-  nextTick(() => {
-    if (!import.meta.env.SSR) {
-      const tocItem = document.getElementById(`__toc-item-${currentSlug}`);
-      if (tocItem && tocRoot.value) {
-        const itemTop = tocItem.getBoundingClientRect().top;
-        const rootRect = tocRoot.value.getBoundingClientRect();
-        const percent = (itemTop - rootRect.top) / rootRect.height;
-        if (percent < 0.2 || percent > 0.8) {
-          tocRoot.value.scrollTop += itemTop - rootRect.top - rootRect.height / 2;
-        }
-      }
-    }
-  });
+  lastCurrentSlug.value = currentSlug;
 
   const root: TOCNode = {
     level: 0,
@@ -139,4 +128,16 @@ const nodes = ref(getTocNodes());
 watchThrottled([scrollY, showAll, windowHeight], () => {
   nodes.value = getTocNodes();
 }, { throttle: 100 });
+
+watchDebounced([scrollY, showAll, windowHeight, lastCurrentSlug], () => {
+  const tocItem = document.getElementById(`__toc-item-${lastCurrentSlug.value}`);
+  if (tocItem && tocRoot.value) {
+    const itemTop = tocItem.getBoundingClientRect().top;
+    const rootRect = tocRoot.value.getBoundingClientRect();
+    const percent = (itemTop - rootRect.top) / rootRect.height;
+    if (percent < 0.2 || percent > 0.8) {
+      tocRoot.value.scrollTop += itemTop - rootRect.top - rootRect.height / 2;
+    }
+  }
+}, { debounce: 50 });
 </script>
