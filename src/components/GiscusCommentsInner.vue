@@ -20,6 +20,8 @@
       opacity: 0,
       position: 'absolute',
       zIndex: -1,
+      width: 0,
+      height: 0,
     }"
     :aria-hidden="loading"
     :repo="repo"
