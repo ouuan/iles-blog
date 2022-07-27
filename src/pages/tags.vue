@@ -4,12 +4,15 @@ title: 标签列表
 
 <template layout="base">
   <div class="m-3 standard-card">
-    <h1
-      class="mt-3 text-6 font-bold font-serif"
-      itemprop="headline"
-    >
-      标签列表
-    </h1>
+    <div class="my-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
+      <h1
+        class="text-6 font-bold font-serif"
+        itemprop="headline"
+      >
+        标签列表
+      </h1>
+      <span class="mr-2">共 {{ tags.length }} 个标签</span>
+    </div>
     <div class="flex flex-wrap items-baseline gap-3 my-3">
       <span
         v-for="tag of tagsSorted"
