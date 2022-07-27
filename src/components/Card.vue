@@ -71,6 +71,10 @@ details[open] > summary .details-icon {
   @apply i-mdi-chevron-up;
 }
 
+summary::-webkit-details-marker {
+  @apply hidden;
+}
+
 .shadow-md .shadow-md {
   @apply shadow-lg;
 }
