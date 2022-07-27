@@ -38,6 +38,11 @@ html body {
   }
 }
 
+input[type="checkbox"] {
+  width: .8em;
+  height: .8em;
+}
+
 @import "article";
 @import "code";
 @import "math";
