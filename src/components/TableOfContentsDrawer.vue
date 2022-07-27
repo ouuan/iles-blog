@@ -25,7 +25,7 @@
   <div
     v-show="displayToc"
     aria-hidden="true"
-    class="toc-modal-bg fixed inset-0 bg-gray-8 opacity-50 z-10"
+    class="fixed top-0 bottom-0 left-0 right-0 bg-gray-8 opacity-50 z-10"
     @click="displayToc = false"
   />
 </template>
