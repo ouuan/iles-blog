@@ -4,7 +4,7 @@
       v-for="node of nodes"
       :id="`__toc-item-${node.slug}`"
       :key="node.slug"
-      class="m-1 relative"
+      class="my-1 relative"
     >
       <a
         :class="node.current && 'text-link'"

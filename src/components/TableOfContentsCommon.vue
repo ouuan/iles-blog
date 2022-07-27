@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-2 justify-between items-center pr-6 pl-9 mb-3">
+  <div class="flex flex-wrap gap-2 justify-between items-center pr-5 pl-8 mb-3">
     <div class="flex items-center">
       <div
         id="__toc-title"
