@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-3 justify-between items-center px-5 mb-3">
+  <div class="flex flex-wrap gap-2 justify-between items-center pr-6 pl-9 mb-3">
     <div class="flex items-center">
       <div
         id="__toc-title"
@@ -9,7 +9,7 @@
       </div>
       <button
         v-if="drawer"
-        class="px-2 text-xl flex items-center"
+        class="px-1 text-xl flex items-center"
         aria-label="关闭目录"
         aria-controls="__toc-drawer"
         @click="emit('close')"
