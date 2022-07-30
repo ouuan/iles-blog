@@ -3,7 +3,7 @@
     <div
       v-for="(post, index) of currentPagePosts"
       :key="post.meta.href"
-      class="standard-card"
+      class="standard-card lg:px-18 xl:px-24 2xl:px-30 3xl:px-36"
     >
       <article
         itemscope
