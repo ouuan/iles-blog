@@ -1,0 +1,83 @@
+---
+title: 使用 Caddy Security 时的 Uptime 监控
+date: 2022-07-30T14:16:07+08:00
+image: /images/2022/07/uptime-kuma-list.png
+tags:
+-   caddy-security
+-   uptime-kuma
+-   caddy
+-   server
+-   问题解决记录
+---
+
+[Caddy Security](https://authp.github.io/) 不仅会将未经认证的访问者拒之门外，也会拦住 [~~可爱的 kuma 酱~~ Uptime Kuma](https://uptime.kuma.pet/)。这里会分享一下我的一个放过 kuma 的小技巧。
+
+<Excerpt />
+
+~~（P.S. 这是不是应该算“经验分享”而不是“问题解决记录”，这两个 tag 的分界线到底在哪呢）~~
+
+## 问题描述
+
+[Caddy Security](https://authp.github.io/) 可以为 [Caddy](https://caddyserver.com/) 上的路由提供身份认证，而这一认证发生在连接到服务之前，所以如果不通过认证就无法通过网络访问来获知服务是否正常运行，进而影响到 [Uptime Kuma](https://uptime.kuma.pet/) 的运作。
+
+## 初步解决方案，以及存在的问题
+
+一个自然的想法是，可以关闭一些非敏感路由的身份认证，用于 uptime 监控。比如说，一个服务的首页可能是非敏感可以公开的，敏感信息都位于其它路由，则可以：
+
+```
+example.com {
+    handle / {
+        reverse_proxy localhost:2333
+    }
+    authenticate with some-auth-policy
+    reverse_proxy localhost:2333
+}
+```
+
+这看起来很好，但问题在于，一个网页往往不只是这个路径本身，还有 js、css 等资源需要使用。Caddy Security 只会在访问需要认证的网页时进行认证，而不会在加载需要认证的资源时进行认证。如果访问一个无需认证的网页，但其使用的资源需要认证，这些资源就可能加载不出来。
+
+将这些资源全部列出来会很麻烦，如果处理不当也有泄露敏感信息的风险。
+
+## 解决方案: 给 kuma 一个单独的路由
+
+上面的方案的问题只对人类访问者有影响，而解决了 kuma 的问题。所以可以使用同样的思路，但只影响 kuma 而不影响访问者：
+
+```
+example.com {
+    handle /for_uptime_kuma {
+        uri replace /for_uptime_kuma /
+        reverse_proxy localhost:2333
+    }
+    authenticate with some-auth-policy
+    reverse_proxy localhost:2333
+}
+```
+
+然后在 Uptime Kuma 中把监控网址设成 `https://example.com/for_uptime_kuma` 即可。
+
+如果在多个路由都用到这个操作，每次重复会比较繁琐，可以使用 [Caddy 的 snippet 功能](https://caddyserver.com/docs/caddyfile/concepts#snippets)：
+
+```
+(kuma) {
+    handle /for_uptime_kuma {
+        uri replace /for_uptime_kuma {args.1}
+        reverse_proxy localhost:{args.0}
+    }
+}
+
+homepage-public.example.com {
+    import kuma 2333 /
+    authenticate with some-auth-policy
+    reverse_proxy localhost:2333
+}
+
+public-public.example.com {
+    import kuma 6666 /public
+    authenticate with some-auth-policy
+    reverse_proxy localhost:6666
+}
+```
+
+## 另一种解决方案: 使用非网页资源进行监控
+
+既然遇到的问题是网页会需要资源，只放开网页的认证会加载不出资源，另一个思路就是监控资源而非网页（不一定是 js、css 这些，也可以是可以公开的 API，或者几乎不会被访问或访问时一定已经认证了的网页之类的）。这比较简单，就不多讲了。
