@@ -76,9 +76,13 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
         },
         { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
         { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
-        ...(['katex/katex', 'noto-serif-sc/NotoSerifSC', 'lxgw-wenkai/LXGWWenKai'].map((font) => ({
+        ...([
+          '/assets/fonts/noto-serif-sc/NotoSerifSC.046a8ac7.css',
+          '/assets/fonts/lxgw-wenkai/LXGWWenKai.b86f3f29.css',
+          '/fonts/katex/katex.css',
+        ].map((href) => ({
           rel: 'preload',
-          href: `/fonts/${font}.css`,
+          href,
           as: 'style',
           onload: 'this.onload=null;this.rel="stylesheet"',
         }))),
