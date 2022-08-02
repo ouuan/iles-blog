@@ -1,7 +1,7 @@
 <template>
   <nav-bar />
   <main
-    class="container-margin py-6 min-h-100vh"
+    class="page-container py-6 min-h-100vh"
     itemprop="mainContentOfPage"
     itemscope
     itemtype="https://schema.org/WebPageElement"

@@ -22,7 +22,7 @@ export default defineConfig({
       sm: '40em',
       md: '48em',
       lg: '64em',
-      xl: '80em',
+      xl: '79.9em', // fix TOC display on exactly at xl
       '2xl': '96em',
       '3xl': '112em',
     },
@@ -48,7 +48,7 @@ export default defineConfig({
     },
   },
   shortcuts: {
-    'container-margin': 'mx-3 md:mx-12 lg:mx-24 2xl:mx-36 3xl:mx-48',
+    'page-container': 'mx-3 sm:mx-12 md:mx-23 lg:mx-auto lg:w-210 xl:w-288 2xl:w-300 3xl:w-312',
     'floating-button': 'fixed z-5 right-9 md:right-18 lg:right-9 2xl:right-18 3xl:right-27 w-10 h-10 rd-5 flex items-center justify-center bg-popup shadow print:hidden',
     btn: 'b-bghover b-2 rd-1 py-1 flex items-center',
     'btn-normal': 'bg-card hover:bg-bghover',

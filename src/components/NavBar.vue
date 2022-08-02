@@ -5,7 +5,7 @@
     itemtype="https://schema.org/WPHeader"
   >
     <div
-      class="container-margin px-3 whitespace-nowrap
+      class="page-container px-3 whitespace-nowrap
              flex flex-wrap sm:flex-nowrap justify-center"
     >
       <div class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">

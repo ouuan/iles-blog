@@ -9,6 +9,7 @@
         <post-microdata :post="page" />
         <post-head
           client:load
+          class="my-12"
           :href="page.meta.href"
           :filename="page.meta.filename"
           :frontmatter="page.frontmatter"
@@ -19,7 +20,7 @@
         >
           <slot />
         </section>
-        <div class="article-style">
+        <div class="article-style my-9">
           <hr>
         </div>
         <footer>

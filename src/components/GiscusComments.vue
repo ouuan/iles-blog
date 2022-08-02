@@ -1,6 +1,6 @@
 <template>
   <div
-    class="print:hidden my-3"
+    class="print:hidden my-6"
     itemprop="comment"
     itemscope
     itemtype="https://schema.org/Comment"
