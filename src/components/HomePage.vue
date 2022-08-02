@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-3 flex flex-col gap-6">
+  <div class="mx-4 flex flex-col gap-6">
     <div
       v-for="(post, index) of currentPagePosts"
       :key="post.meta.href"

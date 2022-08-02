@@ -1,5 +1,5 @@
 <template layout="base">
-  <div class="m-3 standard-card xl:px-24 2xl:px-30 3xl:px-36">
+  <div class="m-4 standard-card xl:px-24 2xl:px-30 3xl:px-36">
     <article
       itemprop="mainEntity"
       itemscope

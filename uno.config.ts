@@ -48,7 +48,7 @@ export default defineConfig({
     },
   },
   shortcuts: {
-    'page-container': 'mx-3 sm:mx-12 md:mx-23 lg:mx-auto lg:w-210 xl:w-288 2xl:w-300 3xl:w-312',
+    'page-container': 'mx-4 sm:mx-12 md:mx-24 lg:mx-auto lg:w-208 xl:w-288 2xl:w-300 3xl:w-312',
     'floating-button': 'fixed z-5 right-9 md:right-18 lg:right-9 2xl:right-18 3xl:right-27 w-10 h-10 rd-5 flex items-center justify-center bg-popup shadow print:hidden',
     btn: 'b-bghover b-2 rd-1 py-1 flex items-center',
     'btn-normal': 'bg-card hover:bg-bghover',

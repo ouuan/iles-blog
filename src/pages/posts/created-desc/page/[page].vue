@@ -1,5 +1,5 @@
 <template layout="base">
-  <div class="m-3 standard-card">
+  <div class="m-4 standard-card">
     <post-list-nav
       current="created-desc"
       :page-index="pageIndex"

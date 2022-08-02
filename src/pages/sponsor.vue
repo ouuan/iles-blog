@@ -4,7 +4,7 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
 </page>
 
 <template layout="base">
-  <div class="m-3 standard-card">
+  <div class="m-4 standard-card">
     <h1
       class="my-3 text-6 font-bold font-serif"
       itemprop="headline"

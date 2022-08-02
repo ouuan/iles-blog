@@ -1,5 +1,5 @@
 <template>
-  <div class="m-3 flex flex-col gap-6">
+  <div class="m-4 flex flex-col gap-6">
     <div class="flex flex-wrap gap-x-5 gap-y-2">
       <div class="grow max-w-100 flex items-center gap-2">
         <label

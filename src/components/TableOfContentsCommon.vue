@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-wrap gap-2 justify-between items-center pr-5 pl-8 mb-3">
+  <div class="flex flex-wrap gap-2 justify-between items-center pr-4 pl-8 mb-3">
     <div class="flex items-center">
       <div
         id="__toc-title"
@@ -30,7 +30,7 @@
   <div
     ref="tocRoot"
     style="max-height: calc(100% - 2rem);"
-    class="overflow-auto overscroll-contain pr-5 pl-8"
+    class="overflow-auto overscroll-contain pr-4 pl-8"
   >
     <table-of-contents-node
       :nodes="nodes"

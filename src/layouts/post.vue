@@ -1,6 +1,6 @@
 <template layout="base">
   <div class="flex">
-    <div class="grow m-3 standard-card">
+    <div class="grow m-4 standard-card">
       <article
         itemprop="mainEntity"
         itemscope
