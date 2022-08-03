@@ -1,7 +1,8 @@
 @import "variables";
 
-html {
-  @apply text-text bg-bg motion-safe:scroll-smooth;
+// increase specificity by :root to make sure overriding CSS reset
+html:root {
+  @apply text-text font-sans bg-bg motion-safe:scroll-smooth;
 }
 
 * {
