@@ -30,10 +30,12 @@
 </template>
 
 <script setup lang="ts">
+import { Post } from '~/composables/usePosts';
+
 const { site } = usePage();
 
 const props = defineProps<{
-  post: ReturnType<typeof useDocuments<unknown>>['value'][number] | ReturnType<typeof usePage>;
+  post: Post | ReturnType<typeof usePage>;
 }>();
 
 const url = new URL(props.post.meta.href, site.url).href;

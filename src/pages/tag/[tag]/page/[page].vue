@@ -2,7 +2,7 @@
   <div class="m-4 standard-card">
     <post-list
       sort="created-desc"
-      :filter="(post) => post.tags?.includes(tag)"
+      :filter="filter"
       :page-index="pageIndex"
       :href-prefix="`/tag/${tag}/page`"
       :title="`标签: ${tag}`"
@@ -12,7 +12,7 @@
 
 <script lang="ts">
 import { usePageCount } from '~/composables/usePosts';
-import { useTags } from '~/composables/useTags';
+import { useTags, useTagFilter } from '~/composables/useTags';
 
 const tags = useTags();
 
@@ -21,7 +21,7 @@ export default definePageComponent({
     return tags.value.reduce((pages, tag) => {
       const pageCount = usePageCount({
         perPage: 25,
-        filter: (post) => post.tags?.includes(tag),
+        filter: useTagFilter(tag),
       });
       for (let i = 1; i <= pageCount.value; i += 1) {
         pages.push({
@@ -46,6 +46,8 @@ const props = defineProps<{
   pageIndex: number;
   tag: string;
 }>();
+
+const filter = useTagFilter(props.tag);
 
 const page = usePage();
 page.frontmatter.title = `标签: ${props.tag} - 第${props.pageIndex}页`;

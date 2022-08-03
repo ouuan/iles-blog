@@ -1,8 +1,9 @@
 import { FeedItem, FeedOptions } from '@islands/feed';
 import { h } from 'vue';
 
-import useCopyrightYear from '~/composables/useCopyrightYear';
-import { usePosts } from '~/composables/usePosts';
+import useCopyrightYear from './useCopyrightYear';
+import { usePosts } from './usePosts';
+import { useTagFilter } from './useTags';
 
 export default function useFeed(tag?: string) {
   const { site } = usePage();
@@ -38,7 +39,7 @@ Licensed under CC BY-SA 4.0`,
   };
 
   const items = usePosts({
-    filter: (post) => (tag ? post.frontmatter.tags.includes(tag) : true),
+    filter: tag ? useTagFilter(tag) : () => true,
     pageIndex: 1,
   }).value.map<FeedItem>((post) => ({
     title: post.frontmatter.title,

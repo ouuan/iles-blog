@@ -58,12 +58,17 @@
 <script setup lang="ts">
 import { toRefs } from 'vue';
 import { format, formatISO } from 'date-fns';
-import { usePageCount, usePostCount, usePosts } from '~/composables/usePosts';
+import {
+  usePageCount,
+  usePostCount,
+  usePosts,
+  Post,
+} from '~/composables/usePosts';
 
 const props = withDefaults(defineProps<{
   sort?: 'created-desc' | 'updated-desc' | 'visitor-desc';
   pageIndex: number;
-  filter?: (post: ReturnType<typeof useDocuments<unknown>>['value'][number]) => boolean;
+  filter?: (post: Post) => boolean;
   perPage?: number;
   displayTime?: 'date' | 'lastUpdated';
   hrefPrefix: string;

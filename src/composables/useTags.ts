@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+import { Post } from './usePosts';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.{md,mdx}');
 
@@ -22,4 +23,10 @@ const tagCountMap = computed(() => (posts.value.reduce((map, post) => {
 
 export function useTagCountMap() {
   return tagCountMap;
+}
+
+export function useTagFilter(tag: string) {
+  return function filter(post: Post) {
+    return Array.isArray(post.frontmatter.tags) && post.frontmatter.tags.includes(tag);
+  };
 }

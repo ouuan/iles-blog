@@ -4,6 +4,8 @@ import { MaybeRef } from '@vueuse/core';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.md{,x}');
 
+export type Post = typeof posts['value'][number];
+
 export function usePosts({
   sort = 'created-desc',
   pageIndex = 0,
