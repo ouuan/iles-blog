@@ -1,0 +1,167 @@
+---
+title: busuanzi 访问量统计与 live2d 插件同时使用导致 busuanzi 不显示的根本原因以及解决方法
+date: 2022-08-05T10:58:30+08:00
+image: /images/2022/08/busuanzi-and-live2d.png
+tags:
+-   busuanzi
+-   live2d
+-   JavaScript
+-   Web
+-   问题解决记录
+---
+
+昨天在一位网友的 Hexo 博客遇到了很诡异的 busuanzi 访问量统计不显示问题，经过一番研究发现是 busuanzi 代码的一处问题和 live2d 插件的一处问题凑在一起导致的。
+
+今天在写博客之前先搜了一下“busuanzi live2d”，发现搜出来一堆结果，我还以为我白研究了..结果点进去一看，第一页结果里没有一个指出了问题的根本原因，而且修复方法基本上都是删 feature 或者换组件，但实际上只要知道问题的根本原因就可以在不妨碍正常功能运作的前提下进行修复。所以昨天晚上没白忙活，我这篇博客还是要写的。
+
+<Excerpt />
+
+当然，我只看了第一页搜索结果，可能有更深入研究的文章被搜索引擎埋没了，我这篇文章说不定也不会被搜到，只不过既然第一页没有，就让我也来成为被搜索引擎埋没的一员，这样的话说不定被搜到的可能性就增加了（
+
+## 问题描述
+
+在一个同时启用了 busuanzi 访问量统计和 live2d 插件的 Hexo 博客里，访问或刷新博客时有大概率 busuanzi 会被隐藏。
+
+被隐藏的具体表现为，刷新的瞬间 id 为 `busuanzi_container_*` 的容器是显示的，然后容器的样式很快被设为 `display: none`。
+
+查看 F12 的 Network，busuanzi 相关请求正常返回；console 中没有报错。
+
+## 问题定位
+
+注：这个过程中我也走了一些弯路，就不写出来了。
+
+### 设置 `display: none` 的定位
+
+查看 [busuanzi.pure.mini.js](https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js)，发现 `display: none` 在 `hides` 函数中被设置：
+
+```javascript
+hides: function() {
+  this.bszs.map(function(a) {
+    var b = document.getElementById("busuanzi_container_" + a);
+    b && (b.style.display = "none")
+  })
+},
+```
+
+而 hides 函数仅在一处被调用：
+
+```javascript
+try {
+  a(b), scriptTag.parentElement.removeChild(scriptTag)
+} catch (c) {
+  bszTag.hides()
+}
+```
+
+所以是在 `a(b), scriptTag.parentElement.removeChild(scriptTag)` 抛出异常时容器被隐藏。
+
+### 异常原因的定位
+
+由于在其它地方的 busuanzi 不会出现这一问题，而问题的原因还完全不清楚，为了尽可能还原原始环境以复现问题，我选择了使用 [Firefox 的 Header Editor 插件](https://addons.mozilla.org/zh-CN/firefox/addon/header-editor/) 直接在原博客进行测试。具体来说，就是在本地复制一份 busuanzi 的代码，然后跑一个 http server，在 Header Editor 里把 busuanzi 代码的请求重定向到本地的 http server。
+
+首先，在 `catch` 中添加 `console.error(c)`，得到错误内容 `TypeError: scriptTag.parentElement is null`。
+
+查看代码中 `scriptTag` 相关的部分：
+
+```
+scriptTag = document.createElement("SCRIPT"), scriptTag.type = "text/javascript", scriptTag.defer = !0, scriptTag.src = a, scriptTag.referrerPolicy = "no-referrer-when-downgrade", document.getElementsByTagName("HEAD")[0].appendChild(scriptTag)
+```
+
+所以，再在 `catch` 中添加 `s = document.querySelector("[src*=BusuanziCallback]"); console.log(s.parentElement);`，发现 `s.parentElement` 不是 `null`。
+
+再添加 `console.log(s === scriptTag)`，发现结果是 `s` 和 `scriptTag` 不同，所以原因在于此时的 `scriptTag` 变量已经不指向 DOM 中的这个元素了。
+
+### 定位到 live2d 插件
+
+此时我原本是没有任何头绪的，但我发现，并不是每次刷新页面都会触发这一问题，所以没有触发问题时和触发问题时的差别就成了问题的突破口。
+
+经过多次刷新，我发现，有一串 console 输出，在出现问题时总位于我在 `catch` 中添加的调试信息之前，而在没出现问题时则位于调试信息之后：
+
+```
+Live2D 2.1.00_1 live2d.core.js:5925:16
+profile : Desktop live2d.core.js:5913:16
+  [PROFILE_NAME] = Desktop live2d.core.js:5918:20
+  [USE_ADJUST_TRANSLATION] = false live2d.core.js:5918:20
+  [USE_CACHED_POLYGON_IMAGE] = false live2d.core.js:5918:20
+  [EXPAND_W] = 2
+```
+
+多亏了 live2d 的这串输出，我得以将问题定位到 live2d 插件上。
+
+实际上，如果没有这些 console 输出，也可以通过 `<head>` 中 `L2Dwidget.0.min.js` 和 `busuanzi?jsonpCallback=BusuanziCallback` 两个 `<script>` 的相对位置发现问题，只不过这样的话就更隐蔽更难发现了。
+
+### 在 live2d 插件中定位问题
+
+在 `L2Dwidget.min.js` 的第一行有源码地址以及时间：`/*! https://github.com/xiazeyu/live2d-widget.js built@2019-4-6 09:38:17 */`
+
+因为注释中给出的时间不是最新版本，先查看 git log 并 checkout 到相应时间的版本。
+
+既然问题在于 `<script>` 元素被重新创建而导致原变量不指向 DOM 中元素，就在代码中 grep `head`，然后发现 [问题代码](https://github.com/xiazeyu/live2d-widget.js/blob/fa8f2d831a1a9e96cd85bd1ef593a3336aeac720/src/dialog/index.js#L4-L38)：`document.head.innerHTML += ……`
+
+至此，问题原因已发现，就是 live2d 插件通过修改 `document.head.innerHTML` 来添加样式，导致 busuanzi 的 `scriptTag` 变量指向的不再是 DOM 中的 `<script>` 元素。
+
+实际上，live2d 插件的这一问题 [已经修复](https://github.com/xiazeyu/live2d-widget.js/pull/61)，但需要使用新版才行。
+
+## 解决方法
+
+### 修改 busuanzi 的解决方法
+
+因为 busuanzi 的代码较短，而且本来就是用的外部的代码，改起来比较容易。
+
+把 `scriptTag.parentElement.removeChild(scriptTag)` 修改为 `s=document.querySelector('[src*=BusuanziCallback]'),s.parentElement.removeChild(s)` 即可。可以把修改后的静态文件放在博客里，然后修改 busuanzi `<script>` 的 `src`。
+
+<Card title="相关代码" fold>
+
+修改后的 busuanzi 代码（还在 `catch` 里加了个 `console.error`）：
+
+```javascript
+var bszCaller,bszTag;!function(){var c,d,e,a=!1,b=[];ready=function(c){return a||"interactive"===document.readyState||"complete"===document.readyState?c.call(document):b.push(function(){return c.call(this)}),this},d=function(){for(var a=0,c=b.length;c>a;a++)b[a].apply(document);b=[]},e=function(){a||(a=!0,d.call(window),document.removeEventListener?document.removeEventListener("DOMContentLoaded",e,!1):document.attachEvent&&(document.detachEvent("onreadystatechange",e),window==window.top&&(clearInterval(c),c=null)))},document.addEventListener?document.addEventListener("DOMContentLoaded",e,!1):document.attachEvent&&(document.attachEvent("onreadystatechange",function(){/loaded|complete/.test(document.readyState)&&e()}),window==window.top&&(c=setInterval(function(){try{a||document.documentElement.doScroll("left")}catch(b){return}e()},5)))}(),bszCaller={fetch:function(a,b){var c="BusuanziCallback_"+Math.floor(1099511627776*Math.random());window[c]=this.evalCall(b),a=a.replace("=BusuanziCallback","="+c),scriptTag=document.createElement("SCRIPT"),scriptTag.type="text/javascript",scriptTag.defer=!0,scriptTag.src=a,scriptTag.referrerPolicy="no-referrer-when-downgrade",document.getElementsByTagName("HEAD")[0].appendChild(scriptTag)},evalCall:function(a){return function(b){ready(function(){try{a(b),s=document.querySelector('[src*=BusuanziCallback]'),s.parentElement.removeChild(s)}catch(c){console.error(c),bszTag.hides()}})}}},bszCaller.fetch("//busuanzi.ibruce.info/busuanzi?jsonpCallback=BusuanziCallback",function(a){bszTag.texts(a),bszTag.shows()}),bszTag={bszs:["site_pv","page_pv","site_uv"],texts:function(a){this.bszs.map(function(b){var c=document.getElementById("busuanzi_value_"+b);c&&(c.innerHTML=a[b])})},hides:function(){this.bszs.map(function(a){var b=document.getElementById("busuanzi_container_"+a);b&&(b.style.display="none")})},shows:function(){this.bszs.map(function(a){var b=document.getElementById("busuanzi_container_"+a);b&&(b.style.display="inline")})}};
+```
+
+然后将
+
+```html
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+```
+
+修改为（如果上面的代码放在了博客的 `/js/busuanzi.pure.mini.js`）
+
+```html
+<script async src="/js/busuanzi.pure.mini.js"></script>
+```
+
+</Card>
+
+网上搜到的很多解决办法是把 `id="busuanzi_container_*"` 删掉，这样当然就不会被隐藏了，只不过这个隐藏本意是在出错时不把错误或者无意义的内容显示给访客，保留这一行为还是挺好的。
+
+### 修改 live2d 的解决方法
+
+总之，就是把 `innerHTML +=` 换成 `createElement` 和 `appendChild`，按 [xiazeyu/live2d-widget.js#61](https://github.com/xiazeyu/live2d-widget.js/pull/61/files#diff-61426849230d9976d234f7c4ca195c623d9bb05a91d76b7ae51501e394f81860L10-R43) 改就行。
+
+live2d 的代码还是挺长的，直接修改 minify 后的代码不太好。如果是 hexo 插件的话，要修改应该也蛮麻烦的。总之，如果你知道怎么改比较好的话可以改，不然的话还是推荐改 busuanzi。
+
+## 问题启示
+
+### 不要修改原 DOM 中的 innerHTML
+
+直接修改 DOM 元素的 innerHTML 会让其中的元素都重新渲染（加载？创建？），不仅指向其中元素的变量会失效，也可能导致画面闪烁等问题（例如导致 live2d-widget 修复这一问题的不是 busuanzi 失效而是 [CSS 闪烁](https://github.com/EYHN/hexo-helper-live2d/issues/149)）。
+
+所以，如果是添加 DOM 元素，应当避免修改 `innerHTML`，而应当使用 [`document.createElement`](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement) 和 [`Node.appendChild()`](https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild) 以及 `removeChild`、`replaceChild`、`insertBefore` 等 API。
+
+### 不要依赖于指向 DOM 元素的变量长时间不改变
+
+如果 DOM 因各种原因部分重建，指向 DOM 元素的变量很可能不再指向当前 DOM 中的元素。所以，最好不要在过了一段时间后（例如在 callback 中）再次使用指向 DOM 元素的变量，而应当再次获取这一元素。
+
+### 不要 silently fail
+
+在处理异常，尤其是未知的异常时，即使不 throw 出去，也最好用 `console.error` 等方法记录下来。记录在 console 中的错误信息并不会显示给普通用户，但可以给寻找问题所在的用户提供宝贵的提示信息。
+
+### 使用 Header Editor 在对原环境最小修改的情况下进行调试
+
+这次使用 Header Editor 调试还是我临时想到的（~~知道有这么个插件还是以前用 [mahjong-helper](https://github.com/EndlessCheng/mahjong-helper)，当然现在已经没在用了~~）。一开始还用 pastebin 上传代码，效率极低，后来才想起来本地跑个 http server 就可以了..用这个插件来调试还是挺方便的。
+
+### 留心依赖版本
+
+一开始我还在 GitHub 上搜到一个 [busuanzi.pure.js](https://github.com/JoeyBling/busuanzi.pure.js)，调了一会儿才发现这个代码和 https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js 不一样..
+
+live2d 的版本也要注意开头包含时间的注释，因为最新版本已经把问题修复了。
