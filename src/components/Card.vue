@@ -65,10 +65,10 @@ const icon = {
 
 <style lang="scss" scoped>
 details > summary .details-icon {
-  @apply i-mdi-chevron-down;
+  @apply i-mdi-chevron-down transition-transform ease-out;
 }
 details[open] > summary .details-icon {
-  @apply i-mdi-chevron-up;
+  @apply scale-y--100;
 }
 
 summary::-webkit-details-marker {
