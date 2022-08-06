@@ -12,7 +12,7 @@
       >
         <span
           :class="`absolute top-1.2 left--4
-                   transition-transform ease-out ${icon(node)}`"
+                   motion-safe:transition-transform ease-out ${icon(node)}`"
         />
         <span>{{ node.title }}</span>
       </a>
