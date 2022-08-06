@@ -5,7 +5,7 @@
   >
     <button
       title="切换暗色模式"
-      class="hover:text-hover hover:bg-bghover p-2 flex items-center"
+      class="bghover p-2 flex items-center"
       @click="showMenu = !showMenu"
     >
       <span class="text-xl i-mdi-theme-light-dark" />
@@ -18,7 +18,7 @@
         <li
           v-for="key of ['auto', 'light', 'dark'] as const"
           :key="key"
-          class="hover:bg-bghover"
+          class="bghover"
         >
           <button
             :class="['flex items-center p-1', theme === key && 'text-hover']"

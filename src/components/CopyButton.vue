@@ -55,7 +55,7 @@ async function copy() {
 
 <style lang="scss" scoped>
 .copy-button > span {
-  @apply bg-gruvboxbg hover:bg-dark-2 active:bg-dark-8;
+  @apply bg-gruvboxbg hover:bg-dark-2 active:bg-dark-8 transition-colors ease-out;
   @apply b-2 rd-1;
   @apply w-6 h-6 text-sm;
   @apply flex justify-center items-center;

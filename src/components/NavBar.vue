@@ -10,7 +10,7 @@
     >
       <div class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">
         <a
-          class="p-3 hover:bg-bghover font-serif text-xl flex items-center"
+          class="p-3 bghover font-serif text-xl flex items-center"
           href="/"
         >
           <span>ouuan's blog</span>
@@ -40,7 +40,7 @@
       <ul class="flex">
         <li class="flex items-stretch justify-center">
           <a
-            class="p-2 hover:text-hover hover:bg-bghover flex items-center"
+            class="p-2 bghover flex items-center"
             href="/search"
             title="搜索"
           >
@@ -49,7 +49,7 @@
         </li>
         <li class="flex items-stretch justify-center">
           <a
-            class="p-2 hover:text-hover hover:bg-bghover flex items-center"
+            class="p-2 bghover flex items-center"
             href="/feed.xml"
             title="RSS 订阅"
           >
