@@ -7,7 +7,7 @@
       class="my-1 relative"
     >
       <a
-        :class="node.current && 'text-link'"
+        :class="['transition-color ease-in', node.current && 'text-link']"
         :href="`#${node.slug}`"
       >
         <span :class="`absolute top-1.2 left--4 ${icon(node)}`" />
