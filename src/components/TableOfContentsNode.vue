@@ -45,16 +45,18 @@ function icon(node: TOCNode) {
 </script>
 
 <style scoped lang="scss">
-.animate-appear {
-  animation: appear .15s cubic-bezier(0, 0, 0.2, 1);
-}
-
-@keyframes appear {
-  from {
-    opacity: 0;
+@media (prefers-reduced-motion: no-preference) {
+  .animate-appear {
+    animation: appear .15s cubic-bezier(0, 0, 0.2, 1);
   }
-  to {
-    opacity: 1;
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 </style>
