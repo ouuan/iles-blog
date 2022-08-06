@@ -34,7 +34,7 @@ div[class*="language-"] {
     @apply absolute z-1 top-0 right-0;
 
     @media (hover: hover) {
-      @apply opacity-15 top-3 right-3;
+      @apply transition-opacity ease-out opacity-15 top-3 right-3;
     }
   }
 
