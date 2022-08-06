@@ -58,15 +58,3 @@ export function usePageCount({
   const postCount = usePostCount(filter);
   return computed(() => Math.ceil(postCount.value / unref(perPage)));
 }
-
-const postHrefMap = computed(() => {
-  const map = new Map<string, (typeof posts)['value'][number]>();
-  posts.value.forEach((post) => {
-    map.set(post.meta.href, post);
-  });
-  return map;
-});
-
-export function useGetPostByHref() {
-  return (href: string) => postHrefMap.value.get(href);
-}
