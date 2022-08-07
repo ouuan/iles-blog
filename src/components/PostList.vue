@@ -9,42 +9,46 @@
     </h1>
     <span class="mr-2">共 {{ postCount }} 篇文章</span>
   </div>
-  <ol class="my-3 flex flex-col gap-1">
+  <ol class="my-6 flex flex-col gap-6 b-l-4 b-area">
     <li
       v-for="post of posts"
       :key="post.meta.href"
-      class="flex items-center gap-1 relative hover:left-2"
-      itemscope
-      itemtype="https://schema.org/BlogPosting"
     >
-      <post-microdata :post="post" />
-      <time
-        class="text-footer"
-        :datetime="formatISO(post.frontmatter[displayTime])"
-        :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
-          format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss')
-        }`"
-        :itemprop="displayTime === 'date' ? 'dateCreated' : 'dateModified'"
+      <a
+        class="flex items-center gap-1 relative pl-4 group
+               b-b-2 b-area hover:b-footer transition-colors ease-out b-dotted"
+        :href="post.meta.href"
+        itemscope
+        itemtype="https://schema.org/BlogPosting"
       >
-        {{ format(post.frontmatter[displayTime], 'yyyy-MM-dd') }}
-      </time>
-      <span
-        class="article-style"
-        itemprop="headline"
-      >
-        <a
-          class="text-lg inline-block pl-2"
-          :href="post.meta.href"
+        <span
+          class="absolute left--12px text-20px i-mdi-circle-medium
+               text-gray-5 dark:text-gray-10 group-hover:text-text transition-color ease-out"
+        />
+        <post-microdata :post="post" />
+        <time
+          class="text-footer"
+          :datetime="formatISO(post.frontmatter[displayTime])"
+          :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
+            format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss')
+          }`"
+          :itemprop="displayTime === 'date' ? 'dateCreated' : 'dateModified'"
+        >
+          {{ format(post.frontmatter[displayTime], 'yyyy-MM-dd') }}
+        </time>
+        <span
+          itemprop="headline"
+          class="font-serif text-lg inline-block pl-2"
         >
           {{ post.frontmatter.title }}
-        </a>
-      </span>
-      <span
-        v-if="displayVisitor"
-        :title="`访问量: ${post.frontmatter.visitor}`"
-      >
-        ({{ post.frontmatter.visitor }})
-      </span>
+        </span>
+        <span
+          v-if="displayVisitor"
+          :title="`访问量: ${post.frontmatter.visitor}`"
+        >
+          ({{ post.frontmatter.visitor }})
+        </span>
+      </a>
     </li>
   </ol>
   <pagination-bar
