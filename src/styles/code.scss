@@ -1,5 +1,5 @@
 div[class*="language-"] {
-  @apply max-h-90vh print:max-h-fit overflow-auto bg-gruvboxbg my-6;
+  @apply max-h-90vh print:max-h-fit overflow-auto bg-gruvboxbg my-6 rd-1;
 
   pre[class*="language-"] {
     @apply m-0;
@@ -24,10 +24,13 @@ div[class*="language-"] {
 }
 
 .code-block-wrapper {
-  @apply relative bg-#2C3031 my-6 shadow;
+  @apply relative bg-#2C3031 my-6 shadow rd-1;
 
   &[data-lang] {
-    @apply pt-0.1 rd-2;
+    @apply pt-0.1;
+    div[class*="language-"] {
+      @apply rd-t-0;
+    }
   }
 
   .copy-button {
