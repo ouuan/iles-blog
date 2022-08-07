@@ -82,7 +82,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   sort: 'created-desc',
   filter: () => true,
-  perPage: 25,
+  perPage: 20,
   displayTime: 'date',
   description: undefined,
   displayVisitor: false,

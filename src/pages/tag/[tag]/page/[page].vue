@@ -20,7 +20,7 @@ export default definePageComponent({
   getStaticPaths() {
     return tags.value.reduce((pages, tag) => {
       const pageCount = usePageCount({
-        perPage: 25,
+        perPage: 20,
         filter: useTagFilter(tag),
       });
       for (let i = 1; i <= pageCount.value; i += 1) {

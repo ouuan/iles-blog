@@ -17,7 +17,7 @@
 <script lang="ts">
 import { usePageCount } from '~/composables/usePosts';
 
-const pageCount = usePageCount({ perPage: 25 });
+const pageCount = usePageCount({ perPage: 20 });
 
 export default definePageComponent({
   getStaticPaths() {
