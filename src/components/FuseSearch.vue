@@ -56,7 +56,7 @@
               >{{ part.content }}</span>
             </template>
           </post-head>
-          <pre class="mt-6 mb-3 max-h-80vh overflow-auto whitespace-pre-wrap"><span
+          <pre class="mt-6 mb-3 max-h-72 overflow-auto whitespace-pre-wrap"><span
             v-for="(part, index) of result.contentParts"
             :key="index"
             :class="CLASS[part.type]"
