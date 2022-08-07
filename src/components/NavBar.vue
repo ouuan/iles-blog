@@ -38,14 +38,8 @@
       </nav>
       <div class="sm:basis-full" />
       <ul class="flex">
-        <li class="flex items-stretch justify-center">
-          <a
-            class="p-2 bghover flex items-center"
-            href="/search"
-            title="搜索"
-          >
-            <span class="text-xl i-mdi-magnify" />
-          </a>
+        <li class="flex">
+          <search-bar client:idle />
         </li>
         <li class="flex items-stretch justify-center">
           <a

@@ -33,6 +33,7 @@ declare module '@vue/runtime-core' {
     RenderFeed: typeof import('./node_modules/.pnpm/@islands+feed@0.8.0_iles@0.8.3+vue@3.2.37/node_modules/@islands/feed/dist/render-feed')['RenderFeed']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SearchBar: typeof import('./src/components/SearchBar.vue')['default']
     SponsorRequest: typeof import('./src/components/SponsorRequest.vue')['default']
     TableOfContents: typeof import('./src/components/TableOfContents.vue')['default']
     TableOfContentsCommon: typeof import('./src/components/TableOfContentsCommon.vue')['default']
