@@ -22,8 +22,8 @@
         itemtype="https://schema.org/BlogPosting"
       >
         <span
-          class="absolute left--12px text-20px i-mdi-circle-medium
-               text-gray-5 dark:text-gray-10 group-hover:text-text transition-color ease-out"
+          class="absolute left--5px w-6px h-6px rd-3px
+                 bg-gray-5 dark:bg-gray-10 group-hover:bg-text transition-colors ease-out"
         />
         <post-microdata :post="post" />
         <time
