@@ -39,7 +39,7 @@ export default defineConfig({
         },
       }),
     }),
-    prism({ showLineNumbers: true }),
+    prism(),
   ],
   async extendFrontmatter(frontmatter, filename) {
     if (filename.includes('/post/')) {
