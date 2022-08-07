@@ -41,9 +41,6 @@ import { useTags, useTagCountMap } from '~/composables/useTags';
 const tags = useTags();
 const tagCountMap = useTagCountMap();
 const tagsSorted = computed(() => tags.value.slice().sort(
-  (lhs, rhs) => (
-    (tagCountMap.value.get(rhs) ?? 0) - (tagCountMap.value.get(lhs) ?? 0)
-     || new Intl.Collator('zh-CN').compare(lhs, rhs)
-  ),
+  (lhs, rhs) => (tagCountMap.value.get(rhs) ?? 0) - (tagCountMap.value.get(lhs) ?? 0),
 ));
 </script>
