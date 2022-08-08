@@ -110,14 +110,18 @@ const props = defineProps<{
   } [];
 }>();
 
-const fuse = new Fuse(props.data, {
+const config = {
   includeScore: true,
-  includeMatches: true,
-  keys: [{ name: 'title', weight: 2 }, 'content', 'tags'],
-  threshold: 0.4,
   ignoreLocation: true,
   useExtendedSearch: true,
   fieldNormWeight: 0.2,
+};
+
+const fuse = new Fuse(props.data, {
+  ...config,
+  threshold: 0.4,
+  includeMatches: true,
+  keys: [{ name: 'title', weight: 2 }, 'content', 'tags'],
 });
 
 const params = useUrlSearchParams('history');
@@ -144,6 +148,12 @@ const CLASS = {
 
 const CONTEXT_LENGTH = 50;
 
+function matchType(content: string) {
+  const result = new Fuse([content], config).search(pattern.value);
+  const score = result[0]?.score;
+  return score !== undefined && score < 0.002 ? 'exact' : 'fuzzy';
+}
+
 function search() {
   if (!pattern.value) return null;
   return fuse.search(pattern.value, {
@@ -162,7 +172,7 @@ function search() {
       const { value } = match;
       if (!value) return;
       let indices: [number, number][] = match.indices.filter(
-        ([start, end]) => value.slice(start, end + 1).toLowerCase() === pattern.value.toLowerCase(),
+        ([start, end]) => matchType(value.slice(start, end + 1)) === 'exact',
       );
       if (indices.length === 0) indices = match.indices.slice();
       indices.sort((lhs, rhs) => lhs[0] - rhs[0]);
@@ -177,7 +187,7 @@ function search() {
           parts.push({ type: 'miss', content: value.slice(last, start) });
         }
         const content = value.slice(Math.max(last, start), end + 1);
-        parts.push({ type: content === pattern.value ? 'exact' : 'fuzzy', content });
+        parts.push({ type: matchType(content), content });
         last = Math.max(last, end + 1);
       });
       parts.push({
