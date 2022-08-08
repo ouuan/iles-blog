@@ -39,7 +39,7 @@
       <div class="sm:basis-full" />
       <ul class="flex">
         <li class="flex">
-          <search-bar client:idle />
+          <search-bar client:load />
         </li>
         <li class="flex items-stretch">
           <a
