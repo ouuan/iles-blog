@@ -5,7 +5,7 @@
   >
     <button
       title="切换暗色模式"
-      class="bghover p-2 flex items-center"
+      class="p-2 bghover flex items-center"
       @click="showMenu = !showMenu"
     >
       <span class="text-xl i-mdi-theme-light-dark" />

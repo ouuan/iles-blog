@@ -50,7 +50,7 @@ export default defineConfig({
   shortcuts: {
     bghover: 'hover:bg-bghover transition-colors ease-out',
     'page-container': 'mx-4 sm:mx-12 md:mx-24 lg:mx-auto lg:w-208 xl:w-288 2xl:w-300 3xl:w-312',
-    'floating-button': 'fixed z-5 right-9 md:right-18 lg:right-9 2xl:right-18 3xl:right-27 w-10 h-10 rd-5 flex items-center justify-center bg-popup shadow print:hidden',
+    'floating-button': 'fixed z-5 right-9 md:right-18 lg:right-9 2xl:right-18 3xl:right-27 w-10 h-10 rd-full flex items-center justify-center bg-popup shadow print:hidden',
     btn: 'b-bghover b-2 rd-1 py-1 flex items-center',
     'btn-normal': 'bg-card bghover',
     'btn-invert': 'text-card bg-gray-11 hover:bg-gray-11 dark:bg-gray-3 dark:hover:bg-gray-3',

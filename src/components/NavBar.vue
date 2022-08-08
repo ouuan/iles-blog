@@ -41,7 +41,7 @@
         <li class="flex">
           <search-bar client:idle />
         </li>
-        <li class="flex items-stretch justify-center">
+        <li class="flex items-stretch">
           <a
             class="p-2 bghover flex items-center"
             href="/feed.xml"

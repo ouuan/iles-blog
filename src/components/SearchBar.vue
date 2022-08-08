@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:hidden flex items-stretch justify-center">
+  <div class="lg:hidden flex items-stretch">
     <a
       class="p-2 bghover flex items-center"
       href="/search"
@@ -13,7 +13,7 @@
       <input
         id="__navbar_search_keywords"
         v-model="pattern"
-        class="w-48 px-3 py-1 bg-area rd-4"
+        class="w-48 px-3 py-1 bg-area rd-full"
         type="text"
         placeholder="搜索"
         @keypress="onKeyPress"
