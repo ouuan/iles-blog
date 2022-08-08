@@ -1,0 +1,24 @@
+name: Quotation Check
+
+on: [push, pull_request]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      - name: Setup checker
+        run: |
+          git clone https://github.com/ouuan/quotation-checker
+          cd quotation-checker
+          pnpm i
+          pnpm build
+      - name: Check
+        run: node quotation-checker src/**/*.*
