@@ -13,7 +13,7 @@
       <input
         id="__navbar_search_keywords"
         v-model="pattern"
-        class="w-40 p-1 bg-area rd-1"
+        class="w-48 px-3 py-1 bg-area rd-4"
         type="text"
         placeholder="搜索"
         @keypress="onKeyPress"
