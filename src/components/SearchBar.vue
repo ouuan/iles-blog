@@ -25,7 +25,7 @@
     >
       <a
         class="p-2 bghover flex items-center"
-        :href="`/search?q=${pattern}`"
+        :href="href"
         title="搜索"
       >
         <span class="text-xl i-mdi-magnify" />
@@ -35,14 +35,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const pattern = ref('');
+const href = computed(() => `/search?q=${pattern.value}`);
 
 function onKeyPress(e: KeyboardEvent) {
   if (e.key === 'Enter') {
     e.preventDefault();
-    window.location.href = `/search?q=${pattern.value}`;
+    window.location.href = href.value;
   }
 }
 </script>
