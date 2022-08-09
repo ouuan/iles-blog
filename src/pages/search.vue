@@ -26,7 +26,8 @@ const data = await Promise.all(docs.value.map(async (doc) => {
 }));
 
 const meta = docs.value.map((doc) => {
-  const { frontmatter } = doc;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { description, ...frontmatter } = doc.frontmatter;
   const { href, filename } = doc.meta;
   return { frontmatter, href, filename };
 });
