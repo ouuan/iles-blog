@@ -48,7 +48,7 @@ export default async function useCommitsFeed(post: Post) {
     id: `https://github.com/${site.repo}/commit/${commit.hash}`,
     link: `https://github.com/${site.repo}/commit/${commit.hash}`,
     description: commit.body,
-    content: await simpleGit().raw(['show', commit.hash, meta.filename]),
+    content: `<pre>${await simpleGit().raw(['show', commit.hash, meta.filename])}</pre>`,
     date: new Date(commit.date),
     author: [{
       name: commit.author_name,
