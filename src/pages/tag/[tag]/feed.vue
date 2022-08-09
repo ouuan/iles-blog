@@ -1,10 +1,10 @@
 <page>
-path: /tag/[tag]/feed.xml
+path: /tag/[tag]/[filename]
 </page>
 
 <template>
   <render-feed
-    format="rss"
+    :format="format"
     :options="options"
     :items="items"
   />
@@ -18,10 +18,10 @@ const tags = useTags();
 
 export default definePageComponent({
   getStaticPaths() {
-    return tags.value.map((tag) => ({
-      params: { tag },
-      props: { tag },
-    }));
+    return ['rss', 'atom'].flatMap((format) => tags.value.map((tag) => ({
+      params: { tag, filename: format === 'rss' ? 'feed.xml' : 'feed.atom' },
+      props: { tag, format },
+    })));
   },
 });
 </script>
@@ -29,6 +29,7 @@ export default definePageComponent({
 <script setup lang="ts">
 const props = defineProps<{
   tag: string;
+  format: 'rss' | 'atom';
 }>();
 
 const { options, items } = useFeed(props.tag);
