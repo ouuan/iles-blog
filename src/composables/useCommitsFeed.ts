@@ -29,8 +29,8 @@ export default async function useCommitsFeed(post: Post) {
     copyright: `Copyright © ${yearString} ${site.author}`,
     updated: new Date(),
     feedLinks: {
-      atom: new URL(`${meta.href}/feed.atom`, url).href,
-      rss: new URL(`${meta.href}/feed.xml`, url).href,
+      atom: new URL(`${meta.href}/commits.atom`, url).href,
+      rss: new URL(`${meta.href}/commits.xml`, url).href,
     },
     author: {
       name: author,
