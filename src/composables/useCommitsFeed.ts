@@ -1,5 +1,6 @@
 import { FeedItem, FeedOptions } from '@islands/feed';
 import { simpleGit } from 'simple-git';
+import { escape } from 'html-escaper';
 
 import useCopyrightYear from './useCopyrightYear';
 import { Post } from './usePosts';
@@ -48,7 +49,7 @@ export default async function useCommitsFeed(post: Post) {
     id: `https://github.com/${site.repo}/commit/${commit.hash}`,
     link: `https://github.com/${site.repo}/commit/${commit.hash}`,
     description: commit.body,
-    content: `<pre>${await simpleGit().raw(['show', commit.hash, meta.filename])}</pre>`,
+    content: `<pre>${escape(await simpleGit().raw(['show', commit.hash, meta.filename]))}</pre>`,
     date: new Date(commit.date),
     author: [{
       name: commit.author_name,
