@@ -21,12 +21,7 @@ const fonts = [
 ];
 
 export default defineApp({
-  head({
-    frontmatter,
-    meta,
-    site,
-    route,
-  }) {
+  head({ frontmatter, site, route }) {
     return {
       htmlAttrs: { lang: 'zh-CN' },
       bodyAttrs: {
