@@ -88,12 +88,6 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
           href: '/feed.atom',
           title: `Atom Feed - ${site.title}`,
         },
-        {
-          rel: 'feed',
-          type: 'application/rss+xml',
-          href: computed(() => `https://rsshub.app/github/file/${site.repo}/${site.branch}/${meta.filename}`),
-          title: computed(() => `本页面的 commits - ${meta.filename} - ${site.title}`),
-        },
         { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
         { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
       ].concat(fonts.map((href) => ({

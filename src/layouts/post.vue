@@ -45,6 +45,17 @@ const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
 
 useHead({
+  link: [{
+    rel: 'feed',
+    type: 'application/rss+xml',
+    href: `${page.meta.href}/commits.xml`,
+    title: `RSS Feed - 本文的 commits - ${page.site.title}`,
+  }, {
+    rel: 'feed',
+    type: 'application/atom+xml',
+    href: `${page.meta.href}/commits.atom`,
+    title: `Atom Feed - 本文的 commits - ${page.site.title}`,
+  }],
   meta: [
     { property: 'og:type', content: 'article' },
     { property: 'article:published_time', content: page.frontmatter.date.toISOString() },
