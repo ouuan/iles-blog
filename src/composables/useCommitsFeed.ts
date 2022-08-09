@@ -19,7 +19,7 @@ export default async function useCommitsFeed(post: Post) {
   const link = `https://github.com/${repo}/commits/${branch}/${meta.filename}`;
 
   const options: FeedOptions = {
-    title: `${frontmatter.title} - ${site.title}`,
+    title: `${site.title}: ${frontmatter.title}`,
     description: `Git Commits of ${frontmatter.title} - ${site.description}`,
     id: link,
     link,

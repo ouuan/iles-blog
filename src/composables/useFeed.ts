@@ -19,7 +19,7 @@ export default function useFeed(tag?: string) {
   const link = tag ? new URL(`/tag/${tag}`, url).href : url;
 
   const options: FeedOptions = {
-    title: tag ? `标签: ${tag} - ${title}` : title,
+    title: tag ? `${title}: 标签: ${tag}` : title,
     description: tag ? `标签: ${tag} - ${description}` : description,
     id: link,
     link,
