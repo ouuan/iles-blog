@@ -70,7 +70,7 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
         },
         { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#a07e5b' },
-        { rel: 'canonical', href: computed(() => new URL(route.path, site.url).href) },
+        { rel: 'canonical', href: computed(() => new URL(frontmatter.canonical || route.path, site.url).href) },
         {
           rel: 'feed',
           type: 'application/rss+xml',

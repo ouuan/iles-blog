@@ -24,4 +24,7 @@ const props = defineProps<{
 
 const page = usePage();
 page.frontmatter.title = `首页 - 第${props.pageIndex}页`;
+if (props.pageIndex === 1) {
+  page.frontmatter.canonical = '/';
+}
 </script>

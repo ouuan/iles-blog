@@ -35,4 +35,7 @@ const props = defineProps<{
 
 const page = usePage();
 page.frontmatter.title = `文章列表: 最新创建 - 第${props.pageIndex}页`;
+if (props.pageIndex === 1) {
+  page.frontmatter.canonical = '/posts';
+}
 </script>

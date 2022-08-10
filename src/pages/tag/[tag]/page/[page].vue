@@ -51,6 +51,9 @@ const filter = useTagFilter(props.tag);
 
 const page = usePage();
 page.frontmatter.title = `标签: ${props.tag} - 第${props.pageIndex}页`;
+if (props.pageIndex === 1) {
+  page.frontmatter.canonical = `/tag/${props.tag}`;
+}
 
 const title = `标签: ${props.tag} - ${page.site.title}`;
 useHead({
