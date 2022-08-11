@@ -59,16 +59,22 @@ const title = `标签: ${props.tag} - ${page.site.title}`;
 useHead({
   link: [
     {
-      rel: 'feed',
+      rel: 'alternate',
       type: 'application/rss+xml',
       href: `/tag/${props.tag}/feed.xml`,
       title: `RSS Feed - ${title}`,
     },
     {
-      rel: 'feed',
+      rel: 'alternate',
       type: 'application/atom+xml',
       href: `/tag/${props.tag}/feed.atom`,
       title: `Atom Feed - ${title}`,
+    },
+    {
+      rel: 'alternate',
+      type: 'application/json',
+      href: `/tag/${props.tag}/feed.json`,
+      title: `JSON Feed - ${title}`,
     },
   ],
 });

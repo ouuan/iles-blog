@@ -31,6 +31,7 @@ Licensed under CC BY-SA 4.0`,
     feedLinks: {
       atom: new URL(`${tag ? `/tag/${tag}` : ''}/feed.atom`, url).href,
       rss: new URL(`${tag ? `/tag/${tag}` : ''}/feed.xml`, url).href,
+      json: new URL(`${tag ? `/tag/${tag}` : ''}/feed.json`, url).href,
     },
     author: {
       name: author,

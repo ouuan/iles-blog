@@ -18,8 +18,8 @@ const tags = useTags();
 
 export default definePageComponent({
   getStaticPaths() {
-    return ['rss', 'atom'].flatMap((format) => tags.value.map((tag) => ({
-      params: { tag, filename: format === 'rss' ? 'feed.xml' : 'feed.atom' },
+    return ['rss', 'atom', 'json'].flatMap((format) => tags.value.map((tag) => ({
+      params: { tag, filename: format === 'rss' ? 'feed.xml' : `feed.${format}` },
       props: { tag, format },
     })));
   },
@@ -29,7 +29,7 @@ export default definePageComponent({
 <script setup lang="ts">
 const props = defineProps<{
   tag: string;
-  format: 'rss' | 'atom';
+  format: 'rss' | 'atom' | 'json';
 }>();
 
 const { options, items } = useFeed(props.tag);

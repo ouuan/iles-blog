@@ -31,6 +31,7 @@ export default async function useCommitsFeed(post: Post) {
     feedLinks: {
       atom: new URL(`${meta.href}/commits.atom`, url).href,
       rss: new URL(`${meta.href}/commits.xml`, url).href,
+      json: new URL(`${meta.href}/commits.json`, url).href,
     },
     author: {
       name: author,

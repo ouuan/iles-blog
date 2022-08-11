@@ -1,5 +1,5 @@
 <page>
-path: /[path]
+path: /post/[path]
 </page>
 
 <template>
@@ -18,9 +18,9 @@ const posts = usePosts();
 
 export default definePageComponent({
   getStaticPaths() {
-    return ['rss', 'atom'].flatMap((format) => posts.value.map((post) => ({
+    return ['rss', 'atom', 'json'].flatMap((format) => posts.value.map((post) => ({
       params: {
-        path: `${post.meta.href.slice(1)}/commits.${format === 'rss' ? 'xml' : 'atom'}`,
+        path: `${post.meta.href.slice(5)}/commits.${format === 'rss' ? 'xml' : format}`,
       },
       props: { post, format },
     })));
@@ -31,7 +31,7 @@ export default definePageComponent({
 <script setup lang="ts">
 const props = defineProps<{
   post: Post;
-  format: 'rss' | 'atom';
+  format: 'rss' | 'atom' | 'json';
 }>();
 
 const { options, items } = await useCommitsFeed(props.post);
