@@ -1,54 +1,45 @@
 <template>
-  <div class="my-9 flex flex-col gap-3">
-    <div
-      class="flex justify-center flex-wrap-reverse gap-x-3"
-      itemprop="copyrightNotice"
-    >
-      <span class="truncate">
-        文章链接:
-        <a
-          :href="url"
-          rel="canonical"
-        >{{ url }}</a>
-      </span>
-      <span>
-        作者:
+  <div
+    class="my-6 bg-area shadow b-l-6 b-gray-4 dark:b-gray-11 p-6"
+    itemprop="copyrightNotice"
+  >
+    <ul class="flex flex-col gap-1">
+      <li class="flex gap-1">
+        <span class="shrink-0">文章作者:</span>
         <a
           :href="page.site.authorLink"
           rel="author"
         >{{ page.site.author }}</a>
-      </span>
-    </div>
-    <div class="flex flex-wrap justify-center items-center gap-2">
-      <span>
-        本文采用
+      </li>
+      <li class="flex gap-1">
+        <span class="shrink-0">原文链接:</span>
         <a
-          rel="license"
-          href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
-          class="text-link hover:underline hover:text-hover active:text-active"
-          itemprop="license"
-        >CC BY-SA 4.0</a>
-        许可协议进行授权，未满足
-        <span
-          class="underline decoration-dotted"
-          title="简而言之，转载时必须标明出处（本文的链接）并使用相同的许可协议，但无需私信征求许可"
-        >许可协议要求</span>
-        不得转载。
-      </span>
-      <span>
-        <a
-          rel="license"
-          href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
-        >
-          <img
-            alt="CC BY-SA 4.0 License Picture"
-            src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
-            width="88"
-            height="31"
-          >
-        </a>
-      </span>
-    </div>
+          :href="url"
+          rel="canonical"
+          class="break-all"
+        >{{ url }}</a>
+      </li>
+      <li class="flex gap-1">
+        <span class="shrink-0">许可协议:</span>
+        <span>
+          本文采用
+          <span class="article-style">
+            <a
+              rel="license"
+              href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
+              class="font-sans"
+              itemprop="license"
+            >CC BY-SA 4.0</a>
+          </span>
+          许可协议进行授权，未满足
+          <span
+            class="underline decoration-dotted"
+            title="简而言之，转载时必须标明出处（本文的链接）并使用相同的许可协议，但无需私信征求许可"
+          >许可协议要求</span>
+          不得转载。
+        </span>
+      </li>
+    </ul>
   </div>
 </template>
 
