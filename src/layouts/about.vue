@@ -42,7 +42,9 @@ useHead({
 .liella { color: #DA57D8 !important; }
 .kanon { color: #FF7F27 !important; }
 .kuku { color: #A0FFF9 !important; }
-.mia { color: #A9A898 !important; }`,
+.mia { color: #A9A898 !important; }
+.honoka { color: #FFAE00 !important; }
+`,
   }],
 });
 </script>
