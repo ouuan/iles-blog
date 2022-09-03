@@ -114,3 +114,13 @@ fn main() {
 先是看了 [Asynchronous Programming in Rust](https://rust-lang.github.io/async-book/)，感觉看得一知半解的（尤其是 `Pin`），好像大概知道 `Future` 在干什么又不完全知道（~~而且这本书好咕啊，`TODO` 的章节应该是有生之年了~~
 
 没看完 async book，直接去看 [Tokio Tutorial](https://tokio.rs/tokio/tutorial) 和 [Async programming in Rust with async-std](https://book.async.rs/) 了。作为 async runtime 的教程，它们涉及到的具体原理和实现少一些，更注重怎么实际使用，读起来会容易理解一些。因为 Tokio 更 popular，主要看的是 Tokio 的教程。
+
+## 数据库: Diesel
+
+感觉 [diesel 的教程](https://diesel.rs/guides/) 写的挺简略的，但对着 examples 硬查文档也勉强能看懂基本用法。ORM 看着就很“安全”，只不过实在是太类型体操了，不仅文档查起来有点小麻烦，代码复用也经常因为繁琐的 trait bounds 写不太动（也可能是我没学会）。
+
+[diesel-derive-enum](https://crates.io/crates/diesel-derive-enum) 是好用的。
+
+Sqlite 的 `RETURNING` 语句需要启用 `returning_clauses_for_sqlite_3_35` feature flag（并且需要至少 3.35 版本的 Sqlite）。没启用的时候对着一堆 trait bound 不满足的错误信息（就和 C++ 模板感觉差不多了..）根本发现不了错误原因，还是翻文档翻半天发现的。
+
+还遇到一个 Sqlite 锁死的小坑，通过 [设定 `busy_timeout`](https://stackoverflow.com/a/57717533) 解决了。
