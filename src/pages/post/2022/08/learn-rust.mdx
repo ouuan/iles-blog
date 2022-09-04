@@ -123,4 +123,4 @@ fn main() {
 
 Sqlite 的 `RETURNING` 语句需要启用 `returning_clauses_for_sqlite_3_35` feature flag（并且需要至少 3.35 版本的 Sqlite）。没启用的时候对着一堆 trait bound 不满足的错误信息（就和 C++ 模板感觉差不多了..）根本发现不了错误原因，还是翻文档翻半天发现的。
 
-还遇到一个 Sqlite 锁死的小坑，通过 [设定 `busy_timeout`](https://stackoverflow.com/a/57717533) 解决了。
+还遇到一个 Sqlite 锁死的坑，通过 [使用 r2d2 设定 `busy_timeout`](https://stackoverflow.com/a/57717533) 并 [使用 WAL mode 以及 immediate transaction](https://github.com/the-lean-crate/criner/issues/1) （hopefully）解决了。
