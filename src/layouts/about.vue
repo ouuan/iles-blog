@@ -43,6 +43,7 @@ useHead({
 .kanon { color: #FF7F27 !important; }
 .kuku { color: #A0FFF9 !important; }
 .mia { color: #A9A898 !important; }
+.emma { color: #84C36E !important; }
 .honoka { color: #FFAE00 !important; }
 `,
   }],
