@@ -1,0 +1,204 @@
+---
+title: CS:APP 第二章学习笔记
+date: 2022-09-18T13:28:17+08:00
+image: /images/2022/09/csapp-2.png
+tags:
+-   csapp
+-   计算机系统
+-   学习笔记
+---
+
+[CS:APP](https://csapp.cs.cmu.edu/) 第二章“Representing and Manipulating Information”的学习笔记。
+
+这章的主要内容为 byte、整数和浮点数的存储及计算。
+
+<Excerpt />
+
+## Information Storage
+
+byte 而非 bit 是 memory 的基本单位，memory 可以看作 array of bytes。
+
+一个 byte 常用两个十六进制数码表示。
+
+word size 表示 virtual memory 的位数（大小），所以也是指针的位数。在 C 语言中，word size 也会影响到整型的大小。
+
+### Byte Ordering
+
+很多时候，单个数据需要用多个 byte 表示，于是就有两种可能的 byte ordering: big endian 和 little endian。
+
+如果把每个 byte 看作一个“数位”，而把由多个 byte 组成的单个数据看作一个“256 进制数”，那么 big endian 就是从高位开始“书写”，little endian 就是从低位开始“书写”。也就是说，big endian 看上去是更加符合人类的“书写习惯”的，而 little endian 则像是把 1234 写成 4321。
+
+由于 byte 是 memory 的基本单位，endian 影响的是 byte 的排列顺序，而不是 bit 的排列顺序。如果把一串 byte 分别用 big endian 和 little endian 写出来，例如 big endian `0x1234`，little endian `0x3412`，可能会感觉 endian 不影响“byte 内部的顺序”很奇怪，但其实 `0x12` 和 `0x34` 只是 byte 的一种表示方式，并不代表“byte 内部的顺序”。上面说“把由多个 byte 组成的单个数据看作一个‘256 进制数’”，也是考虑到 10 进制数的“反过来写”是为人熟知的，这样的话用“256 进制数”来作类比会比较好理解且不容易误解。
+
+一般来说，byte ordering 对于程序员来说是无关紧要的。但是，如果要将数据与外界分享（例如通过网络传输），或者需要查看原始的 byte array（在 machine-level program 中），或者需要通过类型转换、union 等方式绕开 C 语言的类型系统，则 byte ordering 会非常重要。
+
+字符串的表示是不受 byte ordering 影响的。
+
+### 位运算
+
+主要是左移、右移，其它是熟知的。
+
+左移时高位会被丢弃，低位会填充零。
+
+右移则有两种: logical right shift 和 arithmetic right shift。两者都是丢弃低位，但 logical 是高位填零，arithmetic 是高位填原来最高位的值。
+
+在 C 语言中，unsigned integer 一定是 logical right shift，而 signed integer 则一般是 arithmetic right shift。
+
+arithmetic right shift 是为了在使用补码表示负数时得到正确的结果。
+
+在位移过大（超过 word size）时，行为是不确定的，但一般会将位移对 word size 取模。
+
+## Integer Representations
+
+### 整型编码
+
+unsigned integer 的编码就是普通的二进制。
+
+signed integer 一般采用补码 (two<Latin>’</Latin>s-complement encoding)，即在 word size 为 $w$ 时最高位表示 $-2^{w-1}$ 而非 $2^{w-1}$。也就是说，最高位为 0 表示非负，为 1 表示负数；在最高位为 0 时和 unsigned integer 是一致的，而在最高位为 1 时是同样编码的 unsigned integer 减去 $2^w$。
+
+### signed unsigned 转换
+
+在 C 语言中，在同样长度的 signed 和 unsigned 之间转换时，虽然不一定，但一般是不改变编码地只进行类型的转换。
+
+若算术运算符的两侧分别是 signed 和 unsigned，则会将 signed 隐式转换为 unsigned，这在运算符为比较运算符时尤其可能导致意外的结果，例如 `-1 > 0u`。
+
+<Card type="warn">
+由于 signed 与 unsigned 转换可能带来意外的结果，很多时候最好避免使用 unsigned integer。如果要将 signed 和 unsigned 放在同一个表达式中运算一般是会有 warning 的，如果要显式进行转换则要小心。
+</Card>
+
+### 整型增长
+
+将某个长度的 unsigned integer 转换为更长的 unsigned integer 时，会在高位补零。
+
+将某个长度的 signed integer 转换为更长的 signed integer 时，会在高位补原来的最高位，类似于 arithmetic right shift，以保证转换后数值不变。
+
+如果一个类型转换既要增长又要转变 signed/unsigned，会先转换长度再转换 signed/unsigned。
+
+### 整型缩短
+
+无论是 signed 还是 unsigned，在缩短整型时会直接将高位截去。在新的整型长度为 $w$ 时，这相当于对 $2^w$ 取模。
+
+## Integer Arithmetic
+
+### 加法和取反
+
+unsigned integer 的加法：模 $2^w$。
+
+判断 unsigned integer 加法是否发生溢出：`x + y` 溢出当且仅当 `x + y < x`。
+
+unsigned integer 取反：$x \mapsto \begin{cases} 0 & x = 0 \\ 2^w - x & x > 0 \end{cases}$
+
+取反有两种计算方式：
+
+-   按位取反后加一；
+-   或者找到二进制表示中最低位的 `1` 然后将比这一位高的位取反。
+
+signed integer 的加法：把编码当作 unsigned integer 算，就可以实现 positive overflow 和 negative overflow 的效果，即 overflow 后保持模 $2^w$ 不变。
+
+判断 signed integer 加法是否发生溢出：`x + y` positive overflow 当且仅当 `x > 0 && y > 0 && x + y <= 0`，negative overflow 当且仅当 `x < 0 && y < 0 && x + y >= 0`。
+
+signed integer 取反: 把编码当作 unsigned integer 来取反即可，表现为，能表示的最小值取反得到自身，其它值取反就是其相反数。
+
+<Card type="warn">
+signed integer 取最小值时取反得到自身而非其相反数，这可能会是被忽视的 corner case 而导致 bug。
+</Card>
+
+### 乘法
+
+无论 signed integer 还是 unsigned integer，乘法都是丢弃高位即模 $2^w$，且在编码上是等价的。
+
+如果乘法运算中的某个因数是常数，编译器可能会把乘法优化为位移和加法的组合。是否以及如何进行优化取决于常数的值以及相关指令（加法、位移、乘法，可能还有 `LEA` 等指令）的相对速度，与具体机器密切相关。
+
+### 除以 2 的幂
+
+如果除法运算中除数是 2 的幂，编译器会将除法优化为右移。
+
+### 总结
+
+计算机的整数运算总的来说通过取模来处理溢出，而使用补码表示 signed integer 可以使 signed integer 和 unsigned integer 的运算在编码层面上的实现相同。
+
+## Floating Point
+
+### IEEE 浮点表示
+
+浮点数大体上是一个二进制的科学计数法，形如 $(-1)^s \times M \times 2^E$。
+
+IEEE 浮点表示的编码包含三部分：
+
+1.  sign bit，表示 $s$
+2.  exponent field，表示 $E$，下文中记其表示的 unsigned integer 为 $e$
+3.  fraction field，表示 $M$，下文中记 fraction field 为 $f_{n-1} \cdots f_1 f_0$
+
+如果简单地使用普通整数的表示法来表示 $M$ 和 $E$，会遇到一些问题：
+
+-   $E$ 需要能是负数，以用来表示比较小的数
+-   若 $M = 0.f_{n-1} \cdots f_1 f_0$，那么：
+    -   $E$ 不同的编码可能表示同一个值，造成编码的浪费
+    -   可能会出现 $E$ 更大但值更小的情况，会给比较两个数造成困难
+-   不能表示 $\pm \infty$ 和 `NaN` 等特殊值
+
+为了解决这些问题，IEEE 浮点表示采取了如下措施。
+
+首先，浮点数被分为三类：normalized values, denormalized values 和 special values。
+
+Normalized values:
+
+-   一个浮点数是 normalized value，当且仅当其 exponent field 既不全零也不全一
+-   $E = e - \mathrm{Bias}$，其中 $\mathrm{Bias}$ 是一个预先设置的常量
+-   $M = 1.f_{n-1} \cdots f_1 f_0$
+
+Denormalized values:
+
+-   一个浮点数是 denormalized value，当且仅当其 exponent field 全零
+-   $E = 1 - \mathrm{Bias}$
+-   $M = 0.f_{n-1} \cdots f_1 f_0$
+
+Special values:
+
+-   一个浮点数是 special value，当且仅当其 exponent field 全一
+-   若 fraction field 全零，则根据 sign bit 表示 $\pm \infty$
+-   若 fraction field 非全零，则表示 `NaN`
+
+现在来看这套编码规则如何解决了上面提出的问题：
+
+1.  设置 $\mathrm{Bias}$，以表示小于零的 $E$
+2.  将 normalized values 的 $M$ 的最高位钦定为 1，以避免不同 $E$ 表示同一个数。这和标准的十进制科学计数法要求小数在 $[1, 10)$ 的范围内是一个道理，在二进制科学计数法中就是要求小数在 $[1, 2)$ 的范围内。
+3.  由于 $E$ 的取值范围有限，normalized values 的 $M$ 最高位强制为 1 使其无法表示 $0.0$ 以及接近 $0$ 的数（能够表示 $2^{-\mathrm{Bias}}$ 和 $(1 + \varepsilon) \times 2^{-\mathrm{Bias}}$，却无法表示位于 $[0, 2^{-\mathrm{Bias}})$ 内的数），所以增设 denormalized values 这一分类用来表示接近 $0$ 的数以及 $\pm 0.0$。由于 denormalized values 没有将 $M$ 的最高位设为 $1$，它的 $E$ 设置为 $1 - \mathrm{Bias}$ 而非 $-\mathrm{Bias}$ 作为补偿。
+4.  通过 special values 的分类，表示了 $\pm \infty$ 以及 `NaN`。
+5.  使用 exponent fields 按照 denormalized -> normalized -> special 的顺序进行分类，对于同一符号的浮点数，只需将 exponent field 和 fraction field 看作无符号整数即可比较大小（实际比较时，除了先比较符号位，可能还要考虑 $\pm 0.0$、`NaN` 等特殊情况）。
+
+IEEE 浮点表示还规定了每个 field 的长度：
+
+-   32 位: exponent field 8 位，fraction field 23 位
+-   64 位: exponent field 11 位，fraction field 52 位
+
+记 exponent field 的位数为 $k$，则 $\mathrm{Bias} = 2^{k-1} - 1$，即 32 位为 $127$，64 位为 $1023$。
+
+### 特殊（标志性）的浮点数
+
+exponent field 和 fraction field 全零表示 $\pm 0.0$。
+
+exponent field 全零，fraction field 最低位 1 其它位 0，是能够表示的最接近零的数（32 位约为 $1.4 \times 10^{-45}$，64 位约为 $4.9 \times 10^{-324}$）。（注意这个数的值为 $2^{2-2^k-n}$，和 $\varepsilon = 2^{-n}$ 不同。）
+
+exponent field 最高位 0 其它位 1（这得益于 $\mathrm{Bias}$ 的设定），fraction field 全零，表示 $\pm 1.0$。
+
+exponent field 最低位 0 其它位 1，fraction field 全一，是能够表示（非 special value）的最大的数（32 位约为 $3.4 \times 10^{38}$，64 位约为 $1.8 \times 10^{308}$）。
+
+### 浮点数舍入
+
+浮点数的舍入有四种模式可供选择：
+
+-   round-to-even: 类似于“四舍六入五成双”但是二进制，是默认的舍入模式
+-   round-toward-zero
+-   round-down
+-   round-up
+
+### 浮点数运算
+
+除了一些特殊值（如 `sqrt(-1.0)`、`1/0.0`），浮点数的运算结果被定义为精确计算后进行舍入得到的结果，但具体计算的实现方式是随意的（不需要真的先精确计算再进行舍入）。
+
+浮点数的加法和乘法会进行舍入、可能溢出，所以不满足结合律、分配律（但是满足交换律）。调换结合顺序可能改变计算结果，意味着编译器无法以改变结合顺序为代价进行优化。
+
+### C 语言中浮点数类型转换
+
+简单来说，整数转成浮点数或不同类型的浮点数之间进行转换可能舍入也可能溢出。浮点数转成整数会向零取整，溢出时行为不确定。
