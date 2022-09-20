@@ -64,7 +64,7 @@ export default defineConfig({
     }
 
     const postHref = filename.match(/^src\/pages\/(post\/.*)\.mdx?$/)?.[1];
-    if (postHref) {
+    if (process.env.NODE_ENV === 'production' && postHref) {
       const data = await got.get(
         new URL(
           `/api/visitors/${encodeURIComponent(postHref)}`,
@@ -72,6 +72,8 @@ export default defineConfig({
         ).href,
       ).json<{ visitors: number; }>();
       frontmatter.visitor = data.visitors;
+    } else {
+      frontmatter.visitor = 0;
     }
   },
   markdown: {
