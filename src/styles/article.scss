@@ -1,7 +1,8 @@
 .article-style {
   @apply font-serif break-words hyphens-auto text-justify;
 
-  * * {
+  // not `:not(td, th)` for compatibility
+  * :not(td):not(th) {
     @apply text-initial sm:text-justify;
   }
 
