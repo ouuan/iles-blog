@@ -26,7 +26,7 @@ word size 表示 virtual memory 的位数（大小），所以也是指针的位
 
 很多时候，单个数据需要用多个 byte 表示，于是就有两种可能的 byte ordering: big endian 和 little endian。
 
-如果把每个 byte 看作一个“数位”，而把由多个 byte 组成的单个数据看作一个“256 进制数”，那么 big endian 就是从高位开始“书写”，little endian 就是从低位开始“书写”。也就是说，big endian 看上去是更加符合人类的“书写习惯”的，而 little endian 则像是把 1234 写成 4321。
+如果把每个 byte 看作一个“数位”，而把由多个 byte 组成的单个数据看作一个“256 进制数”，那么 big endian 就是从高位开始“书写”，little endian 就是从低位开始“书写”。也就是说，big endian 看上去是更加符合人类的“书写习惯”的，而 little endian 则像是把 1234 写成 4321。但是，little endian 会把低位存在低地址，从这个角度来说又更加“自然”一些。
 
 由于 byte 是 memory 的基本单位，endian 影响的是 byte 的排列顺序，而不是 bit 的排列顺序。如果把一串 byte 分别用 big endian 和 little endian 写出来，例如 big endian `0x1234`，little endian `0x3412`，可能会感觉 endian 不影响“byte 内部的顺序”很奇怪，但其实 `0x12` 和 `0x34` 只是 byte 的一种表示方式，并不代表“byte 内部的顺序”。上面说“把由多个 byte 组成的单个数据看作一个‘256 进制数’”，也是考虑到 10 进制数的“反过来写”是为人熟知的，这样的话用“256 进制数”来作类比会比较好理解且不容易误解。
 
@@ -40,11 +40,11 @@ word size 表示 virtual memory 的位数（大小），所以也是指针的位
 
 左移时高位会被丢弃，低位会填充零。
 
-右移则有两种: logical right shift 和 arithmetic right shift。两者都是丢弃低位，但 logical 是高位填零，arithmetic 是高位填原来最高位的值。
+右移则有两种: 逻辑右移和算术右移。两者都是丢弃低位，但逻辑右移是高位填零，算术右移是高位填原来最高位的值。
 
-在 C 语言中，unsigned integer 一定是 logical right shift，而 signed integer 则一般是 arithmetic right shift。
+在 C 语言中，unsigned integer 一定是逻辑右移，而 signed integer 则一般是算术右移。
 
-arithmetic right shift 是为了在使用补码表示负数时得到正确的结果。
+算术右移的行为是为了在使用补码表示负数时得到正确的结果。
 
 在位移过大（超过 word size）时，行为是不确定的，但一般会将位移对 word size 取模。
 
