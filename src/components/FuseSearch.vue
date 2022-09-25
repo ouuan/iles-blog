@@ -134,7 +134,7 @@ interface MatchPart {
 
 const TITLE = {
   miss: '未匹配',
-  fuzzy: '模糊匹配（或使用了高级搜索语法）',
+  fuzzy: '模糊匹配',
   exact: '精确匹配',
   ellipsis: '省略',
 };
