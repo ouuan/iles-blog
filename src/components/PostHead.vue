@@ -37,10 +37,9 @@
         :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}`"
       >
         <span class="i-mdi-update mr-1" />
-        <component
-          :is="frontmatter.commitHash ? 'a' : 'span'"
-          :class="frontmatter.commitHash && 'hover:underline'"
-          :href="frontmatter.commitHash && `https://github.com/${site.repo}/commit/${frontmatter.commitHash}`"
+        <a
+          class="hover:underline"
+          :href="`https://github.com/${site.repo}/commits/${site.branch}/${filename}`"
         >
           <time
             :datetime="formatISO(frontmatter.lastUpdated)"
@@ -49,7 +48,7 @@
             {{ format(frontmatter.lastUpdated, 'yyyy-MM-dd') }}
             <relative-time :date="frontmatter.lastUpdated" />
           </time>
-        </component>
+        </a>
       </span>
       <span
         class="flex items-center"

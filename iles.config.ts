@@ -57,7 +57,6 @@ export default defineConfig({
     const { latest } = log;
     if (latest) {
       frontmatter.lastUpdated ||= new Date(latest.date);
-      frontmatter.commitHash ||= latest.hash;
     } else {
       const { mtime } = await stat(filename);
       frontmatter.lastUpdated = mtime;
