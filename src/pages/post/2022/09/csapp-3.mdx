@@ -667,7 +667,9 @@ gcc 使用 _stack protector_ 来检测 stack corruption，以避免 corrupted st
 
 ## Floating-Point Code
 
-这部分内容基于 AVX2 指令集，可以在编译时指定 `-mavx2`。如果不支持 AVX2 也会是类似的，但指令名称等可能不同。
+这部分内容基于 AVX2 指令集，可以指定 `-mavx2` 选项来让编译器使用 AVX2 指令。
+
+如果不支持 AVX，则可以使用 SSE 指令集，大体上是类似的。简单来说，主要的区别就是 AVX 指令的名称会有一个 `v` 的前缀，而很多 AVX 中三个 operand 的指令在 SSE 中是两个 operand。
 
 ### YMM 寄存器
 
@@ -688,7 +690,7 @@ gcc 使用 _stack protector_ 来检测 stack corruption，以避免 corrupted st
 
 其中 `v` 是 AVX 指令的前缀，`ss` 表示 scalar single-precision，`sd` 表示 scalar double-precision，`a` 表示 aligned，`ps` 表示 packed single-precision，`pd` 表示 packed double-precision。也就是说，`s` 结尾的用于 float，`d` 结尾的用于 double。
 
-### 浮点数的类型转换指令
+### 浮点数类型转换
 
 #### 浮点数转为整数
 
@@ -734,9 +736,13 @@ CS:APP 里提到 gcc 一般不使用这两条指令，而是会使用另外的�
 
 看参数是第几个、放在哪个寄存器时，浮点参数和整型参数是分开算的，例如 `double f1(int x, double y, long z)` 和 `double f2(double y, int x, long z)` 的参数寄存器分配是相同的。
 
-### 浮点数运算指令
+### 浮点数算术运算
 
 下面的指令把 `ss` 换成 `sd`、`m32` 换成 `m64` 即为 double-precision 的版本。
+
+#### 浮点数二元运算
+
+记三个 operand 分别为 $S_1, S_2, D$，则效果为计算 $S_2$ 与 $S_1$ 的运算结果，存在 $D$ 中，例如 `vsubss S_1 S_2 D` 是 $D \gets S_2 - S_1$。
 
 -   `vaddss xmm/m32, xmm, xmm`
 -   `vsubss xmm/m32, xmm, xmm`
@@ -745,9 +751,11 @@ CS:APP 里提到 gcc 一般不使用这两条指令，而是会使用另外的�
 -   `vmaxss xmm/m32, xmm, xmm`
 -   `vminss xmm/m32, xmm, xmm`
 
-记三个 operand 分别为 $S_1, S_2, D$，则效果为计算 $S_2$ 与 $S_1$ 的运算结果，存在 $D$ 中，例如 `vsubss S_1 S_2 D` 是 $D \gets S_2 - S_1$。
+#### 浮点数一元运算
 
--   `sqrtss xmm/m32, xmm, xmm`: 将 $\sqrt{S_1}$ 存在 $D$ 的低位，高位从 $S_2$ 复制
+`sqrtss xmm/m32, xmm`: 将 source 开方存入 destination
+
+这里 CS:APP 中列出的是 SSE 指令 `sqrtss` 而非 AVX 指令 `vsqrtss`，我自己编译出来也是。可能可以参考 [c++ - Using AVX intrinsics instead of SSE does not improve speed -- why? - Stack Overflow](https://stackoverflow.com/questions/8924729/using-avx-intrinsics-instead-of-sse-does-not-improve-speed-why)。
 
 ### 浮点数常量
 
