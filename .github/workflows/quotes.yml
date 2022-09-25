@@ -3,7 +3,7 @@ name: Quotation Check
 on: [push, pull_request]
 
 jobs:
-  check:
+  quotation-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
