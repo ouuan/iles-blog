@@ -30,7 +30,7 @@
           class="text-footer"
           :datetime="formatISO(post.frontmatter[displayTime])"
           :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
-            format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss')
+            format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss O')
           }`"
           :itemprop="displayTime === 'date' ? 'dateCreated' : 'dateModified'"
         >

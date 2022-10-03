@@ -16,7 +16,7 @@
     <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 md:text-sm">
       <span
         class="flex items-center"
-        :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss')}`"
+        :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
         <span class="i-mdi-folder-plus-outline mr-1" />
         <a
@@ -34,7 +34,7 @@
       </span>
       <span
         class="flex items-center"
-        :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss')}`"
+        :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
         <span class="i-mdi-update mr-1" />
         <a
