@@ -39,6 +39,13 @@
           不得转载。
         </span>
       </li>
+      <li
+        v-if="notice"
+        class="flex gap-1"
+      >
+        <span class="shrink-0">额外说明:</span>
+        <span>{{ notice }}</span>
+      </li>
     </ul>
   </div>
 </template>
@@ -48,4 +55,5 @@ import { computed } from 'vue';
 
 const page = usePage();
 const url = computed(() => new URL(page.meta.href, page.site.url).href);
+const notice = computed(() => page.frontmatter.copyrightNotice);
 </script>
