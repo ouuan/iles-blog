@@ -152,7 +152,7 @@ x86-64 CPU 有 16 个 general-purpose register，可以用来存整数或指针�
 
 1.  Immediate，即字面值，代码为 `$Imm`，例如 `$123` 表示 123，`$0x123` 表示 0x123
 2.  Register，代码为寄存器的名称，例如 `%rax`
-3.  Memory，完整形态的代码为 `Imm(rb, ri, s)`，表示 `M[Imm + R[rb] + R[ri] * s]`，其中 $s \in \{1, 2, 4, 8\}$，例如 `2(%rax, %rbx, 4)` 表示 memory 中地址为 `2 + %rax + 4 * %rbx` 的值；`Imm`、`rb`、`, ri, s` 分别可以省略，例如 `Imm`、`(rb)`、`Imm(, ri, s)`。
+3.  Memory，完整形态的代码为 `Imm(rb, ri, s)`，表示 `M[Imm + R[rb] + R[ri] * s]`（其中 `ri` 不为 `%rsp`，$s \in \{1, 2, 4, 8\}$），例如 `2(%rax, %rbx, 4)` 表示 memory 中地址为 `2 + %rax + 4 * %rbx` 的值；`Imm`、`rb`、`, ri, s` 分别可以省略，例如 `Imm`、`(rb)`、`Imm(, ri, s)`；指定了 `ri` 时也可以省略 `s` 表示 `s` 为 1。
 
 在下文中，用 `imm32`、`r64`、`m16`、`r/m64` 等方式表示指令 operand 的类型。
 
@@ -301,22 +301,26 @@ scale:
     也没看到这一条，不知道是怎么回事。
 </Card>
 
-### 128 位的算术运算
+### 结果是 operand 两倍长度的运算
 
 128 位的整数叫做 oct word，需要存在两个寄存器中，在指令中一般高位放在 `R[%rdx]` 低位放在 `R[%rax]`。
 
--   `imulq r/m64`: 计算 operand 和 `R[%rax]` 作为 signed integer 相乘而不截去高位的结果，存在 `R[%rdx]:R[%rax]` 中。
+虽然截去高位时是否有符号对编码层面的乘法没有影响，不截去高位时就需要对 signed 和 unsigned 使用不同的指令了：
+
+-   `imulq r/m64`: 计算 operand 和 `R[%rax]` 作为 signed integer 相乘而不截去高位的结果，存在 `R[%rdx]:R[%rax]` 中。（如果有两个 operand 就是上面的 [二元运算](#二元运算) 了。）
 -   `mulq r/m64`: 计算 operand 和 `R[%rax]` 作为 unsigned integer 相乘而不截去高位的结果，存在 `R[%rdx]:R[%rax]` 中。
 
-虽然截去高位时是否有符号对编码层面的乘法没有影响，不截去高位时就需要对 signed 和 unsigned 使用不同的指令了。
+除法以及取模：
 
--   `cqto`: 将 `R[%rax]` 高位填符号位放在 `R[%rdx]:R[%rax]`（也就是用 `R[%rax]` 的符号位填满 `R[%rdx]`）。
+-   `cqto`/`cqtd`: 将 `R[%rax]` 高位填符号位放在 `R[%rdx]:R[%rax]`（也就是用 `R[%rax]` 的符号位填满 `R[%rdx]`）。
 -   `idivq`: 计算 `R[%rdx]:R[%rax]` 有符号地除以 operand，商放在 `R[%rax]`，余数放在 `R[%rdx]`。
 -   `divq`: 计算 `R[%rdx]:R[%rax]` 无符号地除以 operand，商放在 `R[%rax]`，余数放在 `R[%rdx]`。
 
 得到的商都是向 0 取整，所以被除数为负时余数非正。
 
 若商溢出了，则会触发 divide error 异常。所以被除数一般会是 64 位整数（在 `idivq` 之前用 `cqto` 来设置 `R[%rdx]`，在 `divq` 之前将 `R[%rdx]` 置为全零），否则很可能溢出而触发异常。
+
+这些运算也有 operand 为 32 位，结果为 64 位的版本：`imull`、`mull`、`cltd`、`idivl`、`divl`。它们以 `%edx` 和 `%eax` 来代替 128 位运算中的 `%rdx` 和 `%rax`。
 
 ## Control
 
