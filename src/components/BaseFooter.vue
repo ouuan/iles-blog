@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import filesize from 'filesize';
+import { filesize } from 'filesize';
 import { usePosts } from '~/composables/usePosts';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
