@@ -19,6 +19,12 @@
           itemprop="articleBody"
         >
           <slot />
+          <Card
+            v-if="page.frontmatter.tags.includes('WIP')"
+            type="wip"
+          >
+            <p>未完待续…… 🕊️</p>
+          </Card>
         </section>
         <div class="article-style my-9">
           <hr>
