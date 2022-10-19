@@ -11,7 +11,9 @@
   }
 
   p {
-    @apply overflow-auto;
+    // The padding of <code> may overflow.
+    // See also: https://stackoverflow.com/a/6433475
+    @apply overflow-x-auto overflow-y-hidden;
   }
 
   p,
@@ -109,9 +111,8 @@
   }
 
   :not(pre) > code {
-    @apply inline-block whitespace-pre;
-    @apply bg-area b-1 b-gray-3 dark:b-gray-11 rd-1 p-0.5 m-0.5;
-    @apply text-3.5 min-w-6 text-center;
+    @apply bg-gray-1 dark:bg-gray-13 rd-1 px-1 py-0.5 mx-0.5;
+    @apply whitespace-pre-wrap text-3.5 leading-4.5;
   }
 
   table {

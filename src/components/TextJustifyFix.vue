@@ -6,8 +6,7 @@
 // eslint-disable-next-line import/prefer-default-export
 export function onLoad() {
   const math = Array.from(document.getElementsByClassName('math-inline'));
-  const code = Array.from(document.querySelectorAll(':not(pre) > code'));
-  math.concat(code).forEach((node) => {
+  math.forEach((node) => {
     if (!node.parentElement) return;
     if (getComputedStyle(node.parentElement).display === 'table-cell') {
       return;
