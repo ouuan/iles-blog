@@ -725,11 +725,10 @@ gcc 使用 _stack protector_ 来检测 stack corruption，以避免 corrupted st
 
 operand 的作用和上面整数转为浮点数的指令一样。
 
-<Card type="question" title="gcc 使用的浮点数精度转换指令">
-CS:APP 里提到 gcc 一般不使用这两条指令，而是会使用另外的指令，且没有明确的理由这样做 (p298)，但是我使用 gcc 12.2.0 编译出来的就是使用这两条指令 🤔。
-
-浅搜了一下，没找到相关的 gcc commits 或者讨论，也没试着对 gcc version bisect。
-
+<Card title="gcc 使用的浮点数精度转换指令">
+    在某些版本的 gcc 中，或针对某些处理器架构进行优化时，gcc
+    可能会使用另外的指令来进行浮点数精度转换。详见
+    [另一篇博客](/post/2022/10/gcc-use_vector_fp_converts)。
 </Card>
 
 ### 函数调用中的浮点数

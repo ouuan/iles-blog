@@ -1,0 +1,932 @@
+---
+title: 探究 gcc 浮点数精度转换所使用的指令 —— use_vector_fp_converts 优化
+date: 2022-10-18T15:10:48+08:00
+image: /images/2022/10/use_vector_fp_converts-test-results.png
+tags:
+    - gcc
+    - 性能优化
+    - 计算机系统
+    - 问题解决记录
+---
+
+在学习 [浮点数精度转换指令](/post/2022/09/csapp-3#浮点数精度转换) 时，CS:APP 里提到 gcc 并不使用 `vcvtss2sd`/`vcvtsd2ss`，而是使用 `vunpcklps` & `vcvtps2pd` / `vmovddup` & `vcvtpd2psx`，但是我使用 gcc 12.2.0 编译得到的结果就是 `vcvtss2sd`/`vcvtsd2ss`。对此，CS:APP 没有深究：
+
+> It is unclear why GCC generates this code. There is neither benefit nor need to have the value duplicated within the XMM register.
+
+但是 CS:APP 选择放弃反而会激发读者的斗志啊（
+
+虽然但是，我确实没想到这玩意会让我断断续续搞了三天，ddl 又要寄了 🌚
+
+<Excerpt />
+
+## 问题描述
+
+这一问题可以由下面的代码所展示：
+
+```c
+double f2d(float x)
+{
+    return x;
+}
+
+float d2f(double x)
+{
+    return x;
+}
+
+double fp2d(float *x)
+{
+    return *x;
+}
+
+float dp2f(double *x)
+{
+    return *x;
+}
+```
+
+它编译成汇编的结果有如下几种：
+
+<Card title="编译结果" fold>
+
+汇编中不重要的部分已省去。
+
+A:
+
+```nasm
+f2d:
+    cvtss2sd    %xmm0, %xmm0
+    ret
+d2f:
+    cvtsd2ss    %xmm0, %xmm0
+    ret
+fp2d:
+    pxor        %xmm0, %xmm0
+    cvtss2sd    (%rdi), %xmm0
+    ret
+dp2f:
+    pxor        %xmm0, %xmm0
+    cvtsd2ss    (%rdi), %xmm0
+    ret
+```
+
+B：
+
+```nasm
+f2d:
+    unpcklps    %xmm0, %xmm0
+    cvtps2pd    %xmm0, %xmm0
+    ret
+d2f:
+    unpcklpd    %xmm0, %xmm0
+    cvtpd2ps    %xmm0, %xmm0
+    ret
+fp2d:
+    movss       (%rdi), %xmm0
+    cvtps2pd    %xmm0, %xmm0
+    ret
+dp2f:
+    movq        (%rdi), %xmm0
+    cvtpd2ps    %xmm0, %xmm0
+    ret
+```
+
+A with AVX2：
+
+```nasm
+f2d:
+    vcvtss2sd   %xmm0, %xmm0, %xmm0
+    ret
+d2f:
+    vcvtsd2ss   %xmm0, %xmm0, %xmm0
+    ret
+fp2d:
+    vxorps      %xmm0, %xmm0, %xmm0
+    vcvtss2sd   (%rdi), %xmm0, %xmm0
+    ret
+dp2f:
+    vxorps      %xmm0, %xmm0, %xmm0
+    vcvtsd2ss   (%rdi), %xmm0, %xmm0
+    ret
+```
+
+B with AVX2：
+
+```nasm
+f2d:
+    vunpcklps   %xmm0, %xmm0, %xmm0
+    vcvtps2pd   %xmm0, %xmm0
+    ret
+d2f:
+    vmovddup    %xmm0, %xmm0
+    vcvtpd2psx  %xmm0, %xmm0
+    ret
+fp2d:
+    vmovss      (%rdi), %xmm0
+    vcvtps2pd   %xmm0, %xmm0
+    ret
+dp2f:
+    vmovq       (%rdi), %xmm0
+    vcvtpd2psx  %xmm0, %xmm0
+    ret
+```
+
+</Card>
+
+| 函数 |          A          |            B            |      A with AVX2       |        B with AVX2        |
+| :--: | :-----------------: | :---------------------: | :--------------------: | :-----------------------: |
+| f2d  |     `cvtss2sd`      | `unpcklps` & `cvtps2pd` |      `vcvtss2sd`       | `vunpcklps` & `vcvtps2pd` |
+| d2f  |     `cvtsd2ss`      | `unpcklpd` & `cvtpd2ps` |      `vcvtsd2ss`       | `vmovddup` & `vcvtpd2psx` |
+| fp2d | `pxor` & `cvtss2sd` |  `movss` & `cvtps2pd`   | `vxorps` & `vcvtss2sd` |  `vmovss` & `vcvtps2pd`   |
+| dp2f | `pxor` & `cvtsd2ss` |   `movq` & `cvtpd2ps`   | `vxorps` & `vcvtsd2ss` |  `vmovq` & `vcvtpd2psx`   |
+
+问题在于，gcc 为什么/在什么情况下会生成如 B 所示的指令。其中，使用两条理解起来都不太容易的指令（`unpcklps`、`cvtps2pd`）来代替指令集中自带的 `cvtss2sd`/`cvtsd2ss` 最令人费解。而 source 为指针的另外两个函数是受 [performance - Why don't GCC and Clang use cvtss2sd \[memory\]? - Stack Overflow](https://stackoverflow.com/questions/16597587/why-dont-gcc-and-clang-use-cvtss2sd-memory) 启发。
+
+我先尝试了各种关键词用搜索引擎进行搜索，均未找到答案。
+
+## gcc 版本的定位
+
+使用 [Compiler Explorer](https://gcc.godbolt.org/) 进行尝试，很快就能确认，是在 gcc 4.8.5 / 4.9.0 之间行为出现了变化。
+
+于是，我先看了 [gcc 4.9 changes](https://gcc.gnu.org/gcc-4.9/changes.html)，又在 commit log 里大力搜索“`cvtss2sd`”<wbr/>“`cvtsd2ss`”<wbr/>“`unpcklp`”<wbr/>“floating point”<wbr/>“convert”……都没找到相关内容。
+
+## 具体 commit 的定位：git bisect / 编译 gcc
+
+在各种搜索都失败后，我决定使用 `git bisect` 找到行为出现变化的 commit。
+
+要 bisect，就得编译 gcc 4.8.5 ~ 4.9.0，步骤大致如下：
+
+1.  将 gcc 代码 clone 下来: `git clone https://github.com/gcc-mirror/gcc --branch releases/gcc-4.9 --depth 50000`
+2.  创建 `build` 目录
+3.  在 `build` 目录下运行 `gcc` 仓库根目录的 `configure` 脚本
+4.  在 `build` 目录下运行 `make`
+
+其中，`configure` 的配置可以参考 [Installing GCC: Configuration - GNU Project](https://gcc.gnu.org/install/configure.html)，但我只是 bisect 一下，就没仔细研究。
+
+过程中走的弯路就不一一细说了，只说一下最终的解决方案中遇到的几个主要问题。
+
+最终的编译命令为:
+
+```sh
+CC=gcc-4.8
+CXX=g++-4.8
+make distclean
+../gcc/configure --enable-languages=c --disable-multilib --disable-libsanitizer
+make -j$(nproc)
+```
+
+### 语言标准问题
+
+因为编译的是多年前的 gcc 4.8~4.9，用现在的编译器会遇到一些语言标准不同的问题。修改编译选项大概能解决问题，但改起来麻烦，也不见得能解决所有问题，不如直接用旧版 gcc 来编译。
+
+~~但是现在目标就是编译旧版 gcc，你哪来的旧版 gcc 用来编译？~~
+
+用旧版 gcc 解决编译旧版 gcc 遇到的问题看起来很矛盾，但我们要解决的是编译两个版本之间的一堆 commit，而获得一个用来编译的旧版 gcc 只需要一个 gcc release 的可执行文件。这个用来编译的旧版 gcc 可以用各种方式下载一个，而我用的是 Arch Linux，就装了 [AUR 里的 gcc48](https://aur.archlinux.org/packages/gcc48)。
+
+获得了一个旧版 gcc 后，运行 `configure` 时修改环境变量 `CC` 和 `CXX` 即可使用。
+
+P.S. 我本来想用 AUR 的 PKGBUILD 来编译，但能编译 release 不代表能编译各个 commit，然后踩各种坑踩了半天..
+
+### struct ucontext
+
+还会遇到一个编译错误: `md-unwind-support.h:65:47: error: dereferencing pointer to incomplete type 'struct ucontext'`
+
+将相应代码中的 `ucontext` 修改为 `ucontext_t` 即可。
+
+reference: [How to compile gcc 6.4.0 with gcc 7.2 in Archlinux - Stack Overflow](https://stackoverflow.com/questions/46999900/how-to-compile-gcc-6-4-0-with-gcc-7-2-in-archlinux)
+
+### libsanitizer
+
+还会遇到一些编译错误，在搜索其中一个的解决方案时，我找到了 [一次令人吐血的 ubuntu 源码安装 gcc-5.4.0 经历\_亿零贰肆的博客-CSDN 博客\_ubuntu 安装 gcc5.4.0](https://blog.csdn.net/tuibianhuaisheng/article/details/115399019)。
+
+这篇博客也提到了上面说的 `struct ucontext` 的问题，而仔细一看就会发现，剩下其他问题全都是 `libsanitizer` 里的，而我研究这个问题不需要 `libsanitizer`，直接 `--disable-libsanitizer` 就能解决这一堆编译错误还能缩短编译用时。
+
+### make distclean
+
+修改各种选项或者更换 commit 后，如果直接 `make` 容易出问题，可以先 `make distclean` 来重置。
+
+### git bisect
+
+在处理完上面几个问题之后，编译就很顺利了。在我 8C16T 的 AMD Ryzen 7 4800H 上，编译一次大约需要 9min。
+
+需要注意的是，因为原问题可以看成是在更老的版本出现，即新版本 good 老版本 bad，但 `git bisect` 默认是老版本 good 新版本 bad，这里容易搞反，需要注意。（`git bisect` 可以把 good/bad 改成 old/new，但我懒得（研究怎么）改了。）
+
+bisect 找到的 commit 是 [915e8e6e](https://github.com/gcc-mirror/gcc/commit/915e8e6eec05fb595d445cb738e4875d607ce126)。
+
+从这个 commit 的内容可以得知，那些看起来有些奇怪的编译结果是一个叫做 `use_vector_fp_converts` 的优化的结果。这个 commit 使得这个优化只对 amdfam10 架构生效，在新版 gcc 中仍可使用 `-mtune=amdfam10` 选项观察到这一行为（也可以使用 `-mtune-ctrl=use_vector_fp_converts` 来启用这个优化）。代码中对这一优化给出的理由是“avoids partial write to the destination”，也就是说 `cvtss2sd`/`cvtsd2ss` 只修改目标寄存器的低位，可能导致效率低。
+
+## 优化最终被关闭的原因
+
+锁定了问题出现的 commit，接下来就是搜索这个 commit 修改的原因了。
+
+[在 `gcc-patches` 里搜索 `use_vector_fp_converts`](https://www.mail-archive.com/search?l=gcc-patches%40gcc.gnu.org&q=use_vector_fp_converts)，然后再顺着邮件内容找，就可以找到相关邮件：
+
+-   [\[Google\] X86_TUNE_USE_VECTOR_CONVERTS adjustment](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg59433.html)
+-   [\[PATCH\] disable use_vector_fp_converts for m_CORE_ALL](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg61372.html) ([157ca3e9](https://github.com/gcc-mirror/gcc/commit/157ca3e989605194001568cc1864603b32fbd025))
+-   [Revisit Core tunning flags](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg62058.html)
+-   [Re: \[PATCH i386\]: Enable push/pop in pro/epilogue for modern CPUs](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg46926.html)
+
+令我自闭的是..直接搜索 `cvtss2sd`/`cvtsd2ss` 就能搜到这些邮件 😵 为什么 bisect 出来才想着在邮件列表里搜呢...（低情商：wssb；高情商：还是 mailing list 使用经验不足 😢）
+
+总结一下这些邮件的内容，就是：
+
+1.  在一些 Intel CPU 上，某些 test case 上启用 `use_vector_fp_converts` 更快，另一些 test case 上不启用更快。
+2.  在启用 `use_vector_fp_converts` 更快的 test case 上，可以通过在 `cvtss2sd`/`cvtsd2ss` 之前将 XMM 寄存器清空（`pxor %xmm0, %xmm0`）以避免只更新低位带来的性能损失，从而达到和启用 `use_vector_fp_converts` 差不多的性能。所以 [157ca3e9](https://github.com/gcc-mirror/gcc/commit/157ca3e989605194001568cc1864603b32fbd025) 就对 `m_CORE_ALL` 关闭了这个优化并且在需要时先将 XMM 寄存器清空。
+3.  在 [Re: \[PATCH\] disable use_vector_fp_converts for m_CORE_ALL](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg62712.html) 中，Honza 表示可以先把上面那个 patch commit 了，他测试一下再决定是否对 `m_GENERIC` 也关闭这个优化，所以 157ca3e9（对 `m_CORE_ALL` 关闭优化并在需要时清空 XMM）和 915e8e6e（对 `m_GENERIC` 关闭优化）分成了两个 commit。
+
+## 优化最初被添加的原因
+
+继续追根溯源下去，通过 `git blame` 来找到一开始添加这个优化的原因。
+
+首先找到 [54723b46](https://github.com/gcc-mirror/gcc/commit/54723b46231868447f68ed5322d916bd05bffae3)，这个 commit 将 `TARGET_USE_VECTOR_FP_CONVERTS` 从 `TARGET_USE_VECTOR_CONVERTS` 中抽离出来成为单独的优化开关。
+
+然后找到 [4845dbb5](https://github.com/gcc-mirror/gcc/commit/4845dbb50ed31ad03c579364e4b70bbe90e7af99)，这个 commit 添加了 `X86_USE_VECTOR_CONVERTS`，即 `X86_TUNE_USE_VECTOR_FP_CONVERTS` 的前身。
+
+4845dbb5 的邮件是 [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html)，里面写的很简略，就是“Amdfam10 preffers doing packed conversions destinating SSE register rather than scalar”。
+
+只不过 [performance - Why don't GCC and Clang use cvtss2sd \[memory\]? - Stack Overflow](https://stackoverflow.com/questions/16597587/why-dont-gcc-and-clang-use-cvtss2sd-memory) 里还是有一些解释的，反正简单来说就是 partial regisiter update 会有性能损失。
+
+## 对 m_CORE_ALL、m_GENERIC 启用优化的原因
+
+可以发现，一开始有这个优化时，是只对 `m_AMDFAM10` 启用的，这和现在是一样的，为什么中间绕了一圈又回到最开始的选择呢？继续寻找对 `m_CORE_ALL` 和 `m_GENERIC` 启用这个优化的原因。
+
+首先找到 [3ad20bd4](https://github.com/gcc-mirror/gcc/commit/3ad20bd44836e57453b743466f1ca0d591bd10ac)，这个 commit 把相关代码挪了个位置。
+
+然后找到 [3a579e09](https://github.com/gcc-mirror/gcc/commit/3a579e0930abe3ed91977a71284021399339860c)，这个 commit 把 `m_CORE2I7` 改成了 `m_CORE_ALL`。
+
+然后找到 [3a4ffde6](https://github.com/gcc-mirror/gcc/commit/3a4ffde68cfc6fee3c20d282d6690f2569e2fffa)，这个 commit 修改了一堆处理器架构的 bitmask，然后..把 `m_AMDFAM10` 和 `m_CORE2I7` 换了个位置 🤔
+
+然后找到 [ab247762](https://github.com/gcc-mirror/gcc/commit/ab2477624b15b5d1fe43972f8f4d6082c6893624)，这个 commit 新增了 `m_CORE2I7` 架构并且为它启用了 `X86_TUNE_USE_VECTOR_FP_CONVERTS`。这个 patch 的邮件是 [0005-Switch-Core-2-to-new-tuning](https://gcc.gnu.org/pipermail/gcc-patches/2010-November/300958.html)，给出的原因是 Core 2/i7 比较适合使用 generic tuning，而此时 `X86_TUNE_USE_VECTOR_FP_CONVERTS` 是对 `m_GENERIC` 启用的，就也对 `m_CORE2I7` 启用了。
+
+这时再回头看上面找到的 [54723b46](https://github.com/gcc-mirror/gcc/commit/54723b46231868447f68ed5322d916bd05bffae3)，这个 commit 将 `TARGET_USE_VECTOR_CONVERTS || TARGET_GENERIC` 改成了 `TARGET_USE_VECTOR_FP_CONVERTS`，所以要 blame 这个 `|| TARGET_GENERIC`。
+
+最后找到是 [bf019a1f](https://github.com/gcc-mirror/gcc/commit/bf019a1f7f992a1feb985c4b656e527475e73a30) 添加了 `|| TARGET_GENERIC`。这个 patch 的邮件是 [PR target/33396](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225425.html)，时间上紧跟着最初的 4845dbb5，而 changelog 和邮件里只提到了添加 `TARGET_SSE_MATH` 而没有提到添加 `TARGET_GENERIC` 的原因，并且这封邮件还没人回复。
+
+至此，我已经不知道能如何继续探究下去了。我感觉可能是：
+
+1.  [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html) 中提到“We are now testing if the patch is good for generic”，可能他自己测试之后因为某些原因得到了这个优化 good for generic 的结论，就 commit 了，也没再解释；
+2.  或者是，[PR target/33396](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225425.html) 里提到了“failure with 32bit generic”，可能是测试的时候加上了 `TARGET_GENERIC`，后来忘记删掉了 🤔
+3.  或者是，有什么其他原因，但忘记写在 log / 邮件里了，或者写在某个隐秘的角落我没找到。
+
+反正不管是什么原因，bf019a1f 都是一个 commit 做了两件事，还只写了一件事的 changelog，导致这成了一个谜。
+
+## 与其他编译器的对比
+
+使用 [Compiler Explorer](https://gcc.godbolt.org/) 看一下其他编译器是怎么做的。
+
+clang: 无论是否 `-mtune=amdfam10` 都没有 `use_vector_fp_converts`。
+
+MSVC: 无论是否 `-mtune=amdfam10` 都是 source in register 则 `cvtss2sd`/`cvtsd2ss`，source in memory 则表现出 `use_vector_fp_converts` 的行为。
+
+但是我并不知道如何研究其他编译器为什么做出这样的选择 😢
+
+## 性能测试
+
+最后来实际测试一下这个优化的性能。
+
+测试使用的代码为 [\[PATCH\] disable use_vector_fp_converts for m_CORE_ALL](https://www.mail-archive.com/gcc-patches@gcc.gnu.org/msg61372.html) 中的 `1.c` 和 `2.c`，但原来的 `2.c` 用时太短，所以把循环范围改成了 `1ll << 32`：
+
+<Card fold title="测试用代码">
+
+`1.c`:
+
+```c
+float total = 0.2;
+int k = 5;
+
+int main()
+{
+    int i;
+
+    for (i = 0; i < 1000000000; i++)
+    {
+        total += (0.5 + k);
+    }
+
+    return total == 0.3;
+}
+```
+
+`2.c`:
+
+```c
+double b[1024];
+
+float a[1024];
+
+int main()
+{
+    for(long i = 0 ; i < (1ll << 32); i++)
+      a[i & 1023] = a[i & 1023] * (float)b[i & 1023];
+    return (int)a[512];
+}
+```
+
+</Card>
+
+测试使用的编译选项有：
+
+1.  `-O2 -mtune-ctrl=^use_vector_fp_converts`
+2.  `-O2 -mtune-ctrl=^use_vector_fp_converts -mavx2`
+3.  `-O2 -mtune-ctrl=use_vector_fp_converts`
+4.  `-O2 -mtune-ctrl=use_vector_fp_converts -mavx2`
+
+其中值得注意的是，使用 2 号编译选项编译 `2.c` 时会通过将 `vcvtsd2ss` 指令的第二个 operand 设为 `%xmm1` 来代替 `pxor %xmm0, %xmm0` 以达到清空 `%xmm0` 的效果。
+
+为了测试清空 XMM 寄存器的效果，在这 4 种编译选项之外，还对 `2.c` 增设了手动删掉用于清空 `%xmm0` 的指令的两份汇编代码。
+
+所以总共有 10 份汇编代码用于测试：
+
+-   1-1: `1.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts`
+-   1-2: `1.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts -mavx2`
+-   1-3: `1.c`，`-O2 -mtune-ctrl=use_vector_fp_converts`
+-   1-4: `1.c`，`-O2 -mtune-ctrl=use_vector_fp_converts -mavx2`
+-   2-1: `2.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts`
+-   2-2: `2.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts -mavx2`
+-   2-3: `2.c`，`-O2 -mtune-ctrl=use_vector_fp_converts`
+-   2-4: `2.c`，`-O2 -mtune-ctrl=use_vector_fp_converts -mavx2`
+-   2-5: `2.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts`，然后删掉 `pxor %xmm0, %xmm0`
+-   2-6: `2.c`，`-O2 -mtune-ctrl=^use_vector_fp_converts -mavx2`，然后将 `vcvtsd2ss` 的第二个 operand 改为 `%xmm0`。
+
+<Card fold title="测试用汇编代码">
+
+<Card fold title="1-1">
+    ```nasm .file "1.c" .text .section .text.startup,"ax",@progbits .p2align 4
+    .globl main .type main, @function main: .LFB0: .cfi_startproc pxor %xmm1,
+    %xmm1 movss total(%rip), %xmm0 movl $1000000000, %eax cvtsi2sdl k(%rip),
+    %xmm1 addsd .LC0(%rip), %xmm1 .p2align 4,,10 .p2align 3 .L2: cvtss2sd %xmm0,
+    %xmm0 addsd %xmm1, %xmm0 cvtsd2ss %xmm0, %xmm0 subl $1, %eax jne .L2 movss
+    %xmm0, total(%rip) xorl %edx, %edx cvtss2sd %xmm0, %xmm0 ucomisd .LC1(%rip),
+    %xmm0 setnp %dl cmove %edx, %eax ret .cfi_endproc .LFE0: .size main, .-main
+    .globl k .data .align 4 .type k, @object .size k, 4 k: .long 5 .globl total
+    .align 4 .type total, @object .size total, 4 total: .long 1045220557
+    .section .rodata.cst8,"aM",@progbits,8 .align 8 .LC0: .long 0 .long
+    1071644672 .align 8 .LC1: .long 858993459 .long 1070805811 .ident "GCC:
+    (GNU) 12.2.0" .section .note.GNU-stack,"",@progbits ```
+</Card>
+
+<Card fold title="1-2">
+
+```nasm
+	.file	"1.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	vxorps	%xmm1, %xmm1, %xmm1
+	vmovss	total(%rip), %xmm0
+	movl	$1000000000, %eax
+	vcvtsi2sdl	k(%rip), %xmm1, %xmm1
+	vaddsd	.LC0(%rip), %xmm1, %xmm1
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	vcvtss2sd	%xmm0, %xmm0, %xmm0
+	vaddsd	%xmm1, %xmm0, %xmm0
+	vcvtsd2ss	%xmm0, %xmm0, %xmm0
+	subl	$1, %eax
+	jne	.L2
+	vmovss	%xmm0, total(%rip)
+	xorl	%edx, %edx
+	vcvtss2sd	%xmm0, %xmm0, %xmm0
+	vucomisd	.LC1(%rip), %xmm0
+	setnp	%dl
+	cmove	%edx, %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	k
+	.data
+	.align 4
+	.type	k, @object
+	.size	k, 4
+k:
+	.long	5
+	.globl	total
+	.align 4
+	.type	total, @object
+	.size	total, 4
+total:
+	.long	1045220557
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC0:
+	.long	0
+	.long	1071644672
+	.align 8
+.LC1:
+	.long	858993459
+	.long	1070805811
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="1-3">
+
+```nasm
+	.file	"1.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pxor	%xmm1, %xmm1
+	movss	total(%rip), %xmm0
+	movl	$1000000000, %eax
+	cvtsi2sdl	k(%rip), %xmm1
+	addsd	.LC0(%rip), %xmm1
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	unpcklps	%xmm0, %xmm0
+	cvtps2pd	%xmm0, %xmm0
+	addsd	%xmm1, %xmm0
+	unpcklpd	%xmm0, %xmm0
+	cvtpd2ps	%xmm0, %xmm0
+	subl	$1, %eax
+	jne	.L2
+	movss	%xmm0, total(%rip)
+	unpcklps	%xmm0, %xmm0
+	xorl	%edx, %edx
+	cvtps2pd	%xmm0, %xmm0
+	ucomisd	.LC1(%rip), %xmm0
+	setnp	%dl
+	cmove	%edx, %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	k
+	.data
+	.align 4
+	.type	k, @object
+	.size	k, 4
+k:
+	.long	5
+	.globl	total
+	.align 4
+	.type	total, @object
+	.size	total, 4
+total:
+	.long	1045220557
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC0:
+	.long	0
+	.long	1071644672
+	.align 8
+.LC1:
+	.long	858993459
+	.long	1070805811
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="1-4">
+
+```nasm
+	.file	"1.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	vxorps	%xmm1, %xmm1, %xmm1
+	vmovss	total(%rip), %xmm0
+	movl	$1000000000, %eax
+	vcvtsi2sdl	k(%rip), %xmm1, %xmm1
+	vaddsd	.LC0(%rip), %xmm1, %xmm1
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	vunpcklps	%xmm0, %xmm0, %xmm0
+	vcvtps2pd	%xmm0, %xmm0
+	vaddsd	%xmm1, %xmm0, %xmm0
+	vmovddup	%xmm0, %xmm0
+	vcvtpd2psx	%xmm0, %xmm0
+	subl	$1, %eax
+	jne	.L2
+	vmovss	%xmm0, total(%rip)
+	vunpcklps	%xmm0, %xmm0, %xmm0
+	xorl	%edx, %edx
+	vcvtps2pd	%xmm0, %xmm0
+	vucomisd	.LC1(%rip), %xmm0
+	setnp	%dl
+	cmove	%edx, %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	k
+	.data
+	.align 4
+	.type	k, @object
+	.size	k, 4
+k:
+	.long	5
+	.globl	total
+	.align 4
+	.type	total, @object
+	.size	total, 4
+total:
+	.long	1045220557
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC0:
+	.long	0
+	.long	1071644672
+	.align 8
+.LC1:
+	.long	858993459
+	.long	1070805811
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-1">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	leaq	b(%rip), %rdi
+	movabsq	$4294967296, %rsi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	pxor	%xmm0, %xmm0
+	addq	$1, %rax
+	andl	$1023, %edx
+	cvtsd2ss	(%rdi,%rdx,8), %xmm0
+	mulss	(%rcx,%rdx,4), %xmm0
+	movss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	cvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-2">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	vxorps	%xmm1, %xmm1, %xmm1
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	movabsq	$4294967296, %rsi
+	leaq	b(%rip), %rdi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	addq	$1, %rax
+	andl	$1023, %edx
+	vcvtsd2ss	(%rdi,%rdx,8), %xmm1, %xmm0
+	vmulss	(%rcx,%rdx,4), %xmm0, %xmm0
+	vmovss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	vcvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-3">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	leaq	b(%rip), %rdi
+	movabsq	$4294967296, %rsi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	addq	$1, %rax
+	andl	$1023, %edx
+	movq	(%rdi,%rdx,8), %xmm0
+	cvtpd2ps	%xmm0, %xmm0
+	mulss	(%rcx,%rdx,4), %xmm0
+	movss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	cvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-4">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	leaq	b(%rip), %rdi
+	movabsq	$4294967296, %rsi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	addq	$1, %rax
+	andl	$1023, %edx
+	vmovq	(%rdi,%rdx,8), %xmm0
+	vcvtpd2psx	%xmm0, %xmm0
+	vmulss	(%rcx,%rdx,4), %xmm0, %xmm0
+	vmovss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	vcvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-5">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	leaq	b(%rip), %rdi
+	movabsq	$4294967296, %rsi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	addq	$1, %rax
+	andl	$1023, %edx
+	cvtsd2ss	(%rdi,%rdx,8), %xmm0
+	mulss	(%rcx,%rdx,4), %xmm0
+	movss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	cvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+<Card fold title="2-6">
+
+```nasm
+	.file	"2.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	xorl	%eax, %eax
+	leaq	a(%rip), %rcx
+	movabsq	$4294967296, %rsi
+	leaq	b(%rip), %rdi
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	movq	%rax, %rdx
+	addq	$1, %rax
+	andl	$1023, %edx
+	vcvtsd2ss	(%rdi,%rdx,8), %xmm0, %xmm0
+	vmulss	(%rcx,%rdx,4), %xmm0, %xmm0
+	vmovss	%xmm0, (%rcx,%rdx,4)
+	cmpq	%rsi, %rax
+	jne	.L2
+	vcvttss2sil	2048+a(%rip), %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	a
+	.bss
+	.align 32
+	.type	a, @object
+	.size	a, 4096
+a:
+	.zero	4096
+	.globl	b
+	.align 32
+	.type	b, @object
+	.size	b, 8192
+b:
+	.zero	8192
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+</Card>
+
+</Card>
+
+用于测试的机器有五台，CPU 型号分别为：
+
+-   A: AMD Ryzen 7 4800H with Radeon Graphics （笔记本）
+-   B: Intel(R) Xeon(R) CPU E5-2670 v2 @ 2.50GHz （Hostwinds）
+-   C: Intel(R) Xeon(R) CPU E5-4610 v2 @ 2.30GHz （THU 校内服务器）
+-   D: Intel(R) Xeon(R) Platinum 8255C CPU @ 2.50GHz （腾讯云）
+-   E: Intel(R) Xeon(R) Platinum 8269CY CPU @ 2.50GHz （阿里云）
+
+测试时，将程序运行 10 遍，记录其中第 3 短的用时。
+
+<Card fold title="ssh 远程测试脚本">
+
+```bash
+#!/bin/bash
+
+eval "$(ssh-agent)"
+ssh-add
+
+dir="$(ssh "$1" mktemp -d)"
+scp ./*-*.s "$1:$dir"
+
+ssh "$1" 'grep "model name" /proc/cpuinfo | head -n1'
+
+for i in 1-1 1-2 1-3 1-4 2-1 2-2 2-3 2-4 2-5 2-6; do
+    echo "$i"
+    ssh "$1" gcc "$dir/$i.s" -o "$dir/$i"
+    for _ in $(seq 1 10); do
+        ssh "$1" /usr/bin/time "$dir/$i"
+    done
+done
+
+ssh "$1" rm -r "$dir"
+
+ssh-agent -k
+```
+
+</Card>
+
+测试结果为：
+
+| 代码/用时(s) |  A   |  B   |   C   |  D   |  E   |
+| :----------: | :--: | :--: | :---: | :--: | :--: |
+|     1-1      | 2.10 | 3.15 | 3.96  | 4.62 | 4.41 |
+|     1-2      | 2.10 | 3.11 | 3.95  | 4.61 | 4.42 |
+|     1-3      | 3.50 | 3.82 | 4.52  | 5.30 | 5.04 |
+|     1-4      | 3.50 | 3.77 | 4.90  | 5.30 | 5.04 |
+|     2-1      | 1.62 | 6.47 | 7.22  | 3.59 | 3.43 |
+|     2-2      | 1.41 | 6.26 | 7.65  | 4.31 | 4.08 |
+|     2-3      | 1.61 | 4.66 | 5.31  | 3.24 | 3.11 |
+|     2-4      | 1.61 | 4.76 | 5.69  | 3.59 | 3.43 |
+|     2-5      | 1.40 | 9.06 | 10.41 | 7.12 | 6.77 |
+|     2-6      | 1.41 | 9.03 | 10.98 | 7.11 | 6.77 |
+
+这数据真的非常让人怀疑是不是测错了（
+
+只能说是大千世界无奇不有，性能优化实在是太玄学了（
+
+但测试似乎表明，source in register 时关闭 `use_vector_fp_converts`、source in memory 时开启 `use_vector_fp_converts`，也就是 MSVC 的选择，在总体上是比较优的。
