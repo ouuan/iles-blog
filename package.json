@@ -9,6 +9,7 @@
   "author": "Yufan You",
   "license": "AGPL-3.0-or-later",
   "private": true,
+  "type": "module",
   "scripts": {
     "lint": "eslint . --ext .ts,.vue,.js",
     "dev": "iles dev",
@@ -25,6 +26,7 @@
     "date-fns": "^2.29.3",
     "filesize": "^10.0.5",
     "fuse.js": "^6.6.2",
+    "hast-util-select": "^5.0.2",
     "html-escaper": "^3.0.3",
     "iles": "^0.8.6",
     "katex": "^0.16.2",
@@ -32,6 +34,7 @@
     "prism-themes": "^1.9.0",
     "simple-git": "^3.14.1",
     "ts-exhaustive-check": "^1.0.0",
+    "unified": "^10.1.2",
     "unocss": "^0.45.29",
     "vue": "^3.2.41"
   },
@@ -42,6 +45,7 @@
     "@islands/headings": "^0.8.1",
     "@islands/images": "^0.8.1",
     "@islands/prism": "^0.8.0",
+    "@types/hast": "^2.3.4",
     "@types/node": "18.8.0",
     "@typescript-eslint/eslint-plugin": "^5.40.0",
     "@typescript-eslint/parser": "^5.40.0",

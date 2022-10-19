@@ -12,6 +12,8 @@ import prism from '@islands/prism';
 import { simpleGit } from 'simple-git';
 import got from 'got';
 
+import breakLongCode from './src/unified/breakLongCode';
+
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
   turbo: false,
@@ -85,7 +87,7 @@ export default defineConfig({
       return `${prefix}${src}${suffix}`;
     },
     remarkPlugins: ['remark-gfm', 'remark-math'],
-    rehypePlugins: ['rehype-katex'],
+    rehypePlugins: [breakLongCode, 'rehype-katex'],
   },
   ssg: {
     manualChunks(id) {
