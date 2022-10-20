@@ -13,6 +13,7 @@ import { simpleGit } from 'simple-git';
 import got from 'got';
 
 import breakLongCode from './src/unified/breakLongCode';
+import wrapTableOverflowAuto from './src/unified/wrapTableOverflowAuto';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -87,7 +88,7 @@ export default defineConfig({
       return `${prefix}${src}${suffix}`;
     },
     remarkPlugins: ['remark-gfm', 'remark-math'],
-    rehypePlugins: [breakLongCode, 'rehype-katex'],
+    rehypePlugins: [breakLongCode, wrapTableOverflowAuto, 'rehype-katex'],
   },
   ssg: {
     manualChunks(id) {
