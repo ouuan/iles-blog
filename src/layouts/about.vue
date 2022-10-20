@@ -24,14 +24,17 @@
 </template>
 
 <script setup lang="ts">
+import site from '~/site';
+
 const page = usePage();
 
 useHead({
   meta: [
-    { property: 'og:type', content: 'article' },
-    { property: 'article:published_time', content: page.frontmatter.date.toISOString() },
-    { property: 'article:modified_time', content: page.frontmatter.lastUpdated.toISOString() },
-    { property: 'article:author', content: page.site.author },
+    { property: 'og:type', content: 'profile' },
+    { property: 'profile:first_name', content: site.firstName },
+    { property: 'profile:last_name', content: site.lastName },
+    { property: 'profile:username', content: site.author },
+    { property: 'profile:gender', content: site.gender },
   ],
   style: [{
     type: 'text/css',

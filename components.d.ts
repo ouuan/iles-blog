@@ -17,6 +17,7 @@ declare module '@vue/runtime-core' {
     FuseSearch: typeof import('./src/components/FuseSearch.vue')['default']
     GiscusComments: typeof import('./src/components/GiscusComments.vue')['default']
     GiscusCommentsInner: typeof import('./src/components/GiscusCommentsInner.vue')['default']
+    Head: typeof import('@vueuse/head')['Head']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
     Island: typeof import('./node_modules/.pnpm/iles@0.8.6_sass@1.55.0/node_modules/iles/dist/client/app/components/Island.vue')['default']
     Latin: typeof import('./src/components/Latin.vue')['default']

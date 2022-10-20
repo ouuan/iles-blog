@@ -8,4 +8,7 @@ export default {
   giscusRepoId: 'R_kgDOHrOQ9g',
   giscusCategoryId: 'DIC_kwDOHrOQ9s4CQSIu',
   branch: 'master',
+  firstName: 'Yufan',
+  lastName: 'You',
+  gender: 'male',
 } as const;
