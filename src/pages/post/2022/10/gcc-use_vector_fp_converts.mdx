@@ -351,18 +351,66 @@ int main()
 <Card fold title="测试用汇编代码">
 
 <Card fold title="1-1">
-    ```nasm .file "1.c" .text .section .text.startup,"ax",@progbits .p2align 4
-    .globl main .type main, @function main: .LFB0: .cfi_startproc pxor %xmm1,
-    %xmm1 movss total(%rip), %xmm0 movl $1000000000, %eax cvtsi2sdl k(%rip),
-    %xmm1 addsd .LC0(%rip), %xmm1 .p2align 4,,10 .p2align 3 .L2: cvtss2sd %xmm0,
-    %xmm0 addsd %xmm1, %xmm0 cvtsd2ss %xmm0, %xmm0 subl $1, %eax jne .L2 movss
-    %xmm0, total(%rip) xorl %edx, %edx cvtss2sd %xmm0, %xmm0 ucomisd .LC1(%rip),
-    %xmm0 setnp %dl cmove %edx, %eax ret .cfi_endproc .LFE0: .size main, .-main
-    .globl k .data .align 4 .type k, @object .size k, 4 k: .long 5 .globl total
-    .align 4 .type total, @object .size total, 4 total: .long 1045220557
-    .section .rodata.cst8,"aM",@progbits,8 .align 8 .LC0: .long 0 .long
-    1071644672 .align 8 .LC1: .long 858993459 .long 1070805811 .ident "GCC:
-    (GNU) 12.2.0" .section .note.GNU-stack,"",@progbits ```
+
+```nasm
+	.file	"1.c"
+	.text
+	.section	.text.startup,"ax",@progbits
+	.p2align 4
+	.globl	main
+	.type	main, @function
+main:
+.LFB0:
+	.cfi_startproc
+	pxor	%xmm1, %xmm1
+	movss	total(%rip), %xmm0
+	movl	$1000000000, %eax
+	cvtsi2sdl	k(%rip), %xmm1
+	addsd	.LC0(%rip), %xmm1
+	.p2align 4,,10
+	.p2align 3
+.L2:
+	cvtss2sd	%xmm0, %xmm0
+	addsd	%xmm1, %xmm0
+	cvtsd2ss	%xmm0, %xmm0
+	subl	$1, %eax
+	jne	.L2
+	movss	%xmm0, total(%rip)
+	xorl	%edx, %edx
+	cvtss2sd	%xmm0, %xmm0
+	ucomisd	.LC1(%rip), %xmm0
+	setnp	%dl
+	cmove	%edx, %eax
+	ret
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.globl	k
+	.data
+	.align 4
+	.type	k, @object
+	.size	k, 4
+k:
+	.long	5
+	.globl	total
+	.align 4
+	.type	total, @object
+	.size	total, 4
+total:
+	.long	1045220557
+	.section	.rodata.cst8,"aM",@progbits,8
+	.align 8
+.LC0:
+	.long	0
+	.long	1071644672
+	.align 8
+.LC1:
+	.long	858993459
+	.long	1070805811
+	.ident	"GCC: (GNU) 12.2.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
 </Card>
 
 <Card fold title="1-2">
