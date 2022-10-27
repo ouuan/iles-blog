@@ -19,7 +19,7 @@
     </div>
     <div v-if="!isPlain">
       <label class="ml-auto flex gap-1 items-center">
-        <span>显示全部</span>
+        <span>展开全部</span>
         <input
           v-model="showAll"
           type="checkbox"
