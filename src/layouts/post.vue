@@ -71,7 +71,7 @@ useHead({
   ],
   meta: [
     { property: 'og:type', content: 'article' },
-    { property: 'article:published_time', content: page.frontmatter.date.toISOString() },
+    { property: 'article:published_time', content: page.frontmatter.published.toISOString() },
     { property: 'article:modified_time', content: page.frontmatter.lastUpdated.toISOString() },
     { property: 'article:author', content: page.site.author },
   ],

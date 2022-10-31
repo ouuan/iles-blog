@@ -54,15 +54,15 @@ export default defineConfig({
 
     const log = await simpleGit().log({
       file: filename,
-      maxCount: 1,
       strictDate: true,
     });
-    const { latest } = log;
-    if (latest) {
-      frontmatter.lastUpdated ||= new Date(latest.date);
+    if (log.total) {
+      frontmatter.lastUpdated = new Date(log.all[0].date);
+      frontmatter.published = new Date(log.all[log.all.length - 1].date);
     } else {
-      const { mtime } = await stat(filename);
+      const { birthtime, mtime } = await stat(filename);
       frontmatter.lastUpdated = mtime;
+      frontmatter.published = birthtime;
     }
 
     const postHref = filename.match(/^src\/pages\/(post\/.*)\.mdx?$/)?.[1];
