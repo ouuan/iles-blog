@@ -417,7 +417,7 @@ condition code 是 status flags 的组合，常用的有：
 
 如果 `ret` 会作为某个分支的第一条指令（即 jump 指令的下一条指令或 jump target），一般会把 `ret` 换成 `rep; ret`，效果和 `ret` 一样，但可以避免错误的分支预测，从而优化性能。具体可以参考 [repz ret - repz ret](https://repzret.org/p/repzret/)。
 
-#### 指令编码
+#### jump 指令编码
 
 在进行汇编时，label 会被替换为 _jump 指令的**下一条**指令（其实就是 program counter 的值）到 jump target 的地址差_。而在链接时，虽然指令的地址变了，但指令之间相对的地址差不变，则 jump 指令不用改变。
 

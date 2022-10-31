@@ -1,0 +1,145 @@
+---
+title: CS:APP 第七章学习笔记
+date: 2022-10-17T10:56:55+08:00
+image: /images/2022/10/csapp-7.png
+tags:
+-   csapp
+-   计算机系统
+-   学习笔记
+-   WIP
+---
+
+[CS:APP](https://csapp.cs.cmu.edu/) 第七章“Linking”的学习笔记。
+
+这章的主要内容为程序的链接。学习链接有助于：理解链接报错，避免链接相关的 bug，理解变量（函数）的作用域，理解程序运行过程中与链接相关的步骤，了解如何使用共享库（动态链接库）。
+
+<Excerpt />
+
+## Compiler Drivers
+
+编译源文件其实分成若干步骤，compiler driver（如 gcc）会依次调用这些步骤，可以用 `gcc -v` 来查看这些步骤的详细信息。
+
+1.  `cpp`: 预处理，源代码 `.c` ->  intermediate file `.i`
+2.  `cc1`: `.i` -> 汇编代码 `.s`
+3.  `as`: `.s` -> relocatable object file `.o`
+4.  `ld`: 链接，多个 `.o` (或 library) -> executable object file
+
+P.S. 中间步骤的文件也可以作为参数传递给 `gcc`，例如 `gcc a.s -o a`。
+
+## Static Linking
+
+静态链接主要有两个任务：
+
+1.  *Symbol resolution*: relocatable object file 中有很多 symbol，包括函数、全局变量、静态变量等，linker 需要将每个 symbol reference 对应到一个 symbol definition。
+2.  *Relocation*: relocatable object file 中地址从 0 开始，linker 需要将每个 symbol definition 重新分配到正确的地址，并相应地修改每个 symbol reference。
+
+## Object Files
+
+object file 分为三种：
+
+1.  Relocatable object file
+2.  Executable object file
+3.  Shared object file: 一种特殊的 relocatable object file，可以在 load time 或 run time 进行动态链接
+
+object file 有不同的格式，Windows 使用 Portable Executable (PE) 格式，macOS 使用 Mach-O 格式，现代的 x86-64 Linux/Unix 系统使用 Executable and Linkable Format (ELF) 格式。本章会基于 ELF-64。
+
+## Relocatable Object Files
+
+ELF relocatable object file 通常包含以下 section：
+
+1.  `.text`: 程序的机器码
+2.  `.rodata`: 只读的数据
+3.  `.data`: 需要初始化的全局变量和静态变量
+4.  `.bss`: 未初始化或初始化为零的全局变量和静态变量，它们在运行时会以零为初值，从而在 object file 中不占据文件大小
+5.  `.symtab`: symbol table，存储 symbol（函数、全局变量）的信息，不需要 `-g` 编译选项，但不含局部变量的信息
+6.  `.rel.text`: 列出了 `.text` 中在链接时需要修改的地方，一般是调用外部函数或引用全局变量时需要修改，而 [调用本地函数不需要修改](/post/2022/09/csapp-3#jump-指令编码)
+7.  `.rel.data`: 列出了 `.data` 中在链接时需要修改的地方，一般是全局变量的值为其他全局变量或外部函数的地址时需要修改
+8.  `.debug`: 调试信息，包含局部变量的信息、typedef 信息、源代码等，需要 `-g` 编译选项才有
+9.  `.line`: 源代码与机器码行号间的对应关系，需要 `-g` 编译选项才有
+10. `.strtab`: 一堆字符，用于其它 section，可以指向其中一个位置来表示一个字符串（从这个位置起到 `\0` 为止）
+
+## Symbols and Symbol Tables
+
+对 linker 来说，symbol 有三种：
+
+1.  本地定义，可以被外部访问的: C 中非 `static` 的函数和全局变量
+2.  外部定义的，例如 C 中 `extern` 的全局变量
+3.  本地定义，外部不可访问的: C 中 `static` 的函数和变量
+
+一个 ELF64 symbol 包含如下信息（CS:APP Figure 7.4）：
+
+```c
+typedef struct
+{
+    int   name;      /* String table offset */
+    char  type:4,    /* Function or data (4 bits) */
+          binding:4; /* Local or global (4 bits) */
+    char  reserved;  /* Unused */
+    short section;   /* Section header index */
+    long  value;     /* Section offset or absolute address */
+    long  size;      /* Object size in bytes */
+} Elf64_Symbol;
+```
+
+`value` 在 relocatable object file 中是 symbol 的地址相对于 section 开头的 offset，在 executable object file 中是 symbol 的绝对地址。
+
+`section` 是 object file 的 section 之一（的 index），在 relocatable object file 中还可以是一个 pseudosection:
+
+-   ABS: 不应被 relocate 的 symbol
+-   UNDEF: 未定义（在其他 module 中定义）的 symbol
+-   COMMON: 多个 module 共用的 symbol（见 [Symbol Resolution](#symbol-resolution)），此时 `value` 的值给出 data alignment 的要求，`size` 给出的是 minimum size
+
+未初始化的静态变量以及初始化为零的全局或静态变量会放在 `.bss`。
+
+未初始化的全局变量，如果启用了 `-fcommon` 编译选项则会放在 COMMON，否则放在 `.bss`。在 gcc 9 及之前默认选项是 `-fcommon`，而自 gcc 10 起默认选项是 `-fno-common`。在 C++ 中 `-fcommon` 是无效的，未初始化的全局变量总是放在 `.bss`。
+
+可以使用 `readelf -s a.o` 来查看 `a.o` 的 `.symtab`。
+
+## Symbol Resolution
+
+Symbol resolution 即把每个 symbol reference 对应到一个 symbol definition。
+
+local symbol 的 resolution 是容易的，因为编译单个 module 时就保证了 local symbol 是唯一的。
+
+global symbol 可能遇到几种情况：
+
+-   只有一个 module 里定义了这个 global symbol，则使用这个 symbol
+-   没有任何 module 里定义了这个 global symbol，则报错 undefined reference
+-   在多个 module 里定义了这个 global symbol，则：
+    -   如果其中有多个 symbol 不在 COMMON 段，则报错 multiple definition
+    -   如果其中只有一个不在 COMMON 段，则使用这个 symbol
+    -   如果这些 symbol 都在 COMMON 段，则使用其中 `size` 最大的一个（如果 `size` 相同则使用哪个是没有区别的）；如果这些 symbol 有不一样的 `size`，linker 还会给出警告
+
+也就是说，若编译选项为 `-fcommon`，如果在多个 module 中定义了同一个全局变量且其中最多有一个初始化了，则可能导致意外的结果。可以理解为，multiple definition 在本质上是 multiple initialization。
+
+在 C++ 中，函数重载、类方法会通过 *mangling* 来使得函数的每种重载有独特的 symbol name。
+
+## Static Libraries
+
+Static library 其实就是一堆 object file 包装在一起，它的好处是：
+
+1.  不用每次重新编译（比起提供源码）
+2.  使得库和编译器解耦（比起将库函数内置到编译器中）
+3.  只需将用到的 object file 复制到最终的可执行文件中，避免空间浪费（比起提供单个 object file）
+4.  可以自动选择用到的 object file，在编译命令中只需指定少量库的名称（比起提供一堆 object file）
+
+可以使用类似 `ar rcs libabc.a a.o b.o c.o` 的命令来创建一个 static library。
+
+在编译时，有两种使用 static library 的方式：
+
+-   直接将 static library 的路径作为参数: `libabc.a`
+-   使用 `-lname` 来使用 `libname.a`，但需要使用 `-Ldir` 来将 `dir` 加入到 `-l` 的搜索路径之中: `-L. -labc`
+
+特别地，编译器会自动将 `libc.a` 提供给 linker，不需要手动指定。
+
+在链接时，linker 会依次处理每个参数：
+
+-   如果一个参数是 object file 就一定会使用
+-   如果是 static library，则会依次查看其中包含的每一个 object file，如果一个 object file 中定义了某个当前引用了但仍未定义的 symbol，则会使用这个 object file，而这样的过程会反复迭代进行直到没有新的 object file 被使用为止（例如 `main.c` 引用了 `b.o` 而没有引用 `a.o`，而 `b.o` 中引用了 `a.o`，且在 `libabc.a` 中 `a.o` 位于 `b.o` 之前，那么第一次迭代中只会使用 `b.o`，第二次迭代才会使用 `a.o`，而 `c.o` 不会被使用）
+
+这样的过程使得编译命令中参数的顺序以及 static library 中 object file 的顺序可能影响编译结果：
+
+-   一般来说需要将 library 放在编译命令的末尾，否则处理一个 library 时还没有引用其中的 symbol，就不会使用相应的 object file，最后就会报错 undefined reference
+-   如果多个 library 之间有依赖关系，需要将被其他 library 依赖的 library 放在靠后的位置
+-   如果多个 library 之间有循环依赖，可能需要在编译命令中多次指定同一个 library（或者也可以将这两个 library 合并成一个，这样的话通过多次迭代就可以解决循环依赖）
+-   library 的设计应当避免 multiple definition，但理论上存在不同的参数顺序或 static library 中 object file 的顺序导致 multiple definition 的可能
