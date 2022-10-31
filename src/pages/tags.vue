@@ -19,7 +19,7 @@ title: 标签列表
         :key="tag"
         :title="`标签: ${tag}  使用次数: ${tagCountMap.get(tag)}`"
         class="flex items-center"
-        :style="{ fontSize: `${Math.log(tagCountMap.get(tag) || 1) / 3 + 0.95}rem` }"
+        :style="{ fontSize: `${Math.log(tagCountMap.get(tag) || 1) / 4 + 0.95}rem` }"
       >
         <span class="i-mdi-tag-outline" />
         <a
