@@ -21,7 +21,7 @@ tags:
 ### 中文
 
 ```tex
-\documentclass[UTF8, 11pt, fontset=none]{ctexart}
+\documentclass[UTF8, 11pt, fontset=none]{ctexart}  % 需要禁用默认 fontset 才能自定义字体
 \setCJKmainfont{Source Han Serif SC}
 \usepackage[T1]{fontenc}
 ```
@@ -29,12 +29,12 @@ tags:
 ### 基本页面格式
 
 ```tex
-\ctexset{section/format=\Large\bfseries}
-\usepackage[a4paper, hmargin=1.5cm, vmargin=2cm]{geometry}
+\ctexset{section/format=\Large\bfseries}  % 参照讲义上的格式，标题左对齐
+\usepackage[a4paper, hmargin=1.5cm, vmargin=2cm]{geometry}  % 页面大小和边距
 \usepackage{enumitem}
-\setlist{topsep=0pt,itemsep=-4pt}
-\pagestyle{plain}
-\setlength{\parskip}{0.5em}
+\setlist{topsep=0pt,itemsep=-4pt}  % 列表间距
+\pagestyle{plain}                  % ctex 默认的页码在右上角，改成下方
+\setlength{\parskip}{0.5em}        % 段落间距
 ```
 
 ### PDF metadata
@@ -77,7 +77,7 @@ tags:
 ```tex
 \usepackage{graphicx}
 \usepackage{float}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks]{hyperref}  % 使用 hidelinks 选项来禁用链接的红框
 \usepackage{cleveref}
 \crefname{figure}{图}{图}
 \crefname{table}{表}{表}
