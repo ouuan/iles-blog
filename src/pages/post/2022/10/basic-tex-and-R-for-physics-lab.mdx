@@ -1,0 +1,288 @@
+---
+title: 普物实验 TeX & R 急救指北
+date: 2022-10-31T15:42:27+08:00
+tags:
+-   TeX
+-   R
+-   物理实验
+-   经验分享
+---
+
+这学期选了物理实验B。
+
+以前基本上只在 Markdown 里写 LaTeX，没怎么写过 `.tex`，R 则完全没有接触过。理论上我应该好好学一学再用，但实际上没时间好好学。总不能用 Word 写实验报告并且手算吧（
+
+这里总结一下我写实验报告用到的 TeX 和 R。
+
+<Excerpt />
+
+## TeX
+
+### 中文
+
+```tex
+\documentclass[UTF8, 11pt, fontset=none]{ctexart}
+\setCJKmainfont{Source Han Serif SC}
+\usepackage[T1]{fontenc}
+```
+
+### 基本页面格式
+
+```tex
+\ctexset{section/format=\Large\bfseries}
+\usepackage[a4paper, hmargin=1.5cm, vmargin=2cm]{geometry}
+\usepackage{enumitem}
+\setlist{topsep=0pt,itemsep=-4pt}
+\pagestyle{plain}
+\setlength{\parskip}{0.5em}
+```
+
+### PDF metadata
+
+```tex
+\usepackage[pdfusetitle]{hyperref}
+```
+
+### 标题
+
+```tex
+\title{实验名称\ 实验报告}
+\author{姓名}
+\makeatletter
+
+\begin{center}
+    \LARGE
+    \textbf{\@title}
+
+    \vspace{0.5cm}
+    \normalsize
+    实验者姓名: \@author\hspace{15pt}
+    学号: 2021000000\hspace{15pt}
+    实验日期: 2202年10月32日\hspace{15pt}
+    实验台号: 1\hspace{15pt}
+    \vspace{0.5cm}
+\end{center}
+```
+
+### 章节
+
+```tex
+\section{实验目的}
+
+\subsection{测一下这个东西}
+```
+
+### 图表
+
+```tex
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{cleveref}
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+```
+
+可以用 `\label` 和 `\cref` 来在正文中引用图表，这样就可以避免添加图表时重新标号。
+
+```tex
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{picture.png}
+    \caption{这是一幅图，老师说图的标题放下面}
+    \label{this-is-a-picture}
+\end{figure}
+
+如\cref{this-is-a-picture} 所示
+```
+
+```tex
+如\cref{this-is-a-table} 所示
+
+\begin{table}[H]
+    \centering
+    \caption{这是一张表，老师说表的标题放上面}
+    \vspace{1em}
+    \begin{tabular}{|c|c||c|c|}
+        \hline
+        序号 & 值 & 序号 & 值 \\
+        \hline
+        1  & 1.14 & 6  & 5.14 \\ \hline
+        2  & 1.93 & 7  & 5.95 \\ \hline
+        3  & 2.74 & 8  & 6.75 \\ \hline
+        4  & 3.55 & 9  & 7.53 \\ \hline
+        5  & 4.35 & 10 & 8.32 \\ \hline
+    \end{tabular}
+    \label{this-is-a-table}
+\end{table}
+```
+
+如果想把几张图/表放在单独一页，使得这一页没有其他文字，可以把 `[H]` 改成 `[p]`。
+
+### 单位、科学计数法、不确定度
+
+```tex
+\usepackage[separate-uncertainty=true]{siunitx}[=v2]
+```
+
+其中 `[=v2]` 用来修复使用 `T1` 编码时 `\micro` 的样式: [siunitx#619](https://github.com/josephwright/siunitx/issues/619)
+
+`siunitx` 这个包解决了若干问题：
+
+-   单位需要用正体，手写的话需要 `\mathrm`
+-   数字和单位之间最好有一些间距
+-   有的单位会让你纠结怎么写比较好，[例如摄氏度](https://tex.stackexchange.com/questions/258306/how-to-insert-degree-celsius-symbol-in-node-text-in-pgfplots-tikz)
+-   科学计数法写 `\times 10^` 比较麻烦
+-   比较长的数字不分段的话看不清
+-   不确定度和测量结果末位对齐
+-   这个包还可以将不确定度写成括号的形式，只不过实验报告的要求是 $\pm$ 的形式
+-   ~~只记得单位的字母，不记得单位的英文名~~
+
+例子：
+
+```
+$t = \SI{22.5}{\celsius}$
+
+$v = \SI{1.91981 \pm 0.114514 e3}{\kilo\metre / \hour}$
+```
+
+其中下面那个的渲染效果大概是（没研究这个包的源码，只是看样子大概复刻一下）：
+
+ $v = (1.919\,810 \pm 0.114\,514) \times 10^3 \, \mathrm{km/h}$
+
+`$v = (1.919\,810 \pm 0.114\,514) \times 10^3 \, \mathrm{km/h}$`
+
+### 模板
+
+<Card fold title="完整实验报告模板">
+
+```tex
+\documentclass[UTF8, 11pt, fontset=none]{ctexart}
+\setCJKmainfont{Source Han Serif SC}
+\usepackage[T1]{fontenc}
+
+\pagestyle{plain}
+\ctexset{section/format=\Large\bfseries}
+\usepackage[a4paper, hmargin=1.5cm, vmargin=1.9cm]{geometry}
+\setlength{\parskip}{0.5em}
+\usepackage{enumitem}
+\setlist{topsep=0pt,itemsep=-4pt}
+
+\usepackage[pdfusetitle, hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{cleveref}
+\crefname{figure}{图}{图}
+\crefname{table}{表}{表}
+\crefname{page}{页}{页}
+\crefname{section}{节}{节}
+
+\usepackage{amsmath}
+\usepackage[separate-uncertainty=true]{siunitx}[=v2]
+
+\begin{document}
+
+\title{XXX\ 实验报告}
+\author{姓名}
+\makeatletter
+
+\begin{center}
+    \LARGE
+    \textbf{\@title}
+
+    \vspace{0.5cm}
+    \normalsize
+    实验者姓名: \@author\hspace{15pt}
+    学号: 2021000000\hspace{15pt}
+    实验日期: 2022年XX月XX日\hspace{15pt}
+    实验台号: XX\hspace{15pt}
+    \vspace{0.5cm}
+\end{center}
+
+\section{实验目的}
+
+\begin{enumerate}
+    \item
+    \item
+    \item
+\end{enumerate}
+
+\section{实验仪器}
+
+\begin{itemize}
+    \item
+    \item
+\end{itemize}
+
+\newpage
+
+\section{数据处理及结果}
+
+% \begin{table}[H]
+%     \centering
+%     \caption{}
+%     \vspace{1em}
+%     \begin{tabular}{|c|c|c|}
+%     \end{tabular}
+%     \label{}
+% \end{table}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=\textwidth]{.png}
+%     \caption{}
+%     \label{}
+% \end{figure}
+
+\newpage
+
+\section{原始数据记录}
+
+\begin{center}
+\includegraphics[width=\textwidth]{data.jpg}
+\end{center}
+
+\end{document}
+```
+
+</Card>
+
+## R
+
+### Arch 装 R package
+
+[arch4edu](https://github.com/arch4edu/arch4edu) 有一些 R package，可以减少 AUR 的需求。
+
+### 读取数据
+
+```r
+data <- readr::read_csv(here::here("data.csv"))
+```
+
+### 平均数、标准偏差
+
+```r
+ybar <- mean(data$y)
+Sy <- sd(data$y)
+```
+
+### 线性回归
+
+```r
+model <- lm(log(y) ~ x, data)
+b <- coefficients(model)[2]   # 线性回归系数
+r <- cor(log(data$y), data$x) # 相关系数
+nu <- df.residual(model)      # 自由度 (n-2)
+```
+
+### t 因子
+
+```r
+t <- qt(p=0.025, df=nu, lower.tail=FALSE)
+```
+
+R 里面有好几个和 student 分布相关的函数，我猜可能有的东西可以直接用这些函数算出来，但我懒得研究了，反正能拿到 t 因子自己代公式就是了（
+
+### 画图
+
+画出来好像还挺容易的，但要画得好看还得学一学，所以咕了，暂时在用 Excel（
