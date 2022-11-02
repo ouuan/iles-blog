@@ -615,6 +615,12 @@ function_name:
 
 除了使用 `%rbp` 作为 frame pointer，为非确定大小的数组分配栈空间还涉及到 [data alignment](#data-alignment) 的问题，可以参考 CS:APP Practice Problem 3.49。
 
+### Stack Frame Alignment
+
+x86-64 中要求 stack frame 以 16 byte 对齐。具体来说，就是执行 `call` 之前 `%rsp` 的值必须是 16 的倍数，而在进入一个 procedure 时 `%rsp` 的值就模 16 余 8。
+
+为了满足这一对齐要求，有时会在 `call` 之前先 `subq $8, %rsp`，`call` 之后再 `addq $8, %rsp`。
+
 ## Array Allocation and Access
 
 简单来说，`Imm(rb, ri, s)` 的 operand 格式使得数组访问变得容易。
