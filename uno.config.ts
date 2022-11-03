@@ -13,7 +13,10 @@ export default defineConfig({
   rules: [
     [
       /^font-(serif|sans|mono|kai|latin)$/,
-      ([, type]) => ({ 'font-family': `var(--default-${type}-font)` }),
+      ([, type]) => ({
+        'font-family': `var(--default-${type}-font)`,
+        ...(type === 'kai' ? { 'font-size': '1.02em' } : {}),
+      }),
     ],
   ],
   theme: {
