@@ -53,6 +53,13 @@ export default defineConfig({
     frontmatter.tags = frontmatter.tags?.length
       ? Array.from(new Set(frontmatter.tags)).filter((tag) => tag) : null;
 
+    const { image } = frontmatter;
+    if (typeof image === 'string' && image && !image.includes('/')) {
+      frontmatter.image = filename
+        .replace('src/pages/post/', '/images/')
+        .replace(/[^/]+$/, image);
+    }
+
     const log = (await simpleGit().log({
       file: filename,
       strictDate: true,
