@@ -144,4 +144,8 @@
       @apply b-1 b-gray-1 dark:b-gray-13 my-0;
     }
   }
+
+  .inline-img img {
+    @apply inline my-0;
+  }
 }
