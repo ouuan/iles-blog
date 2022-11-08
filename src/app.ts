@@ -16,7 +16,7 @@ function pageType(href: string) {
 
 const fonts = [
   '/assets/fonts/noto-serif-sc/NotoSerifSC.31c223c6.css',
-  '/assets/fonts/lxgw-wenkai/LXGWWenKai.b86f3f29.css',
+  '/assets/fonts/lxgw-wenkai/LXGWWenKai.402b9b87.css',
   '/vendors/katex/katex.css',
 ];
 
