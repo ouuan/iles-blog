@@ -4,14 +4,18 @@
       class="mt-6 mb-3 text-8 text-center"
       itemprop="headline"
     >
-      <a
-        class="relative inline-block max-w-full post-title font-serif break-words"
-        :href="href"
+      <component
+        :is="titleLink ? 'a' : 'span'"
+        :class="[
+          'inline-block max-w-full font-serif break-words',
+          titleLink && 'relative post-title'
+        ]"
+        :href="titleLink ? href : undefined"
       >
         <slot name="title">
           {{ frontmatter.title }}
         </slot>
-      </a>
+      </component>
     </h1>
     <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 md:text-sm">
       <span
@@ -90,8 +94,10 @@ withDefaults(defineProps<{
   href: string;
   filename: string;
   tagMatched?: boolean;
+  titleLink?: boolean;
 }>(), {
   tagMatched: false,
+  titleLink: true,
 });
 </script>
 
