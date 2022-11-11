@@ -143,3 +143,60 @@ Static library 其实就是一堆 object file 包装在一起，它的好处是�
 -   如果多个 library 之间有依赖关系，需要将被其他 library 依赖的 library 放在靠后的位置
 -   如果多个 library 之间有循环依赖，可能需要在编译命令中多次指定同一个 library（或者也可以将这两个 library 合并成一个，这样的话通过多次迭代就可以解决循环依赖）
 -   library 的设计应当避免 multiple definition，但理论上存在不同的参数顺序或 static library 中 object file 的顺序导致 multiple definition 的可能
+
+## Relocation
+
+relocation 分为两步：
+
+1.  给 symbol definition 重新分配内存地址
+2.  相应地修改 symbol reference
+
+第一步是简单的，把各个 object file 中的各个 section 分别拼在一起即可。
+
+为了让 linker 知道如何修改 symbol reference，需要让 linker 知道：
+
+1.  需要被修改的 symbol reference 在哪
+2.  需要修改成什么
+
+在 relocatable object file 的 `.rel.text` 和 `.rel.data` 中存放了相关的信息，一条这样的信息称作一个 relocation entry，包含的内容为：
+
+-   `offset`: 这个 symbol reference 相对于其所在的 section 的偏移量。也就是说，在这个 reference 所在的 section 的地址的基础上加上 `offset` 就得到了这个 reference 的地址。
+-   `type`: 有很多种 relocation，CS:APP 中只介绍其中的 `R_X86_64_PC32` 和 `R_X86_64_32` 两种。
+-   `symbol`: 被 reference 的 symbol 在 symbol table 中的 index。
+-   `addend`: 计算 symbol 地址时加在最后的常数（见后文）。
+
+简单来说，`R_X86_64_32` 使用绝对地址进行定位，`R_X86_64_PC32` 使用相对于 PC 的地址进行定位，且这两种类型的 relocation 都只支持 32 位的地址（如果一个程序的大小超过 2GB，就需要指定编译选项 `-mcmodel=medium/large`）。
+
+-   `R_X86_64_32`: 修改后的 reference 为 symbol 的地址加上 `addend`
+-   `R_X86_64_PC32`: 修改后的 reference 为 symbol 的地址与 reference 的地址之差加上 `addend`；需要注意的是，是与 reference 的地址之差，而不是与执行到 reference 所在语句时的 PC 之差，所以通常会需要通过 `addend` 来修正
+
+可以使用 `objdump -dx` 以在反汇编结果中显示 relocation entry，或者使用 `readelf -r` 显示所有 relocation entry。
+
+例如，使用 GCC 8.5 编译
+
+```c
+int foo(int *arr);
+
+int a[3] = {1, 2, 3};
+int *b = &a[2];
+
+int bar()
+{
+    return foo(&a[1]);
+}
+```
+
+`readelf -r`:
+
+```
+Relocation section '.rela.text' at offset 0x250 contains 2 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000001  000a0000000a R_X86_64_32       0000000000000008 a + 4
+000000000006  000b00000002 R_X86_64_PC32     0000000000000000 foo - 4
+
+Relocation section '.rela.data' at offset 0x280 contains 1 entry:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000000000  000a00000001 R_X86_64_64       0000000000000008 a + 8
+```
+
+在 `.rela.text` 中，`a` 的 `addend` 是 `4`，是直接得到 `a[1]` 而非 `a[0]` 的地址；`foo` 的 `addend` 是 `-4`，是因为 reference 的地址是 reference 所在的 `jmp` 指令的下一条指令的地址减 4，导致 PC 的地址加上 `foo` 的地址减去 reference 的地址得到的是 `foo` 的地址加 4，需要 `addend` 来修正。
