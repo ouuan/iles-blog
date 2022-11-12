@@ -119,6 +119,26 @@ tags:
 
 如果想把几张图/表放在单独一页，使得这一页没有其他文字，可以把 `[H]` 改成 `[p]`。
 
+### 斜线表头
+
+```tex
+\usepackage{diagbox}
+
+\begin{tabular}{|c|}
+\diagbox{左下}{右上}
+\end{tabular}
+
+\begin{tabular}{|c|}
+\diagbox{左下}{中间}{右上}
+\end{tabular}
+```
+
+还可以设置其它样式，但应该用不上。
+
+### 多行/多列（合并单元格）
+
+可以参考 [Latex 表格技巧 - 合并单元格\_TheNetAdmin的博客](https://blog.csdn.net/wzxlovesy/article/details/69063271)。
+
 ### 单位、科学计数法、不确定度
 
 ```tex
@@ -172,6 +192,9 @@ $v = \SI{1.91981 \pm 0.114514 e3}{\kilo\metre / \hour}$
 
 \usepackage{amsmath}
 \usepackage[separate-uncertainty=true]{siunitx}[=v2]
+
+\usepackage{multirow}
+\usepackage{diagbox}
 
 \usepackage[pdfusetitle, hidelinks]{hyperref}
 \usepackage{graphicx}
@@ -285,6 +308,32 @@ t <- qt(p=0.025, df=nu, lower.tail=FALSE)
 
 R 里面有好几个和 student 分布相关的函数，我猜可能有的东西可以直接用这些函数算出来，但我懒得研究了，反正能拿到 t 因子自己代公式就是了（
 
+### 非线性函数的拟合
+
+```r
+model <- nls(
+    y ~ a * cos(2 * pi * (14.5 - x) / lambda),
+    data = data,
+    start = list(a = 200, lambda = 10)
+)
+co <- coef(model)
+a <- co["a"]
+lambda <- co["lambda"]
+```
+
+如果一个函数长得很奇怪，不能线性拟合，可以用 `nls` (Non-linear Least Squares) 来以减小残差平方和为目标进行拟合。
+
+`nls` 需要传入 `start` 参数作为拟合的起点，可以自己大致估计一下参数大概是多少，如果估计的偏差太大，可能导致最后拟合的结果出错。
+
 ### 画图
 
 画出来好像还挺容易的，但要画得好看还得学一学，所以咕了，暂时在用 Excel（
+
+但是画个丑陋的图可以用来检查函数拟合的情况：
+
+```r
+plot(data)
+curve(a * cos(2 * pi * (14.5 - x) / lambda), add = TRUE)
+```
+
+如果是在 non-interactive 模式下（例如使用 `R -f foo.R` 运行），生成的图像默认会放在 `Rplots.pdf` 中。
