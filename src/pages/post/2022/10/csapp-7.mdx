@@ -200,3 +200,23 @@ Relocation section '.rela.data' at offset 0x280 contains 1 entry:
 ```
 
 在 `.rela.text` 中，`a` 的 `addend` 是 `4`，是直接得到 `a[1]` 而非 `a[0]` 的地址；`foo` 的 `addend` 是 `-4`，是因为 reference 的地址是 reference 所在的 `jmp` 指令的下一条指令的地址减 4，导致 PC 的地址加上 `foo` 的地址减去 reference 的地址得到的是 `foo` 的地址加 4，需要 `addend` 来修正。
+
+## Executable Object Files
+
+可执行文件的内容大体上和 relocatable object file 类似，主要的区别是：
+
+-   在 ELF header 中指定了程序的 entry point
+-   有一个 `.init` section，定义了一个简单的函数，用来初始化程序
+-   有一个 program header table，描述了程序文件与内存的对应关系，即要把文件的哪一段映射到内存的哪一段，地址如何对齐，以及每一段的权限（`.init`、`.text`、`.rodata` 的权限为 `r-x`，`.data` 和 `.bss` 的权限为 `rw-`）
+-   `.symtab`、`.debug`、`.line`、`.strtab` 在执行时不会加载到内存中
+-   如果 fully linked，则没有 `.rel` section
+
+## Loading Executable Object Files
+
+在程序运行时，run-time memory image 大致如下图（CS:APP Figure 7.15）所示：
+
+![Linux x86-64 run-time memory image](csapp-fig7.15.png)
+
+因为地址对齐、address-space layout randomization 等原因，实际上的内存结构会与上图有一定的差异，但每一段的相对位置是和图中一致的。
+
+loader 加载可执行文件时，首先创建 memory image，然后根据 program header table 将可执行文件的内容复制到内存中，最后跳转到程序的 entry point。C 语言程序的 entry point 是 `_start` 函数（在 `crt1.o` 中定义）的地址，`_start` 又会调用 `__libc_start_main` 函数（在 `libc.so` 中定义），进行运行环境的初始化，然后调用 `main` 函数，最后对返回值进行处理。
