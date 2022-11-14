@@ -4,16 +4,23 @@ import { Plugin } from 'unified';
 import { Root } from 'hast';
 import { selectAll } from 'hast-util-select';
 
+function maxPartLength(parts: string[]) {
+  return parts.reduce((max, part) => Math.max(max, part.length), 0);
+}
+
 const breakLongCode: Plugin<[], Root> = () => (root) => {
   selectAll(':not(pre) > code', root).forEach((node) => {
     if (node.children.length !== 1) return;
     const child = node.children[0];
     if (child.type !== 'text') return;
-    if (child.value.split(/\s/).reduce((max, part) => Math.max(max, part.length), 0) <= 10) return;
-    const wordBreakSplitParts = child.value.split(/\b/);
-    if (wordBreakSplitParts.reduce((max, part) => Math.max(max, part.length), 0) <= 15) {
+    if (maxPartLength(child.value.split(/\s/)) <= 10) return;
+    let parts = child.value.split(/\b/);
+    if (maxPartLength(parts) > 12) {
+      parts = child.value.split(/\b|(?<=_)/);
+    }
+    if (maxPartLength(parts) <= 15) {
       node.children = [];
-      wordBreakSplitParts.forEach((part) => {
+      parts.forEach((part) => {
         node.children.push({
           type: 'text',
           value: part,
