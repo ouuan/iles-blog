@@ -48,8 +48,8 @@ Licensed under CC BY-SA 4.0`,
     link: new URL(post.href, url).href,
     description: h(post, { excerpt: true }),
     content: post,
-    date: post.frontmatter.date,
-  }));
+    date: post.frontmatter.published,
+  })).sort((lhs, rhs) => rhs.date.valueOf() - lhs.date.valueOf());
 
   return {
     options,
