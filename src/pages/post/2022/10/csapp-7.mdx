@@ -2,11 +2,11 @@
 title: CS:APP 第七章学习笔记
 date: 2022-10-17T10:56:55+08:00
 image: /images/2022/10/csapp-7.png
+copyrightNotice: 本文包含少量直接从 CS:APP 中复制的代码、图片，本文作者对其不拥有版权。
 tags:
 -   csapp
 -   计算机系统
 -   学习笔记
--   WIP
 ---
 
 [CS:APP](https://csapp.cs.cmu.edu/) 第七章“Linking”的学习笔记。
@@ -217,6 +217,119 @@ Relocation section '.rela.data' at offset 0x280 contains 1 entry:
 
 ![Linux x86-64 run-time memory image](csapp-fig7.15.png)
 
+（[errata](https://csapp.cs.cmu.edu/3e/errata.html) 中指出，栈的起始地址并不是 $2^{48}-1$。）
+
 因为地址对齐、address-space layout randomization 等原因，实际上的内存结构会与上图有一定的差异，但每一段的相对位置是和图中一致的。
 
-loader 加载可执行文件时，首先创建 memory image，然后根据 program header table 将可执行文件的内容复制到内存中，最后跳转到程序的 entry point。C 语言程序的 entry point 是 `_start` 函数（在 `crt1.o` 中定义）的地址，`_start` 又会调用 `__libc_start_main` 函数（在 `libc.so` 中定义），进行运行环境的初始化，然后调用 `main` 函数，最后对返回值进行处理。
+loader 加载可执行文件时，首先创建 memory image，然后根据 program header table 将可执行文件的内容映射到内存中，最后跳转到程序的 entry point。C 语言程序的 entry point 是 `_start` 函数（在 `crt1.o` 中定义）的地址，`_start` 又会调用 `__libc_start_main` 函数（在 `libc.so` 中定义），进行运行环境的初始化，然后调用 `main` 函数，最后对返回值进行处理。
+
+## Dynamic Linking with Shared Libraries
+
+静态库有一些问题：
+
+1.  更新静态库需要重新链接
+2.  每个程序都有一份库的拷贝，会造成空间的浪费
+
+共享库 (shared library) 可以解决这些问题。共享库可以在 run time 或者 load time 被动态链接。动态链接由 dynamic linker 完成。共享库也被称作 shared object，在 Linux 中后缀名为 `.so`，在 Windows 中被叫做 DLL。
+
+共享库在两个层面上被共享：
+
+1.  在文件系统上只有一份 `.so` 文件，而在可执行文件中没有库的拷贝
+2.  在内存中共享库的 `.text` section 的单份拷贝可以被多个进程同时使用
+
+可以用类似于 `gcc -shared -fpic a.c b.c c.c -o libabc.so` 的命令构建共享库。编译选项中 `-shared` 告诉编译器要生成 shared object，`-fpic` 用来生成 [position-independent code](#position-independent-code-pic)。
+
+可以用类似 `gcc main.c ./libabc.so -o main` 的命令来使用共享库。
+
+运行 `main` 时，loader 会在进入 entry point 前在 `.interp` section 中发现 dynamic linker `ld-linux.so`，于是让 dynamic linker 完成共享库的 relocation 并修改程序中的 symbol reference，最后将控制权交还给程序。
+
+## Loading and Linking Shared Libraries from Applications
+
+除了在编译时指定要链接到的共享库并在 load time 链接，也可以在 run time 加载并使用共享库。
+
+C 语言中的相关函数放在 `dlfcn.h` 头文件中，编译时需要 `-ldl` 来使用这些函数：
+
+-   `void *dlopen(const char *filename, int flag)`: 加载共享库
+
+    -   返回值: 成功加载则返回 handle，否则返回 `NULL`
+
+    -   `filename`: 共享库文件名
+
+    -   `flag`: 影响如何处理共享库中引用的 external symbol，必须包含 `RTLD_NOW` 和 `RTLD_LAZY` 两者之一
+
+        -   `RTLD_NOW`: 立即 resolve 所有 external symbol
+        -   `RTLD_LAZY`: 等到运行共享库中的代码时再 resolve external symbol
+        -   `RTLD_GLOBAL`: 之后给其他共享库 resolve external symbol 时可以使用当前这个共享库
+
+        如果编译程序时使用了 `-rdynamic` 选项，在 resolve external symbol 时，除了使用其他加载时启用了 `RTLD_GLOBAL` 选项的共享库，也可以使用程序自身的 global symbol。
+
+-   `void *dlsym(void *handle, char *symbol)`: 获得共享库中某个 symbol 的地址
+
+    -   `symbol`: symbol 名称
+
+    -   返回值: 成功获取则返回 symbol 地址，否则返回 `NULL`
+
+-   `int dlclose(void *handle)`: 关闭共享库
+
+    -   返回值: 成功关闭则返回 `0`，出错则返回 `-1`
+
+-   `const char *dlerror(void)`: 获取最后一次调用 `dlopen` / `dlsym` / `dlclose` 的报错信息，如果最后一次调用没有出错则返回 `NULL`
+
+CS:APP Figure 7.17 给出了一份参考代码：
+
+![运行时链接共享库的示例代码](csapp-fig7.17.png)
+
+## Position-Independent Code (PIC)
+
+共享库的一条重要性质是它的代码段在内存中只有一份，而可以被多个进程共享，这就使得它的代码中的 symbol reference 不能在动态链接时被修改，适用于静态链接的 relocation 无法完成，所以共享库的代码需要是 position-independent 的。
+
+PIC 的主要思路基于以下两点：
+
+1.  虽然共享库的代码段是共享的，但数据段是每个进程各有一份的
+2.  无论整个共享库被放到内存的哪个位置，代码段和数据段地址的距离是固定的（这与上一条不矛盾，应该是因为虚存）
+
+因此，可以在数据段中存放效果相当于 relocation 的信息，来间接达到 relocation 的效果。说白了就是，因为没法修改代码段，所以把 symbol 的地址放到数据段里。具体实现中，数据段的开头有一个 *global offset table* (GOT)，表中每一项都是一个地址，可以由 dynamic linker 进行修改，而由于代码段和数据段的地址距离固定，就可以用 PC-relative 的方式寻址到表中的项。
+
+PIC data reference 是简单的，只要在 GOT 中为每个 data symbol (全局或 static 变量) 创建一个表项，在动态链接时由 dynamic linker 修改这些项，而在代码中通过这个表项来间接地进行 data reference，例如 (CS:APP Figure 7.18，`GOT[3]` 中存放了全局变量 `x` 的地址)：
+
+```nasm
+    movq Ox2OO8b9(%rip), %rax   # %rax = *GOT[3] = &x
+    addl $0x1, (%rax)           # ++x
+```
+
+如果是本地定义的变量，也可以使用 PC-relative 的定位方式直接引用，而只对外部定义的变量使用 GOT，但编译器也可能选择不做这样的区分而是使用统一的方法来处理。
+
+PIC procedure call 也可以和 data reference 一样处理（可以用 `-fno-plt` 编译选项来这样做），但实际上会使用名为 *lazy binding* 的技术进行优化。
+
+这是因为，链接到一个共享库时，往往最终会调用的只是它提供的大量函数中的一小部分，如果对整个共享库用到的外部函数都在动态链接时计算出相应的 offset，就可能造成浪费。而 lazy loading 则是在第一次调用某个外部函数时绑定这个函数的地址。
+
+lazy binding 基于一个名为 *procedure linkage table* (PLT) 的结构。PLT 位于代码段中，表中的每一项其实是三条指令，如 CS:APP Figure 7.19 所示：
+
+![PLT 原理示意图](csapp-fig7.19.png)
+
+整个流程就是：
+
+1.  调用 `addvec` 时，实际上调用的是 `PLT[2]` 的地址
+2.  `PLT[2]` 的第一条指令会跳转到 `GOT[4]`，`GOT[4]` 里一开始放的是 `PLT[2]` 的第二条指令，所以首次调用 `PLT[2]` 时就从第一条指令跳到第二条指令
+3.  第二条指令是往栈里压入 `addvec` 的 ID，是用来告诉 dynamic linker 这是哪个函数
+4.  第三条指令会跳转到 `PLT[0]` 
+5.  `PLT[0]` 的第一条指令是往栈里压入 relocation entries 的地址，第二条指令是跳转到 dynamic linker
+6.  dynamic linker 通过放在栈中的函数的 ID 以及 relocation entries 计算出 `addvec` 的地址，放在 `GOT[4]`，然后跳转到 `addvec`
+7.  因为一路上都是 `jmp`，跳转到 `addvec` 后可以正常返回到调用 `PLT[2]` 的位置
+8.  第二次调用 `PLT[2]` 时，`GOT[4]` 里已经是 `addvec` 的地址，所以就在 `PLT[2]` 的第一条指令处跳转到了 `addvec`
+
+## Library Interpositioning
+
+Linux 的链接器支持一个名为 *library interpositioning* 的技术，可以用来把共享库的函数替换掉，一般会换成一个 wrapper function 用来 trace，但也可以换成完全不同的东西。
+
+看了下中文版 CS:APP，这个东西竟然叫“库打桩”（
+
+编译时的 library interpositioning 就是用 `#define` 换掉某个函数 ~~，在机房里被 `#define sort random_shuffle` 过的大家想必对此非常熟悉~~。
+
+链接时的 library interpositioning 是给 linker 传参 `--wrap foo`，然后调用 `foo` 就会实际上调用 `__wrap_foo`，而调用 `__real_foo` 则会调用原本的 `foo`。一般会给 `gcc` 而非 `ld` 传参，就是用 `gcc -Wl,--wrap,foo` 代替 `ld --wrap foo`，其中 `-Wl` 表示给 linker 传参，后面的逗号会被换成空格。
+
+运行时的 library interpositioning 是在运行程序时设置环境变量 `LD_PRELOAD="/path/to/wrapper.so /path/to/anotherwrapper.so"`，然后在使用任意共享库中的函数之前就会优先尝试使用 `wrapper.so` 和 `anotherwrapper.so`。这时，为了能在 wrapper function 中调用原本的函数，就需要 [在运行时加载共享库](#loading-and-linking-shared-libraries-from-applications)。
+
+如果想看具体实现，可以参考 CS:APP。
+
+编译时的 library interpositioning 需要修改源代码，链接时的 library interpositioning 需要获取到 object file 并重新链接得到可执行文件，而运行时 library interpositioning 只需要设置环境变量，不需要对可执行文件进行任何修改，可以方便地对很多不同程序的某个函数调用进行跟踪。
