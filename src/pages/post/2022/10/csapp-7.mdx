@@ -261,7 +261,7 @@ C 语言中的相关函数放在 `dlfcn.h` 头文件中，编译时需要 `-ldl`
         -   `RTLD_LAZY`: 等到运行共享库中的代码时再 resolve external symbol
         -   `RTLD_GLOBAL`: 之后给其他共享库 resolve external symbol 时可以使用当前这个共享库
 
-        如果编译程序时使用了 `-rdynamic` 选项，在 resolve external symbol 时，除了使用其他加载时启用了 `RTLD_GLOBAL` 选项的共享库，也可以使用程序自身的 global symbol。
+        如果编译程序时启用了 `-rdynamic` 选项，在 resolve external symbol 时，除了使用其他加载时启用了 `RTLD_GLOBAL` 选项的共享库，也可以使用程序自身的 global symbol。
 
 -   `void *dlsym(void *handle, char *symbol)`: 获得共享库中某个 symbol 的地址
 
@@ -301,7 +301,7 @@ PIC data reference 是简单的，只要在 GOT 中为每个 data symbol (全局
 
 PIC procedure call 也可以和 data reference 一样处理（可以用 `-fno-plt` 编译选项来这样做），但实际上会使用名为 *lazy binding* 的技术进行优化。
 
-这是因为，链接到一个共享库时，往往最终会调用的只是它提供的大量函数中的一小部分，如果对整个共享库用到的外部函数都在动态链接时计算出相应的 offset，就可能造成浪费。而 lazy loading 则是在第一次调用某个外部函数时绑定这个函数的地址。
+这是因为，链接到一个共享库时，往往最终会调用的只是它提供的大量函数中的一小部分，如果对整个共享库用到的外部函数都在动态链接时计算出相应的 offset，就可能造成浪费。而 lazy binding 则是在第一次调用某个外部函数时绑定这个函数的地址。
 
 lazy binding 基于一个名为 *procedure linkage table* (PLT) 的结构。PLT 位于代码段中，表中的每一项其实是三条指令，如 CS:APP Figure 7.19 所示：
 
