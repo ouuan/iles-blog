@@ -27,7 +27,7 @@
         />
         <post-microdata :post="post" />
         <time
-          class="text-footer"
+          class="text-footer shrink-0"
           :datetime="formatISO(post.frontmatter[displayTime])"
           :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
             format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss O')
@@ -44,6 +44,7 @@
         </span>
         <span
           v-if="displayVisitor"
+          class="shrink-0"
           :title="`访问量: ${post.frontmatter.visitor}`"
         >
           ({{ post.frontmatter.visitor }})
