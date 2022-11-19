@@ -38,7 +38,7 @@
         </time>
         <span
           itemprop="headline"
-          class="font-serif text-lg inline-block pl-2"
+          class="font-serif text-lg inline-block pl-2 break-anywhere"
         >
           {{ post.frontmatter.title }}
         </span>

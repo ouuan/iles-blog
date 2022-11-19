@@ -18,6 +18,7 @@ export default defineConfig({
         ...(type === 'kai' ? { 'font-size': '1.02em' } : {}),
       }),
     ],
+    ['break-anywhere', { 'overflow-wrap': 'anywhere' }],
   ],
   theme: {
     breakpoints: {

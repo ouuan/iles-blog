@@ -7,7 +7,7 @@
       <component
         :is="titleLink ? 'a' : 'span'"
         :class="[
-          'inline-block max-w-full font-serif break-words',
+          'inline-block font-serif break-anywhere',
           titleLink && 'relative post-title'
         ]"
         :href="titleLink ? href : undefined"
