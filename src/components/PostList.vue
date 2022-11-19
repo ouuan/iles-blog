@@ -27,14 +27,22 @@
         />
         <post-microdata :post="post" />
         <time
-          class="text-footer shrink-0"
+          :class="[
+            'text-footer shrink-0',
+            displayVisitor && 'hidden sm:inline-block'
+          ]"
           :datetime="formatISO(post.frontmatter[displayTime])"
           :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
             format(post.frontmatter[displayTime], 'yyyy-MM-dd HH:mm:ss O')
           }`"
           :itemprop="displayTime === 'date' ? 'dateCreated' : 'dateModified'"
         >
-          {{ format(post.frontmatter[displayTime], 'yyyy-MM-dd') }}
+          <span class="hidden xs:inline">
+            {{ format(post.frontmatter[displayTime], 'yyyy-') }}
+          </span>
+          <span>
+            {{ format(post.frontmatter[displayTime], 'MM-dd') }}
+          </span>
         </time>
         <span
           itemprop="headline"
