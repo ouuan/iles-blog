@@ -42,12 +42,14 @@
         >
           {{ post.frontmatter.title }}
         </span>
+        <span class="flex-1" />
         <span
           v-if="displayVisitor"
-          class="shrink-0"
+          class="flex items-center"
           :title="`访问量: ${post.frontmatter.visitor}`"
         >
-          ({{ post.frontmatter.visitor }})
+          <span class="i-mdi-eye-outline mr-1" />
+          <span>{{ post.frontmatter.visitor }}</span>
         </span>
       </a>
     </li>
