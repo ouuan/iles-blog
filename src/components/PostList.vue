@@ -15,7 +15,7 @@
       :key="post.meta.href"
     >
       <a
-        class="flex items-center gap-1 relative pl-4 group
+        class="flex items-center gap-3 relative pl-4 group
                b-b-2 b-area hover:b-footer transition-colors ease-out b-dotted"
         :href="post.meta.href"
         itemscope
@@ -46,14 +46,13 @@
         </time>
         <span
           itemprop="headline"
-          class="font-serif text-lg inline-block pl-2 break-anywhere"
+          class="font-serif text-lg inline-block break-anywhere"
         >
           {{ post.frontmatter.title }}
         </span>
-        <span class="flex-1" />
         <span
           v-if="displayVisitor"
-          class="flex items-center"
+          class="ml-auto flex items-center"
           :title="`访问量: ${post.frontmatter.visitor}`"
         >
           <span class="i-mdi-eye-outline mr-1" />
