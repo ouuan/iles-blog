@@ -28,7 +28,7 @@
         <post-microdata :post="post" />
         <time
           :class="[
-            'text-footer shrink-0',
+            'text-footer shrink-0 tabular-nums',
             displayVisitor && 'hidden sm:inline-block'
           ]"
           :datetime="formatISO(post.frontmatter[displayTime])"
