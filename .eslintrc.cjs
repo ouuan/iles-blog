@@ -27,7 +27,7 @@ module.exports = {
       'error',
       {
         devDependencies: [
-          './*.ts',
+          './**/*.config.ts',
         ],
       },
     ],

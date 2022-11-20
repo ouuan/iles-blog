@@ -1,5 +1,8 @@
 module.exports = {
   upgrade: true,
   peer: true,
-  reject: ['got'],
+  reject: [
+    'got',
+    'tsup', // imcompatible with Vite
+  ],
 };
