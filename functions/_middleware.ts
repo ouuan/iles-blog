@@ -37,7 +37,14 @@ const trackFeeds: PagesFunction = async (context) => {
   }
 
   const response = await context.next();
-  await Promise.all(sendRequest);
+
+  try {
+    await Promise.all(sendRequest);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+
   return response;
 };
 
