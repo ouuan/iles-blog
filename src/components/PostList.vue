@@ -9,14 +9,14 @@
     </h1>
     <span class="mr-2">共 {{ postCount }} 篇文章</span>
   </div>
-  <ol class="my-6 flex flex-col gap-6 b-l-4 b-area">
+  <ol class="my-6 flex flex-col gap-4 b-l-4 b-area">
     <li
       v-for="post of posts"
       :key="post.meta.href"
     >
       <a
         class="flex items-center gap-3 relative pl-4 group
-               b-b-2 b-area hover:b-footer transition-colors ease-out b-dotted"
+               py-1 b-b-2 b-area hover:b-footer transition-colors ease-out b-dotted"
         :href="post.meta.href"
         itemscope
         itemtype="https://schema.org/BlogPosting"
