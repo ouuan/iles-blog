@@ -14,19 +14,15 @@ async function sha1(message: string) {
   return hashHex;
 }
 
-const trackFeeds: PagesFunction = async (context) => {
-  const { request } = context;
+async function trackFeeds(request: Request) {
+  const referer = request.headers.get('Referer');
+  const ua = request.headers.get('User-Agent') || 'Unknown UA';
+  const ip = request.headers.get('CF-Connecting-IP') || 'Unknown IP';
+  const hash = await sha1(`${ua}-${ip}`);
 
-  const sendRequest = [];
-
-  if (/\/(feed|commits)\.(xml|atom|json)\/*$/.test(new URL(request.url).pathname)) {
-    const referer = request.headers.get('Referer');
-    const ua = request.headers.get('User-Agent') || 'Unknown UA';
-    const ip = request.headers.get('CF-Connecting-IP') || 'Unknown IP';
-    const hash = await sha1(`${ua}-${ip}`);
-
-    async function trackEvent(name: string, props?: object) {
-      return fetch(`${plausibleUrl}/api/event`, {
+  async function trackEvent(name: string, props?: object) {
+    try {
+      const res = await fetch(`${plausibleUrl}/api/event`, {
         method: 'POST',
         headers: {
           // Plausible requires a normal UA
@@ -41,22 +37,26 @@ const trackFeeds: PagesFunction = async (context) => {
           ...(props && { props: JSON.stringify(props) }),
         }),
       });
+      if (!res.ok) {
+        // eslint-disable-next-line no-console
+        console.log(`${res.status}: ${await res.text()}`);
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
     }
-
-    sendRequest.push(trackEvent('pageview'));
-    sendRequest.push(trackEvent('Feed', { bot: isbot.find(ua) || 'Not A Bot' }));
   }
 
-  const response = await context.next();
+  await trackEvent('pageview');
+  await trackEvent('Feed', { bot: isbot.find(ua) || 'Not A Bot' });
+}
 
-  try {
-    await Promise.all(sendRequest);
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+export const onRequestGet: PagesFunction = (context) => {
+  const { request } = context;
+
+  if (/\/(feed|commits)\.(xml|atom|json)\/*$/.test(new URL(request.url).pathname)) {
+    context.waitUntil(trackFeeds(request));
   }
 
-  return response;
+  return context.next();
 };
-
-export const onRequestGet = [trackFeeds];
