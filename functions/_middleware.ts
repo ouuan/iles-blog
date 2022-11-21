@@ -19,6 +19,7 @@ async function trackFeeds(request: Request) {
   const ua = request.headers.get('User-Agent') || 'Unknown UA';
   const ip = request.headers.get('CF-Connecting-IP') || 'Unknown IP';
   const hash = await sha1(`${ua}-${ip}`);
+  const bot = isbot.find(ua);
 
   async function trackEvent(name: string, props?: object) {
     try {
@@ -26,7 +27,7 @@ async function trackFeeds(request: Request) {
         method: 'POST',
         headers: {
           // Plausible requires a normal UA
-          'User-Agent': `${isbot(ua) ? 'Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' : ua} (${hash})`,
+          'User-Agent': `${bot ? 'Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' : ua} (${hash})`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -48,7 +49,7 @@ async function trackFeeds(request: Request) {
   }
 
   await trackEvent('pageview');
-  await trackEvent('Feed', { bot: isbot.find(ua) || 'Not A Bot' });
+  await trackEvent('Feed', { bot: bot || 'Not A Bot' });
 }
 
 export const onRequestGet: PagesFunction = (context) => {
