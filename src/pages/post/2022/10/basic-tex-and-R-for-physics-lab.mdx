@@ -139,7 +139,7 @@ tags:
 
 可以参考 [Latex 表格技巧 - 合并单元格\_TheNetAdmin的博客](https://blog.csdn.net/wzxlovesy/article/details/69063271)。
 
-### 单位、科学计数法、不确定度
+### 单位、科学计数法、不确定度、角度
 
 ```tex
 \usepackage[separate-uncertainty=true]{siunitx}[=v2]
@@ -172,7 +172,7 @@ $v = \SI{1.91981 \pm 0.114514 e3}{\kilo\metre / \hour}$
 
 `$v = (1.919\,810 \pm 0.114\,514) \times 10^3 \, \mathrm{km/h}$`
 
-也可以只有单位 / 只有数字（用来显示科学计数法以及数字分段），把数字 / 单位留空即可。
+可以用 `\unit` 来只有单位没有数字，用 `\num` 来只有数字没有单位，用 `\ang{1;2;}` 来显示 $1^\circ 2'$；更多用法可以参考 siunitx 的文档。
 
 ### 模板
 
