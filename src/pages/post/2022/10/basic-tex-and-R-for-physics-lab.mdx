@@ -172,7 +172,11 @@ $v = \SI{1.91981 \pm 0.114514 e3}{\kilo\metre / \hour}$
 
 `$v = (1.919\,810 \pm 0.114\,514) \times 10^3 \, \mathrm{km/h}$`
 
-可以用 `\unit` 来只有单位没有数字，用 `\num` 来只有数字没有单位，用 `\ang{1;2;}` 来显示 $1^\circ 2'$；更多用法可以参考 siunitx 的文档。
+可以用 `\unit` 来只有单位没有数字，用 `\num` 来只有数字没有单位，或者用 `\SI` 但把一部分留空。
+
+可以用 `\ang{1;02;}` 来显示 $1^\circ 2'$，用 `\ang[parse-numbers=false]{1;02;}` 来显示 $1^\circ 02'$，用 `\sisetup{parse-numbers=false}` 来在当前环境（例如表格）内设置 `parse-numbers=false`，就不用每条命令单独设置。
+
+更多用法可以参考 siunitx 的文档。
 
 ### 模板
 
