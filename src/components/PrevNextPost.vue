@@ -13,7 +13,7 @@
         aria-label="上一篇"
       >
         <span class="i-mdi-chevron-left" />
-        <span>{{ prevPost.frontmatter.title }}</span>
+        <span class="break-anywhere">{{ prevPost.frontmatter.title }}</span>
       </a>
     </div>
     <div
@@ -25,7 +25,7 @@
         :href="nextPost.meta.href"
         aria-label="下一篇"
       >
-        <span>{{ nextPost.frontmatter.title }}</span>
+        <span class="break-anywhere">{{ nextPost.frontmatter.title }}</span>
         <span class="i-mdi-chevron-right" />
       </a>
     </div>
