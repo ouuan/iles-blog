@@ -42,14 +42,25 @@ Licensed under CC BY-SA 4.0`,
   const items = usePosts({
     filter: tag ? useTagFilter(tag) : () => true,
     pageIndex: 1,
-  }).value.map<FeedItem>((post) => ({
-    title: post.frontmatter.title,
-    id: new URL(post.href, url).href,
-    link: new URL(post.href, url).href,
-    description: h(post, { excerpt: true }),
-    content: post,
-    date: post.frontmatter.published,
-  })).sort((lhs, rhs) => rhs.date.valueOf() - lhs.date.valueOf());
+  }).value.map<FeedItem>((post) => {
+    let category: FeedItem['category'];
+    if (Array.isArray(post.frontmatter.tags)) {
+      category = post.frontmatter.tags.map((t) => ({
+        name: t,
+        domain: new URL(`/tag/${t}`, url).href,
+        term: new URL(`/tag/${t}`, url).href,
+      }));
+    }
+    return {
+      title: post.frontmatter.title,
+      id: new URL(post.href, url).href,
+      link: new URL(post.href, url).href,
+      description: h(post, { excerpt: true }),
+      content: post,
+      date: post.frontmatter.published,
+      category,
+    };
+  }).sort((lhs, rhs) => rhs.date.valueOf() - lhs.date.valueOf());
 
   return {
     options,
