@@ -1,7 +1,3 @@
-<page>
-title: 首页
-</page>
-
 <template layout="base">
   <Head>
     <meta
