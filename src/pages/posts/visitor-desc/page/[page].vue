@@ -16,6 +16,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import { format } from 'date-fns';
 import { usePageCount } from '~/composables/usePosts';
 
@@ -37,5 +38,5 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表: 最多访问 - 第${props.pageIndex}页`;
+page.frontmatter.title = computed(() => `文章列表: 最多访问 - 第${props.pageIndex}页`);
 </script>

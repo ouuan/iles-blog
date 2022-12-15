@@ -15,6 +15,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import { usePageCount } from '~/composables/usePosts';
 
 const pageCount = usePageCount({ perPage: 20 });
@@ -35,5 +36,5 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表: 最近修改 - 第${props.pageIndex}页`;
+page.frontmatter.title = computed(() => `文章列表: 最近修改 - 第${props.pageIndex}页`);
 </script>

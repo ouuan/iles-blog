@@ -11,6 +11,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import { usePageCount } from '~/composables/usePosts';
 import { useTags, useTagFilter } from '~/composables/useTags';
 
@@ -50,10 +51,8 @@ const props = defineProps<{
 const filter = useTagFilter(props.tag);
 
 const page = usePage();
-page.frontmatter.title = `标签: ${props.tag} - 第${props.pageIndex}页`;
-if (props.pageIndex === 1) {
-  page.frontmatter.canonical = `/tag/${props.tag}`;
-}
+page.frontmatter.title = computed(() => `标签: ${props.tag} - 第${props.pageIndex}页`);
+page.frontmatter.canonical = computed(() => (props.pageIndex === 1 ? `/tag/${props.tag}` : page.route.path));
 
 const title = `标签: ${props.tag} - ${page.site.title}`;
 useHead({

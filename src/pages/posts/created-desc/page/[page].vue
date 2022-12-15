@@ -14,6 +14,7 @@
 </template>
 
 <script lang="ts">
+import { computed } from 'vue';
 import { usePageCount } from '~/composables/usePosts';
 
 const pageCount = usePageCount({ perPage: 20 });
@@ -34,8 +35,6 @@ const props = defineProps<{
 }>();
 
 const page = usePage();
-page.frontmatter.title = `文章列表: 最新创建 - 第${props.pageIndex}页`;
-if (props.pageIndex === 1) {
-  page.frontmatter.canonical = '/posts';
-}
+page.frontmatter.title = computed(() => `文章列表: 最新创建 - 第${props.pageIndex}页`);
+page.frontmatter.canonical = computed(() => (props.pageIndex === 1 ? '/posts' : page.route.path));
 </script>
