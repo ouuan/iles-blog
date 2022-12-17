@@ -275,9 +275,7 @@ C 语言中的相关函数放在 `dlfcn.h` 头文件中，编译时需要 `-ldl`
 
 -   `const char *dlerror(void)`: 获取最后一次调用 `dlopen` / `dlsym` / `dlclose` 的报错信息，如果最后一次调用没有出错则返回 `NULL`
 
-CS:APP Figure 7.17 给出了一份参考代码：
-
-![运行时链接共享库的示例代码](csapp-fig7.17.png)
+CS:APP 给出了一份参考代码 [code/link/dll.c](https://csapp.cs.cmu.edu/3e/ics3/code/link/dll.c)。
 
 ## Position-Independent Code (PIC)
 
