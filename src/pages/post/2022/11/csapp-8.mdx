@@ -164,15 +164,16 @@ fork 出的进程和原进程在接下来会执行同一份代码，所以一般
 -   `pid_t waitpid(pid_t pid, int *statusp, int options)`: 等待子进程结束
 -   `pid_t wait(int *statusp)`: `waitpid(-1, statusp, 0)`
 
-#### wait 的 pid 参数
+#### waitpid 的 pid 参数
 
 参数 `pid` 决定了要等待的是哪些子进程：
 
--   如果是 -1 则是所有子进程
--   否则是 PID 为 `pid` 的子进程
--   也可以是其他形式，但 CS:APP 没讲
+-   -1: 所有子进程
+-   \> 0: PID 为 `pid` 的子进程
+-   0: [process group](#process-group) 与当前进程相同的子进程
+-   \< -1: process group ID 为 `-pid` 的子进程
 
-#### wait 的行为 (options)
+#### waitpid 的行为 (options)
 
 默认情况下，`waitpid` 会等待到有某个被等待的子进程 terminate 再返回，`options` 可以改变这一行为，其值可以包含下列 flag：
 
