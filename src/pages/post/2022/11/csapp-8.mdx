@@ -213,7 +213,7 @@ wait 会在每有一个子进程结束时返回，但子进程全部结束时会
 
 ### execve
 
--   `int execve(const char *filename, const char *argv[], const char *envp[])`
+-   `int execve(const char *filename, char *const argv[], char *const envp[])`
 
 `execve` 会以 `argv` 作为参数、`envp` 作为环境变量，在当前进程内执行 executable object file `filename`。可以和 `fork` 配合来在子进程内执行其他程序。
 
