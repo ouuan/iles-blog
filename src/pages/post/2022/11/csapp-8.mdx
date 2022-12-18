@@ -159,6 +159,15 @@ fork 会调用一次，返回两次，分别在两个进程中返回，在 paren
 
 fork 出的进程和原进程在接下来会执行同一份代码，所以一般会判断 `fork` 的返回值是否为 0 来让两个进程执行不同的分支。
 
+### process group
+
+每个进程会属于一个 process group，每个 process group 有一个 ID。
+
+创建子进程时，子进程会默认处于 parent 的 process group。
+
+-   `pid_t getpgrp(void)`: 返回当前进程的 process group ID
+-   `int setpgid(pid_t pid, pid_t pgid)`: 将 `pid` 对应的进程的 progress group ID 修改为 `pgid`，`pid` 为 0 表示当前进程，`pgid` 为 0 表示修改为 `pid` 对应的进程的 PID
+
 ### wait
 
 -   `pid_t waitpid(pid_t pid, int *statusp, int options)`: 等待子进程结束
@@ -170,7 +179,7 @@ fork 出的进程和原进程在接下来会执行同一份代码，所以一般
 
 -   -1: 所有子进程
 -   \> 0: PID 为 `pid` 的子进程
--   0: [process group](#process-group) 与当前进程相同的子进程
+-   0: process group 与当前进程相同的子进程
 -   \< -1: process group ID 为 `-pid` 的子进程
 
 #### waitpid 的行为 (options)
@@ -256,15 +265,6 @@ wait 会在每有一个子进程结束时返回，但子进程全部结束时会
 -   在 blocked 状态下被发送 signal，会在 unblock 时收到
 
 ### 发送 signal
-
-#### process group
-
-每个进程会属于一个 process group，每个 process group 有一个 ID。
-
-创建子进程时，子进程会默认处于 parent 的 process group。
-
--   `pid_t getpgrp(void)`: 返回当前进程的 process group ID
--   `int setpgid(pid_t pid, pid_t pgid)`: 将 `pid` 对应的进程的 progress group ID 修改为 `pgid`，`pid` 为 0 表示当前进程，`pgid` 为 0 表示修改为 `pid` 对应的进程的 PID
 
 #### kill 命令
 
