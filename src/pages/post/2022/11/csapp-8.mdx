@@ -270,17 +270,24 @@ wait 会在每有一个子进程结束时返回，但子进程全部结束时会
 
 可以用 `kill` 命令在 shell 中向指定的进程发送信号。一般 shell 会有 builtin 的 `kill`，也有位于 `/usr/bin/kill` 的 `kill`，可能有一定的区别。
 
-（相信大家都知道 `kill` 的基础用法吧）可以在指定 PID 的位置用负数表示向整个 process group 发送信号。
+基础的 `kill` 命令形如 `kill -sig pid`，其中 `-sig` 可以形如 `-INT`/`-SIGINT`/`-2`，而 `pid` 表示要把信号发送给：
+
+-   \> 0: PID 为 `pid` 的进程
+-   0: process group 和当前进程相同的进程
+-   -1: 除 PID 为 1 的 `init` 外的所有进程
+-   \< 0: process group ID 为 `-pid` 的进程
+
+这与 [waitpid 的 pid 参数](#waitpid-的-pid-参数) 是类似的。
 
 #### 在 shell 中使用键盘发送 SIGINT / SIGTSTP
 
-shell 中会有至多一个 foreground job 和零个或若干个 background job。shell 会给每个 job 中的进程指定同样的 process group。
+shell 中会有至多一个 foreground job 和零个或若干个 background job。shell 会给每个 job 中的所有进程指定同样的 process group。
 
 Ctrl+C 会向 foreground group 发送 SIGINT，Ctrl+Z 会向 foreground group 发送 SIGTSTP。
 
 #### 使用函数发送 signal
 
--   `int kill(pid_t pid, int sig)`: `pid` 大于 0 表示向 PID 发送 `sig`，等于 0 表示向当前进程所在的 process group 发送 `sig`，小于 0 表示向 process group ID `-pid` 发送 `sig`
+-   `int kill(pid_t pid, int sig)`: 与 [kill 命令](#kill-命令)类似
 -   `unsigned int alarm(unsigned int secs)`: 让 kernel 在 `secs` 秒后向当前进程发送 SIGALRM；如果有尚未发送的 alarm 则取消掉，如果 `secs` 为 0 则取消后不会发送新的 SIGALRM；没有尚未发送的 alarm 则返回值是 0，否则是被取消的 alarm 还剩的秒数
 
 ### 设置 signal handler
