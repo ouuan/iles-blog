@@ -1,0 +1,205 @@
+---
+title: CS:APP 第九章学习笔记
+date: 2022-11-23T18:10:42+08:00
+image: csapp-9.png
+copyrightNotice: 本文包含若干截自 CS:APP 中的图片，本文作者对其不拥有版权。
+tags:
+-   csapp
+-   计算机系统
+-   学习笔记
+-   WIP
+---
+
+[CS:APP](https://csapp.cs.cmu.edu/) 第九章“Virtual Memory”的学习笔记。
+
+<Excerpt />
+
+虚存是对 main memory 的抽象，它的主要作用有：
+
+-   将 main memory 用作 disk 的 cache，只将 active 的部分放在 main memory，在需要时在 disk 和 memory 之间传递数据
+-   通过给应用程序提供统一的地址空间，简化内存管理
+-   通过给不同进程提供独立的地址空间，防止一个进程的数据被其他进程破坏
+
+虚存在系统中起着非常重要的作用，学习虚存一方面可以学会使用它的一些强大功能（例如将文件映射到内存中），另一方面可以避免一些内存管理相关的错误。
+
+## Physical and Virtual Addressing
+
+内存有两种寻址方式：物理寻址和虚拟寻址。
+
+main memory 可以看作 $M$ 个 byte 排列在一起，地址分别为 $0 \sim M-1$，物理寻址就是 CPU 直接将需要的地址传给 main memory，获取到数据后传回 CPU。
+
+虚拟寻址需要硬件和操作系统配合，CPU 将虚拟地址传给 *memory management unit* (MMU)，MMU 将虚拟地址翻译成物理地址传给 main memory，而这个过程又和操作系统相关。
+
+## Address Spaces
+
+（线性）地址空间是连续的非负整数构成的集合，一个系统有一个物理地址空间 $[0, M-1]$，还有若干个虚拟地址空间 $[0, N-1]$，其中 $N = 2^n$，称作 $n$-bit 地址空间，一般是 32-bit 或者 64-bit。
+
+同一份数据可以在不同的地址空间有不同的地址，是虚存的一个基本思想。
+
+## VM as a Tool for Caching
+
+可以说，虚存是存储在磁盘上的，而物理内存是虚存的 cache。（但实际上虚存在很多时候会只出现在这个 cache 里而只在必要时被写入到磁盘上。）
+
+### page
+
+虚存被分成了很多固定大小的块，每一块称作一个 *virtual page*，而物理内存被分为同样大小的块，每一块被称作一个 *physical page*。在 cache 中，这样的一块一般被称作一个 block，但在虚存中被称作一个 page。
+
+因为 DRAM 比磁盘快很多，并且磁盘的连续访问比随机访问快很多：
+
+-   虚存的一个 page 会比较大，一般有 4KB ~ 2MB
+-   虚存是 [fully associative cache](/post/2022/12/csapp-6#cache-的分类)
+-   操作系统会使用一些比 SRAM cache 更加复杂的算法作为 replacement policy 来管理虚存
+
+一个 virtual page 可能处于三种状态之一: unallocated、cached、uncached。
+
+### page table
+
+在物理内存中存放着一张 *page table*，虚拟地址空间中的每个 page 都对应 page table 中的一项 (*page table entry*, PTE)。每一项包含一个 valid bit 和一个地址：
+
+-   cached: valid bit set，地址为该 page 的缓存的物理地址
+-   uncached: valid bit not set，地址指向磁盘上的 virtual page
+-   unallocated: valid bit not set，地址为 null
+
+### page fault
+
+在地址翻译时，MMU 会查看传入的虚拟地址对应的 PTE，若 cached，则称作 *page hit*，就会将 PTE 存储的物理地址传给 main memory；否则，就是 cache miss，在虚存中被称作 *page fault*。
+
+page fault 是一个 exception，会触发 kernel 中的 page fault handler。page fault handler 会在 physical memory 中选择一个 physical page（victim page）用来存这个触发 page fault 的 page，先将 victim page 原有的数据在必要时放回磁盘，然后将新的数据存入 victim page，再相应地修改 page table 中的这两个 PTE，使得 victim page 原来存的那个 virtual page 变为 uncached，而新存入的 virtual page 变为 cached 并且地址指向 victim page。page fault handler 的最终效果就是，一开始想要的 virtual page 已经 cached，于是在返回到 exception 触发的位置时就可以 page hit 而正常读取数据了。
+
+在磁盘和内存间传递数据在虚存中被称作 *swapping* 或 *paging*：
+
+> Pages are *swapped in* (*paged in*) from disk to DRAM, and *swapped out* (*paged out*) from DRAM to disk.
+
+虚存的 cache miss 是非常昂贵的，但由于程序访问内存的 locality，一般来说 page fault 很少触发，效率就不会太差。不断触发 page fault 的情况称作 *thrashing*，会大大影响程序的效率。
+
+## VM as a Tool for Memory Management
+
+实际上，page table 在一个系统中并非只有一份，而是每个进程都有一份，并且可以把同一个 physical page 映射到不同进程中的多个 virtual page。
+
+虚存为内存管理提供了如下的便利：
+
+-   简化了 linking，使得链接时无需考虑具体的物理地址，不同程序可以使用同样的虚拟地址分配方案。
+-   简化了 loading，使得加载程序时只需将可执行文件的段落映射到虚存中，不用拷贝数据，等访问到某个 page 时才会 page in。这样的将文件内容映射到虚存中的操作称作 [memory mapping](#memory-mapping)，Linux 提供了 `mmap` system call 来进行 memory mapping。
+-   简化了内存共享，操作系统可以将进程私有的数据映射到不同的 physical page，而将共享的数据映射到相同的 physical page。
+-   简化了内存分配，因为应用请求一段连续的 virtual pages 时，操作系统可以将其映射到不连续的 physical pages。
+
+## VM as a Tool for Memory Protection
+
+-   虚存可以轻松地给不同的进程提供不同的私有内存空间。
+-   通过给 PTE 添加 permission bit `SUP`、`READ`、`WRITE`，就可以使某个 page 只读或者只能在 kernel mode 下被访问。如果试图访问一个 page 时权限出错，则会触发 CPU 的 general protection exception，进而由 exception handler 向进程发送 SIGSEGV。
+
+## Address Translation
+
+一个内存地址可以被分为两部分，虚拟地址被分为高位的 *virtual page number* (VPN) 和低位的 *virtual page offset* (VPO)，物理地址被分为 PPN 和 PPO。
+
+CPU 中有一个 *page table base register* (PTBR)，指向 page table 的起始地址。地址翻译时，MMU 通过 PTBR 和 VPN 得到 PTE 的地址，从 main memory 获取 PTE，根据 valid bit，要么触发 page fault，要么获取到 PPN，而 PPO = VPO，就得到了物理地址。
+
+SRAM cache 一般会以物理地址来 cache main memory，也就是说，通过 PTE 的地址访问 PTE、通过物理地址访问 main memory 时会首先尝试通过 SRAM cache 来访问。
+
+如果每次都从 main memory 获取 PTE，即使在 L1 cache hit 了效率也不够高，所以 MMU 中还有一个小的 page table cache，叫做 *translation lookaside buffer* (TLB)。VPN 被分为两部分：低位的 TLBI (index) 和高位的 TLBT (tag)，其中 TLBI 用来选择 cache set，TLBT 用来进行 cache line matching。在地址翻译时，会优先查询 TLB，若 miss 再查询 page table。
+
+地址空间往往很大，如果只用一张 page table，那么 page table 本身就会占用大量的空间，所以可以将 page table 分层，每层 page table 指向下一层 page table，直到最后一层指向 VP / PP。
+
+## Case Study: Core i7 Address Translation
+
+Core i7 memory system 如 CS:APP Figure 9.21 所示：
+
+![The Core i7 memory system](csapp-fig9.21.png)
+
+Core i7 使用 48-bit 的虚拟地址空间和 52-bit 的物理地址空间，page size 可以设置为 4KB 或 4MB，有四级 page table。
+
+每个 PTE 有以下内容：（还有一些其他内容）
+
+-   P: valid bit
+-   R/W: 是否只读
+-   U/S: 是否需要在 kernel mode 下访问
+-   XD: 是否可以被读取指令（是否可执行）
+-   A: reference bit，访问到时由 MMU 设置，而由软件清除（可以用于 replacement algorithm）
+-   Base addr: child page table / physical page 的地址的高位 40 bits（剩下 12 bits 即 4KB，这要求地址以 4KB 对齐，而 page size 一般就是 4KB）
+
+L1 page table 还有一项 PS 用来指定 page size。
+
+L4 page table 还有 dirty bit D 用来表示 page 被写入过需要被 swap out (write back)，以及 G 表示 global page 即切换进程时不从 TLB 中 evict 掉。
+
+VPN 有 36 bits，每 9 bits 用来访问一级 page table。
+
+因为 L1 cache 是 8-way 32KB 的，正好有 12 bits 用来选择 cache set，所以在获取 PPN 的同时就可以把 VPO 发送给 L1 cache 来提前选择好 cache set。
+
+## Linux Virtual Memory System
+
+kernel 的虚存中包含：
+
+-   kernel 的代码以及全局的数据结构
+
+-   将整个物理内存连续地映射到虚存中，这样就可以方便地访问特定的物理地址
+
+-   和每个进程相关的数据结构，例如 page table、kernel stack、`task_struct` 等
+
+    （P.S. 这部分虽然是和每个进程相关，但并不会在每个进程中有所不同，CS:APP 中这里写错了，在 errata 中指出了）
+
+Linux 将虚存划分为若干 *area*（也称 *segment*）来管理，例如 code segment、data segment、heap、shared library segment，每个 area 是虚存中连续的一段。
+
+kernel 为每个进程维护了一个 `task_struct`，其中的 `mm` 一项是一个 `mm_struct`。`mm_struct` 的 `pgd` 一项是 L1 page table 的地址，而 `mmap` 指向一个 `vm_area_struct`。每个 `vm_area_struct` 表示一个 area，有以下几项（还有一些其他项）：
+
+-   `vm_start` / `vm_end`: 指向 area 的开头 / 结尾
+-   `vm_page_prot`: area 中所有 page 的 access permission
+-   `vm_flags`: 一些 flag，例如这个 area 中的 page 是否被所有进程共享
+-   `vm_prev` / `vm_next`: 指向相邻的 `vm_area_struct`，构成一个链表
+
+在处理 page fault 时，page fault handler 首先会检查地址是否在某个 area 内（不在则触发 segmentation fault），然后会检查是否有访问权限（没有则触发 protection exception），如果一切 ok 就会根据 replacement algorithm 选择 victim page，若其 dirty 则将其 swap out，然后将新的 page swap in，最后更新 page table 并返回。
+
+<Card type="question" title="segmentation fault vs protection exception">
+segmentation fault 和 protection exception 有区别吗？general protection exception 不应该是 CPU 触发的吗，怎么是 page fault handler 触发？segmentation fault 和 SIGSEGV 是什么关系？
+
+我的理解是 kernel 收到 CPU 的 general protection exception 会向进程发送 SIGSEGV，但 CS:APP 这里在相邻的两段分别用了“segmentation fault”和“protection exception”。
+</Card>
+
+## Memory Mapping
+
+将一个 *object* 的内容设为一段虚存的初始值称作 *memory mapping*。这个 object 可以是文件系统中一个文件的一段 (*file-backed*)，也可以是一个初始为空的 *anonymous file* (*demand-zero*)。
+
+在 map 时并不会立即将数据放到物理内存中，而是等到访问到某个 page 时再 swap in，这称作 *demand paging*。操作系统会使用 *swap file* 来进行 swapping，但只有进行了修改才会需要 swap out，否则可以直接从 map 到的文件 swap in。
+
+如果不同的进程映射到了同一个文件的同一段，在物理内存中会只有一份数据。
+
+memory mapping 有 shared 和 private 两种：
+
+-   map as shared objects: 修改对其他进程可见，如果是 file-backed 还会将内存修改同步到磁盘上的文件。
+-   map as private objects: 修改对其他进程不可见，也不会同步到磁盘上，并且是 copy-on-write 的：一开始将 PTE 设为只读，在触发 protection exception 后，exception handler 发现这个 area 是可以写入但 private 的，就创建一个新的 page，将原来的 page 复制过去，将 PTE 设为可以写入。
+
+### fork 的原理
+
+fork 时会将原来的 `mm_struct` 以及 page table 复制一份，但是将原来的 private area 中的 PTE 可以写入的重新变为只读，从而在之后再写入时重新触发 copy-on-write，就做到了 parent 和 child 一开始有一样的数据但后续写入独立。在 fork 前就创建了的 shared area 会由两个进程共享，可以利用这一点在 parent 和 child 之间通信。
+
+### execve 的原理
+
+1.  删除当前进程的所有 area (`vm_area_struct`)
+2.  根据 program header table 进行 memory mapping：
+    -   `.init`、`.text`、`.rodata`: private, file-backed, read-only
+    -   `.data`: private, file-backed, read/write
+    -   `.bss`、heap、stack: private, demand-zero, read/write
+3.  如果有 link 到共享库，会进行动态链接，将共享库 private, file-backed map
+4.  修改 program counter
+
+### mmap
+
+`void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)`
+
+-   `addr`: area 的起始地址，仅作提示作用，一般 `NULL` 就行
+-   `length`: area 的长度
+-   `prot`: `PROT_EXEC`、`PROT_READ`、`PROT_WRITE`、`PROT_NONE`
+-   `flags`: 有很多，常用的有 `MAP_SHARED`、`MAP_PRIVATE`、`MAP_ANONYMOUS`
+-   `fd`: map 到的 file descriptor
+-   `offset`: map 到的文件内容的 offset，必须是 page size 的倍数
+
+在 `MAP_ANONYMOUS` 时，最好将 `fd` 设为 -1、`offset` 设为 0（在有的实现中这是必须的）。
+
+失败时 `mmap` 会返回 `MAP_FAILED`。
+
+`int munmap(void *addr, size_t length)`: 将自 `addr` 起 `length` 长的范围内的 mapping 删除，以后再访问就会 segmentation fault。`addr` 必须是 page size 的倍数。
+
+## Dynamic Memory Allocation
+
+## Garbage Collection
+
+## Common Memory-Related Bugs in C Programs
