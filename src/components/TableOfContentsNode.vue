@@ -40,7 +40,10 @@ const props = defineProps<{
 }>();
 
 function icon(node: TOCNode) {
-  if (node.children.length === 0) return 'i-mdi-circle-medium';
+  if (node.children.length === 0) {
+    if (node.level === 6) return 'i-mdi-square-medium'; // Card
+    return 'i-mdi-circle-medium';
+  }
   if (node.open || props.showAll) return 'i-mdi-chevron-right rotate-90';
   return 'i-mdi-chevron-right';
 }
