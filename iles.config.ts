@@ -14,6 +14,7 @@ import got from 'got';
 
 import breakLongCode from './src/unified/breakLongCode';
 import wrapTableOverflowAuto from './src/unified/wrapTableOverflowAuto';
+import addHeadingForCard from './src/unified/addHeadingForCard';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -87,7 +88,7 @@ export default defineConfig({
       const suffix = src.includes('?') ? '' : '?preset=normal';
       return `${prefix}${src}${suffix}`;
     },
-    remarkPlugins: ['remark-gfm', 'remark-math'],
+    remarkPlugins: [addHeadingForCard, 'remark-gfm', 'remark-math'],
     rehypePlugins: [breakLongCode, wrapTableOverflowAuto, 'rehype-katex'],
   },
   ssg: {

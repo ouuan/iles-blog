@@ -1,3 +1,5 @@
+<!-- eslint-disable vue/no-v-html -->
+
 <template>
   <ol>
     <li
@@ -14,7 +16,7 @@
           :class="`absolute top-1.2 left--4
                    motion-safe:transition-transform ease-out ${icon(node)}`"
         />
-        <span>{{ node.title }}</span>
+        <span v-html="node.title" />
       </a>
       <div
         v-if="(node.open || showAll) && node.children.length > 0"
