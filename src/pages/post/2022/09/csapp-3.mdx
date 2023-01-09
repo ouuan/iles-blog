@@ -339,6 +339,17 @@ status flags 中存储了最近一次运算的状态，常用的 status flag 有
 -   `SF`: Sign Flag，表示运算结果（看作补码）为负，即运算结果的符号位。
 -   `OF`: Overflow Flag，表示若将运算视作 signed 发生了溢出。
 
+<Card title="ARM 中的 carry flag —— carry flag vs borrow flag" fold>
+在 ARM 中，计算减法时，与 x86 相反，carry flag 为 0 表示溢出，为 1 表示没有溢出。
+
+这是因为，计算减法有两种方式，[subtract with borrow 和 subtract with carry](https://en.wikipedia.org/wiki/Carry_flag#Vs._borrow_flag)：
+
+-   subtract with borrow 相当于普通的减法竖式计算，计算过程中记录 borrow flag，最后存储在 carry flag 中，表现为若最后发生借位则 carry flag 为 1。
+-   subtract with carry 利用了 `-x = ~x + 1` 的性质，通过 `a + ~b + 1` 来计算 `a - b`，而和普通加法一样计算 carry flag；而在 subtract with borrow 最后发生借位时，subtract with carry 反而 carry flag 是 0。
+
+可以这么理解这两者间的差异：设计算是 $w$ 位的，最后计算完成时，borrow flag 表示第 $w+1$ 位上是 $-1$，carry flag 表示第 $w+1$ 位上是 $1$，而 subtract with carry 相当于先加上了 $2^w$ 再进行减法，就会将第 $w+1$ 位从 $-1$ 变成 $0$，从 $0$ 变成 $1$。
+</Card>
+
 LEA 不会改变 status flags。
 
 [一元运算](#一元运算) 和 [二元运算](#二元运算) 都会改变 status flags。特别地，`INC` 和 `DEC` 不会改变 `CF`。
