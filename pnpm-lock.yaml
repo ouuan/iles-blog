@@ -27,6 +27,8 @@ specifiers:
   eslint-plugin-vue: ^9.8.0
   filesize: ^10.0.5
   fuse.js: ^6.6.2
+  glob: ^8.0.3
+  glob-promise: ^6.0.1
   got: ^11
   hast-util-select: ^5.0.2
   html-escaper: ^3.0.3
@@ -93,6 +95,8 @@ devDependencies:
   eslint-config-airbnb-base: 15.0.0_lt3hqehuojhfcbzgzqfngbtmrq
   eslint-plugin-import: 2.26.0_ub3senzxbs32f65wl7xoyha6lu
   eslint-plugin-vue: 9.8.0_eslint@8.29.0
+  glob: 8.0.3
+  glob-promise: 6.0.1_glob@8.0.3
   got: 11.8.5
   rehype-katex: 6.0.2
   remark-gfm: 3.0.1
@@ -471,6 +475,13 @@ packages:
   /@types/estree/1.0.0:
     resolution: {integrity: sha512-WulqXMDUTYAXCjZnk6JtIHPigp55cVtDgDrO2gHRwhyJto21+1zbVCtOYB2L1F9w4qCQ0rOGWBnBe0FNTiEJIQ==}
 
+  /@types/glob/8.0.0:
+    resolution: {integrity: sha512-l6NQsDDyQUVeoTynNpC9uRvCUint/gSUXQA2euwmTuWGvPY5LSDUu6tkCtJB2SvGQlJQzLaKqcGZP4//7EDveA==}
+    dependencies:
+      '@types/minimatch': 5.1.2
+      '@types/node': 18.11.10
+    dev: true
+
   /@types/hast/2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
     dependencies:
@@ -509,6 +520,10 @@ packages:
 
   /@types/mdx/2.0.2:
     resolution: {integrity: sha512-mJGfgj4aWpiKb8C0nnJJchs1sHBHn0HugkVfqqyQi7Wn6mBRksLeQsPOFvih/Pu8L1vlDzfe/LidhVHBeUk3aQ==}
+
+  /@types/minimatch/5.1.2:
+    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
+    dev: true
 
   /@types/ms/0.7.31:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
@@ -2284,6 +2299,16 @@ packages:
       is-glob: 4.0.3
     dev: true
 
+  /glob-promise/6.0.1_glob@8.0.3:
+    resolution: {integrity: sha512-Ugly3a7Od8pF36Liskb83Ux0Cok9cq9YqiQmVAEsj9XWFOlzjbcWMIQEzTpMH9EMi4KrMGYpvExf9q5iKa64OQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      glob: ^8.0.3
+    dependencies:
+      '@types/glob': 8.0.0
+      glob: 8.0.3
+    dev: true
+
   /glob/7.1.6:
     resolution: {integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==}
     dependencies:
@@ -2304,6 +2329,17 @@ packages:
       minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
+    dev: true
+
+  /glob/8.0.3:
+    resolution: {integrity: sha512-ull455NHSHI/Y1FqGaaYFaLGkNMMJbavMrEGFXG/PGrg6y7sutWHUHrz6gy6WEBH6akM1M414dWKCNs+IhKdiQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 5.1.0
+      once: 1.4.0
     dev: true
 
   /globals/13.17.0:

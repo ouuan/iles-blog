@@ -58,6 +58,8 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-vue": "^9.8.0",
+    "glob": "^8.0.3",
+    "glob-promise": "^6.0.1",
     "got": "^11",
     "rehype-katex": "^6.0.2",
     "remark-gfm": "^3.0.1",

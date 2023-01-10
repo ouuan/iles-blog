@@ -66,21 +66,11 @@
 import { filesize } from 'filesize';
 import { format } from 'date-fns';
 import { sha, authorDate } from '~build/info';
-import { usePosts } from '~/composables/usePosts';
+import { totalSize } from '~build/meta';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
 const lastUpdate = `最后更新于 ${format(new Date(authorDate), 'yyyy-MM-dd HH:mm:ss O')} (${sha.slice(0, 7)})`;
-
-const posts = usePosts();
-const totalSize = (await Promise.all(posts.value.map(async (post) => {
-  if (import.meta.env.SSR) {
-    const { readFile } = await import('fs/promises');
-    const buffer = await readFile(post.meta.filename);
-    return buffer.byteLength;
-  }
-  return 0;
-}))).reduce((acc, size) => acc + size, 0);
 </script>
