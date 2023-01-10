@@ -2,7 +2,7 @@
 
 <template>
   <component
-    :is="fold ? 'details' : 'div'"
+    :is="fold ? 'details' : 'section'"
     :class="['shadow-md rd-1 b-l-6 my-6', boxClasses[type]]"
   >
     <component
@@ -10,7 +10,7 @@
       :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
     >
       <span :class="['text-5', icon[type]]" />
-      <span
+      <h6
         class="font-bold"
         v-html="title || defaultTitle[type]"
       />
