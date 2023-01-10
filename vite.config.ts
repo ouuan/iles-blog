@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import unocss from 'unocss/vite';
 import viteCompression from 'vite-plugin-compression';
 import analyze from 'rollup-plugin-analyzer';
+import buildInfo from 'vite-plugin-info';
 import { builtinModules } from 'module';
 
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
       filter: /\.(js|map|json|css|html|wasm|txt|xml)$/i,
     }),
     analyze({ limit: 10 }),
+    buildInfo(),
   ],
   base: '',
   build: {

@@ -6,7 +6,11 @@
   >
     <div class="flex flex-wrap justify-center gap-x-1">
       <span>Copyright ©</span>
-      <span itemprop="copyrightYear">{{ yearString }}</span>
+      <span
+        itemprop="copyrightYear"
+        :aria-label="yearString"
+        :title="lastUpdate"
+      >{{ yearString }}</span>
       <a
         class="flex items-center"
         href="/sponsor"
@@ -60,12 +64,15 @@
 
 <script setup lang="ts">
 import { filesize } from 'filesize';
+import { format } from 'date-fns';
+import { sha, authorDate } from '~build/info';
 import { usePosts } from '~/composables/usePosts';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
+const lastUpdate = `最后更新于 ${format(new Date(authorDate), 'yyyy-MM-dd HH:mm:ss O')} (${sha.slice(0, 7)})`;
 
 const posts = usePosts();
 const totalSize = (await Promise.all(posts.value.map(async (post) => {

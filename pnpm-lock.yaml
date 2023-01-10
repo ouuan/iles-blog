@@ -48,6 +48,7 @@ specifiers:
   unocss: ^0.47.5
   vite: ^3.2.4
   vite-plugin-compression: ^0.5.1
+  vite-plugin-info: ^0.4.0
   vue: ^3.2.45
   vue-tsc: ^1.0.10
 
@@ -102,6 +103,7 @@ devDependencies:
   typescript: 4.9.3
   vite: 3.2.4_clvymlzunojxjbv3h6i2warera
   vite-plugin-compression: 0.5.1_vite@3.2.4
+  vite-plugin-info: 0.4.0_vite@3.2.4
   vue-tsc: 1.0.10_typescript@4.9.3
 
 packages:
@@ -1304,6 +1306,11 @@ packages:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
     dev: true
 
+  /ci-info/3.7.1:
+    resolution: {integrity: sha512-4jYS4MOAaCIStSRwiuxc4B8MYhIe676yO1sYGzARnjXkWpmzZMMYxY6zu8WYWDhSuth5zhrQ1rhNSibyyvv4/w==}
+    engines: {node: '>=8'}
+    dev: true
+
   /clone-response/1.0.3:
     resolution: {integrity: sha512-ROoL94jJH2dUVML2Y/5PEDNaSHgeOdSDicUyS7izcF63G6sTc/FTjLub4b8Il9S8S0beOfYt0TaA5qvFK+w0wA==}
     dependencies:
@@ -2249,6 +2256,16 @@ packages:
     dependencies:
       lit: 2.4.1
     dev: false
+
+  /git-config-path/2.0.0:
+    resolution: {integrity: sha512-qc8h1KIQbJpp+241id3GuAtkdyJ+IK+LIVtkiFTRKRrmddDzs3SI9CvP1QYmWBFvm1I/PWRwj//of8bgAc0ltA==}
+    engines: {node: '>=4'}
+    dev: true
+
+  /git-repo-info/2.1.1:
+    resolution: {integrity: sha512-8aCohiDo4jwjOwma4FmYFd3i97urZulL8XL24nIPxuE+GZnfsAyy/g2Shqx6OjUiFKUXZM+Yy+KHnOmmA3FVcg==}
+    engines: {node: '>= 4.0'}
+    dev: true
 
   /github-from-package/0.0.0:
     resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
@@ -3743,6 +3760,20 @@ packages:
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
 
+  /parse-git-config/3.0.0:
+    resolution: {integrity: sha512-wXoQGL1D+2COYWCD35/xbiKma1Z15xvZL8cI25wvxzled58V51SJM04Urt/uznS900iQor7QO04SgdfT/XlbuA==}
+    engines: {node: '>=8'}
+    dependencies:
+      git-config-path: 2.0.0
+      ini: 1.3.8
+    dev: true
+
+  /parse-github-url/1.0.2:
+    resolution: {integrity: sha512-kgBf6avCbO3Cn6+RnzRGLkUsv4ZVqv/VfAYkRsyBcgkshNvVBkRn1FEZcW0Jb+npXQWm2vHPnnOqFteZxRRGNw==}
+    engines: {node: '>=0.10.0'}
+    hasBin: true
+    dev: true
+
   /parse5/6.0.1:
     resolution: {integrity: sha512-Ofn/CTFzRGTTxwpNEs9PP93gXShHcTq255nzRYSKe8AkVpZY7e1fpmTfOyoIvjP5HG7Z2ZM7VS9PPhQGW2pOpw==}
     dev: true
@@ -4005,6 +4036,13 @@ packages:
       '@types/mdast': 3.0.10
       mdast-util-to-hast: 12.2.4
       unified: 10.1.2
+
+  /remote-origin-url/2.0.0:
+    resolution: {integrity: sha512-4TKz5bTDEHFzsqgjQZY/NxNqceWhtWD69Fgwetm+172GT2NoljyQssB649ECUBHGhBINuGwKw8mfcjQFugdIlg==}
+    engines: {node: '>=8'}
+    dependencies:
+      parse-git-config: 3.0.0
+    dev: true
 
   /resolve-alpn/1.2.1:
     resolution: {integrity: sha512-0a1F4l73/ZFZOakJnQ3FvkJ2+gSTQWz/r2KE5OdDY0TxPm5h4GkqkWWfM47T7HsbnOtcJVEF4epCVy6u7Q3K+g==}
@@ -4707,6 +4745,18 @@ packages:
       sharp: 0.29.3
     transitivePeerDependencies:
       - supports-color
+    dev: true
+
+  /vite-plugin-info/0.4.0_vite@3.2.4:
+    resolution: {integrity: sha512-KCDhf637MLkr3T5Pv2X7qo9qDOjXsFPD+EGhMAkOMnoYfsrJA68hvLNBqwxFpRGvHWCDmBKfggWER2bJadLlyg==}
+    peerDependencies:
+      vite: ^2.9.13 || ^3.0.0 || ^4.0.0
+    dependencies:
+      ci-info: 3.7.1
+      git-repo-info: 2.1.1
+      parse-github-url: 1.0.2
+      remote-origin-url: 2.0.0
+      vite: 3.2.4_clvymlzunojxjbv3h6i2warera
     dev: true
 
   /vite/3.2.4_clvymlzunojxjbv3h6i2warera:
