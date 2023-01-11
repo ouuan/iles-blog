@@ -53,13 +53,14 @@ export default defineConfig({
     frontmatter.tags = frontmatter.tags?.length
       ? Array.from(new Set(frontmatter.tags)).filter((tag) => tag) : null;
 
-    const log = await simpleGit().log({
+    const log = (await simpleGit().log({
       file: filename,
       strictDate: true,
-    });
-    if (log.total) {
-      frontmatter.lastUpdated = new Date(log.all[0].date);
-      frontmatter.published = new Date(log.all[log.all.length - 1].date);
+    })).all.filter((commit) => !commit.body.includes('[log skip]'));
+
+    if (log.length) {
+      frontmatter.lastUpdated = new Date(log[0].date);
+      frontmatter.published = new Date(log[log.length - 1].date);
     } else {
       const { birthtime, mtime } = await stat(filename);
       frontmatter.lastUpdated = mtime;
