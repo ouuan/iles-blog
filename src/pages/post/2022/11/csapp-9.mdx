@@ -268,7 +268,7 @@ allocate 时需要找到一个足够大的 free block，allocator 进行这样�
 
 immediate coalescing 的实现较为简单，可以在常数时间内完成，但可能会导致反复的合并和分割，带来不必要的性能损失。
 
-合并时需要知道上一个 block 的信息，这可以通过在 block 尾部添加一个与 header 内容相同的 footer 来实现，这被称作使用 *boundary tags*。由于只有 free block 需要 footer，可以省去 allocated block 的 footer 来节省空间。
+合并时需要知道上一个 block 的信息，这可以通过在 block 尾部添加一个与 header 内容相同的 footer 来实现，这被称作使用 *boundary tags*。由于只有 free block 需要 footer，可以省去 allocated block 的 footer，而在 header 中存储上一块的 allocated bit，来节省空间。
 
 ### explicit free list
 
