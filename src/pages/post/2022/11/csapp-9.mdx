@@ -7,7 +7,6 @@ tags:
 -   csapp
 -   计算机系统
 -   学习笔记
--   WIP
 ---
 
 [CS:APP](https://csapp.cs.cmu.edu/) 第九章“Virtual Memory”的学习笔记。
@@ -200,6 +199,113 @@ fork 时会将原来的 `mm_struct` 以及 page table 复制一份，但是将�
 
 ## Dynamic Memory Allocation
 
+### 动态分配的相关函数
+
+在 C 语言中，可以用 `malloc` 和 `free` 来获取 / 释放动态分配的内存。可以使用 `calloc` 来初始化分配到的内存并在使用乘法计算内存大小时检测是否发生溢出。可以使用 `realloc` 来给一块动态分配的内存调整大小。详见 `man malloc`。
+
+为了让动态分配得到的内存可以用于任何数据类型，地址会以 double word 对齐，即 32 位系统对齐到 8 的倍数，64 位系统对齐到 16 的倍数。
+
+操作系统使用 `brk` 指针来指向 heap 的结尾，可以通过 `sbrk` 函数来增大 heap。
+
+### allocator 的要求和目标
+
+Dynamic memory allocator 会将 heap 划分为若干大小不等的 block，每个 block 要么 allocated 要么 free。
+
+allocator 需要做到：
+
+-   能够处理以任意顺序发送的 allocate 和 free 请求（不能对顺序做任何假定）
+-   立即对请求做出响应（不能离线）
+-   只使用 heap 存储数据（不能将数据存储在虚存的其他位置）
+-   满足对齐要求（能够存储任何类型的数据）
+-   不能修改或移动 allocated block（可以修改 free block 或者 heap 中不是 block 的区域）
+
+而 allocator 有两个性能方面的目标：
+
+1.  更快地响应请求（更大的吞吐量）
+2.  更高效地利用内存
+
+其中，导致内存利用率低的主要原因是 *fragmentation*：
+
+-   internal fragmentation: 实际分配的 allocated block 比 alloc 请求中申请的大
+-   external fragmentation: 所有 free block 加起来大小足够，但每单个 free block 都不够大，导致需要使用更多 heap 空间
+
+### 一种简单的 allocator 实现方式
+
+#### block header
+
+allocator 需要记录 block 的信息，而只能使用 heap 空间，所以直接在 block 的开头记录 block header，即 block size 以及是否 allocated。
+
+因为地址有对齐要求，block size 的最低几位一定是 0，就可以用最低位来存 allocated bit。
+
+block size 充当了单向链表的作用。如果想访问 free block，就得访问每个 block 再看是否 free，所以这样的结构被称作 *implicit free list*。
+
+#### placement policy
+
+allocate 时需要找到一个足够大的 free block，allocator 进行这样的搜索的方式称作 *placement policy*：
+
+-   first fit：从头开始找，直到找到足够大的 free block
+-   next fit：从上次搜索结束的地方开始找，直到找到足够大的 free block
+-   best fit：遍历所有 free block，使用足够大的 free block 中最小的
+
+使用 implicit free list 时，next fit 比 first fit 吞吐量更大但内存利用率更低，best fit 内存利用率最好但吞吐量最差。
+
+#### 分割 free block
+
+如果 allocate 时 free block 的剩余空间比需要的空间大，且大的超过一个 block 的 minimum size (double word)，就可以将这个 block 分为两半，一半用作 allocated block，另一半为 free block。
+
+#### 获取更多的 heap 空间
+
+如果已有的 heap 空间无法满足 allocate 请求，可以使用 `sbrk` 来获取更多的 heap 空间，并将新得到的空间设为 free block。
+
+#### 合并 free block
+
+如果很多 free block 相邻地放在一起，可能会造成 *false fragmentation*，即合并后能放下但每个单独无法放下，所以需要对相邻的 free block 进行合并 (coalesce)。
+
+合并有两种策略：
+
+-   immediate coalescing：每次 free 时都将新得到的 free block 与相邻的 free block 合并，这样的话每时每刻都不会有相邻的 free block
+-   deferred coalescing：等到某个时候再合并，例如在未能找到足够大的 free block 时
+
+immediate coalescing 的实现较为简单，可以在常数时间内完成，但可能会导致反复的合并和分割，带来不必要的性能损失。
+
+合并时需要知道上一个 block 的信息，这可以通过在 block 尾部添加一个与 header 内容相同的 footer 来实现，这被称作使用 *boundary tags*。由于只有 free block 需要 footer，可以省去 allocated block 的 footer 来节省空间。
+
+### explicit free list
+
+可以在 free block 中存储指向前驱后继的指针来维护一个 free block 的链表，称作 *explicit free list*。
+
+这个 list 可以是 LIFO 的或者按地址顺序的。LIFO 的 list 可以在常数时间内完成 free 操作，而按地址顺序的 list 需要使用线性时间来找到一个 block 在 list 中的位置，但内存利用率更高。
+
+由于需要足够大的空间来存储前驱后继的指针，explicit free list 的 minimum block size 更大，可能会出现更严重的 internal fragmentation 导致内存利用率下降。
+
+### segregated free lists
+
+可以将 block 按 size 分类，例如按 2 的次幂分类，每一类维护一个 list。具体实现方式有很多，例如 simple segregated storage 和 segregated fits。
+
+#### simple segregated storage
+
+每一类的所有 block 都是这一类的最大 size，如果一类 block 用光了就申请新的 heap 空间，free 时直接放回相应的 list，不合并也不分割。
+
+这样的话，header 和 footer 都不需要了，只需在 free block 里存放一个后继指针即可，但 internal fragmentation 和 external fragmentation 都很严重。
+
+#### segregated fit
+
+每一类中有不同大小的 block，有分割和合并。allocate 时从相应的类别开始找，在一类中找不到就继续找下一类，这样近似于 best-fit search，但速度很快。
+
+segregated fit 的综合性能较好，所以包括 libc 中的 `malloc` 函数在内的 allocator 往往选择使用 segregated fit。
+
+#### buddy system
+
+所有 block size 都是 2 的次幂，分割时每次分成两半直到大小合适，合并时只和“buddy”合并。
+
+这里描述清楚可能比较复杂，就感性理解一下，所有的 block 会形成一个如下图所示树状的样子（有点树状数组的感觉），parent 相同的 block 就是 buddy。
+
+![buddy system](buddy-system.png)
+
+这样的话，搜索和合并会比较快速，但由于 block size 都是 2 的次幂，可能出现严重的 internal fragmentation。
+
 ## Garbage Collection
 
-## Common Memory-Related Bugs in C Programs
+可以通过 block 之间以及 stack、register、global 变量对 block 的引用关系找到不可达的 block 而进行 garbage collection。
+
+在 C 中，由于没有类型信息，可能会将其他类型的数据视作对 block 的引用，导致不可达的 block 被视作可达，所以 C 语言的 garbage collection 只能是 conservative 的。
