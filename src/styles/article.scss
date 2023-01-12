@@ -54,11 +54,6 @@
     @apply text-5 font-bold;
   }
 
-  // reserved for addHeadingForCard
-  h6.heading {
-    @apply absolute invisible;
-  }
-
   blockquote {
     @apply bg-area shadow-sm;
     @apply px-6 overflow-auto b-l-6 b-gray-4 dark:b-gray-11;

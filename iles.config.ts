@@ -15,6 +15,7 @@ import got from 'got';
 import breakLongCode from './src/unified/breakLongCode';
 import wrapTableOverflowAuto from './src/unified/wrapTableOverflowAuto';
 import addHeadingForCard from './src/unified/addHeadingForCard';
+import hideHeadingForCard from './src/unified/hideHeadingForCard';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -97,7 +98,7 @@ export default defineConfig({
       return `${prefix}${src}${suffix}`;
     },
     remarkPlugins: [addHeadingForCard, 'remark-gfm', 'remark-math'],
-    rehypePlugins: [breakLongCode, wrapTableOverflowAuto, 'rehype-katex'],
+    rehypePlugins: [breakLongCode, wrapTableOverflowAuto, hideHeadingForCard, 'rehype-katex'],
   },
   ssg: {
     manualChunks(id) {
