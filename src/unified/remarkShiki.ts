@@ -8,9 +8,9 @@ import {
   getHighlighter,
 } from 'shiki';
 // eslint-disable-next-line import/no-relative-packages
-import darkThemeJson from '../shiki/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
+import darkThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
 // eslint-disable-next-line import/no-relative-packages
-import lightThemeJson from '../shiki/night-owl-vscode-theme/themes/Night Owl-Light-color-theme-noitalic.json';
+import lightThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-Light-color-theme-noitalic.json';
 
 const darkTheme = {
   name: 'dark',
