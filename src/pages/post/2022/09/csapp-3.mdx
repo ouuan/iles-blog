@@ -46,7 +46,7 @@ void multstore(long x, long y, long *dest)
 
 编译为如下的汇编代码：
 
-```nasm
+```asm
 	.file	"a.c"
 	.text
 	.globl	multstore
@@ -74,7 +74,7 @@ multstore:
 
 可以通过 `objdump` 反汇编，例如 `gcc a.c -Og -c && objdump -d a.o` 得到：
 
-```nasm
+```asm
 a.o：     文件格式 elf64-x86-64
 
 
@@ -254,7 +254,7 @@ long scale(long x, long y, long z)
 }
 ```
 
-```nasm
+```asm
 scale:
 	leaq	(%rdi,%rsi,4), %rax
 	leaq	(%rdx,%rdx,2), %rdx
@@ -404,7 +404,7 @@ condition code 是 status flags 的组合，常用的有：
 
 在汇编中 jump 通常会使用 label 作为 jump target，例如（CS:APP P205）：
 
-```nasm
+```asm
     movq $0, %rax
     jmp  .L1
     movq (%rax), %rdx
@@ -433,7 +433,7 @@ condition code 是 status flags 的组合，常用的有：
 
 例如（CS:APP P207）：
 
-```nasm
+```asm
     movq %rdi, %rax
     jmp .L2
 .L3:
@@ -446,7 +446,7 @@ condition code 是 status flags 的组合，常用的有：
 
 汇编后：
 
-```nasm
+```asm
    0:	48 89 f8             	mov    %rdi,%rax
    3:	eb 03                	jmp    0x8
    5:	48 d1 f8             	sar    %rax
@@ -459,7 +459,7 @@ condition code 是 status flags 的组合，常用的有：
 
 链接后：
 
-```nasm
+```asm
 000000000000112e <foo>:
     112e:       48 89 f8                mov    %rdi,%rax
     1131:       eb 03                   jmp    1136 <foo+0x8>
@@ -602,7 +602,7 @@ stack frame 大小确定主要是为了能够通过与 `%rsp` 即栈顶的相对
 
 具体实现为：
 
-```nasm
+```asm
 function_name:
     pushq %rbp
     movq %rsp, %rbp
@@ -784,7 +784,7 @@ operand 的作用和上面整数转为浮点数的指令一样。
 double foo() { return 1.8; }
 ```
 
-```nasm
+```asm
 foo:
 	vmovsd	.LC0(%rip), %xmm0
 	ret

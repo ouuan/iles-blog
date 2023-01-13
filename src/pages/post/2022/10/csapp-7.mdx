@@ -289,7 +289,7 @@ PIC 的主要思路基于以下两点：
 
 PIC data reference 是简单的，只要在 GOT 中为每个 data symbol (全局或 static 变量) 创建一个表项，在动态链接时由 dynamic linker 修改这些项，而在代码中通过这个表项来间接地进行 data reference，例如 (CS:APP Figure 7.18，`GOT[3]` 中存放了全局变量 `x` 的地址)：
 
-```nasm
+```asm
     movq Ox2OO8b9(%rip), %rax   # %rax = *GOT[3] = &x
     addl $0x1, (%rax)           # ++x
 ```
