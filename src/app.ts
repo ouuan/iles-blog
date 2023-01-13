@@ -1,7 +1,6 @@
 import { defineApp } from 'iles';
 import { computed } from 'vue';
 import '@unocss/reset/tailwind.css';
-import 'prism-themes/themes/prism-gruvbox-dark.min.css';
 import 'uno.css';
 
 import '~/styles/index.scss';

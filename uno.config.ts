@@ -37,7 +37,6 @@ export default defineConfig({
       gray: ['#F0F0F3', '#E1E2E8', '#D2D3DC', '#C3C5D1', '#B4B6C5', '#A5A7BA', '#9699AE', '#878AA2', '#787B97', '#6A6E8A', '#5F627B', '#53566C', '#474A5D', '#3C3E4E', '#2F313D'],
       success: '#3DA83A',
       error: '#B7404C',
-      gruvboxbg: '#1d2021',
       text: 'var(--text-color)',
       bg: 'var(--bg-color)',
       card: 'var(--card-color)',

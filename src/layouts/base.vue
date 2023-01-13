@@ -10,7 +10,6 @@
   </main>
   <base-footer />
   <back-to-top client:idle />
-  <copy-button-adder />
   <plausible-trigger />
   <text-justify-fix />
   <meta

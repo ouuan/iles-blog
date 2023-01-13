@@ -8,7 +8,6 @@ specifiers:
   '@islands/feed': ^0.8.0
   '@islands/headings': ^0.8.1
   '@islands/images': ^0.8.1
-  '@islands/prism': ^0.8.0
   '@types/hast': ^2.3.4
   '@types/html-escaper': ^3.0.0
   '@types/node': 18.11.10
@@ -36,12 +35,12 @@ specifiers:
   isbot: ^3.6.5
   katex: ^0.16.3
   plausible-tracker: ^0.3.8
-  prism-themes: ^1.9.0
   rehype-katex: ^6.0.2
   remark-gfm: ^3.0.1
   remark-math: ^5.1.1
   rollup-plugin-analyzer: ^4.0.0
   sass: ^1.56.1
+  shiki: ^0.12.1
   simple-git: ^3.15.1
   ts-exhaustive-check: ^1.0.0
   tsup: '6.3'
@@ -69,7 +68,7 @@ dependencies:
   isbot: 3.6.5
   katex: 0.16.3
   plausible-tracker: 0.3.8
-  prism-themes: 1.9.0
+  shiki: 0.12.1
   simple-git: 3.15.1
   ts-exhaustive-check: 1.0.0
   unified: 10.1.2
@@ -83,7 +82,6 @@ devDependencies:
   '@islands/feed': 0.8.0_iles@0.8.7+vue@3.2.45
   '@islands/headings': 0.8.1
   '@islands/images': 0.8.1
-  '@islands/prism': 0.8.0
   '@types/hast': 2.3.4
   '@types/node': 18.11.10
   '@typescript-eslint/eslint-plugin': 5.45.0_yjegg5cyoezm3fzsmuszzhetym
@@ -309,13 +307,6 @@ packages:
     resolution: {integrity: sha512-EcgO0E5WkN4QK7nUnFto6csr8OjeWYCq7vKMcQJCMxLcvQsVelDtkxxMvD4W5J/Kvmm8JaFz3bCxs7yMZL3Xew==}
     dependencies:
       '@islands/hydration': 0.8.2
-
-  /@islands/prism/0.8.0:
-    resolution: {integrity: sha512-Ua3mzLadCDTjlrfRP3qlXHHlRnymBoC1DXOhAkp7fnil31fD3Gu36gEWoLtZOAONMS3uenLCgjfyXE3NtQ4ytA==}
-    dependencies:
-      prismjs: 1.29.0
-      unist-util-visit: 4.1.1
-    dev: true
 
   /@jridgewell/gen-mapping/0.1.1:
     resolution: {integrity: sha512-sQXCasFk+U8lWYEe66WxRDOE9PjVz4vSM51fTu3Hw+ClTpUSQb718772vH3pyS5pShp6lvQM7SxgIDXXXmOX7w==}
@@ -2895,6 +2886,10 @@ packages:
       minimist: 1.2.7
     dev: true
 
+  /jsonc-parser/3.2.0:
+    resolution: {integrity: sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==}
+    dev: false
+
   /jsonfile/6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
     dependencies:
@@ -3928,15 +3923,6 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prism-themes/1.9.0:
-    resolution: {integrity: sha512-tX2AYsehKDw1EORwBps+WhBFKc2kxfoFpQAjxBndbZKr4fRmMkv47XN0BghC/K1qwodB1otbe4oF23vUTFDokw==}
-    dev: false
-
-  /prismjs/1.29.0:
-    resolution: {integrity: sha512-Kx/1w86q/epKcmte75LNrEoT+lX8pBpavuAbvJWRXar7Hz8jrtF+e3vY751p0R8H9HdArwaCTNDDzHg/ScJK1Q==}
-    engines: {node: '>=6'}
-    dev: true
-
   /property-information/6.1.1:
     resolution: {integrity: sha512-hrzC564QIl0r0vy4l6MvRLhafmUowhO/O3KgVSoXIbbA2Sz4j8HGpJc6T2cubRVwMwpdiG/vKGfhT4IixmKN9w==}
 
@@ -4210,6 +4196,14 @@ packages:
   /shebang-regex/3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  /shiki/0.12.1:
+    resolution: {integrity: sha512-aieaV1m349rZINEBkjxh2QbBvFFQOlgqYTNtCal82hHj4dDZ76oMlQIX+C7ryerBTDiga3e5NfH6smjdJ02BbQ==}
+    dependencies:
+      jsonc-parser: 3.2.0
+      vscode-oniguruma: 1.7.0
+      vscode-textmate: 8.0.0
+    dev: false
 
   /side-channel/1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
@@ -4828,6 +4822,14 @@ packages:
       sass: 1.56.1
     optionalDependencies:
       fsevents: 2.3.2
+
+  /vscode-oniguruma/1.7.0:
+    resolution: {integrity: sha512-L9WMGRfrjOhgHSdOYgCt/yRMsXzLDJSL7BPrOZt73gU0iWO4mpqzqQzOz5srxqTvMBaR0XZTSrVWo4j55Rc6cA==}
+    dev: false
+
+  /vscode-textmate/8.0.0:
+    resolution: {integrity: sha512-AFbieoL7a5LMqcnOF04ji+rpXadgOXnZsxQr//r83kLPr7biP7am3g9zbaZIaBGwBRWeSvoMD4mgPdX3e4NWBg==}
+    dev: false
 
   /vue-demi/0.13.11_vue@3.2.45:
     resolution: {integrity: sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A==}

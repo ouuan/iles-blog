@@ -8,7 +8,6 @@ import excerpt from '@islands/excerpt';
 import feed from '@islands/feed';
 import headings from '@islands/headings';
 import images, { widthPreset } from '@islands/images';
-import prism from '@islands/prism';
 import { simpleGit } from 'simple-git';
 import got from 'got';
 
@@ -16,6 +15,7 @@ import breakLongCode from './src/unified/breakLongCode';
 import wrapTableOverflowAuto from './src/unified/wrapTableOverflowAuto';
 import addHeadingForCard from './src/unified/addHeadingForCard';
 import hideHeadingForCard from './src/unified/hideHeadingForCard';
+import remarkShiki from './src/unified/remarkShiki';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -44,7 +44,6 @@ export default defineConfig({
         },
       }),
     }),
-    prism(),
   ],
   async extendFrontmatter(frontmatter, filename) {
     if (filename.includes('/post/')) {
@@ -97,7 +96,7 @@ export default defineConfig({
       const suffix = src.includes('?') ? '' : '?preset=normal';
       return `${prefix}${src}${suffix}`;
     },
-    remarkPlugins: [addHeadingForCard, 'remark-gfm', 'remark-math'],
+    remarkPlugins: [remarkShiki, addHeadingForCard, 'remark-gfm', 'remark-math'],
     rehypePlugins: [breakLongCode, wrapTableOverflowAuto, hideHeadingForCard, 'rehype-katex'],
   },
   ssg: {

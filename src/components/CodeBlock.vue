@@ -1,0 +1,50 @@
+<template>
+  <section
+    class="code-block relative my-6 shadow"
+    :aria-label="`${lang} 代码块`"
+  >
+    <copy-button client:visible />
+    <div
+      class="flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
+      style="display:none;"
+      aria-hidden="true"
+    >
+      <span class="text-3 text-footer">{{ lang }}</span>
+    </div>
+    <slot />
+  </section>
+</template>
+
+<script setup lang="ts">
+defineProps<{
+  lang: string;
+}>();
+</script>
+
+<style scoped lang="scss">
+.code-block:hover :deep(.copy-button) {
+  @apply opacity-100;
+}
+
+// use inline style to hide it in places without the stylesheet (e.g. RSS feeds)
+.flex {
+  display: flex !important;
+}
+
+:deep() {
+  pre.shiki {
+    @apply p-4 max-h-80vh print:max-h-fit overflow-auto;
+  }
+}
+</style>
+
+<style lang="scss">
+.light {
+  .shiki-light {
+    display: block !important;
+  }
+  .shiki-dark {
+    @apply hidden;
+  }
+}
+</style>
