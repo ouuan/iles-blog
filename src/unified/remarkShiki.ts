@@ -4,8 +4,10 @@ import { Plugin } from 'unified';
 import { Content, Root } from 'mdast';
 import {
   BUNDLED_LANGUAGES,
+  Highlighter,
   Lang,
   getHighlighter,
+  renderToHtml,
 } from 'shiki';
 // eslint-disable-next-line import/no-relative-packages
 import darkThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
@@ -41,26 +43,41 @@ function isBundledLanguage(name: string): name is Lang {
   ) !== undefined;
 }
 
-async function highlight(code: string, lang: string | null | undefined) {
-  if (!lang) {
-    return {
-      dark: `<pre class="shiki dark" style="color: ${darkTheme.fg}; background-color: ${darkTheme.bg}"><code>${code}</code></pre>`,
-      light: `<pre class="shiki light" style="color: ${lightTheme.fg}; background-color: ${lightTheme.bg}"><code>${code}</code></pre>`,
-    };
-  }
-  if (!isBundledLanguage(lang)) {
-    return {
-      dark: `unsupported language ${lang}`,
-      light: `unsupported language ${lang}`,
-    };
-  }
+function highlightWithTheme(highlighter: Highlighter, code: string, lang: string, theme: 'dark' | 'light', from: number, to: number) {
+  const tokens = lang === 'plain' ? code.split('\n').map((line) => [{ content: line }]) : highlighter.codeToThemedTokens(code, lang, theme);
+
+  const themeConfig = theme === 'dark' ? darkTheme : lightTheme;
+
+  return renderToHtml(tokens, {
+    themeName: theme,
+    fg: themeConfig.fg,
+    bg: themeConfig.bg,
+    elements: {
+      line({ index, children }) {
+        if (from === 0) return `<span>${children}</span>`;
+        if (index < from || index > to) return `<span class="dim">${children}</span>`;
+        return `<span class="highlighted">${children}</span>`;
+      },
+    },
+  });
+}
+
+async function highlight(code: string, lang: string, from: number, to: number) {
   const highlighter = await highlighterPromise;
-  if (!highlighter.getLoadedLanguages().includes(lang)) {
-    await highlighter.loadLanguage(lang);
+  if (lang !== 'plain') {
+    if (!isBundledLanguage(lang)) {
+      return {
+        dark: `unsupported language ${lang}`,
+        light: `unsupported language ${lang}`,
+      };
+    }
+    if (!highlighter.getLoadedLanguages().includes(lang)) {
+      await highlighter.loadLanguage(lang);
+    }
   }
   return {
-    dark: highlighter.codeToHtml(code, { lang, theme: 'dark' }),
-    light: highlighter.codeToHtml(code, { lang, theme: 'light' }),
+    dark: highlightWithTheme(highlighter, code, lang, 'dark', from, to),
+    light: highlightWithTheme(highlighter, code, lang, 'light', from, to),
   };
 }
 
@@ -73,8 +90,14 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
     return;
   }
 
-  const { lang, value } = child;
-  const html = await highlight(value, lang);
+  const { lang, value, meta } = child;
+
+  let [from, to] = [0, 0];
+  if (meta && /^\d+-\d+$/.test(meta)) {
+    [from, to] = meta.split('-').map((n) => parseInt(n, 10));
+  }
+
+  const html = await highlight(value, lang || 'plain', from, to);
 
   siblings[index] = {
     type: 'mdxJsxFlowElement',

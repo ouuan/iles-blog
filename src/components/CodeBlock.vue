@@ -34,6 +34,29 @@ defineProps<{
 :deep() {
   pre.shiki {
     @apply p-4 max-h-80vh print:max-h-fit overflow-auto;
+
+    .dim span {
+      @apply opacity-50 ease-out duration-150;
+      transition-property: opacity, filter;
+      filter: saturate(.5);
+    }
+
+    .highlighted::before {
+      content: "";
+      @apply absolute left-0 h-6 b-l-4 b-blue;
+      @apply opacity-0 transition-opacity ease-out;
+    }
+
+    &:hover {
+      .dim span {
+        @apply opacity-100;
+        filter: none;
+      }
+
+      .highlighted::before {
+        @apply opacity-100;
+      }
+    }
   }
 }
 </style>
