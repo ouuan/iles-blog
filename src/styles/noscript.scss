@@ -12,5 +12,5 @@
 
 // remove restriction on theme not set
 html {
-  visibility: visible !important;
+  @apply important-visible;
 }

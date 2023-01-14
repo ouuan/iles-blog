@@ -1,6 +1,6 @@
 @media print {
   * {
-    box-shadow: none !important;
+    @apply important-shadow-none;
   }
 
   :root {

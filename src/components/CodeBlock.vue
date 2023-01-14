@@ -10,7 +10,7 @@
   >
     <copy-button client:visible />
     <div
-      class="flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
+      class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
       aria-hidden="true"
     >
@@ -43,11 +43,6 @@ defineProps<{
 <style scoped lang="scss">
 .code-block:hover :deep(.copy-button) {
   @apply opacity-100;
-}
-
-// use inline style to hide it in places without the stylesheet (e.g. RSS feeds)
-.flex {
-  display: flex !important;
 }
 
 :deep() {

@@ -62,7 +62,7 @@ async function copy() {
 <style lang="scss" scoped>
 .copy-button {
   @media screen {
-    display: block !important; // hide it in print and in places without stylesheet
+    @apply important-block; // hide it in print and in places without stylesheet
   }
 
   @apply absolute top-0 right-0;
