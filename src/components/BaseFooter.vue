@@ -65,12 +65,12 @@
 <script setup lang="ts">
 import { filesize } from 'filesize';
 import { format } from 'date-fns';
-import { sha, authorDate } from '~build/info';
+import { sha, committerDate } from '~build/info';
 import { totalSize } from '~build/meta';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
-const lastUpdate = `最后更新于 ${format(new Date(authorDate), 'yyyy-MM-dd HH:mm:ss O')} (${sha.slice(0, 7)})`;
+const lastUpdate = `最后更新于 ${format(new Date(committerDate), 'yyyy-MM-dd HH:mm:ss O')} (${sha.slice(0, 7)})`;
 </script>
