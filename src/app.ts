@@ -50,7 +50,7 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
       }],
       noscript: [{
         children: fonts.map((href) => `<link rel="stylesheet" href="${href}">`).concat(
-          `<style>${noscriptStyle}</style>`,
+          `<style>${noscriptStyle.replace(/\s+/g, ' ')}</style>`,
         ).join(''),
       }],
       link: [
