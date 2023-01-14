@@ -1,7 +1,12 @@
+<!-- eslint-disable vue/no-v-html -->
+
 <template>
   <section
     class="code-block relative my-6 shadow"
     :aria-label="`${lang} 代码块`"
+    itemprop="hasPart"
+    itemscope
+    itemtype="https://schema.org/SoftwareSourceCode"
   >
     <copy-button client:visible />
     <div
@@ -9,15 +14,29 @@
       style="display:none;"
       aria-hidden="true"
     >
-      <span class="text-3 text-footer">{{ lang }}</span>
+      <span
+        class="text-3 text-footer"
+        itemprop="programmingLanguage"
+      >{{ lang }}</span>
     </div>
-    <slot />
+    <div
+      class="light:hidden"
+      itemprop="text"
+      v-html="darkHtml"
+    />
+    <div
+      class="light:important-block"
+      style="display:none;"
+      v-html="lightHtml"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 defineProps<{
   lang: string;
+  darkHtml: string;
+  lightHtml: string;
 }>();
 </script>
 
@@ -57,17 +76,6 @@ defineProps<{
         @apply opacity-100;
       }
     }
-  }
-}
-</style>
-
-<style lang="scss">
-.light {
-  .shiki-light {
-    display: block !important;
-  }
-  .shiki-dark {
-    @apply hidden;
   }
 }
 </style>

@@ -127,11 +127,14 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
       type: 'mdxJsxAttribute',
       name: 'lang',
       value: lang || 'plain text',
-    }],
-    children: [{
-      type: 'html',
-      value: `<div class="shiki-dark">${html.dark}</div>
-<div class="shiki-light" style="display: none;">${html.light}</div>`,
+    }, {
+      type: 'mdxJsxAttribute',
+      name: 'darkHtml',
+      value: html.dark,
+    }, {
+      type: 'mdxJsxAttribute',
+      name: 'lightHtml',
+      value: html.light,
     }],
   } as any;
 }
