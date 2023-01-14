@@ -2,9 +2,12 @@
 
 import { Plugin } from 'unified';
 import { Content, Root } from 'mdast';
+import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import {
   BUNDLED_LANGUAGES,
   Highlighter,
+  ILanguageRegistration,
   Lang,
   getHighlighter,
   renderToHtml,
@@ -37,6 +40,14 @@ const highlighterPromise = getHighlighter({
   langs: [],
 });
 
+const CUSTOM_LANGUAGES = {
+  'hcl-csapp': {
+    id: 'hcl-csapp',
+    scopeName: 'source.hcl.csapp',
+    path: resolve(fileURLToPath(import.meta.url), '../../../third_party/hcl-syntax-highlight/hcl.tmLanguage.json'),
+  },
+} as { [id: string]: ILanguageRegistration | undefined };
+
 function isBundledLanguage(name: string): name is Lang {
   return BUNDLED_LANGUAGES.find(
     (lang) => lang.id === name || lang.aliases?.includes(name),
@@ -64,7 +75,12 @@ function highlightWithTheme(highlighter: Highlighter, code: string, lang: string
 
 async function highlight(code: string, lang: string, from: number, to: number) {
   const highlighter = await highlighterPromise;
-  if (lang !== 'plain') {
+  const customLanguage = CUSTOM_LANGUAGES[lang];
+  if (customLanguage) {
+    if (!highlighter.getLoadedLanguages().includes(lang as Lang)) {
+      await highlighter.loadLanguage(customLanguage);
+    }
+  } else if (lang !== 'plain') {
     if (!isBundledLanguage(lang)) {
       return {
         dark: `unsupported language ${lang}`,

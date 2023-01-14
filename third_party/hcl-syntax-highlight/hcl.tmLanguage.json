@@ -1,0 +1,334 @@
+{
+  "fileTypes": [
+    "hcl"
+  ],
+  "name": "hcl-csapp",
+  "patterns": [
+    {
+      "include": "#main"
+    }
+  ],
+  "scopeName": "source.hcl.csapp",
+  "uuid": "bce0e34b-774c-42f1-b3e7-73576d22bb2b",
+  "repository": {
+    "main": {
+      "patterns": [
+        {
+          "begin": "(\\b(wordsig|boolsig|quote)\\b)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#sig"
+            }
+          ],
+          "end": "(^(?=.{0,1})(?:|))",
+          "endCaptures": {
+            "1": {
+              "name": "comment.hcl"
+            }
+          }
+        },
+        {
+          "begin": "(\\b(word|bool)\\b)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#circ"
+            }
+          ],
+          "end": "(;)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          }
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "circ": {
+      "patterns": [
+        {
+          "include": "#none"
+        },
+        {
+          "match": "(\\bin\\b)",
+          "name": "keyword.hcl"
+        },
+        {
+          "match": "([a-zA-Z][0-9a-zA-Z]*(?:_[0-9a-zA-Z]+)*)",
+          "name": "variable.hcl"
+        },
+        {
+          "match": "(=)",
+          "name": "punctuation.hcl"
+        },
+        {
+          "include": "#value"
+        }
+      ]
+    },
+    "comment": {
+      "patterns": [
+        {
+          "match": "((#.*)|(//.*))",
+          "name": "comment.hcl"
+        },
+        {
+          "include": "#multi_line_comment"
+        }
+      ]
+    },
+    "multi_line_comment": {
+      "patterns": [
+        {
+          "begin": "(/\\*)",
+          "beginCaptures": {
+            "1": {
+              "name": "comment.hcl"
+            }
+          },
+          "contentName": "comment.hcl",
+          "end": "(\\*/)",
+          "endCaptures": {
+            "1": {
+              "name": "comment.hcl"
+            }
+          }
+        }
+      ]
+    },
+    "multi_line_comment__1": {
+      "patterns": []
+    },
+    "none": {
+      "patterns": [
+        {
+          "match": "(\\s+)",
+          "name": "text.hcl"
+        }
+      ]
+    },
+    "numeric": {
+      "patterns": [
+        {
+          "match": "(0x[0-9a-fA-F]+)",
+          "name": "constant.numeric.hcl"
+        },
+        {
+          "match": "(0b[01]+)",
+          "name": "constant.numeric.hcl"
+        },
+        {
+          "match": "(\\b\\d+)",
+          "name": "constant.numeric.hcl"
+        },
+        {
+          "match": "(\\+|\\*|-|/|(&)|(\\|)|(\\^)|(!)|(~))",
+          "name": "punctuation.hcl"
+        }
+      ]
+    },
+    "quote": {
+      "patterns": [
+        {
+          "begin": "(')",
+          "beginCaptures": {
+            "1": {
+              "name": "string.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#quote__1"
+            }
+          ],
+          "end": "(')",
+          "endCaptures": {
+            "1": {
+              "name": "string.hcl"
+            }
+          }
+        }
+      ]
+    },
+    "quote__1": {
+      "patterns": [
+        {
+          "match": "([^\\x{0027}]*)",
+          "name": "string.hcl"
+        }
+      ]
+    },
+    "sig": {
+      "patterns": [
+        {
+          "match": "([a-zA-Z][0-9a-zA-Z]*(?:_[0-9a-zA-Z]+)*)",
+          "name": "entity.name.class.hcl"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "include": "#quote"
+        }
+      ]
+    },
+    "value": {
+      "patterns": [
+        {
+          "include": "#none"
+        },
+        {
+          "match": "(:|&&|\\|\\||==)",
+          "name": "punctuation.hcl"
+        },
+        {
+          "match": "(\\bin\\b)",
+          "name": "keyword.hcl"
+        },
+        {
+          "match": "([a-zA-Z][0-9a-zA-Z]*(?:_[0-9a-zA-Z]+)*)",
+          "name": "variable.hcl"
+        },
+        {
+          "begin": "(\\{)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#value__1"
+            }
+          ],
+          "end": "(\\})",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          }
+        },
+        {
+          "begin": "(\\[)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#value__2"
+            }
+          ],
+          "end": "(\\])",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          }
+        },
+        {
+          "include": "#numeric"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "value__1": {
+      "patterns": [
+        {
+          "match": "([a-zA-Z][0-9a-zA-Z]*(?:_[0-9a-zA-Z]+)*)",
+          "name": "entity.name.class.hcl"
+        },
+        {
+          "match": "(,)",
+          "name": "punctuation.hcl"
+        },
+        {
+          "include": "#numeric"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "value__2": {
+      "patterns": [
+        {
+          "include": "#none"
+        },
+        {
+          "begin": "([a-zA-Z][0-9a-zA-Z]*(?:_[0-9a-zA-Z]+)*)",
+          "beginCaptures": {
+            "1": {
+              "name": "variable.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#value__3"
+            }
+          ],
+          "end": "(;)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          }
+        },
+        {
+          "begin": "(\\d+)",
+          "beginCaptures": {
+            "1": {
+              "name": "constant.numeric.hcl"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#value__4"
+            }
+          ],
+          "end": "(;)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.hcl"
+            }
+          }
+        },
+        {
+          "include": "#value"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
+    },
+    "value__3": {
+      "patterns": [
+        {
+          "include": "#value"
+        }
+      ]
+    },
+    "value__4": {
+      "patterns": [
+        {
+          "include": "#value"
+        }
+      ]
+    }
+  }
+}
