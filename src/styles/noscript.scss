@@ -1,0 +1,16 @@
+@import "colors";
+
+// only apply to noscript to prevent flash of color transition
+:root:not(.dark):not(.light) {
+  @media (prefers-color-scheme: light) {
+    @include lightVariables;
+  }
+  @media (prefers-color-scheme: dark) {
+    @include darkVariables;
+  }
+}
+
+// remove restriction on theme not set
+html {
+  visibility: visible !important;
+}

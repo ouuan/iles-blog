@@ -4,6 +4,7 @@ import '@unocss/reset/tailwind.css';
 import 'uno.css';
 
 import '~/styles/index.scss';
+import noscriptStyle from '~/styles/noscript.scss?inline';
 
 function pageType(href: string) {
   if (href === '/about') return 'About';
@@ -50,8 +51,7 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
       noscript: fonts.map((href) => ({
         children: `<link rel="stylesheet" href="${href}">`,
       })).concat({
-        // remove restriction on theme not set
-        children: '<style>html { visibility: visible !important; }</style>',
+        children: `<style>${noscriptStyle}</style>`,
       }),
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },

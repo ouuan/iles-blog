@@ -6,6 +6,14 @@ html:root {
   @apply text-text font-sans bg-bg motion-safe:scroll-smooth;
 }
 
+:root.dark {
+  @include darkVariables;
+}
+
+:root.light {
+  @include lightVariables;
+}
+
 * {
   text-underline-offset: 0.25em;
 }
