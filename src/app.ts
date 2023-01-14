@@ -48,11 +48,11 @@ try {
 document.documentElement.classList.add(dark ? 'dark' : 'light');
 })()`,
       }],
-      noscript: fonts.map((href) => ({
-        children: `<link rel="stylesheet" href="${href}">`,
-      })).concat({
-        children: `<style>${noscriptStyle}</style>`,
-      }),
+      noscript: [{
+        children: fonts.map((href) => `<link rel="stylesheet" href="${href}">`).concat(
+          `<style>${noscriptStyle}</style>`,
+        ).join(''),
+      }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         {
