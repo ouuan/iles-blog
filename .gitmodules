@@ -1,3 +1,6 @@
 [submodule "src/shiki/night-owl-vscode-theme"]
 	path = third_party/night-owl-vscode-theme
 	url = https://github.com/sdras/night-owl-vscode-theme
+[submodule "third_party/vscode-caddyfile"]
+	path = third_party/vscode-caddyfile
+	url = https://github.com/caddyserver/vscode-caddyfile

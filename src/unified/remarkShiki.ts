@@ -46,6 +46,11 @@ const CUSTOM_LANGUAGES = {
     scopeName: 'source.hcl.csapp',
     path: resolve(fileURLToPath(import.meta.url), '../../../third_party/hcl-syntax-highlight/hcl.tmLanguage.json'),
   },
+  caddyfile: {
+    id: 'caddyfile',
+    scopeName: 'source.Caddyfile',
+    path: resolve(fileURLToPath(import.meta.url), '../../../third_party/vscode-caddyfile/syntaxes/caddyfile.tmLanguage.json'),
+  },
 } as { [id: string]: ILanguageRegistration | undefined };
 
 function isBundledLanguage(name: string): name is Lang {
