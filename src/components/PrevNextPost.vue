@@ -10,9 +10,11 @@
       <a
         class="flex items-center gap-1 hover:text-hover"
         :href="prevPost.meta.href"
-        aria-label="上一篇"
       >
-        <span class="i-mdi-chevron-left" />
+        <span
+          class="i-mdi-chevron-left"
+          aria-label="上一篇"
+        />
         <span class="break-anywhere">{{ prevPost.frontmatter.title }}</span>
       </a>
     </div>
@@ -23,10 +25,12 @@
       <a
         class="flex items-center gap-1 hover:text-hover"
         :href="nextPost.meta.href"
-        aria-label="下一篇"
       >
         <span class="break-anywhere">{{ nextPost.frontmatter.title }}</span>
-        <span class="i-mdi-chevron-right" />
+        <span
+          class="i-mdi-chevron-right"
+          aria-label="下一篇"
+        />
       </a>
     </div>
   </nav>
