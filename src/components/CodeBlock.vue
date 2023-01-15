@@ -3,22 +3,21 @@
 <template>
   <section
     class="code-block relative my-6 shadow"
-    :aria-label="`${lang} 代码块`"
     itemprop="hasPart"
     itemscope
     itemtype="https://schema.org/SoftwareSourceCode"
   >
     <copy-button client:visible />
-    <div
+    <h6
       class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
-      aria-hidden="true"
     >
       <span
         class="text-3 text-footer"
         itemprop="programmingLanguage"
+        :aria-label="`${lang} 代码块`"
       >{{ lang }}</span>
-    </div>
+    </h6>
     <div
       class="light:hidden"
       itemprop="text"
