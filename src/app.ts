@@ -15,8 +15,8 @@ function pageType(href: string) {
 }
 
 const fonts = [
-  '/assets/fonts/noto-serif-sc/NotoSerifSC.31c223c6.css',
-  '/assets/fonts/lxgw-wenkai/LXGWWenKai.402b9b87.css',
+  '/assets/fonts/noto-serif-sc/NotoSerifSC.5165abd4.css',
+  '/assets/fonts/lxgw-wenkai/LXGWWenKai.e72fd0cc.css',
   '/vendors/katex/katex.css',
 ];
 
