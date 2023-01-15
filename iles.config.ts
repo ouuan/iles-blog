@@ -7,7 +7,7 @@ import { defineConfig } from 'iles';
 import excerpt from '@islands/excerpt';
 import feed from '@islands/feed';
 import headings from '@islands/headings';
-import images, { widthPreset } from '@islands/images';
+import images, { formatPreset } from '@islands/images';
 import { simpleGit } from 'simple-git';
 import got from 'got';
 
@@ -25,19 +25,7 @@ export default defineConfig({
     feed(),
     headings(),
     images({
-      half: widthPreset({
-        widths: [290, 435, 580, 770],
-        sizes: '40vw',
-        density: 1.6,
-        formats: {
-          webp: { quality: 80 },
-          original: {},
-        },
-      }),
-      normal: widthPreset({
-        widths: [720, 1080, 1440, 1920],
-        sizes: '90vw',
-        density: 1.6,
+      normal: formatPreset({
         formats: {
           webp: { quality: 80 },
           original: {},
