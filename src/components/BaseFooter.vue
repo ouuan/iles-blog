@@ -1,6 +1,7 @@
 <template>
   <footer
     class="flex flex-col text-footer bg-card p-6 gap-1"
+    itemprop="hasPart"
     itemscope
     itemtype="https://schema.org/WPFooter"
   >

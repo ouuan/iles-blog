@@ -1,6 +1,7 @@
 <template>
   <header
     class="bg-card shadow print:hidden"
+    itemprop="hasPart"
     itemscope
     itemtype="https://schema.org/WPHeader"
   >
