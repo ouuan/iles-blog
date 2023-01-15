@@ -6,12 +6,30 @@
     itemtype="https://schema.org/Person"
   >
     <meta
-      itemprop="name"
+      itemprop="additionalName"
       :content="site.author"
+    >
+    <meta
+      itemprop="givenName"
+      :content="site.firstName"
+    >
+    <meta
+      itemprop="familyName"
+      :content="site.lastName"
     >
     <meta
       itemprop="url"
       :content="site.authorLink"
+    >
+    <link
+      v-if="GENDER[site.gender]"
+      itemprop="gender"
+      :href="`https://schema.org/${GENDER[site.gender]}`"
+    >
+    <meta
+      v-else
+      itemprop="gender"
+      :content="site.gender"
     >
     <meta
       itemprop="image"
@@ -41,4 +59,9 @@ const props = defineProps<{
 const url = new URL(props.post.meta.href, site.url).href;
 
 const image = new URL(props.post.frontmatter.image, site.url).href;
+
+const GENDER = {
+  male: 'Male',
+  female: 'Female',
+} as Record<string, string | undefined>;
 </script>
