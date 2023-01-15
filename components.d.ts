@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AuthorMicrodata: typeof import('./src/components/AuthorMicrodata.vue')['default']
     BackToTop: typeof import('./src/components/BackToTop.vue')['default']
     BaseFooter: typeof import('./src/components/BaseFooter.vue')['default']
     BaseLayout: typeof import('./src/layouts/base.vue')['default']

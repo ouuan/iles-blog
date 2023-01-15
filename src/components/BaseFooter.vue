@@ -7,11 +7,7 @@
   >
     <div class="flex flex-wrap justify-center gap-x-1">
       <span>Copyright ©</span>
-      <span
-        itemprop="copyrightYear"
-        :aria-label="yearString"
-        :title="lastUpdate"
-      >{{ yearString }}</span>
+      <span :title="lastUpdate">{{ yearString }}</span>
       <a
         class="flex items-center"
         href="/sponsor"
@@ -19,13 +15,7 @@
       >
         <span class="i-mdi-heart text-red dark:text-red-7" />
       </a>
-      <span
-        itemprop="copyrightHolder"
-        itemscope
-        itemtype="https://schema.org/Person"
-      >
-        <span itemprop="name">{{ author }}</span>
-      </span>
+      <span>{{ author }}</span>
     </div>
     <div class="flex flex-wrap justify-center items-center gap-x-1">
       <span>文章总大小 {{ filesize(totalSize, { standard: 'iec', precision: 3 }) }}</span>
@@ -61,6 +51,11 @@
       >Discussions</a>
     </div>
   </footer>
+  <meta
+    itemprop="copyrightYear"
+    :content="yearString"
+  >
+  <author-microdata itemprop="copyrightHolder" />
 </template>
 
 <script setup lang="ts">
