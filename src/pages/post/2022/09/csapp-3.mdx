@@ -143,7 +143,7 @@ x86-64 CPU 有 16 个 general-purpose register，可以用来存整数或指针�
 
 每个 register 可以用四种不同的长度访问，其中短的是长的的低位。修改 byte 或 word 的值时高位不变，修改 double word 的值则会将高位清零。
 
-不同寄存器的用途将在后文说明（主要是在 [Procedures](#Procedures) 这一节）。
+不同寄存器的用途将在后文说明（主要是在 [Procedures](#procedures) 这一节）。
 
 ### Operand 格式
 
@@ -510,7 +510,7 @@ procedure 的实现主要涉及三个方面：
 -   传递参数和返回值
 -   为局部变量分配/释放内存
 
-调用 procedure 的核心是在 [push/pop stack](#push-pop-stack) 一节中介绍过的 runtime stack。大体上来讲，stack 会分成一堆 frame，栈顶的 frame 为当前 procedure 的相关数据，从栈顶到栈底的各个 frame 依次放着调用链上的各个 procedure，在调用一个 procedure 时会将相关数据压入栈中，返回时再弹出。
+调用 procedure 的核心是在 [push/pop stack](#pushpop-stack) 一节中介绍过的 runtime stack。大体上来讲，stack 会分成一堆 frame，栈顶的 frame 为当前 procedure 的相关数据，从栈顶到栈底的各个 frame 依次放着调用链上的各个 procedure，在调用一个 procedure 时会将相关数据压入栈中，返回时再弹出。
 
 这部分会采取“简介-原则-实现”的结构，先简单介绍大概是什么样的，再说明实现需要遵循的原则，再说明具体实现，以及实现是如何满足以及利用原则的。
 
