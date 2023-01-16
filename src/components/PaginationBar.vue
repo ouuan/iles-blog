@@ -6,6 +6,7 @@
     <a
       :href="hasPrevPage ? `${hrefPrefix}/1` : undefined"
       :class="['sm:hidden btn btn-normal px-1 shrink-0', !hasPrevPage && 'disabled']"
+      role="link"
       :aria-disabled="!hasPrevPage"
       aria-label="前往第一页"
     >
@@ -14,6 +15,7 @@
     <a
       :href="hasPrevPage ? `${hrefPrefix}/${currentPage - 1}` : undefined"
       :class="['btn btn-normal px-1 shrink-0', !hasPrevPage && 'disabled']"
+      role="link"
       :aria-disabled="!hasPrevPage"
       aria-label="前往上一页"
     >
@@ -57,6 +59,7 @@
     <a
       :href="hasNextPage ? `${hrefPrefix}/${currentPage + 1}` : undefined"
       :class="['btn btn-normal px-1 shrink-0', !hasNextPage && 'disabled']"
+      role="link"
       :aria-disabled="!hasNextPage"
       aria-label="前往下一页"
     >
@@ -66,6 +69,7 @@
     <a
       :href="hasNextPage ? `${hrefPrefix}/${pageCount}` : undefined"
       :class="['sm:hidden btn btn-normal px-1 shrink-0', !hasNextPage && 'disabled']"
+      role="link"
       :aria-disabled="!hasNextPage"
       aria-label="前往最后一页"
     >
