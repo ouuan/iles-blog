@@ -27,6 +27,13 @@
       <span class="i-mdi-alert-circle-outline" />
     </span>
   </button>
+  <span
+    class="absolute left-100vw"
+    role="status"
+  >
+    <span v-if="state === 'success'">复制成功</span>
+    <span v-else-if="state === 'error'">复制失败</span>
+  </span>
 </template>
 
 <script setup lang="ts">
