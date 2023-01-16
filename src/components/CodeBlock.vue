@@ -7,7 +7,6 @@
     itemscope
     itemtype="https://schema.org/SoftwareSourceCode"
   >
-    <copy-button client:visible />
     <h6
       class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
@@ -18,6 +17,7 @@
         :aria-label="`${lang} 代码块`"
       >{{ lang }}</span>
     </h6>
+    <copy-button client:visible />
     <div
       class="light:hidden"
       itemprop="text"
