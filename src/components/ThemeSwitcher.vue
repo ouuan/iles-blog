@@ -4,32 +4,38 @@
     class="relative flex items-stretch"
   >
     <button
-      title="切换暗色模式"
+      title="暗色模式设置"
       class="p-2 bghover flex items-center"
+      aria-haspopup="menu"
+      aria-controls="__theme-switcher"
+      :aria-expanded="showMenu"
       @click="showMenu = !showMenu"
     >
       <span class="text-xl i-mdi-theme-light-dark" />
     </button>
-    <div
+    <ul
       v-show="showMenu"
+      id="__theme-switcher"
       class="absolute z-20 top-full right-0 bg-popup shadow-md rd-1 whitespace-nowrap"
+      role="menu"
+      aria-label="暗色模式选项"
     >
-      <ul>
-        <li
-          v-for="key of ['auto', 'light', 'dark'] as const"
-          :key="key"
-          class="bghover"
+      <li
+        v-for="key of ['auto', 'light', 'dark'] as const"
+        :key="key"
+        class="bghover"
+        role="menuitemradio"
+        :aria-checked="key === theme"
+      >
+        <button
+          :class="['flex items-center p-1', theme === key && 'text-hover']"
+          @click="theme = key"
         >
-          <button
-            :class="['flex items-center p-1', theme === key && 'text-hover']"
-            @click="theme = key"
-          >
-            <span :class="[icon[key], 'mr-1']" />
-            <span>{{ name[key] }}</span>
-          </button>
-        </li>
-      </ul>
-    </div>
+          <span :class="[icon[key], 'mr-1']" />
+          <span>{{ name[key] }}</span>
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
