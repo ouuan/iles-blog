@@ -17,11 +17,6 @@ for pack in pack-*.pack; do
     git unpack-objects < "$pack"
 done
 rm -f pack-*.pack
-sha=$(git rev-parse HEAD)
-cp ".git/objects/${sha::2}/${sha:2}" .
-git gc
-mkdir -p ".git/objects/${sha::2}"
-mv "${sha:2}" ".git/objects/${sha::2}/"
 
 # build
 npx pnpm i --store=node_modules/.pnpm-store
