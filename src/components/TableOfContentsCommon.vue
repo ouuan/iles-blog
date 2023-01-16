@@ -1,17 +1,15 @@
 <template>
   <div class="flex flex-wrap gap-2 justify-between items-center pr-4 pl-8 mb-3">
     <div class="flex items-center">
-      <div
-        id="__toc-title"
-        class="text-xl font-bold"
-      >
+      <h2 class="text-xl font-bold">
         文章目录
-      </div>
+      </h2>
       <button
         v-if="drawer"
         class="px-1 text-xl flex items-center"
         aria-label="关闭目录"
         aria-controls="__toc-drawer"
+        aria-expanded="true"
         @click="emit('close')"
       >
         <span class="i-mdi-close" />

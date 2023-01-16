@@ -2,7 +2,7 @@
   <div
     id="__toc-drawer"
     class="toc-drawer bg-card py-6 shadow-lg fixed inset-y-0 z-15"
-    aria-labelledby="__toc-title"
+    aria-label="文章目录"
     role="dialog"
     :style="{ right: tocRight }"
     :aria-hidden="!displayToc"
@@ -17,6 +17,7 @@
     class="floating-button text-lg bottom-24"
     title="显示文章目录"
     :aria-hidden="displayToc"
+    aria-haspopup="dialog"
     aria-controls="__toc-drawer"
     @click="displayToc = true"
   >
