@@ -17,7 +17,6 @@ jobs:
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
-      - run: npx pnpm typecheck
       - run: npx pnpm build
       - name: Check links
         shell: bash

@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - uses: pnpm/action-setup@v2
         with:
           version: 7
@@ -16,3 +18,4 @@ jobs:
           cache: 'pnpm'
       - run: pnpm i
       - run: pnpm lint
+      - run: pnpm typecheck
