@@ -6,6 +6,7 @@ const posts = useDocuments<unknown>('~/pages/post/**/*.md{,x}');
 
 export type Post = typeof posts['value'][number];
 
+// @param pageIndex starts from 1, 0 means all posts
 export function usePosts({
   sort = 'created-desc',
   pageIndex = 0,
