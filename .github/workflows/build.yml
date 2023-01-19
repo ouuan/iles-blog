@@ -12,10 +12,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Install Chromium
+      - name: Install Dependencies
         run: |
           apt update
-          apt install -y chromium
+          apt install -y chromium jq
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
