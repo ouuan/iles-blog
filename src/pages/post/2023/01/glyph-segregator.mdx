@@ -1,0 +1,129 @@
+---
+title: 另一种很新的中文字体网页嵌入方案
+date: 2023-01-19T17:03:46+08:00
+image: glyph-segregator.png
+tags:
+    - blog
+    - Web
+    - 项目开发
+---
+
+当你看到 [一种很新的中文字体网页嵌入方案](https://ayu.land/webfont)，但是懒得优化 DP，也不会进化算法，你可以……
+
+整一个[*另*一种很新的中文字体网页嵌入方案](https://github.com/ouuan/glyph-segregator)（
+
+<Excerpt />
+
+~~这就是你 [开坑 DDPP](ddpp) 不填的理由吗~~
+
+## 背景
+
+前不久看到 [一种很新的中文字体网页嵌入方案](https://ayu.land/webfont)，还想着没必要做这种优化，毕竟按 Google Fonts 进行子集化就可以做到每页 1MB 左右，按现代的网速不会有太大问题，用 devtools 开节流试了下看起来也还行。
+
+然后我回家了，离开了校园网。虽然自定义域名的 Cloudflare Pages 还能访问，但速度暂且不论，丢包率就很有点恐怖，经常页面加载一半就卡住了。
+
+再然后，Google Fonts 里 Noto Serif SC 的 unicode range 不含单引号（和撇号是同一个字符），导致 [DDPP 序](ddpp) 里引用的那段话的撇号在我的手机上显示成了很宽的另一种字体，才让我[发现这个问题](https://github.com/ouuan/iles-blog/commit/080bd7112f88d2eae1e86594f8820c0c517e37ce)。为了以后能及时发现这种问题，我就设置了不使用本地字体直接使用 web font 的 Stylus。
+
+恐怖的丢包率，加上自己亲身体验 web font 加载，让我意识到了，在国内普通网络环境下，如果你的设备没有安装思源宋体，访问我的博客会是多么难受（
+
+## 主体思路
+
+“另一种”的主体思路[和“一种”是一样的](https://ayu.land/webfont#principle)，就是把字体划分成常用字和非常用字。但是“一种”在这之后选择了使用动态规划 + 进化算法来对常用字进行进一步的拆分，“另一种”所做的优化则基于这样一个观察：虽然一个博客有一堆页面，但 80% 的人只会访问 20% 的页面（，一个字体是否常用，不仅要看出现在几个页面，还要看出现在哪些页面。
+
+这时候，~~一直充当[不蒜子](https://busuanzi.ibruce.info/)平替（哪平价了啊）的~~ Plausible Analytics 就发挥作用了：近段时间的页面访问量可以用来估计每个页面被访问的概率，为常用字的划分提供可靠的数据支撑。
+
+一旦估计出了每个页面的被访问概率，就可以对每个 glyph 分别计算出，如果在每一个使用了它的页面上都加载一遍，期望代价是多少，也就是使用了它的所有页面的被访问概率之和。如果这个数大于 1，就设为常用，否则设为不常用。
+
+这个思路还是非常简单的，可以说只是“结合实际，采取启发式方法”，也称不上是一种新的方案（
+
+## 具体实现
+
+虽然思路简单，但实现起来还是有点复杂的，坑有点多。
+
+### 获取页面使用的字体
+
+如果整个页面都使用一种字体，直接看 HTML 里有哪些中文就差不多了，但我不仅<span class="font-sans">非正文用的是黑体</span>，<span class="font-kai">引用块还是楷体</span>，说不定在哪冒出来个`等宽`或者 $\LaTeX\text{公式}$，有时候还会**加粗**，更别提心情好的时候会像这段一样直接塞 `<span class="">` 来修改样式。
+
+一开始我通过 [subfont](https://github.com/Munter/subfont) 找到了 [assetgraph/font-tracer](https://github.com/assetgraph/font-tracer)，但这个 font-tracer 就两个 star，没有文档，[AssetGraph](https://github.com/assetgraph/assetgraph) 又是一个 12 年前的老项目，连 Definitely Typed 都没有，试了一下完全用不会。
+
+想了想，最靠谱的还是直接交给浏览器来处理，所以就用 [puppeteer](https://github.com/puppeteer/puppeteer) 了。目前采用的算法是：遍历 `<body>`，跳过 `<script>` 和 `<style>` 子树，找到所有 [Text 节点](https://developer.mozilla.org/docs/Web/API/Text)，再加上所有 `<img>` 的 `alt` 属性。找到节点后，可以用 [`getComputedStyle`](https://developer.mozilla.org/docs/Web/API/Window/getComputedStyle) 获取 `font-family` 和 `font-weight` 等信息。
+
+因为要处理很多页面，也要花一点时间，所以用了 [puppeteer-cluster](https://github.com/thomasdondorf/puppeteer-cluster) 来并行处理。（不知道为什么，在 vitest 和 iles 中运行时，不加参数会报错，而加了 `--no-sandbox --no-zygote` 之后并行的优化效果就差一些。）
+
+代码：[`getPagesFontInfo.ts`](https://github.com/ouuan/glyph-segregator/blob/master/src/getPagesFontInfo.ts)
+
+### 字体匹配
+
+[完整的字体匹配](https://www.w3.org/TR/css-fonts-4/#font-style-matching)是非常复杂的，我也没找到相关的库，就自己写了一个简陋的只匹配完整 `font-family` 和 `font-weight` 的算法。
+
+其实一般 `font-weight` 也就 400 和 700，但我还是实现了一个 [完整的 `font-weight` fallback](https://developer.mozilla.org/docs/Web/CSS/font-weight#fallback_weights)。
+
+代码：[`matchFonts.ts`](https://github.com/ouuan/glyph-segregator/blob/master/src/matchFonts.ts)
+
+### 常用字体划分
+
+最关键的这一步实现起来是最简单的，因为是纯算法的，不涉及到可怕的 Web（
+
+代码：[`getCommonGlyphs.ts`](https://github.com/ouuan/glyph-segregator/blob/master/src/getCommonGlyphs.ts)
+
+### 生成字体文件和 @font-face
+
+我使用的是 [subset-font](https://github.com/papandreou/subset-font) 来生成字体子集文件。
+
+这一步最大的困难，是正确地写出 `@font-face`。
+
+一开始我是给常用字 (common) 和非常用字 (unique) 不同的 `font-family`，然后发现，在特殊情况下（幸好我的博客文章列表就触发了这个问题，不然真没想到），某个字的常规样式属于 common 而粗体属于 unique，由于 `font-family` 里 common 排在 unique 前面，就会匹配到常规样式，而加载不出粗体。
+
+为了解决这个问题，common 和 unique 需要使用同一个 `font-family`。因为用过 Google Fonts 子集划分方案，我知道有不同 `unicode-range` 的 `@font-face` 是可以组合在一起的，难道我需要计算出精确的 `unicode-range` 写在 CSS 里？
+
+为此，我粗略地读了半天（~~这两个词不冲突~~）[CSS Fonts Module Level 4 W3C Working Draft](https://www.w3.org/TR/css-fonts-4/)，发现它说，`unicode-range` 可以比真实的 character map 大很多，若干 `@font-face` 的 `unicode-range` 也可以相交。但是，它没说两个 `@font-face` 能不能除了 `src` 啥都一样，[而只说了](https://www.w3.org/TR/css-fonts-4/#composite-fonts)：
+
+> Multiple @font-face rules with different unicode ranges for the same family and style descriptor values can be used to create composite fonts that mix the glyphs from different fonts for different scripts.
+
+我也不敢依赖于实验结果，就没做实验，直接加上了粗略但是保证 common 和 unique 不相同的 `unicode-range`，具体来说就是 0 到最大的 code point。
+
+这里从 0 开始也是有一定原因的：我在看 specification 的时候注意到一个奇怪的东西叫 [_first available font_](https://www.w3.org/TR/css-fonts-4/#first-available-font)，虽然没太看懂具体是什么意思，但大致上感觉最好是让 `unicode-range` 包含空格，为了保险就从 0 开始了。
+
+最后还有一个坑：如果 composite font 中两个 `@font-face` 的 `unicode-range` 相交，给交集内的字符匹配字体时，会按出现位置的逆序进行匹配。
+
+这能有什么坑呢（，如果不动手试一试真的很难想到.. 按照整体的设计，访问一个页面时很有可能是 common 字体已经缓存好了，需要下载 unique 字体，如果 unique 的 `@font-face` 放在 common 的后面，就会优先匹配，从而阻塞住已经缓存的 common 字体，整个页面都要等 unique 下载好才切换字体，而不是先显示 common 再显示剩下的 unique。当然，反过来的话，unique 也会等 common，但这样一般来说是更好的。
+
+还有一些细节优化：
+
+-   生成 unique 字体文件时，文件名里有 hash 就够了，不要再添加和页面有关的信息，这样的话如果两个页面刚好 unique glyph 集合相同就可以共用一个字体文件。
+-   如果一个页面一个 common glyph 都没用，就可以不添加 common font 的 `@font-face`。
+
+代码：[`generateFontFiles.ts`](https://github.com/ouuan/glyph-segregator/blob/master/src/generateFontFiles.ts)
+
+### 将 CSS 写入 HTML 文件
+
+虽然也有想过直接找到 `</head>` 文本替换，但为了靠谱还是用的 [`jsdom`](https://github.com/jsdom/jsdom)。
+
+这部分的代码是最短的：[`injectCSS.ts`](https://github.com/ouuan/glyph-segregator/blob/master/src/injectCSS.ts)
+
+### 给项目起名
+
+主体思路是把 glyph 分成两类分别对待，就很有 segregate 的感觉（
+
+主要还是因为刚写了一个 [segregated fit](/post/2022/11/csapp-9#segregated-fit) 印象比较深刻，所以就取了这么个名字。
+
+### 在博客中使用
+
+就是 [从 iles 获取页面信息](https://iles-docs.netlify.app/config#ssg-onsiterendered)，从 [Plausible Stats API](https://plausible.io/docs/stats-api#get-apiv1statsbreakdown) 获取访问量，调用 [Vite API](https://vitejs.dev/guide/api-javascript.html#preview) 跑一个 preview server，然后调用 `glyph-segregator`。直接看[代码](https://github.com/ouuan/iles-blog/commit/695f8b22ca3a791ceeb5440e81a6fa377b50bb3b#diff-ca899b3bf20a893bb3dfb058072a2b279953ce008f562727ad74a76d520be662)吧。
+
+访问概率的计算方式是，看每个页面近六个月的访客量，加一后除以其中最高的加二（其实这个加一加二基本没啥用）。用最高访客量而非实际访客数作分母，是想在算法的基础上更加偏向于划分到常用字一些，稍微优化一点访问页面较多的访客的体验，也可以少一次 API 查询。近六个月是因为，API 默认的粒度只有一或六个月，如果要两三个月就得自己把日期算出来，虽然但是懒得写（
+
+更新常用字集合用的是 [scheduled GitHub Actions](https://github.com/ouuan/iles-blog/blob/master/.github/workflows/update-fonts.yml)，在 Docker 里跑是因为 [Connection refused for local server in github actions workflow](https://stackoverflow.com/questions/74332455/connection-refused-for-local-server-in-github-actions-workflow/74341376)。
+
+## 实际效果
+
+整个 `glyphSegregator` 用时 40s 左右，glyph 数量和 common font file size (woff2) 如表所示：
+
+|                                               | Noto Serif SC Regular | Noto Serif SC Bold | LXGW WenKai Regular | LXGW WenKai Bold |
+| :-------------------------------------------: | :-------------------: | :----------------: | :-----------------: | :--------------: |
+| <span class="whitespace-nowrap">common</span> |    575 (162.7KiB)     |    25 (8.5KiB)     |     37 (5.2KiB)     |        0         |
+|                    unique                     |         2311          |        1536        |         161         |        0         |
+
+首页只需加载两个 Regular 的 common font，每个页面需要加载的字体文件总大小缩减到了原来使用子集化的 1/4 左右，并且加载的字体文件数量从 10\~30 个缩减到了 2\~6 个。
+
+作为对比，如果出现在两个页面就设为常用字，Noto Serif SC Regular 的 common 有 299KiB，出现在三个页面则是 227KiB。
