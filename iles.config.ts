@@ -101,7 +101,7 @@ export default defineConfig({
       const updateCommonGlyphs = Boolean(process.env.UPDATE_COMMON_GLYPHS);
 
       const breakdown = updateCommonGlyphs ? await got.get(
-        'https://plausible.ouuan.moe/api/v1/stats/breakdown?site_id=ouuan.moe&period=6mo&property=event:page',
+        'https://plausible.ouuan.moe/api/v1/stats/breakdown?site_id=ouuan.moe&period=6mo&property=event:page&limit=1000',
         {
           headers: {
             Authorization: `Bearer ${process.env.PLAUSIBLE_TOKEN}`,
