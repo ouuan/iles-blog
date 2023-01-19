@@ -111,7 +111,7 @@ tags:
 
 就是 [从 iles 获取页面信息](https://iles-docs.netlify.app/config#ssg-onsiterendered)，从 [Plausible Stats API](https://plausible.io/docs/stats-api#get-apiv1statsbreakdown) 获取访问量，调用 [Vite API](https://vitejs.dev/guide/api-javascript.html#preview) 跑一个 preview server，然后调用 `glyph-segregator`。直接看[代码](https://github.com/ouuan/iles-blog/commit/695f8b22ca3a791ceeb5440e81a6fa377b50bb3b#diff-ca899b3bf20a893bb3dfb058072a2b279953ce008f562727ad74a76d520be662)吧。
 
-访问概率的计算方式是，看每个页面近六个月的访客量，加一后除以其中最高的加二（其实这个加一加二基本没啥用）。用最高访客量而非实际访客数作分母，是想在算法的基础上更加偏向于划分到常用字一些，稍微优化一点访问页面较多的访客的体验，也可以少一次 API 查询。近六个月是因为，API 默认的粒度只有一或六个月，如果要两三个月就得自己把日期算出来，虽然但是懒得写（
+访问概率的计算方式是，看每个页面近 90 天的访客数，加一后除以其中最高的加二（其实这个加一加二基本没啥用）。用最高页面访客数而非实际总访客数作分母，是想在算法的基础上更加偏向于划分到常用字一些，稍微优化一点访问页面较多的访客的体验，也可以少一次 API 查询。
 
 更新常用字集合用的是 [scheduled GitHub Actions](https://github.com/ouuan/iles-blog/blob/master/.github/workflows/update-fonts.yml)，在 Docker 里跑是因为 [Connection refused for local server in github actions workflow](https://stackoverflow.com/questions/74332455/connection-refused-for-local-server-in-github-actions-workflow/74341376)。
 
