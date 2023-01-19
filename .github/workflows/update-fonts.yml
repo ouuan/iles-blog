@@ -15,6 +15,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Install Chromium
+        run: |
+          apt update
+          apt install -y chromium
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
