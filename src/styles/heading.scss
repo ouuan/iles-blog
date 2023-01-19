@@ -20,7 +20,7 @@
       font-size: calc(0.25em + 0.75rem);
     }
 
-    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    @media (prefers-reduced-motion: no-preference) {
       @apply opacity-0 transition-opacity ease-out;
     }
   }
