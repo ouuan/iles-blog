@@ -1,0 +1,30 @@
+name: Update Font Cache
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '37 21 28 * *'
+
+jobs:
+  update-fonts:
+    runs-on: ubuntu-latest
+    container: # https://stackoverflow.com/a/74341376
+      image: node:lts
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Fix file ownerships
+        run: chown -R "$(whoami):$(whoami)" .
+      - run: npx pnpm i
+      - run: npx pnpm build
+        env:
+          UPDATE_COMMON_GLYPHS: 1
+          PLAUSIBLE_TOKEN: ${{ secrets.PLAUSIBLE_TOKEN }}
+      - uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: 'chore: update font cache'
+          title: 'chore: update font cache'
+          branch: create-pull-request/update-fonts
+          delete-branch: true

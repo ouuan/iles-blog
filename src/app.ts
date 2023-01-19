@@ -14,12 +14,6 @@ function pageType(href: string) {
   return 'Web';
 }
 
-const fonts = [
-  '/assets/fonts/noto-serif-sc/NotoSerifSC.5165abd4.css',
-  '/assets/fonts/lxgw-wenkai/LXGWWenKai.e72fd0cc.css',
-  '/vendors/katex/katex.css',
-];
-
 export default defineApp({
   head({ frontmatter, site, route }) {
     return {
@@ -49,9 +43,7 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
 })()`,
       }],
       noscript: [{
-        children: fonts.map((href) => `<link rel="stylesheet" href="${href}">`).concat(
-          `<style>${noscriptStyle.replace(/\s+/g, ' ')}</style>`,
-        ).join(''),
+        children: `<style>${noscriptStyle.replace(/\s+/g, ' ')}</style>`,
       }],
       link: [
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
@@ -90,12 +82,8 @@ document.documentElement.classList.add(dark ? 'dark' : 'light');
         },
         { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
         { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
-      ].concat(fonts.map((href) => ({
-        rel: 'stylesheet',
-        href,
-        media: 'print',
-        onload: 'this.media="all";this.onload=null',
-      }))),
+        { rel: 'stylesheet', href: '/vendors/katex/katex.css' },
+      ],
       meta: [
         { name: 'author', content: site.author },
         { name: 'keywords', content: computed(() => frontmatter.tags || 'blog') },

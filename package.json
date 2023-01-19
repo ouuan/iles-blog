@@ -54,6 +54,7 @@
     "eslint": "^8.31.0",
     "glob": "^8.0.3",
     "glob-promise": "^6.0.1",
+    "glyph-segregator": "^0.2.4",
     "got": "^11.8.6",
     "rehype-katex": "^6.0.2",
     "remark-gfm": "^3.0.1",
