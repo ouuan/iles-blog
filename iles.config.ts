@@ -11,6 +11,7 @@ import got from 'got';
 import { preview } from 'vite';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
+import { sub as subDate } from 'date-fns';
 import { PageInfo, FontInfo, glyphSegregator } from 'glyph-segregator';
 
 import breakLongCode from './src/unified/breakLongCode';
@@ -100,8 +101,18 @@ export default defineConfig({
     async onSiteRendered({ pages }) {
       const updateCommonGlyphs = Boolean(process.env.UPDATE_COMMON_GLYPHS);
 
+      const now = new Date();
+      const fromDate = subDate(now, { days: 90 }).toISOString().slice(0, 10);
+      const nowDate = now.toISOString().slice(0, 10);
+
       const breakdown = updateCommonGlyphs ? await got.get(
-        'https://plausible.ouuan.moe/api/v1/stats/breakdown?site_id=ouuan.moe&period=6mo&property=event:page&limit=1000',
+        `https://plausible.ouuan.moe/api/v1/stats/breakdown?${[
+          'site_id=ouuan.moe',
+          'property=event:page',
+          'period=custom',
+          `date=${fromDate},${nowDate}`,
+          'limit=1000',
+        ].join('&')}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.PLAUSIBLE_TOKEN}`,
