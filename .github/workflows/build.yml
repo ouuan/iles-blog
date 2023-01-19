@@ -6,10 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: # https://stackoverflow.com/a/74341376
-      image: raviqqe/muffet
+      image: node:lts
     steps:
-      - name: Install dependencies
-        run: apk add bash git npm
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -22,6 +20,9 @@ jobs:
         shell: bash
         run: |
           set -xeuo pipefail
-          "$(npx pnpm bin)"/iles preview &
-          sleep 10
-          /muffet http://localhost:4173 -i 'http://localhost'
+          npm exec iles preview &
+          sleep 5
+          wget -c "$(curl -L https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
+          mkdir -p muffet
+          tar xf muffet_*_Linux_x86_64.tar.gz -C muffet
+          muffet/muffet http://localhost:4173 -i 'http://localhost'
