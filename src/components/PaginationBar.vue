@@ -46,7 +46,7 @@
             item.current && 'btn-invert' || 'btn-normal',
           ]"
           :href="`${hrefPrefix}/${item.index}`"
-          :aria-current="item.current"
+          :aria-current="item.current && 'page'"
           :aria-label="`第${item.index}页`"
         >
           {{ item.index }}
