@@ -75,7 +75,7 @@ async function copy() {
   @apply absolute top-0 right-0;
 
   @media (hover: hover) {
-    @apply transition-opacity ease-out opacity-10 top-8 right-2;
+    @apply transition-opacity ease-out opacity-10 top-9 right-3;
   }
 
   & > span {
@@ -83,8 +83,8 @@ async function copy() {
     @apply w-6 h-6 text-sm;
 
     @media (hover: hover) {
-      @apply w-8 h-8 b-2 rd-2 text-base;
-      @apply bg-nested active:bg-area transition-colors ease-out;
+      @apply w-8 h-8 b-2 rd-3 text-base shadow;
+      @apply bg-popup active:bg-card transition-colors ease-out;
     }
   }
 }
