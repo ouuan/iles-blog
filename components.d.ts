@@ -21,7 +21,6 @@ declare module '@vue/runtime-core' {
     Head: typeof import('@vueuse/head')['Head']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
     Island: typeof import('./node_modules/.pnpm/iles@0.8.7_ovmyjmuuyckt3r3gpaexj2onji/node_modules/iles/dist/client/app/components/Island.vue')['default']
-    Latin: typeof import('./src/components/Latin.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
     PaginationBar: typeof import('./src/components/PaginationBar.vue')['default']
