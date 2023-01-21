@@ -79,13 +79,12 @@ async function copy() {
   }
 
   & > span {
-    @apply bg-nested active:bg-area transition-colors ease-out;
-    @apply b-2 rd-1;
-    @apply w-6 h-6 text-sm;
     @apply flex justify-center items-center;
+    @apply w-6 h-6 text-sm;
 
     @media (hover: hover) {
-      @apply w-8 h-8 rd-2 text-base;
+      @apply w-8 h-8 b-2 rd-2 text-base;
+      @apply bg-nested active:bg-area transition-colors ease-out;
     }
   }
 }
