@@ -14,11 +14,12 @@ import { fileURLToPath } from 'url';
 import { sub as subDate } from 'date-fns';
 import { PageInfo, FontInfo, glyphSegregator } from 'glyph-segregator';
 
-import breakLongCode from './src/unified/breakLongCode';
-import wrapTableOverflowAuto from './src/unified/wrapTableOverflowAuto';
-import addHeadingForCard from './src/unified/addHeadingForCard';
-import hideHeadingForCard from './src/unified/hideHeadingForCard';
-import remarkShiki from './src/unified/remarkShiki';
+import remarkShiki from './src/remark/remarkShiki';
+import addHeadingForCard from './src/remark/addHeadingForCard';
+
+import breakLongCode from './src/rehype/breakLongCode';
+import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
+import hideHeadingForCard from './src/rehype/hideHeadingForCard';
 
 const DIRNAME = dirname(fileURLToPath(import.meta.url));
 
