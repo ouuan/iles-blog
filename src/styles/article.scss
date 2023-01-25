@@ -1,9 +1,11 @@
 .article-style {
   @apply font-serif break-anywhere text-justify;
 
-  // not `:not(td, th)` for compatibility
-  * :not(td):not(th) {
-    @apply text-initial sm:text-justify;
+  // No text-justify for nested elements on small screens,
+  // because nested elements are usually narrow.
+  // Set on depth-2 only so that descendants can override it.
+  & > * > * {
+    @apply text-initial sm:text-inherit;
   }
 
   blockquote {
