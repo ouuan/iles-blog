@@ -5,3 +5,11 @@
 .math-display {
   @apply overflow-auto;
 }
+
+.katex .text {
+  @apply font-latin;
+
+  .cjk_fallback {
+    @apply font-serif;
+  }
+}
