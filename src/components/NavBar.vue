@@ -14,7 +14,7 @@
           class="p-3 bghover font-serif text-xl flex items-center"
           href="/"
         >
-          <span>{{ site.title }}</span>
+          <span>ouuan<span class="font-latin">’</span>s blog</span>
         </a>
       </div>
       <nav class="flex">
@@ -58,7 +58,3 @@
     </div>
   </header>
 </template>
-
-<script setup lang="ts">
-import site from '~/site';
-</script>
