@@ -4,8 +4,4 @@
 
 .math-display {
   @apply overflow-auto;
-
-  .katex-display > .katex > .katex-html {
-    @apply flex justify-center;
-  }
 }
