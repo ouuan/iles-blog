@@ -37,40 +37,42 @@
         v-for="result of results"
         :key="`${pattern}-${result.refIndex}`"
       >
-        <div
-          v-if="(result.score ?? 1) < 0.1 || showMore"
-          class="standard-card"
-        >
-          <post-head
-            :href="result.meta.href"
-            :filename="result.meta.filename"
-            :frontmatter="result.meta.frontmatter"
-            :tag-matched="result.tagMatched"
+        <template v-if="result.meta">
+          <div
+            v-if="(result.score ?? 1) < 0.1 || showMore"
+            class="standard-card"
           >
-            <template #title>
-              <span
-                v-for="(part, index) of result.titleParts"
-                :key="index"
-                :class="CLASS[part.type]"
-                :title="TITLE[part.type]"
-              >{{ part.content }}</span>
-            </template>
-          </post-head>
-          <pre class="mt-6 mb-3 max-h-72 overflow-auto whitespace-pre-wrap"><span
+            <post-head
+              :href="result.meta.href"
+              :filename="result.meta.filename"
+              :frontmatter="result.meta.frontmatter"
+              :tag-matched="result.tagMatched"
+            >
+              <template #title>
+                <span
+                  v-for="(part, index) of result.titleParts"
+                  :key="index"
+                  :class="CLASS[part.type]"
+                  :title="TITLE[part.type]"
+                >{{ part.content }}</span>
+              </template>
+            </post-head>
+            <pre class="mt-6 mb-3 max-h-72 overflow-auto whitespace-pre-wrap"><span
             v-for="(part, index) of result.contentParts"
             :key="index"
             :class="CLASS[part.type]"
             :title="TITLE[part.type]"
-          >{{ part.content }}</span></pre>
-        </div>
-        <div
-          v-else
-          class="standard-card"
-        >
-          <p class="my-3">
-            （匹配程度低，结果已隐藏）
-          </p>
-        </div>
+            >{{ part.content }}</span></pre>
+          </div>
+          <div
+            v-else
+            class="standard-card"
+          >
+            <p class="my-3">
+              （匹配程度低，结果已隐藏）
+            </p>
+          </div>
+        </template>
       </template>
     </template>
     <div
@@ -149,6 +151,7 @@ const CLASS = {
 const CONTEXT_LENGTH = 50;
 
 function matchType(content: string) {
+  if (pattern.value === undefined) return 'fuzzy';
   const result = new Fuse([content], config).search(pattern.value);
   const score = result[0]?.score;
   return score !== undefined && score < 0.002 ? 'exact' : 'fuzzy';
@@ -161,6 +164,7 @@ function search() {
   }).map((result) => {
     const { refIndex, score } = result;
     const meta = props.meta[refIndex];
+    if (!meta) return {};
     let titleParts: MatchPart[] = [{ type: 'miss', content: meta.frontmatter.title }];
     let contentParts: MatchPart[] = [{ type: 'miss', content: '' }];
     let tagMatched = false;
@@ -177,7 +181,9 @@ function search() {
       if (indices.length === 0) indices = match.indices.slice();
       indices.sort((lhs, rhs) => lhs[0] - rhs[0]);
       let parts: MatchPart[] = [];
-      let last = match.key === 'title' ? 0 : Math.max(0, indices[0][0] - CONTEXT_LENGTH);
+      const firstIndices = indices[0];
+      if (!firstIndices) return;
+      let last = match.key === 'title' ? 0 : Math.max(0, firstIndices[0] - CONTEXT_LENGTH);
       indices.forEach(([start, end]) => {
         if (start - last > CONTEXT_LENGTH * 3) {
           parts.push({ type: 'miss', content: value.slice(last, last + CONTEXT_LENGTH) });

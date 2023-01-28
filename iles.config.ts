@@ -59,16 +59,19 @@ export default defineConfig({
       strictDate: true,
     })).all.filter((commit) => !commit.body.includes('[log skip]'));
 
-    if (log.length) {
-      frontmatter.lastUpdated = new Date(log[0].date);
-      frontmatter.published = new Date(log[log.length - 1].date);
+    const latestCommit = log[0];
+    const firstCommit = log.at(-1);
+
+    if (latestCommit && firstCommit) {
+      frontmatter.lastUpdated = new Date(latestCommit.date);
+      frontmatter.published = new Date(firstCommit.date);
     } else {
       const { birthtime, mtime } = await stat(filename);
       frontmatter.lastUpdated = mtime;
       frontmatter.published = birthtime;
     }
 
-    const postHref = filename.match(/^src\/pages\/(post\/.*)\.mdx?$/)?.[1].toLowerCase();
+    const postHref = filename.match(/^src\/pages\/(post\/.*)\.mdx?$/)?.[1]?.toLowerCase();
     if (process.env.NODE_ENV === 'production' && postHref) {
       const data = await got.get(
         new URL(
@@ -137,7 +140,7 @@ export default defineConfig({
       const previewServer = await preview();
 
       const pagesInfo: PageInfo[] = pages.filter((page) => page.outputFilename.endsWith('.html')).map((page) => ({
-        url: new URL(page.path, previewServer.resolvedUrls.local[0].replace('localhost', '127.0.0.1')).href,
+        url: new URL(page.path, previewServer.resolvedUrls.local?.[0]?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:4173').href,
         filePath: resolve(DIRNAME, 'dist', page.outputFilename),
         probability: ((visitorMap.get(page.path) || 0) + 1) / (maxVisitor + 2),
       }));

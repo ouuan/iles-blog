@@ -12,7 +12,7 @@ const breakLongCode: Plugin<[], Root> = () => (root) => {
   selectAll(':not(pre) > code', root).forEach((node) => {
     if (node.children.length !== 1) return;
     const child = node.children[0];
-    if (child.type !== 'text') return;
+    if (child?.type !== 'text') return;
     if (maxPartLength(child.value.split(/\s/)) <= 10) return;
     let parts = child.value.split(/\b/);
     if (maxPartLength(parts) > 12) {

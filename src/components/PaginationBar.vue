@@ -116,18 +116,16 @@ const items = computed(() => {
     let largeOnly = true;
     if (page === 1 || page === props.pageCount) largeOnly = false;
     if (Math.abs(page - props.currentPage) <= 1) largeOnly = false;
-    if (res.length) {
-      const last = res[res.length - 1];
-      if (last.type === 'page') {
-        if (page !== last.index + 1) res.push({ type: 'gap', smallOnly: false });
-        else {
-          for (let i = res.length - 1; i >= 0; i -= 1) {
-            const item = res[i];
-            if (item.type === 'gap') break;
-            if (!item.largeOnly) {
-              if (page !== item.index + 1) res.push({ type: 'gap', smallOnly: true });
-              break;
-            }
+    const last = res[res.length - 1];
+    if (last?.type === 'page') {
+      if (page !== last.index + 1) res.push({ type: 'gap', smallOnly: false });
+      else {
+        for (let i = res.length - 1; i >= 0; i -= 1) {
+          const item = res[i];
+          if (item?.type !== 'page') break;
+          if (!item.largeOnly) {
+            if (page !== item.index + 1) res.push({ type: 'gap', smallOnly: true });
+            break;
           }
         }
       }

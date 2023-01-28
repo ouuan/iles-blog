@@ -115,7 +115,8 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
 
   let [from, to] = [0, 0];
   if (meta && /^\d+-\d+$/.test(meta)) {
-    [from, to] = meta.split('-').map((n) => parseInt(n, 10));
+    const [x, y] = meta.split('-').map((n) => parseInt(n, 10));
+    if (x && y) [from, to] = [x, y];
   }
 
   const html = await highlight(value, lang || 'plain', from, to);

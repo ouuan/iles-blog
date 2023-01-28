@@ -115,7 +115,9 @@ const pageCount = usePageCount(propRefs);
 
 function isPostNewYear(index: number) {
   if (index === 0) return true;
-  return posts.value[index].frontmatter.date.getYear()
-     !== posts.value[index - 1].frontmatter.date.getYear();
+  const current = posts.value[index];
+  const previous = posts.value[index - 1];
+  return current && previous
+    && current.frontmatter.date.getYear() !== previous.frontmatter.date.getYear();
 }
 </script>
