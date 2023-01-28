@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { Heading } from '@islands/headings';
+import type { Heading } from '@islands/headings';
 
 defineProps<{
   headings: Heading[];

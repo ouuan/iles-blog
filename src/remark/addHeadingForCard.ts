@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-import { Plugin } from 'unified';
-import { Root } from 'mdast';
+import type { Plugin } from 'unified';
+import type { Root } from 'mdast';
 
 const addHeadingForCard: Plugin<[], Root> = () => (root) => {
   let hasH2 = false;

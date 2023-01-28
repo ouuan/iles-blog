@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { Post } from '~/composables/usePosts';
+import type { Post } from '~/composables/usePosts';
 
 const { site } = usePage();
 

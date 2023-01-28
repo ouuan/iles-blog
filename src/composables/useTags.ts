@@ -1,5 +1,5 @@
 import { computed } from 'vue';
-import { Post } from './usePosts';
+import type { Post } from './usePosts';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.{md,mdx}');
 

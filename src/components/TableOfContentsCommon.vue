@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { Heading } from '@islands/headings';
+import type { Heading } from '@islands/headings';
 import { ref } from 'vue';
 import {
   useWindowScroll,
@@ -46,7 +46,7 @@ import {
   watchDebounced,
   watchThrottled,
 } from '@vueuse/core';
-import TOCNode from '~/types/TOCNode';
+import type TOCNode from '~/types/TOCNode';
 
 const props = defineProps<{
   headings: Heading[];

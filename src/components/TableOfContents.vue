@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import { useMediaQuery } from '@vueuse/core';
-import { Heading } from '@islands/headings';
+import type { Heading } from '@islands/headings';
 
 defineProps<{
   headings?: Heading[];

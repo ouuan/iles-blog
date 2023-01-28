@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-import { Plugin } from 'unified';
-import { Content, Root } from 'mdast';
+import type { Plugin } from 'unified';
+import type { Content, Root } from 'mdast';
 import { fileURLToPath } from 'url';
 import { resolve } from 'path';
 import {

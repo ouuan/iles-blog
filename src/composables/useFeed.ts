@@ -1,4 +1,4 @@
-import { FeedItem, FeedOptions } from '@islands/feed';
+import type { FeedItem, FeedOptions } from '@islands/feed';
 import { h } from 'vue';
 
 import useCopyrightYear from './useCopyrightYear';

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-import { Plugin } from 'unified';
-import { Root } from 'hast';
+import type { Plugin } from 'unified';
+import type { Root } from 'hast';
 
 const hideHeadingForCard: Plugin<[], Root> = () => (root) => {
   root.children.forEach((child) => {
