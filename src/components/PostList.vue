@@ -19,7 +19,9 @@
         class="flex items-center relative pl-4 mt-2"
       >
         <span class="absolute left--6px w-8px h-8px rd-4px bg-gray-5 dark:bg-gray-10" />
-        <span class="text-6 font-bold font-serif">{{ format(post.frontmatter.date, 'yyyy') }}</span>
+        <span class="text-6 font-bold font-serif">
+          {{ format(post.frontmatter[displayTime], 'yyyy') }}
+        </span>
       </li>
       <li>
         <a
@@ -118,6 +120,7 @@ function isPostNewYear(index: number) {
   const current = posts.value[index];
   const previous = posts.value[index - 1];
   return current && previous
-    && current.frontmatter.date.getYear() !== previous.frontmatter.date.getYear();
+     && current.frontmatter[props.displayTime].getYear()
+    !== previous.frontmatter[props.displayTime].getYear();
 }
 </script>
