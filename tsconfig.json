@@ -1,32 +1,14 @@
 {
+  "extends": "@ouuan/tsconfig-vue/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
-    "target": "esnext",
-    "useDefineForClassFields": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "isolatedModules": true,
-    "strict": true,
-    "jsx": "preserve",
-    "sourceMap": true,
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "paths": {
-      "~/*": [
-        "src/*"
-      ]
-    },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ],
-    "skipLibCheck": true
+    "baseUrl": "./"
   },
   "include": [
+    "*.ts",
     "src/**/*.ts",
-    "src/**/*.vue",
-    "*.ts"
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "components.d.ts"
   ]
 }

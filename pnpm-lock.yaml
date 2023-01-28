@@ -9,6 +9,7 @@ specifiers:
   '@islands/headings': ^0.8.1
   '@islands/images': ^0.8.1
   '@ouuan/eslint-config-vue': ^1.0.3
+  '@ouuan/tsconfig-vue': ^0.3.0
   '@types/hast': ^2.3.4
   '@types/html-escaper': ^3.0.0
   '@types/node': 18.11.18
@@ -79,6 +80,7 @@ devDependencies:
   '@islands/headings': 0.8.1
   '@islands/images': 0.8.1
   '@ouuan/eslint-config-vue': 1.0.3_iukboom6ndih5an6iafl45j2fe
+  '@ouuan/tsconfig-vue': 0.3.0
   '@types/hast': 2.3.4
   '@types/node': 18.11.18
   '@unocss/transformer-directives': 0.48.4
@@ -450,6 +452,18 @@ packages:
       - supports-color
     dev: true
 
+  /@ouuan/tsconfig-base/0.3.0:
+    resolution: {integrity: sha512-SDOUUd766vPxoJfzYtWe+gs27u7bO9f7gD0ao0E7hURgQ6Kl69dmNdtzo9rMZizUV/mTO1ftifzuY7H0duryMA==}
+    dependencies:
+      '@tsconfig/node-lts-strictest-esm': 18.12.1
+    dev: true
+
+  /@ouuan/tsconfig-vue/0.3.0:
+    resolution: {integrity: sha512-jyCYxgFuk/g7oLDR/fzYFJywHBkfeXtlxrR/rLkg952Vq0Ek0wir9I14jaIEXYb9FEtuU7TgGvYPYipqdOpS0A==}
+    dependencies:
+      '@ouuan/tsconfig-base': 0.3.0
+    dev: true
+
   /@polka/url/1.0.0-next.21:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: false
@@ -490,6 +504,10 @@ packages:
   /@tootallnate/once/2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
+    dev: true
+
+  /@tsconfig/node-lts-strictest-esm/18.12.1:
+    resolution: {integrity: sha512-LvBLmaC6Q/txTddLc11OeMHF9XjJFzlilkETJuvBlUvHy9pPiMsoH3nxWZM1FMSO53zp4mJP6gzOzxKEq0me7Q==}
     dev: true
 
   /@types/acorn/4.0.6:
