@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
     PaginationBar: typeof import('./src/components/PaginationBar.vue')['default']
     Picture: typeof import('./node_modules/.pnpm/@islands+images@0.8.1/node_modules/@islands/images/src/Picture.vue')['default']
+    Pie: typeof import('./src/components/Pie.vue')['default']
     PlausibleTrigger: typeof import('./src/components/PlausibleTrigger.vue')['default']
     PostHead: typeof import('./src/components/PostHead.vue')['default']
     PostList: typeof import('./src/components/PostList.vue')['default']

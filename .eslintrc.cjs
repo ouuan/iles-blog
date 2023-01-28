@@ -4,7 +4,7 @@ module.exports = {
   rules: {
     'vue/component-name-in-template-casing': ['error', 'kebab-case', {
       registeredComponentsOnly: false,
-      ignores: ['Picture', 'Head', 'Card'],
+      ignores: ['Picture', 'Head', 'Card', 'Pie'],
     }],
   },
 };

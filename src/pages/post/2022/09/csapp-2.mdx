@@ -53,7 +53,7 @@ word size 表示 virtual memory 的位数（大小），所以也是指针的位
 
 unsigned integer 的编码就是普通的二进制。
 
-signed integer 一般采用补码 (two<span class="font-latin">’</span>s-complement encoding)，即在 word size 为 $w$ 时最高位表示 $-2^{w-1}$ 而非 $2^{w-1}$。也就是说，最高位为 0 表示非负，为 1 表示负数；在最高位为 0 时和 unsigned integer 是一致的，而在最高位为 1 时是同样编码的 unsigned integer 减去 $2^w$。
+signed integer 一般采用补码 (two<Pie/>s-complement encoding)，即在 word size 为 $w$ 时最高位表示 $-2^{w-1}$ 而非 $2^{w-1}$。也就是说，最高位为 0 表示非负，为 1 表示负数；在最高位为 0 时和 unsigned integer 是一致的，而在最高位为 1 时是同样编码的 unsigned integer 减去 $2^w$。
 
 ### signed unsigned 转换
 
