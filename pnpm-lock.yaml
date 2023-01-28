@@ -8,7 +8,7 @@ specifiers:
   '@islands/feed': ^0.8.0
   '@islands/headings': ^0.8.1
   '@islands/images': ^0.8.1
-  '@ouuan/eslint-config-vue': ^1.0.3
+  '@ouuan/eslint-config-vue': ^1.2.0
   '@ouuan/tsconfig-vue': ^0.3.0
   '@types/hast': ^2.3.4
   '@types/html-escaper': ^3.0.0
@@ -79,7 +79,7 @@ devDependencies:
   '@islands/feed': 0.8.0_iles@0.8.7+vue@3.2.45
   '@islands/headings': 0.8.1
   '@islands/images': 0.8.1
-  '@ouuan/eslint-config-vue': 1.0.3_iukboom6ndih5an6iafl45j2fe
+  '@ouuan/eslint-config-vue': 1.2.0_iukboom6ndih5an6iafl45j2fe
   '@ouuan/tsconfig-vue': 0.3.0
   '@types/hast': 2.3.4
   '@types/node': 18.11.18
@@ -417,8 +417,8 @@ packages:
   /@nuxt/devalue/2.0.0:
     resolution: {integrity: sha512-YBI/6o2EBz02tdEJRBK8xkt3zvOFOWlLBf7WKYGBsSYSRtjjgrqPe2skp6VLLmKx5WbHHDNcW+6oACaurxGzeA==}
 
-  /@ouuan/eslint-config-ts/1.0.3_iukboom6ndih5an6iafl45j2fe:
-    resolution: {integrity: sha512-9wUHxLREG2cx6JNKdfCH3/qkajpkED/QnzbXlaLAbWaqZ+VBA+IyPg1MFvBwonwoIBXwmU7K/nql9GmTkLFHRg==}
+  /@ouuan/eslint-config-ts/1.2.0_iukboom6ndih5an6iafl45j2fe:
+    resolution: {integrity: sha512-2V0I256DogtrNwqACxHnq8DXwfZBYO2Pa4+bxAMaszdy8rxNBwOOFYmFQVwKjFYt1Ovb9Kne0jYv1TD1/ETLGQ==}
     peerDependencies:
       eslint: '>=8'
       typescript: '>=4'
@@ -435,13 +435,13 @@ packages:
       - supports-color
     dev: true
 
-  /@ouuan/eslint-config-vue/1.0.3_iukboom6ndih5an6iafl45j2fe:
-    resolution: {integrity: sha512-R1b3FBBqduxzDq4BYTGDVAV2H6sv5FuA64src1CpOhEkFTMLJuycqujGKCCL1xNQlr51nrEBUuk9dNyqWT8iGw==}
+  /@ouuan/eslint-config-vue/1.2.0_iukboom6ndih5an6iafl45j2fe:
+    resolution: {integrity: sha512-PxwgJg+NgYt+KJQ0aE/ZTZH0Mjv8By/PIwUreJWscxDFKjE5VO7bqdPthLKqOwpEjEftc7H0S7H/BMnKvMliXA==}
     peerDependencies:
       eslint: '>=8'
       typescript: '>=4'
     dependencies:
-      '@ouuan/eslint-config-ts': 1.0.3_iukboom6ndih5an6iafl45j2fe
+      '@ouuan/eslint-config-ts': 1.2.0_iukboom6ndih5an6iafl45j2fe
       '@vue/eslint-config-typescript': 11.0.2_r2ofcm3a3mosf6mtxm5d53nciq
       eslint: 8.31.0
       eslint-plugin-vue: 9.9.0_eslint@8.31.0

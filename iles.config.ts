@@ -51,7 +51,7 @@ export default defineConfig({
     if (typeof image === 'string' && image && !image.includes('/')) {
       frontmatter.image = filename
         .replace('src/pages/post/', '/images/')
-        .replace(/[^/]+$/, image);
+        .replace(/[^/]+$/, () => image);
     }
 
     const log = (await simpleGit().log({

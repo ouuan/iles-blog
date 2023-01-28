@@ -46,7 +46,7 @@
     "@islands/feed": "^0.8.0",
     "@islands/headings": "^0.8.1",
     "@islands/images": "^0.8.1",
-    "@ouuan/eslint-config-vue": "^1.0.3",
+    "@ouuan/eslint-config-vue": "^1.2.0",
     "@ouuan/tsconfig-vue": "^0.3.0",
     "@types/hast": "^2.3.4",
     "@types/node": "18.11.18",
