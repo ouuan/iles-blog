@@ -71,7 +71,7 @@ function highlightWithTheme(highlighter: Highlighter, code: string, lang: string
     elements: {
       line({ index, children }) {
         if (from === 0) return `<span>${children}</span>`;
-        if (index < from || index > to) return `<span class="dim">${children}</span>`;
+        if (index + 1 < from || index + 1 > to) return `<span class="dim">${children}</span>`;
         return `<span class="highlighted">${children}</span>`;
       },
     },
