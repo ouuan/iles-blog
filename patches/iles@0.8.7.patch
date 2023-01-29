@@ -1,0 +1,13 @@
+diff --git a/dist/node/chunk-OI2P4L3A.js b/dist/node/chunk-OI2P4L3A.js
+index 3abbd78ec960dad1fac28c17e32bf6fe110a822a..6c28d81768795d2ddc96ecac17db8a57c7097bd7 100644
+--- a/dist/node/chunk-OI2P4L3A.js
++++ b/dist/node/chunk-OI2P4L3A.js
+@@ -38,7 +38,7 @@ async function writeRoute(config, manifest, route, islands = []) {
+       const filename2 = resolve(config.outDir, entry.file);
+       const code = await fs.readFile(filename2, "utf-8");
+       const rebasedCode = await rebaseImports(config, code);
+-      content = content.replace(`<!--${island.placeholder}-->`, `<script><\/script><script type="module" async>${rebasedCode}<\/script>`);
++      content = content.replace(`<!--${island.placeholder}-->`, () => `<script><\/script><script type="module" async>${rebasedCode}<\/script>`);
+     }
+     route.rendered = content.replace("</head>", `${stringifyScripts(config, manifest, preloadScripts)}</head>`);
+   }

@@ -1,5 +1,10 @@
 lockfileVersion: 5.4
 
+patchedDependencies:
+  iles@0.8.7:
+    hash: ndqhp7tuwptobhhyzyw64umno4
+    path: patches/iles@0.8.7.patch
+
 specifiers:
   '@cloudflare/workers-types': ^4.20221111.1
   '@giscus/vue': ^2.2.6
@@ -61,7 +66,7 @@ dependencies:
   fuse.js: 6.6.2
   hast-util-select: 5.0.3
   html-escaper: 3.0.3
-  iles: 0.8.7_ovmyjmuuyckt3r3gpaexj2onji
+  iles: 0.8.7_ndqhp7tuwptobhhyzyw64umno4_ovmyjmuuyckt3r3gpaexj2onji
   isbot: 3.6.5
   katex: 0.16.4
   plausible-tracker: 0.3.8
@@ -266,7 +271,7 @@ packages:
       vue: ^3.2.37
     dependencies:
       feed: 4.2.2
-      iles: 0.8.7_ovmyjmuuyckt3r3gpaexj2onji
+      iles: 0.8.7_ndqhp7tuwptobhhyzyw64umno4_ovmyjmuuyckt3r3gpaexj2onji
       pathe: 0.2.0
       vue: 3.2.45
     dev: true
@@ -2936,7 +2941,7 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /iles/0.8.7_ovmyjmuuyckt3r3gpaexj2onji:
+  /iles/0.8.7_ndqhp7tuwptobhhyzyw64umno4_ovmyjmuuyckt3r3gpaexj2onji:
     resolution: {integrity: sha512-tAP9/VGU5ASt+fL21GaXQUwufHckjNAGLcaoiL27+HKwreqOl2G5oc6wVsJhgeZooyHGR33Wf//23Yp/ebHHUQ==}
     engines: {node: ^14.18 || >= 16.0.0}
     hasBin: true
@@ -2979,6 +2984,7 @@ packages:
       - supports-color
       - terser
       - webpack
+    patched: true
 
   /immutable/4.2.2:
     resolution: {integrity: sha512-fTMKDwtbvO5tldky9QZ2fMX7slR0mYpY5nbnFWYp0fOzDhHqhgIw9KoYgxLWsoNTS9ZHGauHj18DTyEw6BK3Og==}
