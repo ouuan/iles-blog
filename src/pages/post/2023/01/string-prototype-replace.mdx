@@ -1,0 +1,61 @@
+---
+title: String.prototype.replace 与隐藏的“$”
+date: 2023-01-29T16:46:08+08:00
+image:
+tags:
+    - JavaScript
+    - 问题解决记录
+---
+
+tl;dr: `replace` 的第二个参数应当使用字面量或函数，不应使用带变量的字符串表达式。
+
+<Excerpt />
+
+## String.prototype.replace 的第二个参数
+
+(reference: [`String.prototype.replace()` - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#specifying_a_function_as_the_replacement))
+
+```javascript
+replace(pattern, replacement);
+```
+
+第二个参数 `replacement` 可以是字符串或函数，如果是函数，则由匹配信息作为参数计算出 replacement，如果是字符串，则可以使用一些 special replacement pattern：
+
+|                          Pattern                           |                                           Inserts                                            |
+| :--------------------------------------------------------: | :------------------------------------------------------------------------------------------: |
+|                            `$$`                            |                                       Inserts a `"$"`.                                       |
+|                            `$&`                            |                                Inserts the matched substring.                                |
+|                          `` $` ``                          |            Inserts the portion of the string that precedes the matched substring.            |
+|                            `$'`                            |            Inserts the portion of the string that follows the matched substring.             |
+|                            `$n`                            | Inserts the `n`th (1-indexed) capturing group where `n` is a positive integer less than 100. |
+| <code class="important-whitespace-nowrap">$\<Name\></code> |              Inserts the named capturing group where `Name` is the group name.               |
+
+## 使用变量作为 replacement 带来的问题
+
+我实际遇到的问题是 [iles#224](https://github.com/ElMassimo/iles/issues/224)，由于使用了模板字符串作为 replacement，在变量中包含上面这些 special replacement pattern 时，就会错误地替换。
+
+解决方法也很简单，将含变量的表达式改成函数（前面加上 `() => `）就可以了：[regex - javascript - Better Way to Escape Dollar Signs in the String Used By `String.prototype.replace` - Stack Overflow](https://stackoverflow.com/questions/28102491/javascript-better-way-to-escape-dollar-signs-in-the-string-used-by-string-prot)。
+
+因为解决的代价非常小，虽然有的时候根据代码逻辑可以推断出 replacement 不含 `$`，依然可以认为，凡是 replacement 需要用到变量的，都应当替换成函数。
+
+## 使用 ESLint 检测这一问题
+
+[写了个](https://github.com/ouuan/eslint-config/commit/166e332dbdf8dc2ab9ff918302ada13fbd487ead) [`no-restricted-syntax`](https://eslint.org/docs/latest/rules/no-restricted-syntax) 的配置：
+
+```javascript
+{
+  rules: {
+    'no-restricted-syntax': [
+      'error',
+      {
+        selector: "CallExpression[callee.property.name='replace'] > .arguments:nth-child(2):not(Literal):not(ArrowFunctionExpression):not(FunctionExpression)",
+        message: 'Only literals and functions are permitted as the 2nd argument of String.prototype.replace. Use a function that returns the expression instead.',
+      },
+    ],
+  },
+}
+```
+
+因为只是分析 AST，有很多情况会误报，例如 replacement 是一个函数名，但实际代码应该很少出现这样的情况，真遇到了的话再套一层函数就 ok 了，实在不行还能用注释 disable 掉 lint。
+
+没研究过，不知道写 ESLint plugin 能不能更加准确地检测，~~但是差不多得了~~（
