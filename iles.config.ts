@@ -93,8 +93,19 @@ export default defineConfig({
       const suffix = src.includes('?') ? '' : '?preset=normal';
       return `${prefix}${src}${suffix}`;
     },
-    remarkPlugins: [remarkShiki, addHeadingForCard, 'remark-gfm', 'remark-math'],
-    rehypePlugins: [breakLongCode, wrapTableOverflowAuto, hideHeadingForCard, 'rehype-katex'],
+    remarkPlugins: [
+      remarkShiki,
+      addHeadingForCard,
+      'remark-gfm',
+      'remark-math',
+    ],
+    rehypePlugins: [
+      breakLongCode,
+      wrapTableOverflowAuto,
+      hideHeadingForCard,
+      'rehype-plugin-image-native-lazy-loading',
+      'rehype-katex',
+    ],
   },
   ssg: {
     manualChunks(id) {

@@ -32,6 +32,7 @@
     "isbot": "^3.6.5",
     "katex": "^0.16.4",
     "plausible-tracker": "^0.3.8",
+    "rehype-plugin-image-native-lazy-loading": "^1.2.0",
     "shiki": "^0.12.1",
     "simple-git": "^3.15.1",
     "ts-exhaustive-check": "^1.0.0",
