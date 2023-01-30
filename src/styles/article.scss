@@ -1,5 +1,9 @@
 .article-style {
-  @apply font-serif break-anywhere text-justify;
+  &:not(.font-sans) {
+    @apply font-serif;
+  }
+
+  @apply break-anywhere text-justify;
 
   // No text-justify for nested elements on small screens,
   // because nested elements are usually narrow.
