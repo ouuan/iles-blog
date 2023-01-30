@@ -11,6 +11,20 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
     >
       赞赏支持
     </h1>
+    <p class="mt-5 mb-4">
+      If you do not live in China, you can
+      <a href="https://ko-fi.com/ouuan">
+        <img
+          src="/images/kofi2.webp"
+          class="inline max-h-9"
+          alt="Buy Me a Coffee"
+        >
+      </a>
+      on
+      <span class="article-style font-sans">
+        <a href="https://ko-fi.com/ouuan">ko-fi.com</a>
+      </span>.
+    </p>
     <p>如果喜欢我的博客或者其他项目，可以扫码赞赏支持～</p>
     <sponsor-request />
     <div class="article-style">
