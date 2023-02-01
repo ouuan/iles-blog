@@ -132,7 +132,7 @@ tags:
 
 因为通过 Stylus 设置了不使用本地字体，我可以轻松地在本地字体和 web font 之间切换。然后我就偶然发现，切换时一些标题发生了字符的偏移。原因也很简单，就是相邻的两个字符本来有 kerning (字距调整)，但它们被划分到了不同的子集中，生成字体子集时就丢失了 kerning 信息。
 
-我在 glyph-segregator 中 [添加了 `alwaysCommonGlyphs` 选项](https://github.com/ouuan/glyph-segregator/commit/ae3ddd5cbb91f0eb6bbfec7071ee408c28b36dec) 来解决这一问题。最好的解决方案是真的去看一下字体里有哪些 kerning 信息然后相应地处理，但是差不多得了（
+我在 glyph-segregator 中 [添加了 `alwaysCommonGlyphs` 选项](https://github.com/ouuan/glyph-segregator/commit/ae3ddd5cbb91f0eb6bbfec7071ee408c28b36dec)（ASCII 字符总是设为 common，如果需要处理非 ASCII 字符的 kerning 也可以修改设置，但我的博客就假设只有 ASCII 字符会遇到这个问题）来解决这一问题。最好的解决方案是真的去看一下字体里有哪些 kerning 信息然后相应地处理，但是差不多得了（
 
 <Card title="font kerning 示例">
 
@@ -140,3 +140,5 @@ tags:
 -   没 kerning: <span style="font-kerning: none; font-size: 2rem;">TAVeYoW</span>
 
 </Card>
+
+后记的后记：还是改成了[即使未被使用也添加进 common glyph set](https://github.com/ouuan/glyph-segregator/commit/e955eb1c935d77adf0e4bcb5c870fee0614801b6)，否则如果新加一个 always common 的 glyph，为了让它 common，就会改变 common glyph set，导致 cache 失效。这里有一定的 trade-off，要在 cache 失效 / 多塞一些未被使用的 glyph / kerning 挂掉之间进行选择，我还是选择了多塞一些未被使用的 glyph，毕竟整个 ASCII 也没多大。最好是借助人类智慧来预测一下哪些 glyph 更有可能在未来被添加而放进 common glyph set 里，其他 glyph 就只有使用了才放，但是差不多得了（
