@@ -29,7 +29,7 @@ specifiers:
   fuse.js: ^6.6.2
   glob: ^8.0.3
   glob-promise: ^6.0.1
-  glyph-segregator: ^0.5.0
+  glyph-segregator: ^0.5.1
   got: ^11.8.6
   hast-util-select: ^5.0.3
   html-escaper: ^3.0.3
@@ -95,7 +95,7 @@ devDependencies:
   eslint: 8.31.0
   glob: 8.0.3
   glob-promise: 6.0.1_glob@8.0.3
-  glyph-segregator: 0.5.0
+  glyph-segregator: 0.5.1
   got: 11.8.6
   rehype-katex: 6.0.2
   remark-gfm: 3.0.1
@@ -2615,8 +2615,8 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /glyph-segregator/0.5.0:
-    resolution: {integrity: sha512-QmXjO0ps99eFkvoyPzc/8sWRyx4e00kARJvYuzsjxnsrZa0FgRUJ7yqsS5hGs0NcMWCayzfQHMMzt+OgBNSGhg==}
+  /glyph-segregator/0.5.1:
+    resolution: {integrity: sha512-9uqzbDPTrqXj7vQpNwLSUvLLnfbtnAYZhbiYZAzHu3NBDrpZBBkl9+XCofoN/KFnT0C/P00hGTdcwYWd8jCIIg==}
     dependencies:
       consola: 2.15.3
       jsdom: 21.1.0
