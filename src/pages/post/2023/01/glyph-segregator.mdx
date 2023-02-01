@@ -127,3 +127,16 @@ tags:
 首页只需加载两个 Regular 的 common font，每个页面需要加载的字体文件总大小缩减到了原来使用子集化的 1/4 左右，并且加载的字体文件数量从 10\~30 个缩减到了 2\~6 个。
 
 作为对比，如果出现在两个页面就设为常用字，Noto Serif SC Regular 的 common 有 299KiB，出现在三个页面则是 227KiB。
+
+## 后记：font subsetting 与 kerning
+
+因为通过 Stylus 设置了不使用本地字体，我可以轻松地在本地字体和 web font 之间切换。然后我就偶然发现，切换时一些标题发生了字符的偏移。原因也很简单，就是相邻的两个字符本来有 kerning (字距调整)，但它们被划分到了不同的子集中，生成字体子集时就丢失了 kerning 信息。
+
+我在 glyph-segregator 中 [添加了 `alwaysCommonGlyphs` 选项](https://github.com/ouuan/glyph-segregator/commit/ae3ddd5cbb91f0eb6bbfec7071ee408c28b36dec) 来解决这一问题。最好的解决方案是真的去看一下字体里有哪些 kerning 信息然后相应地处理，但是差不多得了（
+
+<Card title="font kerning 示例">
+
+-   有 kerning: <span style="font-kerning: normal; font-size: 2rem;">TAVeYoW</span>
+-   没 kerning: <span style="font-kerning: none; font-size: 2rem;">TAVeYoW</span>
+
+</Card>
