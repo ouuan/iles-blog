@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url';
 import { sub as subDate } from 'date-fns';
 import { PageInfo, FontInfo, glyphSegregator } from 'glyph-segregator';
 
+import { all as m2hAll } from 'mdast-util-to-hast';
 import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
 
 import remarkShiki from './src/remark/remarkShiki';
@@ -104,6 +105,9 @@ export default defineConfig({
     ],
     remarkRehypeOptions: {
       handlers: {
+        emphasis(h, node) {
+          return h(node, 'i', m2hAll(h, node));
+        },
         ...defListHastHandlers,
       },
     },

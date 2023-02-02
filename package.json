@@ -58,6 +58,7 @@
     "glob-promise": "^6.0.1",
     "glyph-segregator": "^0.5.1",
     "got": "^11.8.6",
+    "mdast-util-to-hast": "^12.2.6",
     "micromark": "^3.1.0",
     "rehype-katex": "^6.0.2",
     "remark-definition-list": "^1.2.0",
