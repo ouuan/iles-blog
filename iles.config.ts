@@ -108,6 +108,9 @@ export default defineConfig({
         emphasis(h, node) {
           return h(node, 'i', m2hAll(h, node));
         },
+        delete(h, node) {
+          return h(node, 's', m2hAll(h, node));
+        },
         ...defListHastHandlers,
       },
     },
