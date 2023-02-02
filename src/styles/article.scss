@@ -30,6 +30,7 @@
   h5,
   ul,
   ol,
+  dl,
   img,
   blockquote {
     @apply my-6;
@@ -75,10 +76,9 @@
   ol {
     @apply list-decimal-outside;
   }
+
   ul,
   ol {
-    @apply pl-8;
-
     ul {
       @apply list-circle;
     }
@@ -95,6 +95,12 @@
         @apply list-alpha;
       }
     }
+  }
+
+  dd,
+  ul,
+  ol {
+    @apply pl-8;
 
     p,
     ul,
@@ -103,6 +109,10 @@
     blockquote {
       @apply my-1;
     }
+  }
+
+  dl dt {
+    @apply mt-4 mb-2 font-bold;
   }
 
   hr {

@@ -14,6 +14,8 @@ import { fileURLToPath } from 'url';
 import { sub as subDate } from 'date-fns';
 import { PageInfo, FontInfo, glyphSegregator } from 'glyph-segregator';
 
+import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
+
 import remarkShiki from './src/remark/remarkShiki';
 import addHeadingForCard from './src/remark/addHeadingForCard';
 
@@ -94,11 +96,17 @@ export default defineConfig({
       return `${prefix}${src}${suffix}`;
     },
     remarkPlugins: [
-      remarkShiki,
-      addHeadingForCard,
-      'remark-gfm',
       'remark-math',
+      'remark-gfm',
+      remarkDefinitionList,
+      addHeadingForCard,
+      remarkShiki,
     ],
+    remarkRehypeOptions: {
+      handlers: {
+        ...defListHastHandlers,
+      },
+    },
     rehypePlugins: [
       breakLongCode,
       wrapTableOverflowAuto,
