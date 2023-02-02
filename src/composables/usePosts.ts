@@ -4,6 +4,16 @@ import type { MaybeRef } from '@vueuse/core';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.md{,x}');
 
+const postTitleSet = new Set(posts.value.map((post) => post.frontmatter.title));
+if (postTitleSet.size !== posts.value.length) {
+  if (typeof alert === 'function') {
+    // eslint-disable-next-line no-alert
+    alert('Duplicate post title');
+  } else {
+    throw new Error('Duplicate post title');
+  }
+}
+
 export type Post = typeof posts['value'][number];
 
 // @param pageIndex starts from 1, 0 means all posts
