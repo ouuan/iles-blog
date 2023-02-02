@@ -21,4 +21,4 @@ jobs:
           pnpm i
           pnpm build
       - name: Check
-        run: node quotation-checker src/**/*.*
+        run: node quotation-checker 'src/**/*.{vue,md,mdx}'
