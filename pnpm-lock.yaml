@@ -74,6 +74,7 @@ dependencies:
   iles: 0.8.7_ndqhp7tuwptobhhyzyw64umno4_ovmyjmuuyckt3r3gpaexj2onji
   isbot: 3.6.5
   katex: 0.16.4
+  mdast-util-to-hast: 12.2.6
   plausible-tracker: 0.3.8
   rehype-plugin-image-native-lazy-loading: 1.2.0
   shiki: 0.12.1
@@ -101,7 +102,6 @@ devDependencies:
   glob-promise: 6.0.1_glob@8.0.3
   glyph-segregator: 0.5.1
   got: 11.8.6
-  mdast-util-to-hast: 12.2.6
   micromark: 3.1.0
   rehype-katex: 6.0.2
   remark-definition-list: 1.2.0_u5fd4pglhm75ma4tntw4gwwznu

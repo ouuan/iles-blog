@@ -164,4 +164,8 @@
   .inline-img img {
     @apply inline my-0 h-6;
   }
+
+  .mojikumi {
+    font-feature-settings: "palt";
+  }
 }

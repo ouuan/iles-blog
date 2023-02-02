@@ -19,6 +19,7 @@ import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-lis
 
 import remarkShiki from './src/remark/remarkShiki';
 import addHeadingForCard from './src/remark/addHeadingForCard';
+import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
 
 import breakLongCode from './src/rehype/breakLongCode';
 import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
@@ -100,6 +101,7 @@ export default defineConfig({
       'remark-math',
       'remark-gfm',
       remarkDefinitionList,
+      remarkMojikumi,
       addHeadingForCard,
       remarkShiki,
     ],
@@ -111,6 +113,7 @@ export default defineConfig({
         delete(h, node) {
           return h(node, 's', m2hAll(h, node));
         },
+        ...remarkRehypeMojikumi,
         ...defListHastHandlers,
       },
     },
