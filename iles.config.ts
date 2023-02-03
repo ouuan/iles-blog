@@ -113,6 +113,9 @@ export default defineConfig({
         delete(h, node) {
           return h(node, 's', m2hAll(h, node));
         },
+        heading(h, node) {
+          return h(node, `h${node.depth}`, [h(node, 'span', m2hAll(h, node))]);
+        },
         ...remarkRehypeMojikumi,
         ...defListHastHandlers,
       },
