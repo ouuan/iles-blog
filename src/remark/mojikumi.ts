@@ -6,25 +6,26 @@ import { all, Handlers } from 'mdast-util-to-hast';
 
 const openingBrackets = '‘“（〔［｛〈《「『【｟〘〖«〝';
 const closingBrackets = '’”）〕］｝〉》」』】｠〙〗»〟';
-const middleDots = '・：；';
+const middleDots = '・';
+const colons = '：；';
 const fullStops = '。．';
 const commas = '、，';
-const commasOrFullStops = `${commas}${fullStops}`;
+const halfWidthPauseOrStop = `${commas}${colons}${fullStops}`;
 const space = ' ';
 
 const leftRules = [
-  [commasOrFullStops, closingBrackets],
-  [closingBrackets, commasOrFullStops],
-  [commasOrFullStops, openingBrackets],
+  [halfWidthPauseOrStop, closingBrackets],
+  [closingBrackets, halfWidthPauseOrStop],
+  [halfWidthPauseOrStop, openingBrackets],
   [closingBrackets, openingBrackets],
   [closingBrackets, closingBrackets],
   [closingBrackets, middleDots],
-  [commasOrFullStops, space],
+  [halfWidthPauseOrStop, space],
   [closingBrackets, space],
 ] as const;
 
 const leftWbrRules = [
-  [commasOrFullStops, openingBrackets],
+  [halfWidthPauseOrStop, openingBrackets],
   [closingBrackets, openingBrackets],
 ] as const;
 
@@ -39,7 +40,7 @@ const rightWbrRules = [
 ] as const;
 
 const lineStartRule = openingBrackets;
-const lineEndRule = `${closingBrackets}${commasOrFullStops}`;
+const lineEndRule = `${closingBrackets}${halfWidthPauseOrStop}`;
 
 function dfs(u: Parent) {
   const children: Content[] = [];
