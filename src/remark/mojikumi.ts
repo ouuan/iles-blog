@@ -38,12 +38,16 @@ const rightWbrRules = [
   [middleDots, openingBrackets],
 ] as const;
 
+const lineStartRule = openingBrackets;
+const lineEndRule = `${closingBrackets}${commasOrFullStops}`;
+
 function dfs(u: Parent) {
   const children: Content[] = [];
 
   for (const v of u.children) {
     if (v.type !== 'text') {
-      if ('children' in v) dfs(v);
+      // skip LXGW Wenkai in blockquote
+      if (v.type !== 'blockquote' && 'children' in v) dfs(v);
       children.push(v);
     } else {
       const s = v.value;
@@ -95,6 +99,23 @@ function dfs(u: Parent) {
           }
 
           lastIndex = i;
+        } else if (lineStartRule.includes(l) || lineEndRule.includes(l)) {
+          if (i - 1 > lastIndex) {
+            children.push({
+              type: 'text',
+              value: s.slice(lastIndex, i - 1),
+            });
+          }
+
+          children.push({
+            type: lineStartRule.includes(l) ? 'mojikumi-line-start' : 'mojikumi-line-end',
+            children: [{
+              type: 'text',
+              value: s[i - 1],
+            }],
+          } as any);
+
+          lastIndex = i;
         }
       }
 
@@ -114,7 +135,7 @@ function dfs(u: Parent) {
 export const remarkMojikumi: Plugin<[], Root> = () => dfs;
 
 export const remarkRehypeMojikumi: Handlers = {
-  mojikumi(h, node) {
-    return h(node, 'span', { className: 'mojikumi' }, all(h, node));
-  },
+  mojikumi: (h, node) => h(node, 'span', { className: 'mojikumi' }, all(h, node)),
+  'mojikumi-line-start': (h, node) => h(node, 'span', { className: 'mojikumi mojikumi-line-start' }, all(h, node)),
+  'mojikumi-line-end': (h, node) => h(node, 'span', { className: 'mojikumi mojikumi-line-end' }, all(h, node)),
 };

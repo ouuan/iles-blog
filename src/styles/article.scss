@@ -168,4 +168,10 @@
   .mojikumi {
     font-feature-settings: "palt";
   }
+  // reference: https://github.com/ethantw/Han/blob/master/src/sass/inline/_jiya.sass
+  .mojikumi-line-start::before,
+  .mojikumi-line-end::after {
+    content: " ";
+    letter-spacing: 0.2416em;
+  }
 }
