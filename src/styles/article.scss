@@ -12,16 +12,6 @@
     @apply text-initial sm:text-inherit;
   }
 
-  blockquote {
-    @apply font-kai;
-  }
-
-  p {
-    // The padding of <code> may overflow.
-    // See also: https://stackoverflow.com/a/6433475
-    @apply overflow-x-auto overflow-y-hidden;
-  }
-
   p,
   h1,
   h2,
@@ -62,8 +52,9 @@
   }
 
   blockquote {
-    @apply bg-area shadow-sm;
-    @apply px-6 overflow-auto b-l-6 b-gray-4 dark:b-gray-11;
+    @apply font-kai bg-area shadow-sm;
+    @apply px-6 b-l-6 b-gray-4 dark:b-gray-11;
+    @apply overflow-y-auto; // avoid margin-collapsing
 
     blockquote {
       @apply bg-nested b-gray-3 dark:b-gray-10 shadow;

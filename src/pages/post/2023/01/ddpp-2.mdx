@@ -101,7 +101,7 @@ Gray code 的性质：相邻两个数的 code word 只有一位不同，且 $2^n
 
 一个 $(2^n-1)$-bit Hamming code 的 bit 依次编号为 $1 \sim 2^n-1$，编号为 $1, 2, 4, \ldots, 2^{n-1}$ 的 bit 是 check bit。每个 check bit 代表一个 group，编号为 $2^i$ 的 check bit 所代表的 group 包含的是编号的二进制中包含 $2^i$ 的所有 bit。check bit 的取值使得每个 group 都含偶数个 1。
 
-实际使用的 Hamming code 往往会将 check bit 移到末尾，例如一个 $15$-bit Hamming code 中 bit 的编号依次为 $15, 14, 13, 12, 11, 10, 9, 7, 6, 5, 3, 8, 4, 2, 1$。
+实际使用的 Hamming code 往往会将 check bit 移到末尾，例如一个 $15$-bit Hamming code 中 bit 的编号依次为 15, 14, 13, 12, 11, 10, 9, 7, 6, 5, 3, 8, 4, 2, 1。
 
 因为每个 bit 都至少属于一个 group，改变一个 bit 会得到 noncode word。改变编号为 $i$ 和 $j$ 的两个 bit 时，会改变 $i$ 异或 $j$ 对应的 group，所以改变两个 bit 会得到 noncode word。所以 Hamming code 中两个 code word 的 Hamming distance 至少为 3。
 
