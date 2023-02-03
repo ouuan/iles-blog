@@ -1,0 +1,14 @@
+::-webkit-scrollbar {
+  @apply w-2 h-1.5;
+}
+
+::-webkit-scrollbar-track:hover {
+  @apply bg-gray-1 dark:bg-gray-14;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rd-1;
+  @apply bg-gray-5 dark:bg-gray-11;
+  @apply hover:bg-gray-8;
+  @apply active:bg-gray-10 dark:active:bg-gray-6;
+}
