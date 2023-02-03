@@ -55,6 +55,29 @@ function dfs(u: Parent) {
 
       let lastIndex = 0;
 
+      function checkLineStartEnd(index: number) {
+        const c = s[index];
+        if (!c) return;
+        if (lineStartRule.includes(c) || lineEndRule.includes(c)) {
+          if (index > lastIndex) {
+            children.push({
+              type: 'text',
+              value: s.slice(lastIndex, index),
+            });
+          }
+
+          children.push({
+            type: lineStartRule.includes(c) ? 'mojikumi-line-start' : 'mojikumi-line-end',
+            children: [{
+              type: 'text',
+              value: c,
+            }],
+          } as any);
+
+          lastIndex = index + 1;
+        }
+      }
+
       for (let i = 1; i < s.length; i += 1) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const l = s[i - 1]!;
@@ -100,31 +123,19 @@ function dfs(u: Parent) {
           }
 
           lastIndex = i;
-        } else if (lineStartRule.includes(l) || lineEndRule.includes(l)) {
-          if (i - 1 > lastIndex) {
-            children.push({
-              type: 'text',
-              value: s.slice(lastIndex, i - 1),
-            });
-          }
-
-          children.push({
-            type: lineStartRule.includes(l) ? 'mojikumi-line-start' : 'mojikumi-line-end',
-            children: [{
-              type: 'text',
-              value: s[i - 1],
-            }],
-          } as any);
-
-          lastIndex = i;
+        } else {
+          checkLineStartEnd(i - 1);
         }
       }
 
       if (lastIndex < s.length) {
-        children.push({
-          type: 'text',
-          value: s.slice(lastIndex),
-        });
+        checkLineStartEnd(s.length - 1);
+        if (lastIndex < s.length) {
+          children.push({
+            type: 'text',
+            value: s.slice(lastIndex),
+          });
+        }
       }
     }
   }
