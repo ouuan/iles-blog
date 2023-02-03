@@ -10,7 +10,7 @@ tags:
 ---
 
 
-[CS:APP](https://csapp.cs.cmu.edu/) 第四章“Processor Architecture”的学习笔记。
+[CS:APP](https://csapp.cs.cmu.edu/) 第四章 “Processor Architecture” 的学习笔记。
 
 这章的主要内容为一个简化的指令集 Y86-64 的设计以及 Y86-64 处理器的实现（顺序实现和 pipeline 实现）。
 
@@ -18,7 +18,7 @@ tags:
 
 ## The Y86-64 Instruction Set Architecture
 
-这部分定义了在这一章中用作演示的名为“Y86-64”的玩具 ISA。
+这部分定义了在这一章中用作演示的名为 “Y86-64” 的玩具 ISA。
 
 ### Y86-64 程序状态
 
@@ -103,7 +103,7 @@ Y86-64 遵循和 x86-64 相同的规则：`pushq %rsp` 会将旧的（没有减 
 
 ## Logic Design and the Hardware Control Language HCL
 
-这一章中使用玩具语言 HCL (hardware control language) 来描述 Y86-64 处理器的逻辑设计。（与之类似但不是玩具的语言，例如 VHDL、Verilog 等，叫做“[hardware description language (HDL)](https://en.wikipedia.org/wiki/Hardware_description_language)”。）
+这一章中使用玩具语言 HCL (hardware control language) 来描述 Y86-64 处理器的逻辑设计。（与之类似但不是玩具的语言，例如 VHDL、Verilog 等，叫做 “[hardware description language (HDL)](https://en.wikipedia.org/wiki/Hardware_description_language)”。）
 
 ### 逻辑门
 
@@ -243,7 +243,7 @@ CS:APP Figure 4.23 大致展示了 SEQ 的主体电路：
 
 也就是说，整个执行过程是：读取 memory 并计算出需要写入 memory 的值，然后在 clock rise 时执行写入，从而读取到新的 memory 的值而执行下一条指令。
 
-为了这个设计能够实现，一条重要的原则是“No reading back”，即一条指令不能先更新再读取同一个值。例如，在 `pushq` 中，不是先更新 `R[%rsp]` 再写入 `M[R[%rsp]]`，而是先算出 `valE`，再写入 `M[valE]`，最后将 `valE` 写入 `R[%rsp]`。又例如，有的指令会修改 status flags，有的会读取，但没有指令既修改又读取。
+为了这个设计能够实现，一条重要的原则是 “No reading back”，即一条指令不能先更新再读取同一个值。例如，在 `pushq` 中，不是先更新 `R[%rsp]` 再写入 `M[R[%rsp]]`，而是先算出 `valE`，再写入 `M[valE]`，最后将 `valE` 写入 `R[%rsp]`。又例如，有的指令会修改 status flags，有的会读取，但没有指令既修改又读取。
 
 因为运算都是同时进行的，执行的六个阶段实际上是六个部分。
 

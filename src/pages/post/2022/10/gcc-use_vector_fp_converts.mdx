@@ -147,7 +147,7 @@ dp2f:
 
 使用 [Compiler Explorer](https://gcc.godbolt.org/) 进行尝试，很快就能确认，是在 gcc 4.8.5 / 4.9.0 之间行为出现了变化。
 
-于是，我先看了 [gcc 4.9 changes](https://gcc.gnu.org/gcc-4.9/changes.html)，又在 commit log 里大力搜索“`cvtss2sd`”<wbr/>“`cvtsd2ss`”<wbr/>“`unpcklp`”<wbr/>“floating point”<wbr/>“convert”……都没找到相关内容。
+于是，我先看了 [gcc 4.9 changes](https://gcc.gnu.org/gcc-4.9/changes.html)，又在 commit log 里大力搜索 “`cvtss2sd`” “`cvtsd2ss`” “`unpcklp`” “floating point” “convert”……都没找到相关内容。
 
 ## 具体 commit 的定位：git bisect / 编译 gcc
 
@@ -212,7 +212,7 @@ reference: [How to compile gcc 6.4.0 with gcc 7.2 in Archlinux - Stack Overflow]
 
 bisect 找到的 commit 是 [915e8e6e](https://github.com/gcc-mirror/gcc/commit/915e8e6eec05fb595d445cb738e4875d607ce126)。
 
-从这个 commit 的内容可以得知，那些看起来有些奇怪的编译结果是一个叫做 `use_vector_fp_converts` 的优化的结果。这个 commit 使得这个优化只对 amdfam10 架构生效，在新版 gcc 中仍可使用 `-mtune=amdfam10` 选项观察到这一行为（也可以使用 `-mtune-ctrl=use_vector_fp_converts` 来启用这个优化）。代码中对这一优化给出的理由是“avoids partial write to the destination”，也就是说 `cvtss2sd`/`cvtsd2ss` 只修改目标寄存器的低位，可能导致效率低。
+从这个 commit 的内容可以得知，那些看起来有些奇怪的编译结果是一个叫做 `use_vector_fp_converts` 的优化的结果。这个 commit 使得这个优化只对 amdfam10 架构生效，在新版 gcc 中仍可使用 `-mtune=amdfam10` 选项观察到这一行为（也可以使用 `-mtune-ctrl=use_vector_fp_converts` 来启用这个优化）。代码中对这一优化给出的理由是 “avoids partial write to the destination”，也就是说 `cvtss2sd`/`cvtsd2ss` 只修改目标寄存器的低位，可能导致效率低。
 
 ## 优化最终被关闭的原因
 
@@ -241,7 +241,7 @@ bisect 找到的 commit 是 [915e8e6e](https://github.com/gcc-mirror/gcc/commit/
 
 然后找到 [4845dbb5](https://github.com/gcc-mirror/gcc/commit/4845dbb50ed31ad03c579364e4b70bbe90e7af99)，这个 commit 添加了 `X86_USE_VECTOR_CONVERTS`，即 `X86_TUNE_USE_VECTOR_FP_CONVERTS` 的前身。
 
-4845dbb5 的邮件是 [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html)，里面写的很简略，就是“Amdfam10 preffers doing packed conversions destinating SSE register rather than scalar”。
+4845dbb5 的邮件是 [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html)，里面写的很简略，就是 “Amdfam10 preffers doing packed conversions destinating SSE register rather than scalar”。
 
 只不过 [performance - Why don't GCC and Clang use cvtss2sd \[memory\]? - Stack Overflow](https://stackoverflow.com/questions/16597587/why-dont-gcc-and-clang-use-cvtss2sd-memory) 里还是有一些解释的，反正简单来说就是 partial regisiter update 会有性能损失。
 
@@ -263,8 +263,8 @@ bisect 找到的 commit 是 [915e8e6e](https://github.com/gcc-mirror/gcc/commit/
 
 至此，我已经不知道能如何继续探究下去了。我感觉可能是：
 
-1.  [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html) 中提到“We are now testing if the patch is good for generic”，可能他自己测试之后因为某些原因得到了这个优化 good for generic 的结论，就 commit 了，也没再解释；
-2.  或者是，[PR target/33396](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225425.html) 里提到了“failure with 32bit generic”，可能是测试的时候加上了 `TARGET_GENERIC`，后来忘记删掉了 🤔
+1.  [SSE conversion optimization](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225078.html) 中提到 “We are now testing if the patch is good for generic”，可能他自己测试之后因为某些原因得到了这个优化 good for generic 的结论，就 commit 了，也没再解释；
+2.  或者是，[PR target/33396](https://gcc.gnu.org/pipermail/gcc-patches/2007-September/225425.html) 里提到了 “failure with 32bit generic”，可能是测试的时候加上了 `TARGET_GENERIC`，后来忘记删掉了 🤔
 3.  或者是，有什么其他原因，但忘记写在 log / 邮件里了，或者写在某个隐秘的角落我没找到。
 
 反正不管是什么原因，bf019a1f 都是一个 commit 做了两件事，还只写了一件事的 changelog，导致这成了一个谜。

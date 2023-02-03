@@ -8,7 +8,7 @@ tags:
 -   学习笔记
 ---
 
-[CS:APP](https://csapp.cs.cmu.edu/) 第九章“Virtual Memory”的学习笔记。
+[CS:APP](https://csapp.cs.cmu.edu/) 第九章 “Virtual Memory” 的学习笔记。
 
 <Excerpt />
 
@@ -149,7 +149,7 @@ kernel 为每个进程维护了一个 `task_struct`，其中的 `mm` 一项是�
 <Card type="question" title="segmentation fault vs protection exception">
 segmentation fault 和 protection exception 有区别吗？general protection exception 不应该是 CPU 触发的吗，怎么是 page fault handler 触发？segmentation fault 和 SIGSEGV 是什么关系？
 
-我的理解是 kernel 收到 CPU 的 general protection exception 会向进程发送 SIGSEGV，但 CS:APP 这里在相邻的两段分别用了“segmentation fault”和“protection exception”。
+我的理解是 kernel 收到 CPU 的 general protection exception 会向进程发送 SIGSEGV，但 CS:APP 这里在相邻的两段分别用了 “segmentation fault” 和 “protection exception”。
 </Card>
 
 ## Memory Mapping
@@ -295,7 +295,7 @@ segregated fit 的综合性能较好，所以包括 libc 中的 `malloc` 函数�
 
 #### buddy system
 
-所有 block size 都是 2 的次幂，分割时每次分成两半直到大小合适，合并时只和“buddy”合并。
+所有 block size 都是 2 的次幂，分割时每次分成两半直到大小合适，合并时只和 “buddy” 合并。
 
 这里描述清楚可能比较复杂，就感性理解一下，所有的 block 会形成一个如下图所示树状的样子（有点树状数组的感觉），parent 相同的 block 就是 buddy。
 

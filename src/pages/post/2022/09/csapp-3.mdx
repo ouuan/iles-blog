@@ -7,7 +7,7 @@ tags:
     - 学习笔记
 ---
 
-[CS:APP](https://csapp.cs.cmu.edu/) 第三章“Machine-Level Representation of Programs”的学习笔记。
+[CS:APP](https://csapp.cs.cmu.edu/) 第三章 “Machine-Level Representation of Programs” 的学习笔记。
 
 这章的主要内容为汇编（machine-level programming）。
 
@@ -92,7 +92,7 @@ Disassembly of section .text:
 可以看出，机器码就是一串 bytes，若干个 bytes 合在一起表示一条指令。而每条指令对应的 bytes 数量不同，与 operands 个数以及指令的常用程度相关（类似摩斯电码、UTF-8）。
 
 <Card title="指令集的 reference；ATT 格式 vs Intel 格式">
-CS:APP 以及 gcc 默认使用的是 ATT 格式的汇编，可以在 [Instruction Set Mapping - Oracle x86 Assembly Language Reference Manual](https://docs.oracle.com/cd/E19253-01/817-5477/enmzx/index.html) 查看 ATT 格式汇编和实际指令之间的对应关系，在 [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)（下文中以“Intel Manual”指代）（主要是第 2 卷）查看具体指令的 reference。
+CS:APP 以及 gcc 默认使用的是 ATT 格式的汇编，可以在 [Instruction Set Mapping - Oracle x86 Assembly Language Reference Manual](https://docs.oracle.com/cd/E19253-01/817-5477/enmzx/index.html) 查看 ATT 格式汇编和实际指令之间的对应关系，在 [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)（下文中以 “Intel Manual” 指代）（主要是第 2 卷）查看具体指令的 reference。
 
 ATT 格式与 Intel 格式有一些差别，其中在查看 reference 时需要注意的是，Intel 格式的指令没有 `b/w/l/q` 的类型后缀，并且 operands 的顺序和 ATT 格式恰好相反。
 
@@ -100,7 +100,7 @@ ATT 格式与 Intel 格式有一些差别，其中在查看 reference 时需要�
 
 ## Data Formats
 
-由于历史原因，Intel 使用“word”表示 16 bits，而用“double word”表示 32 bits，用“quad word”表示 64 bits。
+由于历史原因，Intel 使用 “word” 表示 16 bits，而用 “double word” 表示 32 bits，用 “quad word” 表示 64 bits。
 
 C 语言类型在 x86-64 中的大小：
 
@@ -159,7 +159,7 @@ x86-64 CPU 有 16 个 general-purpose register，可以用来存整数或指针�
 
 ### move 类指令
 
-虽然叫“move”，但实际上是复制。
+虽然叫 “move”，但实际上是复制。
 
 #### MOV 指令
 
@@ -323,9 +323,9 @@ scale:
 
 ## Control
 
-<Card type="hint" title="“status flag” vs “condition code”">
-    在 CS:APP 中 `CF`/`ZF`/`SF`/`OF` 等被叫做“condition code”；而在 Intel Manual
-    中，`CF`/`ZF`/`SF`/`OF` 等被叫做“status flag”，“condition code”指的是 status
+<Card type="hint" title='<span class="mojikumi">“</span>status flag<span class="mojikumi">”</span> vs <span class="mojikumi">“</span>condition code<span class="mojikumi">”</span>'>
+    在 CS:APP 中 `CF`/`ZF`/`SF`/`OF` 等被叫做 “condition code”；而在 Intel Manual
+    中，`CF`/`ZF`/`SF`/`OF` 等被叫做 “status flag”，“condition code” 指的是 status
     flags 的组合。下文采用 Intel 的叫法。
 </Card>
 
@@ -671,7 +671,7 @@ union 的大小是最大的 field 的大小，每个 field 的 offset 都是 0�
 
 可以修改 stack 的起始地址，以降低指令地址的可预测性，增大攻击难度。这在 Linux 中已经是标准做法了，是 address-space layout randomization (ASLR) 的一部分。
 
-攻击者可以通过“nop sled”，即通过大量 `nop` 指令来增长攻击代码的长度，来降低猜测指令地址的难度。
+攻击者可以通过 “nop sled”，即通过大量 `nop` 指令来增长攻击代码的长度，来降低猜测指令地址的难度。
 
 ### Stack Corruption Detection
 
@@ -825,7 +825,7 @@ operands 格式和上面一样。
 
 效果为，计算第二个 operand 减去第一个 operand 并设置 status flags。
 
-浮点数的比较是“unordered”的，即若某个 operand 是 NaN，则比较结果为 unordered。
+浮点数的比较是 “unordered” 的，即若某个 operand 是 NaN，则比较结果为 unordered。
 
 不同的比较结果对应的 status flags 以及 condition code 为：
 

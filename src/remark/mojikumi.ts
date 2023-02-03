@@ -10,6 +10,7 @@ const middleDots = '・：；';
 const fullStops = '。．';
 const commas = '、，';
 const commasOrFullStops = `${commas}${fullStops}`;
+const space = ' ';
 
 const leftRules = [
   [commasOrFullStops, closingBrackets],
@@ -18,10 +19,22 @@ const leftRules = [
   [closingBrackets, openingBrackets],
   [closingBrackets, closingBrackets],
   [closingBrackets, middleDots],
+  [commasOrFullStops, space],
+  [closingBrackets, space],
+] as const;
+
+const leftWbrRules = [
+  [commasOrFullStops, openingBrackets],
+  [closingBrackets, openingBrackets],
 ] as const;
 
 const rightRules = [
   [openingBrackets, openingBrackets],
+  [middleDots, openingBrackets],
+  [space, openingBrackets],
+] as const;
+
+const rightWbrRules = [
   [middleDots, openingBrackets],
 ] as const;
 
@@ -43,16 +56,29 @@ function dfs(u: Parent) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const r = s[i]!;
 
-        const rightRuleMatched = rightRules.some(([a, b]) => a.includes(l) && b.includes(r));
+        function matches(rule: ReadonlyArray<Readonly<[string, string]>>) {
+          return rule.some(([a, b]) => a.includes(l) && b.includes(r));
+        }
+
+        const leftRuleMatched = matches(leftRules);
+        const rightRuleMatched = matches(rightRules);
         if (rightRuleMatched) i += 1;
 
-        if (rightRuleMatched || leftRules.some(([a, b]) => a.includes(l) && b.includes(r))) {
+        if (rightRuleMatched || leftRuleMatched) {
           if (i - 1 > lastIndex) {
             children.push({
               type: 'text',
               value: s.slice(lastIndex, i - 1),
             });
           }
+
+          if (rightRuleMatched && matches(rightWbrRules)) {
+            children.push({
+              type: 'html',
+              value: '<wbr>',
+            });
+          }
+
           children.push({
             type: 'mojikumi',
             children: [{
@@ -60,6 +86,14 @@ function dfs(u: Parent) {
               value: s[i - 1],
             }],
           } as any);
+
+          if (leftRuleMatched && matches(leftWbrRules)) {
+            children.push({
+              type: 'html',
+              value: '<wbr>',
+            });
+          }
+
           lastIndex = i;
         }
       }

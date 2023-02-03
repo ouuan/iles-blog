@@ -7,7 +7,7 @@ tags:
 -   学习笔记
 ---
 
-[CS:APP](https://csapp.cs.cmu.edu/) 第八章“Exceptional Control Flow”的学习笔记。
+[CS:APP](https://csapp.cs.cmu.edu/) 第八章 “Exceptional Control Flow” 的学习笔记。
 
 <Excerpt />
 
@@ -51,12 +51,12 @@ exception 一般有四种：
 
 #### x86-64 中的 fault / abort
 
--   Divide Error Exception (Interrupt 0): 除以零。它是 fault，但实际上 Linux 不会尝试从 divide error 中恢复，而是会直接 abort，一般会显示为“floating point exception”。
--   General Protection Exception (Interrupt 13): 有多种触发原因，例如访问未定义的内存，尝试写入只读的内存段。Linux 也不会尝试从中恢复，而是会直接 abort，一般会显示为“segmentation fault”。
+-   Divide Error Exception (Interrupt 0): 除以零。它是 fault，但实际上 Linux 不会尝试从 divide error 中恢复，而是会直接 abort，一般会显示为 “floating point exception”。
+-   General Protection Exception (Interrupt 13): 有多种触发原因，例如访问未定义的内存，尝试写入只读的内存段。Linux 也不会尝试从中恢复，而是会直接 abort，一般会显示为 “segmentation fault”。
 -   Page-Fault Exception (Interrupt 14): page fault 是一个名副其实的 fault，会尝试恢复，详见[第九章](/post/2022/11/csapp-9)。
 -   Machine-Check Exception (Interrupt 18): 严重的硬件错误，是 abort。
 
-（完整列表参见 [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) Volume 3A 的“6.15 EXCEPTION AND INTERRUPT REFERENCE”一节。）
+（完整列表参见 [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html) Volume 3A 的 “6.15 EXCEPTION AND INTERRUPT REFERENCE” 一节。）
 
 #### Linux 中的 system call
 
@@ -356,9 +356,9 @@ sighandler_t signal(int signum, sighandler_t handler);
 
 -   在一些系统上，调用了 handler 后这个 signal 就会恢复默认行为，需要在 handler 中重新调用 `signal` 才能一直使用这个 handler。
 
--   在一些系统上，需要执行较长时间的 system call 会在被 interrupt 后报错 EINTR，而在现代系统上会尽可能地自动重新执行这个 system call，详见 `man signal.7` 的“Interruption of system calls and library functions by signal handlers”一节。
+-   在一些系统上，需要执行较长时间的 system call 会在被 interrupt 后报错 EINTR，而在现代系统上会尽可能地自动重新执行这个 system call，详见 `man signal.7` 的 “Interruption of system calls and library functions by signal handlers” 一节。
 
-    （P.S. 这就是 [Rise of Worse Is Better](https://www.dreamsongs.com/RiseOfWorseIsBetter.html) 中用来举例的“PC loser-ing problem”，原本采用 worse-is-better 的 Unix 现在也进化成了 the right thing）
+    （P.S. 这就是 [Rise of Worse Is Better](https://www.dreamsongs.com/RiseOfWorseIsBetter.html) 中用来举例的 “PC loser-ing problem”，原本采用 worse-is-better 的 Unix 现在也进化成了 the right thing）
     （P.P.S. 当时读这篇的时候我完全没看懂这一段，没想到现在竟然还能记起来）
 
 可以通过 `sigaction` 函数来设置想要的 signal handling 语义。
