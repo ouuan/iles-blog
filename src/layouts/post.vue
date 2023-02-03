@@ -1,5 +1,9 @@
 <template layout="base">
-  <div class="flex">
+  <div class="flex flex-row-reverse">
+    <table-of-contents
+      client:load
+      :headings="page.meta.headings"
+    />
     <div class="grow m-4 standard-card">
       <article
         itemprop="mainEntity"
@@ -40,10 +44,6 @@
         :frontmatter="page.frontmatter"
       />
     </div>
-    <table-of-contents
-      client:load
-      :headings="page.meta.headings"
-    />
   </div>
 </template>
 
