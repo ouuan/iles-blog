@@ -12,6 +12,11 @@
     @apply text-initial sm:text-inherit;
   }
 
+  .font-kai { // does not match blockquote
+    font-size: 1.02em; // match serif font size
+    line-height: 1.25; // avoid affecting serif line height
+  }
+
   p,
   h1,
   h2,

@@ -13,10 +13,7 @@ export default defineConfig({
   rules: [
     [
       /^font-(serif|sans|mono|kai|latin)$/,
-      ([, type]) => ({
-        'font-family': `var(--default-${type}-font)`,
-        ...(type === 'kai' ? { 'font-size': '1.02em' } : {}),
-      }),
+      ([, type]) => ({ 'font-family': `var(--default-${type}-font)` }),
     ],
     ['break-anywhere', { 'overflow-wrap': 'anywhere' }],
   ],
