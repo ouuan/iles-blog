@@ -1,5 +1,8 @@
 lockfileVersion: 5.4
 
+overrides:
+  vite-plugin-image-presets: ^0.3.4
+
 packageExtensionsChecksum: 796752960ba14a41e00e80ce0386e4e9
 
 specifiers:
@@ -475,7 +478,7 @@ packages:
     resolution: {integrity: sha512-3gBXypUQlKBMQva9S2ub2GASvk3fZK9AXdW3e7AvNoW4e5iJQbg0bjy/i7rnzl1qChmyckC5vkCl4dT7YXvZQA==}
     dependencies:
       pathe: 0.2.0
-      vite-plugin-image-presets: 0.3.3
+      vite-plugin-image-presets: 0.3.4
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5937,8 +5940,8 @@ packages:
       - supports-color
     dev: true
 
-  /vite-plugin-image-presets/0.3.3:
-    resolution: {integrity: sha512-Ne3Q08tOpql4gX9aCFVeNTuKIXs+TblOG3Kr+rT27VMyJBP27kuHjrrAbrW8c7B6JjXSVxwMHad4ZL+jVBumig==}
+  /vite-plugin-image-presets/0.3.4:
+    resolution: {integrity: sha512-jVMMY7iuzDCRNUgPKo5oMZ5QPeJA5bou6i+38SmGxW5zrqkRI3QBDGNnUqIUg/nhz7J1fQji1SagGjgiiKfW6w==}
     dependencies:
       '@nuxt/devalue': 2.0.0
       debug: 4.3.4
