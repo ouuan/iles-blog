@@ -1,0 +1,19 @@
+.mojikumi,
+.mojikumi-apostrophe,
+.mojikumi-line-start,
+.mojikumi-line-end {
+  font-feature-settings: "halt";
+}
+
+.mojikumi-apostrophe {
+  letter-spacing: -0.15em;
+}
+
+// reference: https://github.com/ethantw/Han/blob/master/src/sass/inline/_jiya.sass
+.mojikumi-line-start::before,
+.mojikumi-line-end::after {
+  content: " ";
+  font-family: var(--default-serif-font);
+  line-height: 0;
+  letter-spacing: 0.2416em;
+}

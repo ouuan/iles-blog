@@ -4,14 +4,16 @@ import { all, Handlers } from 'mdast-util-to-hast';
 
 // https://www.w3.org/TR/jlreq/#positioning_of_consecutive_opening_brackets_closing_brackets_comma_full_stops_and_middle_dots
 
-const openingBrackets = '‘“（〔［｛〈《「『【｟〘〖«〝';
-const closingBrackets = '’”）〕］｝〉》」』】｠〙〗»〟';
+const openingBrackets = '‘“（〈《「『【〖';
+const closingBrackets = '’”）〉》」』】〗';
 const middleDots = '・';
 const colons = '：；';
 const fullStops = '。．';
 const commas = '、，';
 const halfWidthPauseOrStop = `${commas}${colons}${fullStops}`;
 const space = ' ';
+const apostrophe = '’';
+const latin = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const leftRules = [
   [halfWidthPauseOrStop, closingBrackets],
@@ -22,6 +24,11 @@ const leftRules = [
   [closingBrackets, middleDots],
   [halfWidthPauseOrStop, space],
   [closingBrackets, space],
+  [apostrophe, latin],
+] as const;
+
+const apostropheRules = [
+  [apostrophe, latin],
 ] as const;
 
 const leftWbrRules = [
@@ -47,8 +54,7 @@ function dfs(u: Parent) {
 
   for (const v of u.children) {
     if (v.type !== 'text') {
-      // skip LXGW Wenkai in blockquote
-      if (v.type !== 'blockquote' && 'children' in v) dfs(v);
+      if ('children' in v) dfs(v);
       children.push(v);
     } else {
       const s = v.value;
@@ -108,7 +114,7 @@ function dfs(u: Parent) {
           }
 
           children.push({
-            type: 'mojikumi',
+            type: matches(apostropheRules) ? 'mojikumi-apostrophe' : 'mojikumi',
             children: [{
               type: 'text',
               value: s[i - 1],
@@ -146,8 +152,9 @@ function dfs(u: Parent) {
 
 export const remarkMojikumi: Plugin<[], Root> = () => dfs;
 
-export const remarkRehypeMojikumi: Handlers = {
-  mojikumi: (h, node) => h(node, 'span', { className: 'mojikumi' }, all(h, node)),
-  'mojikumi-line-start': (h, node) => h(node, 'span', { className: 'mojikumi mojikumi-line-start' }, all(h, node)),
-  'mojikumi-line-end': (h, node) => h(node, 'span', { className: 'mojikumi mojikumi-line-end' }, all(h, node)),
-};
+export const remarkRehypeMojikumi: Handlers = Object.fromEntries([
+  'mojikumi',
+  'mojikumi-apostrophe',
+  'mojikumi-line-start',
+  'mojikumi-line-end',
+].map((type) => [type, (h, node) => h(node, 'span', { className: type }, all(h, node))]));

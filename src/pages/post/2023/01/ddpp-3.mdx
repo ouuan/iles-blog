@@ -202,7 +202,7 @@ endcase
 
 这一节就是说给你一个电路图怎么搞出它的 logic function。其实没啥好说的，就（按拓扑序）一个一个 gate 递推就行，可以用真值表也可以用逻辑表达式。
 
-有一个小 trick：DeMorgan<Pie/>s theorem 在电路图中表现为，将 inversion bubble 换到另一侧（输入 / 输出），并且改变 gate 的类型（AND / OR），这样的话，如果两个 inversion bubble 在一条 wire 上就可以消掉。
+有一个小 trick：DeMorgan’s theorem 在电路图中表现为，将 inversion bubble 换到另一侧（输入 / 输出），并且改变 gate 的类型（AND / OR），这样的话，如果两个 inversion bubble 在一条 wire 上就可以消掉。
 
 ## Combinational-Circuit Synthesis
 

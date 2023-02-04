@@ -14,7 +14,7 @@
           class="p-3 bghover font-serif text-xl flex items-center"
           href="/"
         >
-          <span>ouuan<Pie />s blog</span>
+          <span>ouuan<span class="mojikumi-apostrophe">’</span>s blog</span>
         </a>
       </div>
       <nav class="flex">

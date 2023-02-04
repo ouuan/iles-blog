@@ -194,7 +194,7 @@ export default defineConfig({
           originalFontPath: resolve(DIRNAME, 'third_party/fonts/NotoSerifSC-Bold.otf'),
         }],
       }, {
-        fontFamily: '"LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, "LXGW WenKai Web Font", STKaiTi, KaiTi, "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif SC Web Font", "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+        fontFamily: '"XiaWu Punctuations", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, "LXGW WenKai Web Font", STKaiTi, KaiTi, "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif SC Web Font", "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
         webFontName: 'LXGW WenKai Web Font',
         variants: [{
           fontWeight: 400,
