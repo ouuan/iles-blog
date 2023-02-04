@@ -1,12 +1,17 @@
 .mojikumi,
-.mojikumi-apostrophe,
+.mojikumi-narrow-left,
+.mojikumi-narrow-right,
 .mojikumi-line-start,
 .mojikumi-line-end {
   font-feature-settings: "halt";
 }
 
-.mojikumi-apostrophe {
+.mojikumi-narrow-left {
   letter-spacing: -0.15em;
+}
+
+.mojikumi-narrow-right {
+  margin-left: -0.15em;
 }
 
 // reference: https://github.com/ethantw/Han/blob/master/src/sass/inline/_jiya.sass

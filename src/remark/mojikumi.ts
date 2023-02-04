@@ -12,7 +12,8 @@ const fullStops = '。．';
 const commas = '、，';
 const halfWidthPauseOrStop = `${commas}${colons}${fullStops}`;
 const space = ' ';
-const apostrophe = '’';
+const leftSingleQuote = '‘';
+const rightSingleQuote = '’';
 const latin = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const leftRules = [
@@ -24,11 +25,12 @@ const leftRules = [
   [closingBrackets, middleDots],
   [halfWidthPauseOrStop, space],
   [closingBrackets, space],
-  [apostrophe, latin],
+  [rightSingleQuote, latin],
 ] as const;
 
-const apostropheRules = [
-  [apostrophe, latin],
+const leftNarrowRules = [
+  [rightSingleQuote, space],
+  [rightSingleQuote, latin],
 ] as const;
 
 const leftWbrRules = [
@@ -44,6 +46,10 @@ const rightRules = [
 
 const rightWbrRules = [
   [middleDots, openingBrackets],
+] as const;
+
+const rightNarrowRules = [
+  [space, leftSingleQuote],
 ] as const;
 
 const lineStartRule = openingBrackets;
@@ -113,8 +119,12 @@ function dfs(u: Parent) {
             });
           }
 
+          let type = 'mojikumi';
+          if (matches(leftNarrowRules)) type = 'mojikumi-narrow-left';
+          else if (matches(rightNarrowRules)) type = 'mojikumi-narrow-right';
+
           children.push({
-            type: matches(apostropheRules) ? 'mojikumi-apostrophe' : 'mojikumi',
+            type,
             children: [{
               type: 'text',
               value: s[i - 1],
@@ -154,7 +164,8 @@ export const remarkMojikumi: Plugin<[], Root> = () => dfs;
 
 export const remarkRehypeMojikumi: Handlers = Object.fromEntries([
   'mojikumi',
-  'mojikumi-apostrophe',
+  'mojikumi-narrow-left',
+  'mojikumi-narrow-right',
   'mojikumi-line-start',
   'mojikumi-line-end',
 ].map((type) => [type, (h, node) => h(node, 'span', { className: type }, all(h, node))]));
