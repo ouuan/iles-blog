@@ -8,30 +8,28 @@
       <span class="text-xl i-mdi-magnify" />
     </a>
   </div>
-  <div class="hidden lg:flex items-stretch justify-center">
+  <form
+    role="search"
+    class="hidden lg:flex items-stretch justify-center"
+  >
     <div class="flex items-center">
       <input
-        id="__navbar_search_keywords"
         v-model="pattern"
         class="w-48 px-3 py-1 bg-area rd-full"
-        type="text"
-        placeholder="搜索"
+        type="search"
+        placeholder="关键词"
+        aria-label="全站搜索"
         @keypress="onKeyPress"
       >
     </div>
-    <label
-      for="__navbar_search_keywords"
-      class="flex items-stretch"
+    <a
+      class="p-2 bghover flex items-center"
+      :href="href"
+      title="全站搜索"
     >
-      <a
-        class="p-2 bghover flex items-center"
-        :href="href"
-        title="搜索"
-      >
-        <span class="text-xl i-mdi-magnify" />
-      </a>
-    </label>
-  </div>
+      <span class="text-xl i-mdi-magnify" />
+    </a>
+  </form>
 </template>
 
 <script setup lang="ts">

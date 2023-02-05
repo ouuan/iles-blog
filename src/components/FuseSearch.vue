@@ -1,7 +1,10 @@
 <template>
   <div class="m-4 flex flex-col gap-6">
     <div class="flex flex-wrap gap-x-5 gap-y-2">
-      <div class="grow max-w-100 flex items-center gap-2">
+      <form
+        role="search"
+        class="grow max-w-100 flex items-center gap-2"
+      >
         <label
           class="i-mdi-magnify text-xl"
           aria-label="搜索关键词"
@@ -11,10 +14,10 @@
           id="__search_keywords"
           v-model="params.q"
           class="w-full p-1 bg-card rd-1"
-          type="text"
+          type="search"
           placeholder="关键词"
         >
-      </div>
+      </form>
       <a
         class="flex items-center text-link"
         href="https://fusejs.io/examples.html#extended-search"
