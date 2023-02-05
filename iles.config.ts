@@ -20,6 +20,7 @@ import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-lis
 import remarkShiki from './src/remark/remarkShiki';
 import addHeadingForCard from './src/remark/addHeadingForCard';
 import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
+import setHeadingLevels from './src/remark/setHeadingLevels';
 
 import breakLongCode from './src/rehype/breakLongCode';
 import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
@@ -102,8 +103,10 @@ export default defineConfig({
       'remark-gfm',
       remarkDefinitionList,
       remarkMojikumi,
-      addHeadingForCard,
+      // the following order matters!
       remarkShiki,
+      setHeadingLevels,
+      addHeadingForCard,
     ],
     remarkRehypeOptions: {
       handlers: {

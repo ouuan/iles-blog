@@ -7,16 +7,18 @@
     itemscope
     itemtype="https://schema.org/SoftwareSourceCode"
   >
-    <h6
+    <div
       class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
     >
       <span
         class="text-3 text-footer"
         itemprop="programmingLanguage"
+        role="heading"
+        :aria-level="headingLevel"
         :aria-label="`${lang} 代码块`"
       >{{ lang }}</span>
-    </h6>
+    </div>
     <copy-button client:visible />
     <div
       class="light:hidden"
@@ -32,11 +34,14 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   lang: string;
   darkHtml: string;
   lightHtml: string;
-}>();
+  headingLevel?: number;
+}>(), {
+  headingLevel: 6,
+});
 </script>
 
 <style scoped lang="scss">

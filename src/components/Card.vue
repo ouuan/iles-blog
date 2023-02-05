@@ -11,8 +11,10 @@
         :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
       >
         <span :class="['text-5', icon[type]]" />
-        <h6
+        <span
           class="font-bold"
+          role="heading"
+          :aria-level="headingLevel"
           v-html="title || defaultTitle[type]"
         />
         <span
@@ -34,10 +36,12 @@ withDefaults(defineProps<{
   type?: 'note' | 'info' | 'warn' | 'alert' | 'hint' | 'question' | 'wip';
   fold?: boolean;
   title?: string;
+  headingLevel?: number;
 }>(), {
   type: 'note',
   fold: false,
   title: '',
+  headingLevel: 6,
 });
 
 const boxClasses = {
