@@ -3,9 +3,11 @@
 <template>
   <section
     class="code-block relative my-6 shadow"
-    itemprop="hasPart"
-    itemscope
-    itemtype="https://schema.org/SoftwareSourceCode"
+    v-bind="isCodeAnd({
+      itemprop: 'hasPart',
+      itemscope: true,
+      itemtype: 'https://schema.org/SoftwareSourceCode',
+    })"
   >
     <div
       class="media-screen:important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
@@ -13,7 +15,7 @@
     >
       <deep-heading
         class="text-3 text-footer"
-        itemprop="programmingLanguage"
+        :itemprop="isCodeAnd('programmingLanguage')"
         :level="headingLevel"
         :aria-label="`${lang} 代码块`"
       >
@@ -23,7 +25,7 @@
     </div>
     <div
       class="light:hidden"
-      itemprop="text"
+      :itemprop="isCodeAnd('text')"
       v-html="darkHtml"
     />
     <div
@@ -35,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   lang: string;
   darkHtml: string;
   lightHtml: string;
@@ -43,6 +45,11 @@ withDefaults(defineProps<{
 }>(), {
   headingLevel: 6,
 });
+
+function isCodeAnd<T>(x: T) {
+  if (props.lang === 'plain text') return undefined;
+  return x;
+}
 </script>
 
 <style scoped lang="scss">
