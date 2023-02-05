@@ -8,21 +8,22 @@
     >
       <component
         :is="fold ? 'summary' : 'div'"
-        :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
+        :class="['p-3 flex justify-between items-center', fold && 'cursor-pointer']"
       >
-        <span :class="['text-5', icon[type]]" />
         <deep-heading
-          class="font-bold"
+          class="font-bold flex items-center gap-1"
           :level="headingLevel"
         >
+          <span
+            :aria-label="title ? `${defaultTitle[type]}: ` : undefined"
+            :class="['text-5', icon[type]]"
+          />
           <span v-html="title || defaultTitle[type]" />
         </deep-heading>
         <span
           v-if="fold"
-          class="grow flex justify-end"
-        >
-          <span class="details-icon text-5" />
-        </span>
+          class="details-icon text-5"
+        />
       </component>
       <div class="bg-card dark:bg-bghover overflow-auto px-6 rd-br-1">
         <slot />
