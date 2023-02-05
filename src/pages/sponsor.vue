@@ -49,7 +49,7 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
         <p>
           GPG 公钥:
           <a href="https://github.com/ouuan.gpg">
-            <code>863A0F9FA8127FA4</code>
+            <samp>863A0F9FA8127FA4</samp>
           </a>
           <br>
           GPG 签名:

@@ -69,6 +69,10 @@ function highlightWithTheme(highlighter: Highlighter, code: string, lang: string
     fg: themeConfig.fg,
     bg: themeConfig.bg,
     elements: {
+      code({ children }) {
+        const tag = lang === 'plain' ? 'samp' : 'code';
+        return `<${tag}>${children}</${tag}>`;
+      },
       line({ index, children }) {
         if (from === 0) return `<span>${children}</span>`;
         if (index + 1 < from || index + 1 > to) return `<span class="dim">${children}</span>`;
