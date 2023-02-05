@@ -59,6 +59,9 @@ export default defineConfig({
       kanon: '#FF7F27',
       keke: '#A0FFF9',
     },
+    media: {
+      screen: 'screen',
+    },
   },
   shortcuts: {
     bghover: 'hover:bg-bghover transition-colors ease-out',

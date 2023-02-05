@@ -8,7 +8,7 @@
     itemtype="https://schema.org/SoftwareSourceCode"
   >
     <div
-      class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
+      class="media-screen:important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
     >
       <deep-heading
@@ -19,8 +19,8 @@
       >
         {{ lang }}
       </deep-heading>
+      <copy-button client:visible />
     </div>
-    <copy-button client:visible />
     <div
       class="light:hidden"
       itemprop="text"

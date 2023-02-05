@@ -1,7 +1,6 @@
 <template>
   <button
     ref="buttonRef"
-    style="display:none;"
     :title="label[state]"
     :class="['copy-button', classes[state]]"
     @click="copy"
@@ -72,11 +71,8 @@ async function copy() {
 
 <style lang="scss" scoped>
 .copy-button {
-  @media screen {
-    @apply important-flex; // hide it in print and in places without stylesheet
-  }
+  @apply flex justify-center items-center;
 
-  @apply justify-center items-center;
   @apply absolute top-0 right-0;
   @apply w-6 h-6 text-sm;
 
