@@ -5,6 +5,11 @@ overrides:
 
 packageExtensionsChecksum: 796752960ba14a41e00e80ce0386e4e9
 
+patchedDependencies:
+  '@islands/headings@0.8.2':
+    hash: omyrjdrfhnqtdxq5sxsba2yory
+    path: patches/@islands__headings@0.8.2.patch
+
 specifiers:
   '@cloudflare/workers-types': ^4.20230115.0
   '@giscus/vue': ^2.2.6
@@ -89,7 +94,7 @@ devDependencies:
   '@iconify-json/mdi': 1.1.45
   '@islands/excerpt': 0.9.0
   '@islands/feed': 0.8.1_iles@0.9.2+vue@3.2.47
-  '@islands/headings': 0.8.2
+  '@islands/headings': 0.8.2_omyrjdrfhnqtdxq5sxsba2yory
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.1_4vsywjlpuriuw3tl5oq6zy5a64
   '@ouuan/tsconfig-vue': 0.3.0
@@ -464,12 +469,13 @@ packages:
       vue: 3.2.47
     dev: true
 
-  /@islands/headings/0.8.2:
+  /@islands/headings/0.8.2_omyrjdrfhnqtdxq5sxsba2yory:
     resolution: {integrity: sha512-OC/Na/ksaJ/6XxGtBMVKmefja9C1p/7o94kh1qTL7i6LnHkcfhKhl/eQY7wmRxsW0g29dcxBsSmkvchM+1SRXw==}
     dependencies:
       hast-util-heading-rank: 2.1.1
       hast-util-to-string: 2.0.0
     dev: true
+    patched: true
 
   /@islands/hydration/0.8.2:
     resolution: {integrity: sha512-LobIPJsUXovhYA9S9Z8r/DVecOERzwTaPHBNLFKmT0/s9+k/S51fb5J+FSkoEVCmnOvkv5cKaIc8XinIhCqE9A==}

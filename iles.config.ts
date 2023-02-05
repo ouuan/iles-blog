@@ -23,7 +23,6 @@ import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
 
 import breakLongCode from './src/rehype/breakLongCode';
 import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
-import hideHeadingForCard from './src/rehype/hideHeadingForCard';
 
 const DIRNAME = dirname(fileURLToPath(import.meta.url));
 
@@ -124,7 +123,6 @@ export default defineConfig({
     rehypePlugins: [
       breakLongCode,
       wrapTableOverflowAuto,
-      hideHeadingForCard,
       'rehype-plugin-image-native-lazy-loading',
       'rehype-katex',
     ],

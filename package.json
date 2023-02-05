@@ -84,6 +84,9 @@
           "rollup": "^3"
         }
       }
+    },
+    "patchedDependencies": {
+      "@islands/headings@0.8.2": "patches/@islands__headings@0.8.2.patch"
     }
   }
 }
