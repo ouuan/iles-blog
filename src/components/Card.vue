@@ -1,30 +1,32 @@
 <!-- eslint-disable vue/no-v-html -->
 
 <template>
-  <component
-    :is="fold ? 'details' : 'section'"
-    :class="['shadow-md rd-1 b-l-6 my-6', boxClasses[type]]"
-  >
+  <aside role="note">
     <component
-      :is="fold ? 'summary' : 'div'"
-      :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
+      :is="fold ? 'details' : 'div'"
+      :class="['shadow-md rd-1 b-l-6 my-6', boxClasses[type]]"
     >
-      <span :class="['text-5', icon[type]]" />
-      <h6
-        class="font-bold"
-        v-html="title || defaultTitle[type]"
-      />
-      <span
-        v-if="fold"
-        class="grow flex justify-end"
+      <component
+        :is="fold ? 'summary' : 'div'"
+        :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
       >
-        <span class="details-icon text-5" />
-      </span>
+        <span :class="['text-5', icon[type]]" />
+        <h6
+          class="font-bold"
+          v-html="title || defaultTitle[type]"
+        />
+        <span
+          v-if="fold"
+          class="grow flex justify-end"
+        >
+          <span class="details-icon text-5" />
+        </span>
+      </component>
+      <div class="bg-card dark:bg-bghover overflow-auto px-6 rd-br-1">
+        <slot />
+      </div>
     </component>
-    <div class="bg-card dark:bg-bghover overflow-auto px-6 rd-br-1">
-      <slot />
-    </div>
-  </component>
+  </aside>
 </template>
 
 <script setup lang="ts">
