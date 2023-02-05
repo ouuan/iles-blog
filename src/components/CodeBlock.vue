@@ -11,13 +11,14 @@
       class="important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
       style="display:none;"
     >
-      <span
+      <deep-heading
         class="text-3 text-footer"
         itemprop="programmingLanguage"
-        role="heading"
-        :aria-level="headingLevel"
+        :level="headingLevel"
         :aria-label="`${lang} 代码块`"
-      >{{ lang }}</span>
+      >
+        {{ lang }}
+      </deep-heading>
     </div>
     <copy-button client:visible />
     <div

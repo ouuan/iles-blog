@@ -11,12 +11,12 @@
         :class="['p-3 flex items-center gap-1', fold && 'cursor-pointer']"
       >
         <span :class="['text-5', icon[type]]" />
-        <span
+        <deep-heading
           class="font-bold"
-          role="heading"
-          :aria-level="headingLevel"
-          v-html="title || defaultTitle[type]"
-        />
+          :level="headingLevel"
+        >
+          <span v-html="title || defaultTitle[type]" />
+        </deep-heading>
         <span
           v-if="fold"
           class="grow flex justify-end"

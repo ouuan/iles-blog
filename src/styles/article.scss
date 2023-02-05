@@ -12,17 +12,16 @@
     @apply text-initial sm:text-inherit;
   }
 
-  .font-kai { // does not match blockquote
+  // it does not select blockquote
+  .font-kai {
     font-size: 1.02em; // match serif font size
     line-height: 1.25; // avoid affecting serif line height
   }
 
   p,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
+  & > h2,
+  & > h3,
+  & > h4,
   ul,
   ol,
   dl,
@@ -41,18 +40,14 @@
     }
   }
 
-  h1 {
-    @apply text-8 font-bold;
-    @apply pb-2 b-b-3 b-gray-2 dark:b-gray-9;
-  }
-  h2 {
+  & > h2 {
     @apply text-7 font-bold;
     @apply pb-1 b-b-2 b-gray-2 dark:b-gray-9;
   }
-  h3 {
+  & > h3 {
     @apply text-6 font-bold;
   }
-  h4 {
+  & > h4 {
     @apply text-5 font-bold;
   }
 
