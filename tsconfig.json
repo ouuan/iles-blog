@@ -1,7 +1,10 @@
 {
   "extends": "@ouuan/tsconfig-vue/tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "types": [
+      "mdast-util-mdx"
+    ]
   },
   "include": [
     "*.ts",
