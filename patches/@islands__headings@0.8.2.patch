@@ -1,8 +1,8 @@
 diff --git a/dist/headings.js b/dist/headings.js
-index fe3fee32b796f69bd59f3b03df20a5fd1cee3a28..d5182d59ea8f369b3eae1e0687f3beb1cc60040f 100644
+index fe3fee32b796f69bd59f3b03df20a5fd1cee3a28..b2c45445ca111be4c35fe2b91efa1bae5cd9b03f 100644
 --- a/dist/headings.js
 +++ b/dist/headings.js
-@@ -67,10 +67,17 @@ var anchorTag = (properties) => ({
+@@ -67,10 +67,18 @@ var anchorTag = (properties) => ({
    properties,
    children: []
  });
@@ -15,6 +15,7 @@ index fe3fee32b796f69bd59f3b03df20a5fd1cee3a28..d5182d59ea8f369b3eae1e0687f3beb1
 +  if (level === 6) {
 +    node.tagName = "a";
 +    node.children = [];
++    properties.name = slug;
 +    properties.ariaHidden = "true";
 +  } else {
 +    properties.className = properties.className ? `${properties.className} heading` : "heading";
