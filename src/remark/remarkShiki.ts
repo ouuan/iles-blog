@@ -124,6 +124,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
   siblings[index] = {
     type: 'mdxJsxFlowElement',
     name: 'CodeBlock',
+    children: [],
     attributes: [{
       type: 'mdxJsxAttribute',
       name: 'lang',
@@ -137,7 +138,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
       name: 'lightHtml',
       value: html.light,
     }],
-  } as any;
+  };
 }
 
 const remarkShiki: Plugin<[], Root> = () => async (root) => {
