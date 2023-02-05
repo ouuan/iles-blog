@@ -2,38 +2,18 @@
   <button
     ref="buttonRef"
     style="display:none;"
-    class="copy-button"
+    :title="label[state]"
+    :class="['copy-button', classes[state]]"
     @click="copy"
   >
+    <span :class="icon[state]" />
     <span
-      v-if="state === 'normal'"
-      title="复制到剪贴板"
-      class="b-footer text-footer"
+      class="absolute left-100vw"
+      role="status"
     >
-      <span class="i-mdi-content-copy" />
-    </span>
-    <span
-      v-else-if="state === 'success'"
-      title="复制成功"
-      class="b-success text-success"
-    >
-      <span class="i-mdi-check" />
-    </span>
-    <span
-      v-else
-      title="复制失败"
-      class="b-error text-error"
-    >
-      <span class="i-mdi-alert-circle-outline" />
+      {{ status[state] }}
     </span>
   </button>
-  <span
-    class="absolute left-100vw"
-    role="status"
-  >
-    <span v-if="state === 'success'">复制成功</span>
-    <span v-else-if="state === 'error'">复制失败</span>
-  </span>
 </template>
 
 <script setup lang="ts">
@@ -42,6 +22,30 @@ import { ref } from 'vue';
 const buttonRef = ref<HTMLElement | null>(null);
 const state = ref<'normal' | 'success' | 'error'>('normal');
 let timeout: NodeJS.Timeout;
+
+const label = {
+  normal: '复制到剪贴板',
+  success: '复制成功',
+  error: '复制失败',
+} as const;
+
+const classes = {
+  normal: 'b-footer text-footer',
+  success: 'b-success text-success',
+  error: 'b-error text-error',
+} as const;
+
+const icon = {
+  normal: 'i-mdi-content-copy',
+  success: 'i-mdi-check',
+  error: 'i-mdi-alert-circle-outline',
+} as const;
+
+const status = {
+  normal: '',
+  success: '复制成功',
+  error: '复制失败',
+} as const;
 
 async function copy() {
   try {
@@ -69,23 +73,20 @@ async function copy() {
 <style lang="scss" scoped>
 .copy-button {
   @media screen {
-    @apply important-block; // hide it in print and in places without stylesheet
+    @apply important-flex; // hide it in print and in places without stylesheet
   }
 
+  @apply justify-center items-center;
   @apply absolute top-0 right-0;
+  @apply w-6 h-6 text-sm;
+
+  transition-property: opacity, background-color;
+  @apply ease-out duration-150;
 
   @media (hover: hover) {
-    @apply transition-opacity ease-out opacity-10 top-9 right-3;
-  }
-
-  & > span {
-    @apply flex justify-center items-center;
-    @apply w-6 h-6 text-sm;
-
-    @media (hover: hover) {
-      @apply w-8 h-8 b-2 rd-3 text-base shadow;
-      @apply bg-popup active:bg-card transition-colors ease-out;
-    }
+    @apply opacity-10 top-9 right-3;
+    @apply w-8 h-8 b-2 rd-3 text-base shadow;
+    @apply bg-popup active:bg-card;
   }
 }
 </style>
