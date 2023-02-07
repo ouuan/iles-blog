@@ -1,0 +1,232 @@
+---
+title: DDPP 第四章学习笔记
+date: 2023-01-31T10:39:30+08:00
+copyrightNotice: 本文包含若干截自 DDPP 的图片，本文作者对它们不拥有版权。
+image: ddpp-4.png
+tags:
+-   ddpp
+-   学习笔记
+---
+
+[DDPP5](https://wakerly.org/DDPP/) 第四章 “Digital Design Practices” 的学习笔记。
+
+<Excerpt />
+
+## Documentation Standards
+
+一个 <dfn>document package</dfn> 通常至少包含以下内容：
+
+specification (*spec*)
+:   准确地描述系统的所有输入和输出以及功能。
+
+block diagram
+:   大致描述系统的主要模块之间的连接。
+
+logic-device description
+:   分别描述每个 “custom” logic device 的功能，这里 “custom” 是与现成的、由其他制造商生产的相对，例如 ASIC、FPGA、CPLD 等都是 custom 的。
+
+schematic diagram
+:   对每个模块的细节描述，比 *logic diagram* 更加细致，在 board-level design 中是包括 IC type、reference designator、signal name、pin number 等细节信息的电路图，在 FPGA、CPLD 中则由 HDL model 来充当这一角色。
+
+timing diagram
+:   展示各个信号随时间的变化情况。
+
+circuit description
+:   解释电路的工作原理以及注意事项。
+
+test plan
+:   如何对系统进行测试。
+
+感觉大致上来说，与软件进行类比的话，logic-device description 像是组件的 API 文档，circuit description 像是代码内的注释，block diagram 像是整个程序的结构图，schematic 则是“代码”。总之，这个 document package 和软件的文档不一样，还包含 schematic 这种具体实现。
+
+### Block Diagrams
+
+大概就是 DDPP5 Fig.4-1 这种感觉：
+
+![block diagram for a shift-and-add multiplier](ddpp-fig-4-1.png)
+
+整个系统被划分为若干 component，block diagram 展示它们之间最主要的一些连线而略去细节。
+
+在 block diagram 中，信号的流动可以是任意方向的，不需要都沿一个方向。
+
+### Gate Symbols
+
+根据 generalized DeMorgan’s theorem，AND、OR、NAND、NOR、NOT (inverter)、BUFFER (non-inverting buffer) 各自都有两种不同的画法，如 DDPP5 Fig.4-4 所示：
+
+![在 generalized DeMorgan's theorem 下等价的 gate symbols](ddpp-fig-4-4.png)
+
+### Signal Names and Active Levels
+
+为了兼容更多的 HDL 和 EDA，signal name 最好不要有特殊字符，而是只使用字母、数字、下划线，以字母开头。
+
+signal name 往往代表某种状态或某种操作，但并不总是在位于 HIGH 时表示相应的意思。每个 signal name 会有一个 <dfn>active level</dfn>，<dfn>active-high</dfn> 意味着这个 signal 位于 HIGH 时（在 positive-logic 中即为 1 时）表示这某种状态或某种操作，<dfn>active-low</dfn> 则与之相反。一个 signal 位于其 active level 时，我们说它 is <dfn>asserted</dfn>，反之则说它 is <dfn>negated</dfn> (*deasserted*)。
+
+signal name 会以某种 naming convention 来表示其 active level，DDPP5 采用的 convention 是 active-high 保持不变，而 active-low 加上 `_L` 后缀。例如，`READY` 为 1 / `READY_L` 为 0 表示 ready，`READY` 为 0 / `READY_L` 为 1 表示没有 ready。
+
+一般来说 active-high 理解起来相对容易，但由于性能、兼容性等原因也经常会需要 active-low。
+
+### Active Levels for Pins
+
+gate 或其他 logic element 的 pin 上有 inversion bubble 时，除了理解成不同的逻辑函数，也可以理解成 active-low 的输入/输出。
+
+例如，AND、NAND、NOR、OR 可以表示四种不同 active level 的 AND：（DDPP5 Fig.4-6）
+
+![四种不同 active level 的 AND: AND, NAND, NOR, OR](ddpp-fig-4-6.png)
+
+因为 inverting gate 往往性能更好，可以将 noninverting gate 替换为 inverting gate，而理解成输入输出的 active level 相反的 noninverting gate。
+
+### Bubble-to-Bubble Logic Design
+
+在画电路图时，尽量将 active-low 的信号连接到 inversion bubble 上，在理解电路时就可以少一些 logical negation（本质上是因为 active-low 信号的两侧都有 inversion bubble，从而能够消去），使电路更好理解。
+
+### Constant Logic Signals
+
+电路设计中偶尔会用到 constant 0 （*ground*） 和 constant 1 （*power-supply voltage*），在电路图中它们的记号如下图所示：（DDPP5 Fig.4-9 (b))
+
+![constant 0 and 1 inputs with individual gates](ddpp-fig-4-9-b.png)
+
+### Drawing Layout
+
+logic diagram 和 schematic 一般要从左到右画，所有输入都在最左侧，所有输出都在最右侧。
+
+在线路发生交叉时，有两种区分重叠和连接的方法：
+
+-   连接处打点，重叠不打点
+-   连接都形如 ⟂ / ⊤，重叠则形如 +
+
+由于 schematic 需要很多细节，一张图可能画不下，有两种处理方式：
+
+-   分为多张并列的图，标注出跨越两张图的连线。
+-   将图组织为树状（与 Web 前端的 component 类似），树根与 block diagram 类似。图中的 component 可以是另一张 schematic，也可以是 standard logic device 或者 HDL model。
+
+### Buses
+
+为了方便画图，多个并列的信号可以画成一个 <dfn>bus</dfn>。
+
+bus 的名字一般形如 `ADDR[15:0]`，表示 `ADDR15`、`ADDR14`、……、`ADDR1`、`ADDR0`。
+
+在图上 bus 用一条较粗的线表示，从这条粗线上连出一条细线表示从中 “pull” 出单独一个信号。
+
+### Additional Schematic Information
+
+在 board-level design 中，一个 schematic 在电路图的基础上还需要标明 IC type、reference designator、pin number 等信息，用来精确地描述电路。
+
+其中，IC type 描述了 IC 的功能，<dfn>reference designator</dfn> 用来在一类 IC 中指定特定的一个实例，<dfn>pin number</dfn> 用来指定从哪连到哪。
+
+全都标上长这样：（DDPP5 Fig.4-18）
+
+![schematic diagram for a circuit using several SSI parts](ddpp-fig-4-18.png)
+
+## Circuit Timing
+
+在时序电路中，电路由一个 clock 控制，而 clock 的频率会根据完成一步操作在最坏情况下的用时来制订，所以计算、优化电路的 timing 对电路的性能和正确性都非常重要。
+
+### Timing Diagrams
+
+*timing diagram* 用来展示电路里各个信号随时间变化的情况，如 DDPP5 Fig.4-19 (b)(c) 所示：
+
+![(b) 展示 causality 和 propagation delay 的 timing diagram (c) 展示 minimum / maximum delay 的 timing diagram](ddpp-fig-4-19-bc.png)
+
+信号的转变不是瞬间发生的，从一个状态到另一个状态的用时称作 <dfn>transition time</dfn>，从 LOW 到 HIGH 的用时叫做 <dfn>rise time</dfn>，从 HIGH 到 LOW 的用时叫做 <dfn>fall time</dfn>。
+
+在图 (b) 中，不同的箭头用来表示 transition 之间的 causality （因果关系）。
+
+有因果关系的 transition 并不是立刻一个接着一个发生，而是会有 *delay*，不同的信号、路径会有不同的 delay。delay 一般是指两个 transition 各自中点的距离。
+
+很多因素都会对 delay 造成影响，所以 delay 一般不是单个数字，而是一个区间。图 (c) 中标明了 minimum delay 和 maximum delay。
+
+有时候 timing diagram 不需要区分 rise 和 fall，例如用来存储数据的信号，就可以如 DDPP5 Fig.4-20 (a) 这样画：
+
+![不区分 rise 和 fall 的 timing diagram](ddpp-fig-4-20-a.png)
+
+可以将一个 bus 画在一起，也可以用数字标注 bus 的取值，如 DDPP5 Fig.4-20 (b) 所示：
+
+![将 bus 画在一起的 timing diagram](ddpp-fig-4-20-b.png)
+
+### Propagation Delay
+
+<dfn>propagation delay</dfn> 指的是电路的某个输入发生改变后沿着某个路径产生某个输出的 delay，一般记作 $t_{\mathrm{pX}}$，其中 $\mathrm{X}$ 用来标识这个路径。
+
+影响 propagation delay 的因素有很多，例如：
+
+-   Power-supply voltage: 包括标定的电压，以及小的电压波动
+-   Temperature: 包括环境温度和电路工作产生的热量
+-   Output loading: 电路的输出可能与后续电路的很多个输入相连，连接到的输入越多，将信号传递过去就用时越长
+-   Input rise and fall times: 如果输入的 transition 慢，也会计入 propagation delay
+-   Transition direction: 有时 rise 和 fall 的用时会不同
+-   Speed-of-light delays: 如果电路的物理尺寸大，或者电路速度非常快，光速的限制就不能忽略
+-   Noise and crosstalk: 环境中的各种干扰，以及相邻线路之间的干扰
+-   Manufacturing tolerances: 元件被制造出来的时候可能有细微的差异
+
+一般来说，计算 propagation delay 可以不考虑这么多因素，而只需根据生产商提供的元件的 “maximum” “typical” “minimum” propagation delay 来进行计算。
+
+如果电路有多个输入输出，就会有很多条路径需要计算 delay。
+
+<Card title="glitch 与 delay">
+
+第三章中提到的 [glitch](ddpp-3#timing-hazards) 是否实际发生，与电路的 delay 密切相关。
+
+</Card>
+
+### Timing Specifications
+
+生产商一般会提供元件在某种条件下每个路径、每种 transition 方向的 propagation delay 的范围，一般会提供 maximum delay 和 minimum delay，也可能提供一个 “typical” delay。
+
+一般情况下，maximum delay 是最重要的，minimum delay 只在少数情况下需要考虑，而依赖于 typical delay 是不靠谱的。
+
+### Timing Analysis Tools
+
+在复杂的电路中，往往需要借助 EDA tool 来计算 timing。比起手动计算，EDA 可能会利用元件附带的比 min/max delay 更加详细的信息来更加精确地计算 delay。可以使用模拟器，手动设计输入，来计算 delay。也可以使用 timing analysis program，来自动计算出所有可能的 delay。
+
+在设计的不同阶段可能会对 timing 进行多次估计和计算，在设计基本完成时如果发现 propagation delay 不符合设计要求，可能需要进行调整，例如针对 critical path 进行线路优化，将 critical path 上的元件尽量放在相邻的位置，将 high-fanout 的信号复制几分来减轻 output load……这样对 timing 进行调整的过程可能会反复进行很多遍，被称作 <dfn>timing closure</dfn>。
+
+## HDL-Based Digital Design
+
+### EDA Tool Suites for HDLs
+
+text editor
+:   包含代码高亮等功能的 HDL source file 编辑器。
+
+compiler
+:   检查代码中的语法错误，将 HDL 编译为 RTL （register-transfer language）。
+
+synthesizer (synthesis tool)
+:   将 RTL design synthesis 到某个具体的 hardware technology 上，通常分为若干步骤：
+    1.  mapping: 将 RTL design 对应到具体的 hardware element
+    2.  placement: 在 FPGA / CPLD 设计中，为每个 element 选择具体的 programmable resource instance；在 ASIC 设计中，为各种 basic building block 安排位置
+    3.  routing: 在 FPGA / ASIC 设计中，在 element 之间连线（CPLD 中连线是固定的，要根据连线选择 programmable resource）
+
+simulator
+:   对给定的 HDL model 和随时间变化的输入，计算出随时间变化的输出。输入可以是手动编辑的，由 *test bench* 生成的，或者通过 *waveform editor* 编辑的。输出可以是波形图或者列表，还可能包含警告。
+
+template generator
+:   生成常用的代码模板。
+
+schematic viewer
+:   由 HDL model （RTL） 或 synthesized result 生成 schematic diagram，synthesis 前后的 schematic diagram 可能会有很大的不同，但功能是一致的。
+
+chip viewer
+:   查看 synthesized result 中的物理布局和连线。
+
+constraints editor
+:   给 synthesizer 调参，例如设置 timing 要求，调整优化目标。
+
+timing analyzer
+:   计算某些或全部路径的 delay。
+
+back annotator
+:   将 timing analyzer 的计算结果插入到 HDL model 中，以在 simulation 中展现出 timing。
+
+### HDL-Based Design Flow
+
+1.  specification / hierarchy / block diagram
+2.  coding
+3.  compilation
+4.  simulation / functional verification / pre-fitting timing verification
+5.  mapping
+6.  fitting / place & route
+7.  post-fitting timing verification
+
+其中，前四步被称作 <dfn>front-end steps</dfn>，后三步被称作 <dfn>back-end steps</dfn>。
+
+设计过程一般不会是一步一步顺着来的，而是会不断反复。为了少折腾，第一步中总体设计的合理性，以及第四步中进入 back-end steps 前的测试，都非常重要。由于精确的 timing 计算依赖于具体的 fitting，在第七步发现 timing 不符合要求而推倒重来也是很有可能的。
