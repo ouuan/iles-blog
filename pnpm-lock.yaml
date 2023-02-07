@@ -59,6 +59,7 @@ specifiers:
   tsup: 6.3.0
   typescript: 4.9.5
   unified: 10.1.2
+  unist-util-visit: 4.1.2
   unocss: 0.49.4
   vite: 4.1.1
   vite-plugin-compression: 0.5.1
@@ -87,6 +88,7 @@ dependencies:
   simple-git: 3.16.0
   ts-exhaustive-check: 1.0.0
   unified: 10.1.2
+  unist-util-visit: 4.1.2
   unocss: 0.49.4_vite@4.1.1
   vue: 3.2.47
 
@@ -500,7 +502,7 @@ packages:
       hast-util-to-html: 8.0.4
       remark-frontmatter: 4.0.1
       source-map: 0.7.4
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
     transitivePeerDependencies:
       - supports-color
 
@@ -592,7 +594,7 @@ packages:
       unified: 10.1.2
       unist-util-position-from-estree: 1.1.1
       unist-util-stringify-position: 3.0.2
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
       vfile: 5.3.6
     transitivePeerDependencies:
       - supports-color
@@ -3187,7 +3189,7 @@ packages:
       html-void-elements: 2.0.1
       parse5: 6.0.1
       unist-util-position: 4.0.3
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
       vfile: 5.3.6
       web-namespaces: 2.0.1
       zwitch: 2.0.4
@@ -3208,7 +3210,7 @@ packages:
       nth-check: 2.1.1
       property-information: 6.2.0
       space-separated-tokens: 2.0.2
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
       zwitch: 2.0.4
     dev: false
 
@@ -3384,7 +3386,7 @@ packages:
       minimist: 1.2.7
       pathe: 0.2.0
       picocolors: 1.0.0
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
       unplugin-vue-components: 0.21.2_vite@4.1.1+vue@3.2.47
       vite: 4.1.1_gyrp4zacqcjjrmgvdzgac5epyy
       vue: 3.2.47
@@ -3935,7 +3937,7 @@ packages:
     dependencies:
       '@types/mdast': 3.0.10
       '@types/unist': 2.0.6
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
 
   /mdast-util-find-and-replace/2.2.1:
     resolution: {integrity: sha512-SobxkQXFAdd4b5WmEakmkVoh18icjQRxGy5OWTCzgsLRm1Fu/KCtwD1HIQSsmq5ZRjVH0Ehwg6/Fn3xIUk+nKw==}
@@ -4095,7 +4097,7 @@ packages:
       trim-lines: 3.0.1
       unist-util-generated: 2.0.0
       unist-util-position: 4.0.3
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
 
   /mdast-util-to-markdown/1.5.0:
     resolution: {integrity: sha512-bbv7TPv/WC49thZPg3jXuqzuvI45IL2EVAr/KxF0BSdHsU0ceFHOmwQn6evxAh1GaoK/6GQ1wp4R4oW2+LFL/A==}
@@ -4106,7 +4108,7 @@ packages:
       mdast-util-phrasing: 3.0.0
       mdast-util-to-string: 3.1.0
       micromark-util-decode-string: 1.0.2
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
       zwitch: 2.0.4
 
   /mdast-util-to-string/3.1.0:
@@ -5036,7 +5038,7 @@ packages:
       rehype-parse: 8.0.4
       unified: 10.1.2
       unist-util-remove-position: 4.0.1
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
     dev: true
 
   /rehype-parse/8.0.4:
@@ -5799,7 +5801,7 @@ packages:
     resolution: {integrity: sha512-0yDkppiIhDlPrfHELgB+NLQD5mfjup3a8UYclHruTJWmY74je8g+CIFr79x5f6AkmzSwlvKLbs63hC0meOMowQ==}
     dependencies:
       '@types/unist': 2.0.6
-      unist-util-visit: 4.1.1
+      unist-util-visit: 4.1.2
 
   /unist-util-stringify-position/2.0.3:
     resolution: {integrity: sha512-3faScn5I+hy9VleOq/qNbAd6pAx7iH5jYBMS9I1HgQVijz/4mv5Bvw5iw1sC/90CODiKo81G/ps8AJrISn687g==}
@@ -5833,8 +5835,8 @@ packages:
       unist-util-visit-parents: 3.1.1
     dev: false
 
-  /unist-util-visit/4.1.1:
-    resolution: {integrity: sha512-n9KN3WV9k4h1DxYR1LoajgN93wpEi/7ZplVe02IoB4gH5ctI1AaF2670BLHQYbwj+pY83gFtyeySFiyMHJklrg==}
+  /unist-util-visit/4.1.2:
+    resolution: {integrity: sha512-MSd8OUGISqHdVvfY9TPhyK2VdUrPgxkUtWSuMHF6XAAFuL4LokseigBnZtPnJMu+FbynTkFNnFlyjxpVKujMRg==}
     dependencies:
       '@types/unist': 2.0.6
       unist-util-is: 5.1.1

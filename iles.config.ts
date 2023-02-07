@@ -21,6 +21,7 @@ import remarkShiki from './src/remark/remarkShiki';
 import addHeadingForCard from './src/remark/addHeadingForCard';
 import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
 import setHeadingLevels from './src/remark/setHeadingLevels';
+import checkRelativeLinks from './src/remark/checkRelativeLinks';
 
 import breakLongCode from './src/rehype/breakLongCode';
 import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
@@ -102,6 +103,7 @@ export default defineConfig({
       'remark-math',
       'remark-gfm',
       remarkDefinitionList,
+      checkRelativeLinks,
       remarkMojikumi,
       // the following order matters!
       remarkShiki,
