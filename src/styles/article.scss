@@ -18,16 +18,18 @@
     line-height: 1.25; // avoid affecting serif line height
   }
 
-  p,
   & > h2,
   & > h3,
-  & > h4,
+  & > h4 {
+    @apply my-6;
+  }
+
+  p,
   ul,
   ol,
   dl,
-  img,
   blockquote {
-    @apply my-6;
+    @apply my-4;
   }
 
   a {
@@ -145,14 +147,14 @@
   }
 
   p > picture:only-child {
-    @apply flex justify-center;
+    @apply flex justify-center my-6;
 
     img {
-      @apply b-1 b-gray-1 dark:b-gray-13 my-0;
+      @apply b-1 b-gray-1 dark:b-gray-13;
     }
   }
 
   .inline-img img {
-    @apply inline my-0 h-6;
+    @apply inline h-6;
   }
 }

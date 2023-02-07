@@ -25,7 +25,7 @@
           :frontmatter="post.frontmatter"
         />
         <section
-          class="article-style"
+          class="article-style my-6"
           itemprop="abstract"
         >
           <component
