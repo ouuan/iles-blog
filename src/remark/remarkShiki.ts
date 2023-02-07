@@ -108,9 +108,8 @@ async function highlight(code: string, lang: string, from: number, to: number) {
 
 async function processNode(child: Content, index: number, siblings: Content[]) {
   if (child.type !== 'code') {
-    const { children } = child as { children: Content[] };
-    if (children) {
-      await Promise.all(children.map(processNode));
+    if ('children' in child) {
+      await Promise.all(child.children.map(processNode));
     }
     return;
   }
