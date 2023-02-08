@@ -1,10 +1,11 @@
 <template layout="base">
-  <div class="flex flex-row-reverse">
+  <div class="flex flex-row-reverse justify-center">
     <table-of-contents
+      v-if="needToc"
       client:load
       :headings="page.meta.headings"
     />
-    <div class="grow m-4 standard-card">
+    <div :class="['grow m-4 standard-card', { 'max-w-200': needToc }]">
       <article
         itemprop="mainEntity"
         itemscope
@@ -48,8 +49,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
+
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
+
+const needToc = computed(() => Array.isArray(page.meta.headings) && page.meta.headings.length > 1);
 
 useHead({
   meta: [

@@ -1,5 +1,7 @@
 <template>
   <aside
+    v-show="show"
+    id="__toc"
     class="sticky top-16 bg-card py-6 m-4 rd-2 w-72 2xl:w-84 3xl:w-96 shadow hidden xl:block"
     aria-label="文章目录"
     style="max-height: calc(100vh - 10rem);"
@@ -9,15 +11,28 @@
   >
     <table-of-contents-common
       :headings="headings"
-      :drawer="false"
+      @close="show = false"
     />
   </aside>
+  <button
+    v-show="!show"
+    class="floating-button text-lg bottom-24"
+    title="显示文章目录"
+    aria-controls="__toc"
+    aria-expanded="false"
+    @click="show = true"
+  >
+    <span class="i-mdi-menu" />
+  </button>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import type { Heading } from '@islands/headings';
 
 defineProps<{
   headings: Heading[];
 }>();
+
+const show = ref(true);
 </script>

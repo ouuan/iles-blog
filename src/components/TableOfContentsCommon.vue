@@ -5,10 +5,9 @@
         文章目录
       </h2>
       <button
-        v-if="drawer"
         class="px-1 text-xl flex items-center"
-        aria-label="关闭目录"
-        aria-controls="__toc-drawer"
+        title="关闭目录"
+        aria-controls="__toc"
         aria-expanded="true"
         @click="emit('close')"
       >
@@ -50,7 +49,6 @@ import type TOCNode from '~/types/TOCNode';
 
 const props = defineProps<{
   headings: Heading[];
-  drawer: boolean;
 }>();
 const emit = defineEmits<{
   (e: 'close'): void,

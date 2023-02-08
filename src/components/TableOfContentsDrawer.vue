@@ -1,6 +1,6 @@
 <template>
   <div
-    id="__toc-drawer"
+    id="__toc"
     class="toc-drawer bg-card py-6 shadow-lg fixed inset-y-0 z-15"
     aria-label="文章目录"
     role="dialog"
@@ -9,7 +9,6 @@
   >
     <table-of-contents-common
       :headings="headings"
-      drawer
       @close="displayToc = false"
     />
   </div>
@@ -18,7 +17,8 @@
     title="显示文章目录"
     :aria-hidden="displayToc"
     aria-haspopup="dialog"
-    aria-controls="__toc-drawer"
+    aria-controls="__toc"
+    aria-expanded="false"
     @click="displayToc = true"
   >
     <span class="i-mdi-menu" />

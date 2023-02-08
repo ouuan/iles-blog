@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="headings && headings.length > 1"
-    class="flex print:hidden"
-  >
+  <div class="flex print:hidden">
     <table-of-contents-drawer
       v-if="displayDrawer"
       :headings="headings"
@@ -19,7 +16,7 @@ import { useMediaQuery } from '@vueuse/core';
 import type { Heading } from '@islands/headings';
 
 defineProps<{
-  headings?: Heading[];
+  headings: Heading[];
 }>();
 
 /*
