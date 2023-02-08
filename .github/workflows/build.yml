@@ -1,12 +1,18 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '20 20 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container: # https://stackoverflow.com/a/74341376
-      image: node:lts
+      image: satantime/puppeteer-node:lts
+      env:
+        TZ: Asia/Shanghai
     steps:
       - uses: actions/checkout@v3
         with:
@@ -14,8 +20,9 @@ jobs:
           submodules: recursive
       - name: Install Dependencies
         run: |
-          apt update
-          apt install -y chromium jq
+          apt update -y
+          apt upgrade -y
+          apt install -y jq
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
@@ -23,10 +30,27 @@ jobs:
       - name: Check links
         shell: bash
         run: |
-          set -xeuo pipefail
           npm exec iles preview &
           sleep 5
           wget -c "$(curl -L https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
           mkdir -p muffet
           tar xf muffet_*_Linux_x86_64.tar.gz -C muffet
           muffet/muffet http://localhost:4173 -i 'http://localhost'
+      - name: Get deploy commit message
+        id: deploy-commit-message
+        run: |
+          delimiter="$(tr -dc A-Za-z0-9 </dev/urandom | head -c 20)"
+          echo "message<<$delimiter" >> "$GITHUB_OUTPUT"
+          git show -q --pretty="%B
+
+          https://github.com/${{ github.repository }}/commit/%H
+          " >> "$GITHUB_OUTPUT"
+          echo "$delimiter" >> "$GITHUB_OUTPUT"
+      - uses: peaceiris/actions-gh-pages@v3
+        if: (github.event_name == 'push' || github.event_name == 'schedule') && github.ref == 'refs/heads/master'
+        with:
+          publish_dir: dist
+          publish_branch: dist
+          external_repository: ouuan/ouuan.moe
+          personal_token: ${{ secrets.DEPLOY_TOKEN }}
+          full_commit_message: ${{ steps.deploy-commit-message.outputs.message }}
