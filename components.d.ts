@@ -39,6 +39,7 @@ declare module '@vue/runtime-core' {
     SearchBar: typeof import('./src/components/SearchBar.vue')['default']
     SponsorRequest: typeof import('./src/components/SponsorRequest.vue')['default']
     TableOfContents: typeof import('./src/components/TableOfContents.vue')['default']
+    TableOfContentsButton: typeof import('./src/components/TableOfContentsButton.vue')['default']
     TableOfContentsCommon: typeof import('./src/components/TableOfContentsCommon.vue')['default']
     TableOfContentsDrawer: typeof import('./src/components/TableOfContentsDrawer.vue')['default']
     TableOfContentsNode: typeof import('./src/components/TableOfContentsNode.vue')['default']

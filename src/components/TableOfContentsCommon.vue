@@ -5,6 +5,7 @@
         文章目录
       </h2>
       <button
+        id="__toc-close"
         class="px-1 text-xl flex items-center"
         title="关闭目录"
         aria-controls="__toc"

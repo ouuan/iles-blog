@@ -14,16 +14,7 @@
       @close="show = false"
     />
   </aside>
-  <button
-    v-show="!show"
-    class="floating-button text-lg bottom-24"
-    title="显示文章目录"
-    aria-controls="__toc"
-    aria-expanded="false"
-    @click="show = true"
-  >
-    <span class="i-mdi-menu" />
-  </button>
+  <table-of-contents-button v-model:show-toc="show" />
 </template>
 
 <script setup lang="ts">

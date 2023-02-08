@@ -5,29 +5,22 @@
     aria-label="文章目录"
     role="dialog"
     :style="{ right: tocRight }"
-    :aria-hidden="!displayToc"
+    :aria-hidden="!show"
   >
     <table-of-contents-common
       :headings="headings"
-      @close="displayToc = false"
+      @close="show = false"
     />
   </div>
-  <button
-    class="floating-button text-lg bottom-24"
-    title="显示文章目录"
-    :aria-hidden="displayToc"
+  <table-of-contents-button
+    v-model:show-toc="show"
     aria-haspopup="dialog"
-    aria-controls="__toc"
-    aria-expanded="false"
-    @click="displayToc = true"
-  >
-    <span class="i-mdi-menu" />
-  </button>
+  />
   <div
-    v-show="displayToc"
+    v-show="show"
     aria-hidden="true"
     class="fixed top-0 bottom-0 left-0 right-0 bg-gray-8 opacity-50 z-10"
-    @click="displayToc = false"
+    @click="show = false"
   />
 </template>
 
@@ -40,11 +33,11 @@ defineProps<{
   headings: Heading[];
 }>();
 
-const displayToc = ref(false);
-const tocRight = computed(() => (displayToc.value ? '0' : 'calc(-5px - var(--toc-width))'));
+const show = ref(false);
+const tocRight = computed(() => (show.value ? '0' : 'calc(-5px - var(--toc-width))'));
 
 onKeyStroke('Escape', () => {
-  displayToc.value = false;
+  show.value = false;
 });
 </script>
 
