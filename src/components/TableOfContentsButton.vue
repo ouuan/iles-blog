@@ -1,6 +1,7 @@
 <template>
   <button
     v-show="!show"
+    id="__toc-open"
     title="显示文章目录"
     class="floating-button text-lg bottom-24"
     aria-haspopup="dialog"

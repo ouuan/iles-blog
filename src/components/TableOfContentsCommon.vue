@@ -10,7 +10,7 @@
         title="关闭目录"
         aria-controls="__toc"
         aria-expanded="true"
-        @click="emit('close')"
+        @click="close"
       >
         <span class="i-mdi-close" />
       </button>
@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import type { Heading } from '@islands/headings';
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import {
   useWindowScroll,
   useWindowSize,
@@ -54,6 +54,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void,
 }>();
+
+function close() {
+  emit('close');
+  nextTick(() => {
+    document.getElementById('__toc-open')?.focus();
+  });
+}
 
 const { y: scrollY } = useWindowScroll();
 const { height: windowHeight } = useWindowSize();
