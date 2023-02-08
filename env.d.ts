@@ -6,4 +6,6 @@
 
 declare module '~build/meta' {
   export const totalSize: number;
+  export const sha: string;
+  export const committerDate: string;
 }

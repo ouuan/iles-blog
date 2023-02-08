@@ -61,8 +61,7 @@
 <script setup lang="ts">
 import { filesize } from 'filesize';
 import { format } from 'date-fns';
-import { sha, committerDate } from '~build/info';
-import { totalSize } from '~build/meta';
+import { sha, committerDate, totalSize } from '~build/meta';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
