@@ -1,0 +1,159 @@
+---
+title: 一些博客排版优化小 trick
+date: 2023-02-09T19:36:37+08:00
+image: css-is-awesome.jpeg
+tags:
+-   blog
+-   CSS
+-   经验分享
+---
+
+我的博客好像还用了不少奇怪的小 trick 来优化 （~~hopefully~~） 排版，在这整理一下，分享出来，也是怕几年（~~几天~~）后想不起来这些奇怪的东西是在干什么。
+
+主要是 text justify 相关和标点挤压相关。
+
+<Excerpt />
+
+我博客的 Markdown 渲染基于 [unified](https://github.com/unifiedjs/unified)，所以下面的一些优化是以 unified 插件（remark / remark-rehype / rehype 插件）的形式实现的。
+
+<Card type="warn">
+为了直观地进行演示，本文可能会在提到一个问题的段落通过设置文本和 CSS 特意制造出相应的问题，并禁用对这个问题的处理措施以将问题展示出来。
+</Card>
+
+## text justify 相关
+
+在每行的宽度略有差异时，[使用两端对齐会让中文排版更加美观](https://www.w3.org/TR/2022/DNOTE-clreq-20221009/#line_adjustment)，这一般通过 [`text-align` CSS 属性](https://developer.mozilla.org/docs/Web/CSS/text-align) 的 `justify` 选项实现。但由于网页排版的不确定性，每行的宽度可能不是略有差异而是有很大差异，这时使用 text justify 就会造成过大的空隙，所以需要避免出现过短的行，或者在有必要时禁用 text justify。
+
+### lang="zh-CN" 对 text justify 的影响
+
+这个并不是 trick，是基操，但挺重要的，还是写在这。
+
+如果没有将 HTML 的 [`lang` 属性](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/lang) 设为中文，在 Firefox 109（以及其他版本 / 其他浏览器，但不包括 Chrome 109）中就会按照英文的规则，将连续的汉字视作一个单词，而只在词与词之间增大间距，不改变汉字之间的间距，如下所示：
+
+<p lang="en" style="margin: auto; width: 12em; border: gray solid 1px;">这是一个设置了 `lang="en"` 和固定宽度的段落，这是一个 loooooooooooooooong word。</p>
+
+![上面的 lang 设为 en 的段落在 Firefox 109 中的渲染效果](firefox-text-justify-en.png)
+
+其中，第一行没有两端对齐，而第三行只在逗号后面增加了间距。
+
+如果设置了 `lang="zh-CN"` 则会在汉字间添加间距：
+
+<p lang="zh-CN" style="margin: auto; width: 12em; border: gray solid 1px;">这是一个设置了 `lang="zh-CN"` 和固定宽度的段落，这是一个 loooooooooooooooong word。</p>
+
+![上面的 lang 设为 zh-CN 的段落在 Firefox 109 中的渲染效果](firefox-text-justify-zh-CN.png)
+
+当然，设置 HTML 的 `lang` 属性还有其他作用，不管怎么样总是得设一个的。
+
+### 断开过长的行内代码
+
+有时候会遇到一些 <code style="word-break: normal;">veryLoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooongInlineCode</code>，为了让它不断开，前面的一行就会非常短，justify 后间隙就非常大。当然，这样的问题不局限于行内代码，但正常的英文很少会遇到特别长的单词，代码则经常遇到，所以我选择对代码进行处理（主要是因为不需要分词套 `<span>`）。
+
+思路很简单，就是把过长的 `:not(pre) > code` 通过 [`<wbr>`](https://developer.mozilla.org/docs/Web/HTML/Element/wbr) 或者 [`word-break: break-all`](https://developer.mozilla.org/docs/Web/CSS/word-break) 断开，让它不可断开的部分没那么长。例如：`<code>word<wbr>-<wbr>break<wbr>: <wbr>break<wbr>-<wbr>all</code>`、`<code>&lt;<wbr>code<wbr>&gt;<wbr>word<wbr>&lt;<wbr>wbr<wbr>&gt;-&lt;<wbr>wbr<wbr>&gt;<wbr>break<wbr>&lt;<wbr>wbr<wbr>&gt;: &lt;<wbr>wbr<wbr>&gt;<wbr>break<wbr>&lt;<wbr>wbr<wbr>&gt;-&lt;<wbr>wbr<wbr>&gt;<wbr>all<wbr>&lt;/<wbr>code<wbr>&gt;</code>`……（~~禁止禁止套娃~~）。
+
+具体实现：[`breakLongCode.ts`](https://github.com/ouuan/iles-blog/blob/master/src/rehype/breakLongCode.ts)
+
+1.  如果按空格分开没有超过 10 个字符的部分，不进行处理；
+2.  如果按正则表达式的 `\b` 分开没有超过 12 个字符的部分，则在 `\b` 处插入 `<wbr>`；
+3.  如果按 `\b` 以及下划线分开没有超过 15 个字符的部分，则在相应位置插入 `<wbr>`；
+4.  否则，没救了，直接 `word-break: break-all`。
+
+当然这个粗糙的处理方式还是有一些问题，比如从上面的示例就可以看出来，期望结果可能是 `<wbr>` / `</wbr>` 不被断开，但实际上可能在 `<`/`>` 的前后断开。
+
+### 在小屏幕上对窄的元素禁用 text justify
+
+<p style="margin: auto; width: 7em; border: gray solid 1px;">有的时候容器宽度太小，即使是正常的普通文本也不适合进行 text justify。</p>
+
+我选择了一个非常简单粗暴的处理方法：认为窄的元素 = 小屏幕上嵌套了多级的元素。
+
+```css
+.article-style {
+  text-align: justify;
+}
+.article-style > * > * {
+  text-align: initial;
+}
+@media (min-width: 40em) {
+  .article-style > * > * {
+    text-align: inherit;
+  }
+}
+```
+
+（上面放的是编译出来的 CSS，[源码](https://github.com/ouuan/iles-blog/blob/master/src/styles/article.scss)是使用 UnoCSS 的 SCSS。）
+
+一些细节：
+
+-   使用 `*` 选择器，[specificity](https://developer.mozilla.org/docs/Web/CSS/Specificity) 很低，便于 override。
+-   只选择 `> * > *` 而非 ` * *`，这样的话嵌套更深的元素依然从 parent 继承 `text-align`，就可以设置 CSS override 掉一整个子树。（之前我一度以为 katex 不自带行间公式居中，后来发现是被我的 CSS 改掉了 `text-align`。）
+-   使用 `inherit` 而非 `justify` 进行撤销。
+
+### 对包含过长行内公式的元素禁用 text justify
+
+除了 `行内代码`，$\text{行内公式}$ 也是常见的过长的不可断元素。这里我采用了一个本文最 dirty 的处理方式：在客户端通过 JavaScript 检测宽度过大的行内公式。
+
+具体实现：[`TextJustifyFix.vue`](https://github.com/ouuan/iles-blog/blob/master/src/components/TextJustifyFix.vue)
+
+-   只修改 `text-align: justify` 的元素，如果已经设置为其他对齐方式（例如表格中的居中对齐），就不应修改。
+-   使用了 [`document.fonts.ready`](https://developer.mozilla.org/docs/Web/API/FontFaceSet/ready) 来等待字体全部加载好再检查宽度。
+
+## 标点挤压
+
+代码实现：[`mojikumi.ts`](https://github.com/ouuan/iles-blog/blob/master/src/remark/mojikumi.ts)、[`mojikumi.scss`](https://github.com/ouuan/iles-blog/blob/master/src/styles/mojikumi.scss)。
+
+### 相邻标点的挤压
+
+例如：「<span class="no-mojikumi">：“。”（。）</span>」→「<span>：“。”（。）</span>」。当然本页其他地方也有一些例子。
+
+具体规则 [clreq](https://www.w3.org/TR/2022/DNOTE-clreq-20221009/#compression_rules_for_consecutive_punctuation_marks) 中说的比较模糊，可以参考 [jlreq](https://www.w3.org/TR/2020/NOTE-jlreq-20200811/#positioning_of_consecutive_opening_brackets_closing_brackets_comma_full_stops_and_middle_dots)。
+
+### 使用 CSS 去除标点的一半空白
+
+CSS 实现标点挤压有两种方式：
+
+-   使用 [`letter-spacing: -0.5em`](https://developer.mozilla.org/docs/Web/CSS/letter-spacing) 去掉右侧空白，`margin-left: -0.5em` 去掉左侧空白。
+-   使用 [`font-feature-settings:`](https://developer.mozilla.org/docs/Web/CSS/font-feature-settings) [`"halt"`](https://learn.microsoft.com/typography/opentype/spec/features_fj#halt) 将支持 halt 特性的字体变为半宽。
+
+使用 `letter-spacing` 是有讲究的，比 `margin-right` 靠谱，因为字符真的会只占半宽，而不是占全宽但一半和下一个字符重叠，甚至造成 overflow，可能导致滚动条出现。但 `letter-spacing` 不能去掉左侧空白，就只能使用 `margin-left` 了。
+
+通过 halt 特性变为半宽是更加靠谱的做法，但不是所有字体都支持这一特性，思源宋体是支持的，<span class="font-kai">霞鹜文楷</span> 不支持。并且，halt 只能变为半宽，不能变成其他宽度。
+
+### 行首行尾标点的挤压
+
+这里参考了 [Han.css](https://github.com/ethantw/Han) 的实现，就是把全宽的标点改成半宽标点和一个通过 `::before` 或 `::end` 添加的半宽的空格：
+
+-   因为是 pseudo element，所以不影响文本内容（例如复制出来的文本）。
+-   因为是空格，所以位于行首或行尾时就会发生[空格塌陷](https://www.w3.org/TR/2023/CRD-css-text-3-20230127/#white-space-phase-2)。
+
+### 英文标点的处理
+
+我采用了一个比较简单的判断英文标点的方法：
+
+-   空白一侧（左括号、左引号等是左侧，其他一般是右侧）是空格时是英文标点；
+-   右单引号右侧是字母时是撇号。
+
+英文标点一般调为半宽即可，但撇号半宽还是有些太宽了，应该（根据字体而定）调成大约三分之一宽，单引号也可以调窄一点，所以可以特判一下单引号，使用 `letter-spacing` 和 `margin-left`。
+
+### 给霞鹜文楷添加 halt 特性
+
+因为 [添加 halt 特性的 issue](https://github.com/lxgw/LxgwWenKai/issues/104) 被拒了，我就自己改了一个 [标点字体](https://github.com/ouuan/XiaWu-Punctuations)，顺便把引号改成了和思源宋体一致的全宽以方便一起处理（也可以理解为改引号宽度顺便添加 halt 特性，毕竟没有 halt 也可以用 `letter-spacing` 和 `margin-left` 凑合一下），具体可以看仓库里的 patch 文件。
+
+### 关于 chws 特性
+
+[chws 特性](https://learn.microsoft.com/typography/opentype/spec/features_ae#chws) 可以根据上下文自动挤压连续标点，一眼看上去似乎比 halt 更好用。
+
+思源宋体不支持这一特性，只不过有 [chws_tool](https://github.com/googlefonts/chws_tool) 可以用来转换。
+
+但是，chws 不支持行首行尾标点挤压，而如果要支持行首行尾挤压，就得把支持连续标点挤压的工作做一遍（因为要知道哪些标点已经被挤成了半宽哪些只在行首行尾挤成半宽），这样一来 chws 就没多大意义了。
+
+### Yet another mojikumi？
+
+有一些现成的支持标点挤压的库，例如 [heti](https://github.com/sivan/heti) 和 [Han.css](https://github.com/ethantw/Han)。但是我有一些需求：
+
+-   要能 SSG （SSR），不能在客户端运行。最好是能在 remark / rehype 中进行处理。
+-   最好是尽量使用 halt 而非 `letter-spacing` 和 `margin-left`。
+-   要能添加一些自定义的规则，比如对单引号特殊处理。
+-   我只需要标点挤压，不想要一个 CSS 全家桶，或者带有其他功能的 JS。
+
+现有的库难以同时满足上面这些需求，所以我就自己写了。
+
+本来想写一个通用的库，但通用的逻辑貌似没多少代码，不值得写成一个库。而我的整个 remark 插件又有点 opinionated，可能不太适合做成库（~~懒得做成库~~），想用的话可以在遵守 [AGPL 3.0](https://github.com/ouuan/iles-blog/blob/master/LICENSE) 的前提下直接复制（本文提到的其他代码也是一样，当然，如果是两三行的代码片段就不至于 AGPL 了，简单标一下出处就 OK）。
