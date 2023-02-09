@@ -22,3 +22,26 @@
   line-height: 0;
   letter-spacing: 0.2416em;
 }
+
+.no-mojikumi {
+  .mojikumi,
+  .mojikumi-narrow-left,
+  .mojikumi-narrow-right,
+  .mojikumi-line-start,
+  .mojikumi-line-end {
+    font-feature-settings: normal;
+  }
+
+  .mojikumi-narrow-left {
+    letter-spacing: normal;
+  }
+
+  .mojikumi-narrow-right {
+    margin-left: initial;
+  }
+
+  .mojikumi-line-start::before,
+  .mojikumi-line-end::after {
+    content: "";
+  }
+}
