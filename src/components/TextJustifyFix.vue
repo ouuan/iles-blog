@@ -9,7 +9,7 @@ export function onLoad() {
     const math = Array.from(document.getElementsByClassName('math-inline'));
     math.forEach((node) => {
       if (!node.parentElement) return;
-      if (getComputedStyle(node.parentElement).display === 'table-cell') {
+      if (getComputedStyle(node.parentElement).textAlign !== 'justify') {
         return;
       }
       if (node.getBoundingClientRect().width
