@@ -37,7 +37,7 @@ const lightTheme = {
 
 const highlighterPromise = getHighlighter({
   themes: [darkTheme, lightTheme],
-  langs: [],
+  langs: ['css'],
 });
 
 const CUSTOM_LANGUAGES = {
