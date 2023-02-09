@@ -41,9 +41,11 @@ jobs:
         run: |
           delimiter="$(tr -dc A-Za-z0-9 </dev/urandom | head -c 20)"
           echo "message<<$delimiter" >> "$GITHUB_OUTPUT"
-          git show -q --pretty="%B
+          git show -q --pretty="(${{ github.event_name }}) %B
 
           https://github.com/${{ github.repository }}/commit/%H
+
+          https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           " >> "$GITHUB_OUTPUT"
           echo "$delimiter" >> "$GITHUB_OUTPUT"
       - uses: peaceiris/actions-gh-pages@v3
