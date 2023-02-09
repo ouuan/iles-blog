@@ -27,14 +27,19 @@ jobs:
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
       - run: npx pnpm build
+      - name: Download muffet
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 1
+          max_attempts: 5
+          command: |
+            wget -c "$(curl -L https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
+            mkdir -p muffet
+            tar xf muffet_*_Linux_x86_64.tar.gz -C muffet
       - name: Check links
-        shell: bash
         run: |
           npm exec iles preview &
-          sleep 5
-          wget -c "$(curl -L https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
-          mkdir -p muffet
-          tar xf muffet_*_Linux_x86_64.tar.gz -C muffet
+          sleep 10
           muffet/muffet http://localhost:4173 -i 'http://localhost'
       - name: Get deploy commit message
         id: deploy-commit-message
