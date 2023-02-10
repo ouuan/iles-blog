@@ -32,8 +32,9 @@ jobs:
         with:
           timeout_minutes: 1
           max_attempts: 5
+          retry_wait_seconds: 30
           command: |
-            wget -c "$(curl -L https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
+            wget -c "$(curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/raviqqe/muffet/releases/latest | jq -r '.assets[] | select(.name | test("Linux_x86_64")) | .browser_download_url')"
             mkdir -p muffet
             tar xf muffet_*_Linux_x86_64.tar.gz -C muffet
       - name: Check links
