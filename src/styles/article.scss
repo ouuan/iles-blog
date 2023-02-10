@@ -125,6 +125,8 @@
   }
 
   table {
+    @apply min-w-120 mx-auto;
+
     th,
     td {
       @apply py-1 px-3 b-2 b-light-7 dark:b-dark-0;
