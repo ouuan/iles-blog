@@ -59,7 +59,7 @@
     "glob": "8.1.0",
     "glob-promise": "6.0.2",
     "glyph-segregator": "0.5.1",
-    "got": "11.8.6",
+    "got": "12.5.3",
     "mdast-util-mdx": "2.0.1",
     "micromark": "3.1.0",
     "rehype-katex": "6.0.2",
