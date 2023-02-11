@@ -53,7 +53,7 @@ specifiers:
   remark-parse: 10.0.1
   rollup-plugin-analyzer: 4.0.0
   sass: 1.58.0
-  shiki: 0.14.0
+  shiki: 0.14.1
   simple-git: 3.16.0
   ts-exhaustive-check: 1.0.0
   tsup: 6.6.0
@@ -84,7 +84,7 @@ dependencies:
   mdast-util-to-hast: 12.3.0
   plausible-tracker: 0.3.8
   rehype-plugin-image-native-lazy-loading: 1.2.0
-  shiki: 0.14.0
+  shiki: 0.14.1
   simple-git: 3.16.0
   ts-exhaustive-check: 1.0.0
   unified: 10.1.2
@@ -5260,8 +5260,8 @@ packages:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
 
-  /shiki/0.14.0:
-    resolution: {integrity: sha512-fb9Fg1Yx/ElVJcTqPQIEOSfn7mSZlrT1W3CkymY08lL2Jsi+t7jPcZzKO1lCsQwlSDuyNhHvolnyA2OI4EgJNg==}
+  /shiki/0.14.1:
+    resolution: {integrity: sha512-+Jz4nBkCBe0mEDqo1eKRcCdjRtrCjozmcbTUjbPTX7OOJfEbTZzlUWlZtGe3Gb5oV1/jnojhG//YZc3rs9zSEw==}
     dependencies:
       ansi-sequence-parser: 1.1.0
       jsonc-parser: 3.2.0
