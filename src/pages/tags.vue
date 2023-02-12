@@ -15,11 +15,11 @@ title: 标签列表
     </div>
     <div class="flex flex-wrap items-baseline gap-3 my-3">
       <span
-        v-for="tag of tagsSorted"
+        v-for="{ tag, count } of tagsSortedWithCount"
         :key="tag"
-        :title="`标签: ${tag}  使用次数: ${tagCountMap.get(tag)}`"
+        :title="`标签: ${tag}  使用次数: ${count}`"
         class="flex items-center"
-        :style="{ fontSize: `${Math.log(tagCountMap.get(tag) || 1) / 6 + 0.95}rem` }"
+        :style="{ fontSize: `${Math.log(count) / 6 + 0.95}rem` }"
       >
         <span class="i-mdi-tag-outline" />
         <a
@@ -28,7 +28,7 @@ title: 标签列表
         >
           {{ tag }}
         </a>
-        <sup class="text-sm">{{ tagCountMap.get(tag) }}</sup>
+        <sup class="text-sm">{{ count }}</sup>
       </span>
     </div>
   </div>
@@ -40,7 +40,15 @@ import { useTags, useTagCountMap } from '~/composables/useTags';
 
 const tags = useTags();
 const tagCountMap = useTagCountMap();
-const tagsSorted = computed(() => tags.value.slice().reverse().sort(
-  (lhs, rhs) => (tagCountMap.value.get(rhs) ?? 0) - (tagCountMap.value.get(lhs) ?? 0),
-));
+const tagsSortedWithCount = computed(
+  () => tags.value
+    .map((tag) => ({
+      tag,
+      count: tagCountMap.value.get(tag) ?? 0,
+    }))
+    .reverse() // useful because of sort stability
+    .sort(
+      (lhs, rhs) => rhs.count - lhs.count,
+    ),
+);
 </script>
