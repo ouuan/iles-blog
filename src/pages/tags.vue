@@ -57,4 +57,7 @@ const tagsSortedWithCount = computed(
       (lhs, rhs) => rhs.count - lhs.count,
     ),
 );
+
+const page = usePage();
+page.frontmatter.description = computed(() => `文章标签列表：${tagsSortedWithCount.value.slice(0, 10).map(({ tag }) => tag).join('，')}……`);
 </script>
