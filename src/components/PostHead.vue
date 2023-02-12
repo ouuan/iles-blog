@@ -22,7 +22,10 @@
         class="flex items-center"
         :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
-        <span class="i-mdi-folder-plus-outline mr-1" />
+        <span
+          class="i-mdi-folder-plus-outline mr-1"
+          aria-label="创建于"
+        />
         <a
           class="hover:underline"
           :href="`https://github.com/${site.repo}/blob/${site.branch}/${filename}?plain=1`"
@@ -40,7 +43,10 @@
         class="flex items-center"
         :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
-        <span class="i-mdi-update mr-1" />
+        <span
+          class="i-mdi-update mr-1"
+          aria-label="修改于"
+        />
         <a
           class="hover:underline"
           :href="`https://github.com/${site.repo}/commits/${site.branch}/${filename}`"
@@ -58,7 +64,10 @@
         class="flex items-center"
         title="访问量"
       >
-        <span class="i-mdi-eye-outline mr-1" />
+        <span
+          class="i-mdi-eye-outline mr-1"
+          aria-label="访问量"
+        />
         <visitor-count :href="href" />
       </span>
       <span
@@ -72,7 +81,10 @@
           class="flex items-center"
           itemprop="keywords"
         >
-          <span class="i-mdi-tag-outline mr-1" />
+          <span
+            class="i-mdi-tag-outline mr-1"
+            aria-label="标签"
+          />
           <a
             :href="`/tag/${tag}`"
             class="hover:underline"

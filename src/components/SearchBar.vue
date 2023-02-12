@@ -3,7 +3,7 @@
     <a
       class="p-2 bghover flex items-center"
       href="/search"
-      title="搜索"
+      title="全站搜索"
     >
       <span class="text-xl i-mdi-magnify" />
     </a>

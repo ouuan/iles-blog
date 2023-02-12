@@ -21,14 +21,20 @@ title: 标签列表
         class="flex items-center"
         :style="{ fontSize: `${Math.log(count) / 6 + 0.95}rem` }"
       >
-        <span class="i-mdi-tag-outline" />
+        <span
+          class="i-mdi-tag-outline"
+          aria-label="标签"
+        />
         <a
           :href="`/tag/${tag}`"
           class="hover:underline mx-1"
         >
           {{ tag }}
         </a>
-        <sup class="text-sm">{{ count }}</sup>
+        <sup
+          class="text-sm"
+          :aria-label="`使用了${count}次`"
+        >{{ count }}</sup>
       </span>
     </div>
   </div>

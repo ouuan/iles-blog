@@ -5,6 +5,7 @@
   <span
     v-else
     class="i-mdi-loading motion-safe:animate-spin"
+    aria-label="加载中"
   />
 </template>
 
