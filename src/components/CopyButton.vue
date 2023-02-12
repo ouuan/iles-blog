@@ -80,7 +80,7 @@ async function copy() {
   @apply ease-out duration-150;
 
   @media (hover: hover) {
-    @apply opacity-10 top-9 right-3;
+    @apply opacity-10 focus:opacity-100 top-9 right-3;
     @apply w-8 h-8 b-2 rd-3 text-base shadow;
     @apply bg-popup active:bg-card;
   }
