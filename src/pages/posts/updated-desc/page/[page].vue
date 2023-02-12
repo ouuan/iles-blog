@@ -10,6 +10,7 @@
       href-prefix="/posts/updated-desc/page"
       display-time="lastUpdated"
       title="文章列表: 最近修改"
+      description="按修改顺序排列的文章"
     />
   </div>
 </template>

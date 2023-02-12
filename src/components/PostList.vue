@@ -2,7 +2,7 @@
   <div class="my-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
     <h1
       class="text-6 font-bold font-serif"
-      :title="description"
+      :title="note"
       itemprop="headline"
     >
       {{ title }}
@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from 'vue';
+import { computed, toRefs } from 'vue';
 import { format, formatISO } from 'date-fns';
 import {
   usePageCount,
@@ -101,14 +101,15 @@ const props = withDefaults(defineProps<{
   displayTime?: 'date' | 'lastUpdated';
   hrefPrefix: string;
   title: string;
-  description?: string;
+  note?: string;
   displayVisitor?: boolean;
+  description: string;
 }>(), {
   sort: 'created-desc',
   filter: () => true,
   perPage: 20,
   displayTime: 'date',
-  description: undefined,
+  note: undefined,
   displayVisitor: false,
 });
 
@@ -126,4 +127,13 @@ function isPostNewYear(index: number) {
      && current.frontmatter[props.displayTime].getYear()
     !== previous.frontmatter[props.displayTime].getYear();
 }
+
+const page = usePage();
+page.frontmatter.description = computed(
+  () => `${props.description}：${
+    posts.value.slice(0, 5).map(
+      (post) => `《${post.frontmatter.title}》`,
+    ).join('，')
+  }……`,
+);
 </script>
