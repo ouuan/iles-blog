@@ -90,7 +90,6 @@ export default defineApp({
       ],
       meta: [
         { name: 'author', content: site.author },
-        { name: 'keywords', content: computed(() => frontmatter.tags || 'blog') },
         { name: 'twitter:creator', content: '@ouuan' },
         { name: 'twitter:card', content: 'summary' },
         {
