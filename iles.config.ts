@@ -22,6 +22,7 @@ import breakLongCode from './src/rehype/breakLongCode';
 import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
 
 import generateFonts from './src/misc/font';
+import generateSitemap from './src/misc/sitemap';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -128,13 +129,18 @@ export default defineConfig({
     ],
   },
   ssg: {
+    sitemap: false,
+
     manualChunks(id) {
       if (id.includes('fuse.js@')) return 'fuse-js';
       return null;
     },
 
-    onSiteRendered({ pages }) {
-      return generateFonts(pages);
+    async onSiteRendered({ pages }) {
+      await Promise.all([
+        generateFonts(pages),
+        generateSitemap(pages),
+      ]);
     },
   },
 });

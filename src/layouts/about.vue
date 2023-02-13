@@ -36,6 +36,7 @@ useHead({
     { property: 'profile:last_name', content: site.lastName },
     { property: 'profile:username', content: site.author },
     { property: 'profile:gender', content: site.gender },
+    { property: 'article:modified_time', content: page.frontmatter.lastUpdated.toISOString() },
   ],
 });
 </script>

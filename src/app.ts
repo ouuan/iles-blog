@@ -87,6 +87,7 @@ export default defineApp({
         { rel: 'dns-prefetch', href: 'https://plausible.ouuan.moe' },
         { rel: 'preconnect', href: 'https://blog-visitor-count.ouuan.moe' },
         { rel: 'stylesheet', href: '/vendors/katex/katex.css' },
+        { rel: 'sitemap', href: 'https://ouuan.moe/sitemap.xml' },
       ],
       meta: [
         { name: 'author', content: site.author },
