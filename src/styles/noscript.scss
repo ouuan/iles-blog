@@ -3,10 +3,10 @@
 // only apply to noscript to prevent flash of color transition
 :root:not(.dark):not(.light) {
   @media (prefers-color-scheme: light) {
-    @include lightVariables;
+    @include light;
   }
   @media (prefers-color-scheme: dark) {
-    @include darkVariables;
+    @include dark;
   }
 }
 

@@ -7,11 +7,11 @@ html:root {
 }
 
 :root.dark {
-  @include darkVariables;
+  @include dark;
 }
 
 :root.light {
-  @include lightVariables;
+  @include light;
 }
 
 * {
@@ -57,4 +57,3 @@ input[type="checkbox"] {
 @import "math";
 @import "mojikumi";
 @import "print";
-@import "scrollbar";
