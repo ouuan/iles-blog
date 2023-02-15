@@ -11,6 +11,7 @@ echo "---
 title: 
 date: $(date -Iseconds)
 image: 
+description: 
 tags:
 -   
 ---

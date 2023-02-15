@@ -54,6 +54,12 @@ import { computed } from 'vue';
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
 
+if (page.frontmatter.description.length < 50) {
+  throw new Error(`${page.meta.href}: Description too short.`);
+} else if (page.frontmatter.description.length > 150) {
+  throw new Error(`${page.meta.href}: Description too long.`);
+}
+
 const needToc = computed(() => Array.isArray(page.meta.headings) && page.meta.headings.length > 1);
 
 useHead({
