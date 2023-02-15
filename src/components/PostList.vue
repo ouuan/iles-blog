@@ -133,7 +133,6 @@ page.frontmatter.description = useDescription({
   posts,
   page: propRefs.pageIndex,
   lead: propRefs.title,
-  count: 4,
   dateType: propRefs.displayTime,
 });
 </script>
