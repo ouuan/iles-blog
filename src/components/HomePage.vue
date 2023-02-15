@@ -69,8 +69,9 @@ const pageCount = usePageCount();
 const page = usePage();
 page.frontmatter.description = useDescription({
   posts: currentPagePosts,
-  count: 3,
+  count: 2,
   lead: `${page.site.description}最新文章`,
   page: pageIndex,
+  dateType: 'date',
 });
 </script>
