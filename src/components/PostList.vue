@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue';
 import { format, formatISO } from 'date-fns';
-import { usePostListDescription } from '~/composables/useDescription';
+import useDescription from '~/composables/useDescription';
 import {
   usePageCount,
   usePostCount,
@@ -129,7 +129,7 @@ function isPostNewYear(index: number) {
 }
 
 const page = usePage();
-page.frontmatter.description = usePostListDescription({
+page.frontmatter.description = useDescription({
   posts,
   page: propRefs.pageIndex,
   lead: propRefs.title,
