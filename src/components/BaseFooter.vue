@@ -5,9 +5,9 @@
     itemscope
     itemtype="https://schema.org/WPFooter"
   >
-    <div class="flex flex-wrap justify-center gap-x-1">
+    <div class="flex justify-center items-center flex-wrap gap-x-1">
       <span>Copyright ©</span>
-      <span :title="lastUpdate">{{ yearString }}</span>
+      <span>{{ yearString }}</span>
       <a
         class="flex items-center"
         href="/sponsor"
@@ -16,9 +16,6 @@
         <span class="i-mdi-heart text-red dark:text-red-7" />
       </a>
       <span>{{ author }}</span>
-    </div>
-    <div class="flex flex-wrap justify-center items-center gap-x-1">
-      <span>文章总大小 {{ filesize(totalSize, { standard: 'iec', precision: 3 }) }}</span>
       <span class="i-mdi-circle-small" />
       <span title="实际上，为了保护用户隐私，同一用户的多次访问只有在同一天内使用同一浏览器在同一ip下才会被算作同一人">
         共有
@@ -59,13 +56,9 @@
 </template>
 
 <script setup lang="ts">
-import { filesize } from 'filesize';
-import { format } from 'date-fns';
-import { sha, committerDate, totalSize } from '~build/meta';
 import useCopyrightYear from '~/composables/useCopyrightYear';
 
 const { site } = usePage();
 const { author } = site;
 const yearString = useCopyrightYear();
-const lastUpdate = `最后更新于 ${format(new Date(committerDate), 'yyyy-MM-dd HH:mm:ss O')} (${sha.slice(0, 7)})`;
 </script>
