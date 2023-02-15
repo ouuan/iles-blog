@@ -12,7 +12,6 @@ title: 文章列表
       :page-index="1"
       href-prefix="/posts/created-desc/page"
       title="文章列表"
-      description="文章列表"
     />
   </div>
 </template>

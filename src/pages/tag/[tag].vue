@@ -6,7 +6,6 @@
       :page-index="1"
       :href-prefix="`/tag/${tag}/page`"
       :title="`标签: ${tag}`"
-      :description="`标签为“${tag}”的文章`"
     />
   </div>
 </template>

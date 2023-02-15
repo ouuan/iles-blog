@@ -84,8 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue';
+import { toRefs } from 'vue';
 import { format, formatISO } from 'date-fns';
+import useDescription from '~/composables/useDescription';
 import {
   usePageCount,
   usePostCount,
@@ -103,7 +104,6 @@ const props = withDefaults(defineProps<{
   title: string;
   note?: string;
   displayVisitor?: boolean;
-  description: string;
 }>(), {
   sort: 'created-desc',
   filter: () => true,
@@ -129,11 +129,10 @@ function isPostNewYear(index: number) {
 }
 
 const page = usePage();
-page.frontmatter.description = computed(
-  () => `${props.description}：${
-    posts.value.slice(0, 5).map(
-      (post) => `《${post.frontmatter.title}》`,
-    ).join('，')
-  }……`,
-);
+page.frontmatter.description = useDescription({
+  posts,
+  page: propRefs.pageIndex,
+  lead: propRefs.title,
+  count: 5,
+});
 </script>

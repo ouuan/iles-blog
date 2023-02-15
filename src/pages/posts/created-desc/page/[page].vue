@@ -9,7 +9,6 @@
       :page-index="pageIndex"
       href-prefix="/posts/created-desc/page"
       title="文章列表: 最新创建"
-      description="按创建顺序排列的文章"
     />
   </div>
 </template>

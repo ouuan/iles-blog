@@ -55,6 +55,7 @@
 
 <script setup lang="ts">
 import { toRefs } from 'vue';
+import useDescription from '~/composables/useDescription';
 import { usePosts, usePageCount } from '~/composables/usePosts';
 
 const props = defineProps<{
@@ -64,4 +65,12 @@ const props = defineProps<{
 const { pageIndex } = toRefs(props);
 const currentPagePosts = usePosts({ pageIndex });
 const pageCount = usePageCount();
+
+const page = usePage();
+page.frontmatter.description = useDescription({
+  posts: currentPagePosts,
+  count: 3,
+  lead: `${page.site.description}最新文章`,
+  page: pageIndex,
+});
 </script>
