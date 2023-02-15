@@ -62,6 +62,8 @@ Licensed under CC BY-SA 4.0`,
     };
   }).sort((lhs, rhs) => rhs.date.valueOf() - lhs.date.valueOf());
 
+  options.updated = items[0]?.date;
+
   return {
     options,
     items,
