@@ -7,7 +7,16 @@ import type { Post } from './usePosts';
 
 const MAX_LENGTH = 120;
 
-export default function useDescription({
+export function useAdjustedDescription(description: MaybeRef<string>) {
+  return computed(() => {
+    const d = unref(description);
+    if (d.length > MAX_LENGTH) return `${d.slice(0, MAX_LENGTH - 1)}…`;
+    if (d.length + site.description.length <= MAX_LENGTH) return d + site.description;
+    return d;
+  });
+}
+
+export function usePostListDescription({
   posts,
   lead,
   page,
@@ -30,9 +39,7 @@ export default function useDescription({
         if (list.length > 0 && totalLength >= MAX_LENGTH) break;
         list.push(item);
       }
-      let result = `${fullLead}：${list.join('，')}……`;
-      if (result.length + site.description.length <= MAX_LENGTH) result += site.description;
-      return result;
+      return useAdjustedDescription(`${fullLead}：${list.join('，')}……`).value;
     },
   );
 }

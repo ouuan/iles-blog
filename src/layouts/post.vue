@@ -50,9 +50,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useAdjustedDescription } from '~/composables/useDescription';
 
 const page = usePage();
-page.frontmatter.description ||= page.meta.excerpt;
+page.frontmatter.description = useAdjustedDescription(computed(
+  () => page.frontmatter.description || page.meta.excerpt,
+));
 
 const needToc = computed(() => Array.isArray(page.meta.headings) && page.meta.headings.length > 1);
 
