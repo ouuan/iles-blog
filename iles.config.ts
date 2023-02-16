@@ -73,7 +73,7 @@ export default defineConfig({
       frontmatter.published = birthtime;
     }
 
-    const postHref = filename.match(/^src\/pages\/(post\/.*)\.mdx?$/)?.[1]?.toLowerCase();
+    const postHref = filename.match(/^src\/pages\/(.*)\.mdx?$/)?.[1]?.toLowerCase();
     if (process.env.NODE_ENV === 'production' && postHref) {
       const data = await got.get(
         new URL(
