@@ -5,7 +5,10 @@
         role="search"
         class="grow max-w-100 flex items-center gap-2"
       >
-        <label for="__search_keywords">
+        <label
+          class="flex items-center"
+          for="__search_keywords"
+        >
           <span class="i-mdi-magnify text-xl" />
           <span class="sr-only">搜索关键词</span>
         </label>
