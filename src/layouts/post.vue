@@ -28,6 +28,7 @@
           <Card
             v-if="page.frontmatter.tags.includes('WIP')"
             type="wip"
+            :heading-level="2"
           >
             <p>未完待续…… 🕊️</p>
           </Card>

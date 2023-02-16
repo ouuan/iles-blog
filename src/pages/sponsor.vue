@@ -32,6 +32,7 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
         fold
         type="info"
         title="二维码校验信息"
+        :heading-level="2"
         class="font-mono"
       >
         <p>
