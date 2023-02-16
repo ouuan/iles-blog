@@ -65,11 +65,8 @@
             class="ml-auto flex items-center"
             :title="`访问量: ${post.frontmatter.visitor}`"
           >
-            <span
-              class="i-mdi-eye-outline mr-1"
-              role="img"
-              aria-label="访问量"
-            />
+            <span class="i-mdi-eye-outline mr-1" />
+            <span class="sr-only">访问量</span>
             <span>{{ post.frontmatter.visitor }}</span>
           </span>
         </a>

@@ -11,11 +11,8 @@
         class="flex items-center gap-1 hover:text-hover"
         :href="prevPost.meta.href"
       >
-        <span
-          class="i-mdi-chevron-left"
-          role="img"
-          aria-label="上一篇"
-        />
+        <span class="i-mdi-chevron-left" />
+        <span class="sr-only">上一篇</span>
         <span class="break-anywhere">{{ prevPost.frontmatter.title }}</span>
       </a>
     </div>
@@ -27,11 +24,8 @@
         class="flex items-center gap-1 hover:text-hover flex-row-reverse"
         :href="nextPost.meta.href"
       >
-        <span
-          class="i-mdi-chevron-right"
-          role="img"
-          aria-label="下一篇"
-        />
+        <span class="i-mdi-chevron-right" />
+        <span class="sr-only">下一篇</span>
         <span class="break-anywhere">{{ nextPost.frontmatter.title }}</span>
       </a>
     </div>

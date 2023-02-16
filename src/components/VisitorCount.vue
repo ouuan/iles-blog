@@ -5,12 +5,10 @@
   <span v-else-if="Number.isInteger(props.init)">
     {{ props.init }}
   </span>
-  <span
-    v-else
-    class="i-mdi-loading motion-safe:animate-spin"
-    role="img"
-    aria-label="加载中"
-  />
+  <span v-else>
+    <span class="i-mdi-loading motion-safe:animate-spin" />
+    <span class="sr-only">加载中</span>
+  </span>
 </template>
 
 <script setup lang="ts">
