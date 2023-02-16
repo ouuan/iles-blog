@@ -17,12 +17,12 @@ title: 标签列表
       <span
         v-for="{ tag, count } of tagsSortedWithCount"
         :key="tag"
-        :title="`标签: ${tag}  使用次数: ${count}`"
         class="flex items-center"
         :style="{ fontSize: `${Math.log(count) / 6 + 0.95}rem` }"
       >
         <span
           class="i-mdi-tag-outline"
+          role="img"
           aria-label="标签"
         />
         <a
@@ -33,8 +33,12 @@ title: 标签列表
         </a>
         <sup
           class="text-sm"
-          :aria-label="`使用了${count}次`"
-        >{{ count }}</sup>
+          :title="`使用了${count}次`"
+        >
+          <span class="sr-only">使用了</span>
+          <span>{{ count }}</span>
+          <span class="sr-only">次</span>
+        </sup>
       </span>
     </div>
   </div>

@@ -13,6 +13,7 @@
       >
         <span
           class="i-mdi-chevron-left"
+          role="img"
           aria-label="上一篇"
         />
         <span class="break-anywhere">{{ prevPost.frontmatter.title }}</span>
@@ -28,6 +29,7 @@
       >
         <span
           class="i-mdi-chevron-right"
+          role="img"
           aria-label="下一篇"
         />
         <span class="break-anywhere">{{ nextPost.frontmatter.title }}</span>

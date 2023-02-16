@@ -3,7 +3,6 @@
     v-if="toTop"
     class="btt-btn floating-button bottom-10"
     title="回到顶部"
-    aria-label="回到顶部"
     @click="scrollToTop"
   >
     <span class="btt-icon text-xl i-mdi-chevron-double-up" />
@@ -11,10 +10,8 @@
       <span class="flex justify-center">
         <span class="text-xs i-mdi-chevron-double-up" />
       </span>
-      <span
-        class="text-sm"
-        :aria-label="`阅读进度 ${scrollPercent}`"
-      >
+      <span class="sr-only">阅读进度</span>
+      <span class="text-sm">
         {{ scrollPercent }}
       </span>
     </span>
@@ -23,15 +20,12 @@
     v-else
     class="btt-btn floating-button bottom-10"
     title="前往底部"
-    aria-label="前往底部"
     @click="scrollToBottom"
   >
     <span class="btt-icon text-xl i-mdi-chevron-double-down" />
     <span class="btt-percent hidden">
-      <span
-        class="text-sm"
-        :aria-label="`阅读进度 ${scrollPercent}`"
-      >
+      <span class="sr-only">阅读进度</span>
+      <span class="text-sm">
         {{ scrollPercent }}
       </span>
       <span class="flex justify-center">

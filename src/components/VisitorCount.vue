@@ -8,6 +8,7 @@
   <span
     v-else
     class="i-mdi-loading motion-safe:animate-spin"
+    role="img"
     aria-label="加载中"
   />
 </template>

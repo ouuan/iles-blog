@@ -7,7 +7,7 @@
   >
     <span :class="icon[state]" />
     <span
-      class="absolute left-100vw"
+      class="sr-only"
       role="status"
     >
       {{ status[state] }}

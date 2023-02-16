@@ -67,6 +67,7 @@
           >
             <span
               class="i-mdi-eye-outline mr-1"
+              role="img"
               aria-label="访问量"
             />
             <span>{{ post.frontmatter.visitor }}</span>

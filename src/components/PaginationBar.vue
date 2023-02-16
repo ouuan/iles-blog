@@ -22,11 +22,9 @@
       <span class="i-mdi-chevron-left" />
       <span class="mr-1 hidden sm:inline-block">上一页</span>
     </a>
-    <div
-      class="flex sm:hidden items-center"
-      :aria-label="`第${currentPage}页，共${pageCount}页`"
-    >
-      {{ currentPage }} / {{ pageCount }}
+    <div class="flex sm:hidden items-center">
+      <span aria-hidden="true">{{ currentPage }} / {{ pageCount }}</span>
+      <span class="sr-only">第 {{ currentPage }} 页，共 {{ pageCount }} 页</span>
     </div>
     <ol class="hidden sm:flex gap-3 flex-wrap justify-center">
       <li

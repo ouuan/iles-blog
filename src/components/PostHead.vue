@@ -24,6 +24,7 @@
       >
         <span
           class="i-mdi-folder-plus-outline mr-1"
+          role="img"
           aria-label="创建于"
         />
         <a
@@ -44,6 +45,7 @@
       >
         <span
           class="i-mdi-update mr-1"
+          role="img"
           aria-label="修改于"
         />
         <a
@@ -64,6 +66,7 @@
       >
         <span
           class="i-mdi-eye-outline mr-1"
+          role="img"
           aria-label="访问量"
         />
         <visitor-count
@@ -84,6 +87,7 @@
         >
           <span
             class="i-mdi-tag-outline mr-1"
+            role="img"
             aria-label="标签"
           />
           <a

@@ -5,11 +5,13 @@
         role="search"
         class="grow max-w-100 flex items-center gap-2"
       >
-        <label
-          class="i-mdi-magnify text-xl"
-          aria-label="搜索关键词"
-          for="__search_keywords"
-        />
+        <label for="__search_keywords">
+          <span
+            class="i-mdi-magnify text-xl"
+            role="img"
+            aria-label="搜索关键词"
+          />
+        </label>
         <input
           id="__search_keywords"
           v-model="params.q"
