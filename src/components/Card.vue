@@ -14,10 +14,11 @@
           class="font-bold flex items-center gap-1"
           :level="headingLevel"
         >
+          <span :class="['text-5', icon[type]]" />
           <span
-            :aria-label="title ? `${defaultTitle[type]}: ` : undefined"
-            :class="['text-5', icon[type]]"
-          />
+            v-if="title"
+            class="sr-only"
+          >{{ defaultTitle[type] }}</span>
           <span v-html="title || defaultTitle[type]" />
         </deep-heading>
         <span
