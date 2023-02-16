@@ -15,7 +15,7 @@ const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
 export default async function generateSitemap(pages: RouteToRender[]) {
   const items = pages.filter((page) => {
-    if (page.path === '/404') return false;
+    if (page.path === '/404' || page.path === '/search') return false;
     if (!page.outputFilename.endsWith('.html')) return false;
     const canonical = page.rendered.match(/<link rel="canonical" href="(.+?)">/)?.[1];
     if (canonical === undefined) return true;
@@ -35,7 +35,6 @@ export default async function generateSitemap(pages: RouteToRender[]) {
     else if (page.path === '/posts') priority = 0.5;
     else if (page.path.startsWith('/posts/')) priority = 0.5;
     else if (page.path === '/tags') priority = 0.4;
-    else if (page.path === '/search') priority = 0.3;
     else throw new Error(`Unknown path: ${page.path}`);
 
     if (page.path.includes('/page/')) priority -= 0.1;
