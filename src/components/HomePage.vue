@@ -1,7 +1,7 @@
 <template>
   <div class="mx-4 flex flex-col gap-6">
     <div
-      v-for="(post, index) of currentPagePosts"
+      v-for="post of currentPagePosts"
       :key="post.meta.href"
       class="standard-card xl:px-24 2xl:px-30 3xl:px-36"
     >
@@ -11,15 +11,7 @@
       >
         <post-microdata :post="post" />
         <post-head
-          v-if="index < 3"
           client:load
-          :href="post.meta.href"
-          :filename="post.meta.filename"
-          :frontmatter="post.frontmatter"
-        />
-        <post-head
-          v-else
-          client:idle
           :href="post.meta.href"
           :filename="post.meta.filename"
           :frontmatter="post.frontmatter"

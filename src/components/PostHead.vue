@@ -35,7 +35,6 @@
             itemprop="dateCreated"
           >
             {{ format(frontmatter.date, 'yyyy-MM-dd') }}
-            <relative-time :date="frontmatter.date" />
           </time>
         </a>
       </span>
@@ -56,7 +55,6 @@
             itemprop="dateModified"
           >
             {{ format(frontmatter.lastUpdated, 'yyyy-MM-dd') }}
-            <relative-time :date="frontmatter.lastUpdated" />
           </time>
         </a>
       </span>

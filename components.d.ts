@@ -32,7 +32,6 @@ declare module '@vue/runtime-core' {
     PostListNav: typeof import('./src/components/PostListNav.vue')['default']
     PostMicrodata: typeof import('./src/components/PostMicrodata.vue')['default']
     PrevNextPost: typeof import('./src/components/PrevNextPost.vue')['default']
-    RelativeTime: typeof import('./src/components/RelativeTime.vue')['default']
     RenderFeed: typeof import('./node_modules/.pnpm/@islands+feed@0.8.1_iles@0.9.2+vue@3.2.47/node_modules/@islands/feed/dist/render-feed')['RenderFeed']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
