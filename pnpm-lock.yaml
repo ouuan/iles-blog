@@ -33,7 +33,7 @@ specifiers:
   fuse.js: 6.6.2
   glob: 8.1.0
   glob-promise: 6.0.2
-  glyph-segregator: 0.5.1
+  glyph-segregator: 0.6.0
   got: 12.5.3
   hast-util-select: 5.0.5
   html-escaper: 3.0.3
@@ -75,7 +75,7 @@ dependencies:
   '@vueuse/core': 9.12.0_vue@3.2.47
   date-fns: 2.29.3
   fuse.js: 6.6.2
-  glyph-segregator: 0.5.1
+  glyph-segregator: 0.6.0
   hast-util-select: 5.0.5
   html-escaper: 3.0.3
   iles: 0.9.2_gyrp4zacqcjjrmgvdzgac5epyy
@@ -2983,8 +2983,8 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /glyph-segregator/0.5.1:
-    resolution: {integrity: sha512-9uqzbDPTrqXj7vQpNwLSUvLLnfbtnAYZhbiYZAzHu3NBDrpZBBkl9+XCofoN/KFnT0C/P00hGTdcwYWd8jCIIg==}
+  /glyph-segregator/0.6.0:
+    resolution: {integrity: sha512-+d34wV+wMrjSXbUi4daem1iJmrC6/+lOgtOvPHRyUiJan/gU/zHEx4i2DlDX7rYVvb85jK6cTRFfbL7WafrZUA==}
     dependencies:
       consola: 2.15.3
       jsdom: 21.1.0
