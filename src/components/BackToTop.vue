@@ -1,37 +1,39 @@
 <template>
   <button
-    v-if="toTop"
-    class="btt-btn floating-button bottom-10"
-    title="回到顶部"
-    @click="scrollToTop"
+    class="group floating-button bottom-10 flex-col"
+    :title="toTop ? '回到顶部' : '前往底部'"
+    @click="scroll"
   >
-    <span class="btt-icon text-xl i-mdi-chevron-double-up" />
-    <span class="btt-percent hidden">
-      <span class="flex justify-center">
-        <span class="text-xs i-mdi-chevron-double-up" />
-      </span>
-      <span class="sr-only">阅读进度</span>
-      <span class="text-sm">
-        {{ scrollPercent }}
-      </span>
-    </span>
-  </button>
-  <button
-    v-else
-    class="btt-btn floating-button bottom-10"
-    title="前往底部"
-    @click="scrollToBottom"
-  >
-    <span class="btt-icon text-xl i-mdi-chevron-double-down" />
-    <span class="btt-percent hidden">
-      <span class="sr-only">阅读进度</span>
-      <span class="text-sm">
-        {{ scrollPercent }}
-      </span>
-      <span class="flex justify-center">
-        <span class="text-xs i-mdi-chevron-double-down" />
-      </span>
-    </span>
+    <div
+      :aria-hidden="!toTop"
+      class="flex justify-center"
+    >
+      <span
+        :class="[
+          'i-mdi-chevron-double-up motion-safe:transition-font-size',
+          toTop && 'text-5 group-hover:text-3',
+          !toTop && 'text-0',
+        ]"
+      />
+    </div>
+    <div
+      aria-hidden="true"
+      class="text-0 group-hover:text-3.5 motion-safe:transition-font-size"
+    >
+      {{ scrollPercent }}
+    </div>
+    <div
+      :aria-hidden="toTop"
+      class="flex justify-center"
+    >
+      <span
+        :class="[
+          'i-mdi-chevron-double-down motion-safe:transition-font-size',
+          !toTop && 'text-5 group-hover:text-3',
+          toTop && 'text-0',
+        ]"
+      />
+    </div>
   </button>
 </template>
 
@@ -60,26 +62,9 @@ watchThrottled([windowHeight, scrollY], () => {
   throttle: 100,
 });
 
-function scrollToTop() {
+function scroll() {
   window.scrollTo({
-    top: 0,
-  });
-}
-
-function scrollToBottom() {
-  window.scrollTo({
-    top: document.body.scrollHeight,
+    top: toTop.value ? 0 : document.body.scrollHeight,
   });
 }
 </script>
-
-<style lang="scss" scoped>
-.btt-btn:hover {
-  .btt-icon {
-    @apply hidden;
-  }
-  .btt-percent {
-    @apply block;
-  }
-}
-</style>
