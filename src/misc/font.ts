@@ -92,6 +92,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
     assetsPath: 'assets/fonts',
     useCache: !updateCommonGlyphs,
     cachePath: resolve(rootPath, '.fonts-cache.json'),
+    concurrency: 8,
   });
 
   previewServer.httpServer.close();
