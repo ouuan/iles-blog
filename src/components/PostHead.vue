@@ -66,7 +66,10 @@
           class="i-mdi-eye-outline mr-1"
           aria-label="访问量"
         />
-        <visitor-count :href="href" />
+        <visitor-count
+          :href="href"
+          :init="frontmatter.visitor"
+        />
       </span>
       <span
         v-if="frontmatter.tags"

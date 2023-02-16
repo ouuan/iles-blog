@@ -11,7 +11,7 @@
       >
         <post-microdata :post="post" />
         <post-head
-          client:load
+          client:idle
           :href="post.meta.href"
           :filename="post.meta.filename"
           :frontmatter="post.frontmatter"

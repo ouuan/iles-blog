@@ -2,6 +2,9 @@
   <span v-if="Number.isInteger(visitorCount)">
     {{ visitorCount }}
   </span>
+  <span v-else-if="Number.isInteger(props.init)">
+    {{ props.init }}
+  </span>
   <span
     v-else
     class="i-mdi-loading motion-safe:animate-spin"
@@ -12,7 +15,10 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
-const props = defineProps<{ href?: string }>();
+const props = defineProps<{
+  href?: string;
+  init?: number;
+}>();
 
 const visitorCount = ref<number | null>(null);
 
