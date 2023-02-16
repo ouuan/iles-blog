@@ -16,8 +16,10 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
       <a href="https://ko-fi.com/ouuan">
         <img
           src="/images/kofi2.webp"
-          class="inline max-h-9"
+          class="inline max-h-9 w-auto"
           alt="Buy Me a Coffee"
+          width="286"
+          height="73"
         >
       </a>
       on
