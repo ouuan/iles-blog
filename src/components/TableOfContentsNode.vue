@@ -8,14 +8,18 @@
       :key="node.slug"
       class="my-1 relative"
     >
+      <span
+        :class="`absolute top-1.2 left--4
+                   motion-safe:transition-transform ease-out ${icon[nodeType(node)]}`"
+      />
+      <span
+        v-if="label[nodeType(node)]"
+        class="sr-only"
+      >{{ label[nodeType(node)] }}</span>
       <a
         :class="['transition-color ease-out', node.current && 'text-link']"
         :href="`#${node.slug}`"
       >
-        <span
-          :class="`absolute top-1.2 left--4
-                   motion-safe:transition-transform ease-out ${icon(node)}`"
-        />
         <span v-html="node.title" />
       </a>
       <div
@@ -39,14 +43,28 @@ const props = defineProps<{
   showAll: boolean;
 }>();
 
-function icon(node: TOCNode) {
+function nodeType(node: TOCNode) {
   if (node.children.length === 0) {
-    if (node.level === 6) return 'i-mdi-square-medium'; // Card
-    return 'i-mdi-circle-medium';
+    if (node.level === 6) return 'card';
+    return 'leaf';
   }
-  if (node.open || props.showAll) return 'i-mdi-chevron-right rotate-90';
-  return 'i-mdi-chevron-right';
+  if (node.open || props.showAll) return 'open';
+  return 'closed';
 }
+
+const icon = {
+  card: 'i-mdi-square-medium',
+  leaf: 'i-mdi-circle-medium',
+  open: 'i-mdi-chevron-right rotate-90',
+  closed: 'i-mdi-chevron-right',
+};
+
+const label = {
+  card: '卡片',
+  leaf: null,
+  open: '已展开',
+  closed: '已折叠',
+};
 </script>
 
 <style scoped lang="scss">
