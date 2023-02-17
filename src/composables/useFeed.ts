@@ -27,7 +27,6 @@ export default function useFeed(tag?: string) {
     favicon: new URL('/favicon.ico', url).href,
     copyright: `Copyright © ${yearString} ${site.author}
 Licensed under CC BY-SA 4.0`,
-    updated: new Date(),
     feedLinks: {
       atom: new URL(`${tag ? `/tag/${tag}` : ''}/feed.atom`, url).href,
       rss: new URL(`${tag ? `/tag/${tag}` : ''}/feed.xml`, url).href,
