@@ -5,7 +5,7 @@
     itemtype="https://schema.org/Person"
   >
     <meta
-      itemprop="additionalName"
+      itemprop="name"
       :content="site.author"
     >
     <meta
