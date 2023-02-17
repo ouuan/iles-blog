@@ -29,10 +29,10 @@
 }
 
 :root {
-  --default-serif-font: "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif SC Web Font", "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, var(--default-emoji-font);
+  --default-serif-font: "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, var(--default-emoji-font);
   --default-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK SC", "Source Han Sans SC", 思源黑体, "Noto Sans CJK TC", "Source Han Sans TC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
   --default-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace Unicode Fallback", monospace, var(--default-emoji-font);
-  --default-kai-font: "XiaWu Punctuations", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, "LXGW WenKai Web Font", STKaiTi, KaiTi, var(--default-serif-font);
+  --default-kai-font: "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
   --default-emoji-font: "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --default-latin-font: "Noto Serif", Georgia, "Times New Roman", Times, serif;
 }
