@@ -65,3 +65,10 @@ jobs:
           full_commit_message: ${{ steps.deploy-commit-message.outputs.message }}
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Update post list in GitHub profile
+        if: github.repository_owner == 'ouuan' && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: blog-posts.yml
+          repo: ouuan/ouuan
+          token: ${{ secrets.PROFILE_POST_LIST_TOKEN }}
