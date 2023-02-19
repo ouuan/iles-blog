@@ -26,8 +26,15 @@ title: 404 Not Found
   </div>
 </template>
 
-<script setup lang="ts">
-defineProps<{
-  path: string;
-}>();
+<script client:idle lang="ts">
+import { trackEvent } from '~/misc/plausible';
+
+// eslint-disable-next-line import/prefer-default-export
+export function onLoad() {
+  trackEvent('404', {
+    props: {
+      href: window.location.href,
+    },
+  });
+}
 </script>

@@ -1,5 +1,3 @@
-/* eslint-disable import/prefer-default-export */
-
 import Plausible from 'plausible-tracker';
 
 const host = 'ouuan.moe';
@@ -7,6 +5,7 @@ const plausibleUrl = 'https://plausible.ouuan.moe';
 
 const {
   trackPageview: pageView,
+  trackEvent: event,
 } = Plausible({
   domain: host,
   apiHost: plausibleUrl,
@@ -24,3 +23,4 @@ function checkHost<T extends(...args: never[]) => void>(fn: T) {
 }
 
 export const trackPageview = checkHost(pageView);
+export const trackEvent = checkHost(event);
