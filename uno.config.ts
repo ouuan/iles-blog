@@ -63,7 +63,7 @@ export default defineConfig({
       screen: 'screen',
     },
   },
-  shortcuts: {
+  shortcuts: [{
     bghover: 'hover:bg-bghover transition-colors ease-out',
     'page-container': 'mx-2 sm:mx-12 md:mx-24 lg:mx-auto lg:w-208 xl:w-288 2xl:w-300 3xl:w-312',
     'floating-button': 'fixed z-5 right-9 md:right-18 lg:right-9 2xl:right-18 3xl:right-27 w-10 h-10 rd-full flex items-center justify-center bg-popup shadow print:hidden',
@@ -72,7 +72,15 @@ export default defineConfig({
     'btn-invert': 'text-card bg-gray-11 hover:bg-gray-11 dark:bg-gray-3 dark:hover:bg-gray-3',
     disabled: 'cursor-not-allowed opacity-50',
     'standard-card': 'bg-card rd-2 px-6 md:px-12 overflow-auto md:py-3 shadow',
-  },
+  }, [
+    /^contrast-(.+?)(?:-(.+))?$/,
+    ([, color, lightColor]) => [
+      `light:text-${lightColor || 'text'}`,
+      'light:drop-shadow',
+      `light:drop-shadow-color-${color}`,
+      `dark:text-${color}`,
+    ],
+  ]],
   transformers: [
     transformerDirective(),
   ],
