@@ -20,6 +20,7 @@ specifiers:
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.2
   '@ouuan/tsconfig-vue': 0.3.0
+  '@total-typescript/ts-reset': ^0.3.7
   '@types/hast': 2.3.4
   '@types/html-escaper': 3.0.0
   '@types/node': 18.14.0
@@ -104,6 +105,7 @@ devDependencies:
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.2_7kw3g6rralp5ps6mg3uyzz6azm
   '@ouuan/tsconfig-vue': 0.3.0
+  '@total-typescript/ts-reset': 0.3.7
   '@types/hast': 2.3.4
   '@types/node': 18.14.0
   '@unocss/transformer-directives': 0.49.7
@@ -888,6 +890,10 @@ packages:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
     dev: false
+
+  /@total-typescript/ts-reset/0.3.7:
+    resolution: {integrity: sha512-yXt2BRRVCJVvzWaxac5n0nCXzIrQEBE/MeYlNQ8/Iq7UeelNmm/AdnUAu18ilSS893mbEQ4u6whPt/HvOPc4rw==}
+    dev: true
 
   /@tsconfig/node-lts-strictest-esm/18.12.1:
     resolution: {integrity: sha512-LvBLmaC6Q/txTddLc11OeMHF9XjJFzlilkETJuvBlUvHy9pPiMsoH3nxWZM1FMSO53zp4mJP6gzOzxKEq0me7Q==}

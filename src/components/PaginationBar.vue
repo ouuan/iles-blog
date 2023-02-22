@@ -141,4 +141,11 @@ const items = computed(() => {
 
 const hasPrevPage = computed(() => props.currentPage > 1);
 const hasNextPage = computed(() => props.currentPage < props.pageCount);
+
+useHead({
+  link: computed(() => [
+    hasPrevPage.value && { rel: 'prev', href: `${props.hrefPrefix}/${props.currentPage - 1}` },
+    hasNextPage.value && { rel: 'next', href: `${props.hrefPrefix}/${props.currentPage + 1}` },
+  ].filter(Boolean)),
+});
 </script>
