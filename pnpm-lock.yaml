@@ -20,6 +20,7 @@ specifiers:
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.2
   '@ouuan/tsconfig-vue': 0.3.0
+  '@sniptt/guards': ^0.2.0
   '@total-typescript/ts-reset': ^0.3.7
   '@types/hast': 2.3.4
   '@types/html-escaper': 3.0.0
@@ -70,6 +71,7 @@ specifiers:
 
 dependencies:
   '@giscus/vue': 2.2.6_vue@3.2.47
+  '@sniptt/guards': 0.2.0
   '@types/html-escaper': 3.0.0
   '@unocss/reset': 0.49.7
   '@vueuse/components': 9.13.0_vue@3.2.47
@@ -878,6 +880,11 @@ packages:
     resolution: {integrity: sha512-CX6t4SYQ37lzxicAqsBtxA3OseeoVrh9cSJ5PFYam0GksYlupRfy1A+Q4aYD3zvcfECLc0zO2u+ZnR2UYKvCrw==}
     engines: {node: '>=14.16'}
     dev: true
+
+  /@sniptt/guards/0.2.0:
+    resolution: {integrity: sha512-QNxknl5YcrxpLtP99iEvNEJRlfXtIfpkvcEWHJKD6bHUr93dsH6OZGUF6reVBddKs1ps44lndSMoDK2Dz0n6ZQ==}
+    engines: {node: '>=14', npm: '>=7'}
+    dev: false
 
   /@szmarczak/http-timer/5.0.1:
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}

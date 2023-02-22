@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@giscus/vue": "2.2.6",
+    "@sniptt/guards": "^0.2.0",
     "@types/html-escaper": "3.0.0",
     "@unocss/reset": "0.49.7",
     "@vueuse/components": "9.13.0",

@@ -1,11 +1,12 @@
 import { computed } from 'vue';
+import { isString } from '@sniptt/guards';
 import type { Post } from './usePosts';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.{md,mdx}');
 
 const tags = computed(() => Array.from(new Set(posts.value.reduce((set, post) => {
   if (Array.isArray(post.frontmatter.tags)) {
-    post.frontmatter.tags.forEach((tag) => set.add(tag));
+    post.frontmatter.tags.filter(isString).forEach((tag) => set.add(tag));
   }
   return set;
 }, new Set<string>()))));
@@ -16,7 +17,9 @@ export function useTags() {
 
 const tagCountMap = computed(() => (posts.value.reduce((map, post) => {
   if (Array.isArray(post.frontmatter.tags)) {
-    post.frontmatter.tags.forEach((tag) => map.set(tag, (map.get(tag) ?? 0) + 1));
+    post.frontmatter.tags
+      .filter(isString)
+      .forEach((tag) => map.set(tag, (map.get(tag) ?? 0) + 1));
   }
   return map;
 }, new Map<string, number>())));

@@ -51,6 +51,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { isString } from '@sniptt/guards';
 
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
@@ -74,10 +75,12 @@ useHead({
 
 if (Array.isArray(page.frontmatter.tags)) {
   useHead({
-    meta: page.frontmatter.tags.map((tag) => ({
-      property: 'article:tag',
-      content: tag,
-    })),
+    meta: page.frontmatter.tags
+      .filter(isString)
+      .map((tag) => ({
+        property: 'article:tag',
+        content: tag,
+      })),
   });
 }
 </script>

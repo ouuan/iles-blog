@@ -1,5 +1,6 @@
 import type { FeedItem, FeedOptions } from '@islands/feed';
 import { h } from 'vue';
+import { isString } from '@sniptt/guards';
 
 import useCopyrightYear from './useCopyrightYear';
 import { usePosts } from './usePosts';
@@ -44,11 +45,13 @@ Licensed under CC BY-SA 4.0`,
   }).value.map<FeedItem>((post) => {
     let category: FeedItem['category'];
     if (Array.isArray(post.frontmatter.tags)) {
-      category = post.frontmatter.tags.map((t) => ({
-        name: t,
-        domain: new URL(`/tag/${t}`, url).href,
-        term: new URL(`/tag/${t}`, url).href,
-      }));
+      category = post.frontmatter.tags
+        .filter(isString)
+        .map((t) => ({
+          name: t,
+          domain: new URL(`/tag/${t}`, url).href,
+          term: new URL(`/tag/${t}`, url).href,
+        }));
     }
     return {
       title: post.frontmatter.title,
