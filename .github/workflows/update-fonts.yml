@@ -9,16 +9,20 @@ jobs:
   update-fonts:
     runs-on: ubuntu-latest
     container: # https://stackoverflow.com/a/74341376
-      image: node:lts
+      image: satantime/puppeteer-node:lts
+      env:
+        TZ: Asia/Shanghai
     steps:
+      - name: Install Dependencies
+        run: |
+          apt update -y
+          apt upgrade -y
+          apt install -y git-lfs
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          lfs: true
           submodules: recursive
-      - name: Install Chromium
-        run: |
-          apt update
-          apt install -y chromium
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i

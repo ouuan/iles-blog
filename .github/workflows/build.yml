@@ -15,15 +15,16 @@ jobs:
       env:
         TZ: Asia/Shanghai
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: recursive
       - name: Install Dependencies
         run: |
           apt update -y
           apt upgrade -y
-          apt install -y jq
+          apt install -y jq git-lfs
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+          submodules: recursive
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
