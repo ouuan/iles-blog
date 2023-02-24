@@ -15,7 +15,7 @@
     "dev": "iles dev",
     "build": "iles build && tsup --config functions/.tsup.config.ts functions/*.ts",
     "preview": "iles preview --open",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit && tsc -p functions --noEmit"
   },
   "dependencies": {
     "@giscus/vue": "2.2.6",
