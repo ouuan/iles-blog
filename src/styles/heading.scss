@@ -16,7 +16,7 @@
     margin-top: calc(0.3em - 0.1rem);
     font-size: 1rem;
 
-    @media (min-width: 48em) {
+    @screen md {
       font-size: calc(0.25em + 0.75rem);
     }
 
