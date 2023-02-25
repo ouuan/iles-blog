@@ -9,7 +9,11 @@
   // because nested elements are usually narrow.
   // Set on depth-2 only so that descendants can override it.
   & > * > * {
-    @apply text-initial sm:text-inherit;
+    // https://github.com/unocss/unocss/pull/2217
+    text-align: initial;
+    @screen sm {
+      text-align: inherit;
+    }
   }
 
   // it does not select blockquote
