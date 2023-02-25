@@ -158,3 +158,25 @@ CSS 实现标点挤压有两种方式：
 现有的库难以同时满足上面这些需求，所以我就自己写了。
 
 本来想写一个通用的库，但通用的逻辑貌似没多少代码，不值得写成一个库。而我的整个 remark 插件又有点 opinionated，可能不太适合做成库（~~懒得做成库~~），想用的话可以在遵守 [AGPL 3.0](https://github.com/ouuan/iles-blog/blob/master/LICENSE) 的前提下直接复制（本文提到的其他代码也是一样，当然，如果是两三行的代码片段就不至于 AGPL 了，简单标一下出处就 OK）。
+
+## 代码中的 Unicode（CJK）的字体
+
+~~为什么马上要考抽代了你在这更新博客，我也很想知道（~~ 其实是在一个群里看到有人在聊博客的等宽字体，然后看了一眼自己的等宽字体，差点没想起来这个 trick 在干什么。
+
+很多等宽字体是没有 CJK 字形的，在 Windows 的默认字体下，fallback 到 `monospace` 时中文会显示为<code style="font-family: NSimSun, SimSun, serif;">宋体</code>，而一般来说应当是`黑体`。所以可以为 Unicode 部分专门指定一个 fallback font，通过指定 `unicode-range` 来让 ASCII 字符依然 fallback 到 `monospace`。
+
+```css
+@font-face {
+  font-family: "Monospace Unicode Fallback";
+  src: local("Noto Sans Mono CJK SC"),
+       local("Source Han Mono SC"),
+       local("Noto Sans CJK SC"),
+       local("Source Han Sans SC"),
+       local("Microsoft YaHei");
+  unicode-range: U+1000-fffff;
+}
+
+:root {
+  --default-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace Unicode Fallback", monospace, var(--default-emoji-font);
+}
+```
