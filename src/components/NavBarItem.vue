@@ -1,7 +1,7 @@
 <template>
-  <li class="flex-1 flex items-stretch justify-center">
+  <li class="flex flex-1 items-stretch justify-center">
     <a
-      class="p-3 bghover flex items-center"
+      class="flex items-center p-3 bghover"
       :href="href"
     >
       <span>{{ title }}</span>

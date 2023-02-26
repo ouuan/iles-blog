@@ -13,7 +13,7 @@ title: 标签列表
       </h1>
       <span class="mr-2">共 {{ tags.length }} 个标签</span>
     </div>
-    <div class="flex flex-wrap items-baseline gap-3 my-3">
+    <div class="my-3 flex flex-wrap items-baseline gap-3">
       <span
         v-for="{ tag, count } of tagsSortedWithCount"
         :key="tag"
@@ -23,7 +23,7 @@ title: 标签列表
         <span class="i-mdi-tag-outline" />
         <a
           :href="`/tag/${tag}`"
-          class="hover:underline mx-1"
+          class="mx-1 hover:underline"
         >
           {{ tag }}
         </a>

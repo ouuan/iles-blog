@@ -10,7 +10,7 @@
     })"
   >
     <div
-      class="media-screen:important-flex items-center px-4 h-6 rd-t-1 bg-area dark:bg-#2A313A"
+      class="h-6 items-center rd-t-1 bg-area px-4 dark:bg-#2A313A media-screen:important-flex"
       style="display:none;"
     >
       <deep-heading

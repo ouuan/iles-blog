@@ -11,7 +11,7 @@
         :class="['p-3 flex justify-between items-center', fold && 'cursor-pointer']"
       >
         <deep-heading
-          class="font-bold flex items-center gap-1"
+          class="flex items-center gap-1 font-bold"
           :level="headingLevel"
         >
           <span :class="['text-5', icon[type]]" />
@@ -26,7 +26,7 @@
           class="details-icon text-5"
         />
       </component>
-      <div class="bg-card dark:bg-bghover overflow-auto px-6 rd-br-1">
+      <div class="overflow-auto rd-br-1 bg-card px-6 dark:bg-bghover">
         <slot />
       </div>
     </component>

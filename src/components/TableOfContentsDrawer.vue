@@ -1,7 +1,7 @@
 <template>
   <div
     id="__toc"
-    class="toc-drawer bg-card py-6 shadow-lg fixed inset-y-0 z-15"
+    class="toc-drawer fixed inset-y-0 z-15 bg-card py-6 shadow-lg"
     aria-label="文章目录"
     role="dialog"
     :style="{ right: tocRight }"
@@ -19,7 +19,7 @@
   <div
     v-show="show"
     aria-hidden="true"
-    class="fixed top-0 bottom-0 left-0 right-0 bg-gray-8 opacity-50 z-10"
+    class="fixed bottom-0 left-0 right-0 top-0 z-10 bg-gray-8 opacity-50"
     @click="show = false"
   />
 </template>

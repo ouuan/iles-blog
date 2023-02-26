@@ -1,6 +1,6 @@
 <template>
   <div
-    class="my-6 bg-area shadow b-l-6 b-gray-4 dark:b-gray-11 p-6"
+    class="my-6 b-l-6 b-gray-4 bg-area p-6 shadow dark:b-gray-11"
     itemprop="copyrightNotice"
   >
     <ul class="flex flex-col gap-1">

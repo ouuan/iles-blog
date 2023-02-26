@@ -1,6 +1,6 @@
 <template>
   <button
-    class="group floating-button bottom-10 flex-col"
+    class="group bottom-10 flex-col floating-button"
     :title="toTop ? '回到顶部' : '前往底部'"
     @click="scroll"
   >

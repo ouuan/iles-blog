@@ -1,11 +1,11 @@
 <template>
   <nav
     v-if="currentPostIndex !== -1"
-    class="my-6 flex justify-between gap-6 lg:text-justify print:hidden"
+    class="my-6 flex justify-between gap-6 print:hidden lg:text-justify"
   >
     <div
       v-if="prevPost"
-      class="flex-1 flex"
+      class="flex flex-1"
     >
       <a
         class="flex items-center gap-1 hover:text-hover"
@@ -18,10 +18,10 @@
     </div>
     <div
       v-if="nextPost"
-      class="flex-1 flex justify-end"
+      class="flex flex-1 justify-end"
     >
       <a
-        class="flex items-center gap-1 hover:text-hover flex-row-reverse"
+        class="flex flex-row-reverse items-center gap-1 hover:text-hover"
         :href="nextPost.meta.href"
       >
         <span class="i-mdi-chevron-right" />

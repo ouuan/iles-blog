@@ -1,5 +1,5 @@
 <template>
-  <nav class="my-3 text-sm xs:text-base lg:float-right">
+  <nav class="my-3 text-sm lg:float-right xs:text-base">
     <ul class="flex">
       <li>
         <a

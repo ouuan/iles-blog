@@ -9,14 +9,14 @@ title: 404 Not Found
     <span>要不再检查一下网址？</span>
     <div class="flex justify-center gap-6">
       <a
-        class="btn btn-normal px-2"
+        class="btn px-2 btn-normal"
         href="javascript:history.go(-1);"
       >
         <span class="i-mdi-chevron-left" />
         <span class="mr-1">回到上一页</span>
       </a>
       <a
-        class="btn btn-normal px-2"
+        class="btn px-2 btn-normal"
         href="/"
       >
         <span class="i-mdi-home" />

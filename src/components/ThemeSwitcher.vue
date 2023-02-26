@@ -5,18 +5,18 @@
   >
     <button
       title="暗色模式设置"
-      class="p-2 bghover flex items-center"
+      class="flex items-center p-2 bghover"
       aria-haspopup="menu"
       aria-controls="__theme-switcher"
       :aria-expanded="showMenu"
       @click="showMenu = !showMenu"
     >
-      <span class="text-xl i-mdi-theme-light-dark" />
+      <span class="i-mdi-theme-light-dark text-xl" />
     </button>
     <ul
       v-show="showMenu"
       id="__theme-switcher"
-      class="absolute z-20 top-full right-0 bg-popup shadow-md rd-1 whitespace-nowrap"
+      class="absolute right-0 top-full z-20 whitespace-nowrap rd-1 bg-popup shadow-md"
       role="menu"
       aria-label="暗色模式选项"
     >

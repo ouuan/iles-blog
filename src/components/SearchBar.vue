@@ -1,21 +1,21 @@
 <template>
-  <div class="lg:hidden flex items-stretch">
+  <div class="flex items-stretch lg:hidden">
     <a
-      class="p-2 bghover flex items-center"
+      class="flex items-center p-2 bghover"
       href="/search"
       title="全站搜索"
     >
-      <span class="text-xl i-mdi-magnify" />
+      <span class="i-mdi-magnify text-xl" />
     </a>
   </div>
   <form
     role="search"
-    class="hidden lg:flex items-stretch justify-center"
+    class="hidden items-stretch justify-center lg:flex"
   >
     <div class="flex items-center">
       <input
         v-model="pattern"
-        class="w-48 px-3 py-1 bg-area rd-full"
+        class="w-48 rd-full bg-area px-3 py-1"
         type="search"
         placeholder="关键词"
         aria-label="全站搜索"
@@ -23,11 +23,11 @@
       >
     </div>
     <a
-      class="p-2 bghover flex items-center"
+      class="flex items-center p-2 bghover"
       :href="href"
       title="全站搜索"
     >
-      <span class="text-xl i-mdi-magnify" />
+      <span class="i-mdi-magnify text-xl" />
     </a>
   </form>
 </template>

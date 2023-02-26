@@ -6,12 +6,11 @@
     itemtype="https://schema.org/WPHeader"
   >
     <div
-      class="page-container px-4 whitespace-nowrap
-             flex flex-wrap sm:flex-nowrap justify-center"
+      class="flex flex-wrap justify-center whitespace-nowrap px-4 page-container sm:flex-nowrap"
     >
-      <div class="flex basis-full sm:basis-auto items-stretch justify-center sm:mr-3">
+      <div class="flex basis-full items-stretch justify-center sm:mr-3 sm:basis-auto">
         <a
-          class="p-3 bghover font-serif text-xl flex items-center"
+          class="flex items-center p-3 text-xl font-serif bghover"
           href="/"
         >
           <span>ouuan<span class="mojikumi-narrow-left">’</span>s blog</span>
@@ -44,11 +43,11 @@
         </li>
         <li class="flex items-stretch">
           <a
-            class="p-2 bghover flex items-center"
+            class="flex items-center p-2 bghover"
             href="/feed.xml"
             title="RSS 订阅"
           >
-            <span class="text-xl i-mdi-rss" />
+            <span class="i-mdi-rss text-xl" />
           </a>
         </li>
         <li class="flex">

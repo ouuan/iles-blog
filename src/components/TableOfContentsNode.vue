@@ -6,7 +6,7 @@
       v-for="node of nodes"
       :id="`__toc-item-${node.slug}`"
       :key="node.slug"
-      class="my-1 relative"
+      class="relative my-1"
     >
       <span
         :class="`absolute top-1.2 left--4
@@ -24,7 +24,7 @@
       </a>
       <div
         v-if="(node.open || showAll) && node.children.length > 0"
-        class="animate-appear pl-4 b-l-2 b-area"
+        class="animate-appear b-l-2 b-area pl-4"
       >
         <table-of-contents-node
           :nodes="node.children"

@@ -1,3 +1,5 @@
+<!-- eslint-disable max-len - long class name -->
+
 <template>
   <div class="my-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
     <h1
@@ -16,24 +18,22 @@
     >
       <li
         v-if="sort !== 'visitor-desc' && isPostNewYear(index)"
-        class="flex items-center relative pl-4 mt-2"
+        class="relative mt-2 flex items-center pl-4"
       >
-        <span class="absolute left--6px w-8px h-8px rd-4px bg-gray-5 dark:bg-gray-10" />
+        <span class="absolute left--6px h-8px w-8px rd-4px bg-gray-5 dark:bg-gray-10" />
         <span class="text-6 font-bold font-serif">
           {{ format(post.frontmatter[displayTime], 'yyyy') }}
         </span>
       </li>
       <li>
         <a
-          class="flex items-center gap-3 relative pl-4 group
-               py-1 b-b-2 b-area hover:b-footer transition-colors ease-out b-dotted"
+          class="group relative flex items-center gap-3 b-b-2 b-area b-dotted py-1 pl-4 transition-colors ease-out hover:b-footer"
           :href="post.meta.href"
           itemscope
           itemtype="https://schema.org/BlogPosting"
         >
           <span
-            class="absolute left--5px w-6px h-6px rd-3px
-                 bg-gray-5 dark:bg-gray-10 group-hover:bg-text transition-colors ease-out"
+            class="absolute left--5px h-6px w-6px rd-3px bg-gray-5 transition-colors ease-out dark:bg-gray-10 group-hover:bg-text"
           />
           <post-microdata :post="post" />
           <time
@@ -56,7 +56,7 @@
           </time>
           <span
             itemprop="headline"
-            class="font-serif text-lg inline-block break-anywhere"
+            class="inline-block text-lg font-serif break-anywhere"
           >
             {{ post.frontmatter.title }}
           </span>

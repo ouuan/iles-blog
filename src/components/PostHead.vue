@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1
-      class="mt-6 mb-3 text-8 text-center"
+      class="mb-3 mt-6 text-center text-8"
       itemprop="headline"
     >
       <component
@@ -17,7 +17,7 @@
         </slot>
       </component>
     </h1>
-    <div class="flex flex-wrap justify-center text-footer gap-x-4 gap-y-1 md:text-sm">
+    <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-footer md:text-sm">
       <span
         class="flex items-center"
         :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss O')}`"

@@ -1,11 +1,11 @@
 <template>
   <footer
-    class="flex flex-col text-footer bg-card p-6 gap-1"
+    class="flex flex-col gap-1 bg-card p-6 text-footer"
     itemprop="hasPart"
     itemscope
     itemtype="https://schema.org/WPFooter"
   >
-    <div class="flex justify-center items-center flex-wrap gap-x-1">
+    <div class="flex flex-wrap items-center justify-center gap-x-1">
       <span>Copyright ©</span>
       <span>{{ yearString }}</span>
       <a
@@ -23,7 +23,7 @@
         人到访过这里
       </span>
     </div>
-    <div class="flex justify-center items-center flex-wrap gap-x-1">
+    <div class="flex flex-wrap items-center justify-center gap-x-1">
       基于
       <a
         class="underline"

@@ -5,11 +5,11 @@
   />
   <div
     v-if="loading"
-    class="flex justify-center items-center gap-2"
+    class="flex items-center justify-center gap-2"
   >
     <span>
       <a
-        class="text-link hover:text-hover active:text-active"
+        class="text-link active:text-active hover:text-hover"
         :href="`https://github.com/${repo}/discussions/categories/comments?discussions_q=${term}`"
       >评论</a>加载中…
     </span>

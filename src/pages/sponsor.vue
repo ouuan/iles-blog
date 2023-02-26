@@ -11,7 +11,7 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
     >
       赞赏支持
     </h1>
-    <p class="mt-5 mb-4">
+    <p class="mb-4 mt-5">
       If you do not live in China, you can
       <a href="https://ko-fi.com/ouuan">
         <img

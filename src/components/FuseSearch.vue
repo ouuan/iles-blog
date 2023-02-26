@@ -3,7 +3,7 @@
     <div class="flex flex-wrap gap-x-5 gap-y-2">
       <form
         role="search"
-        class="grow max-w-100 flex items-center gap-2"
+        class="max-w-100 flex grow items-center gap-2"
       >
         <label
           class="flex items-center"
@@ -15,7 +15,7 @@
         <input
           id="__search_keywords"
           v-model="params.q"
-          class="w-full p-1 bg-card rd-1"
+          class="w-full rd-1 bg-card p-1"
           type="search"
           placeholder="关键词"
         >
@@ -62,7 +62,7 @@
                 >{{ part.content }}</span>
               </template>
             </post-head>
-            <pre class="mt-6 mb-3 max-h-72 overflow-auto whitespace-pre-wrap"><span
+            <pre class="mb-3 mt-6 max-h-72 overflow-auto whitespace-pre-wrap"><span
             v-for="(part, index) of result.contentParts"
             :key="index"
             :class="CLASS[part.type]"

@@ -2,7 +2,7 @@
   <div class="my-6 flex justify-center">
     <button
       v-if="clickToOpen && !opened"
-      class="btn btn-normal px-2 gap-1"
+      class="btn gap-1 px-2 btn-normal"
       @click="opened = true"
     >
       <span class="i-mdi-gift" />
@@ -10,16 +10,16 @@
     </button>
     <div
       v-else
-      class="flex justify-center gap-6 relative"
+      class="relative flex justify-center gap-6"
     >
-      <figure class="flex-1 flex flex-col gap-3 items-center">
+      <figure class="flex flex-1 flex-col items-center gap-3">
         <Picture
           alt="微信赞赏码"
           src="@/images/wechat-donate.png?preset=normal"
         />
         <figcaption>微信打赏</figcaption>
       </figure>
-      <figure class="flex-1 flex flex-col gap-3 items-center">
+      <figure class="flex flex-1 flex-col items-center gap-3">
         <Picture
           alt="支付宝收款码"
           src="@/images/alipay-donate.png?preset=normal"

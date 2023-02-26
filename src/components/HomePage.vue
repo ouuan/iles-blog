@@ -3,7 +3,7 @@
     <div
       v-for="post of currentPagePosts"
       :key="post.meta.href"
-      class="standard-card xl:px-24 2xl:px-30 3xl:px-36"
+      class="standard-card 2xl:px-30 3xl:px-36 xl:px-24"
     >
       <article
         itemscope
@@ -25,9 +25,9 @@
             excerpt
           />
         </section>
-        <div class="flex justify-center my-3">
+        <div class="my-3 flex justify-center">
           <a
-            class="btn btn-normal pl-2 pr-1"
+            class="btn pl-2 pr-1 btn-normal"
             :href="post.meta.href"
           >
             <span>阅读更多</span>

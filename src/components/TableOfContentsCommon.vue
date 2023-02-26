@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-wrap gap-2 justify-between items-center pr-4 pl-8 mb-3">
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-2 pl-8 pr-4">
     <div class="flex items-center">
       <h2 class="text-xl font-bold">
         文章目录
       </h2>
       <button
         id="__toc-close"
-        class="px-1 text-xl flex items-center"
+        class="flex items-center px-1 text-xl"
         title="关闭目录"
         aria-controls="__toc"
         aria-expanded="true"
@@ -16,7 +16,7 @@
       </button>
     </div>
     <div v-if="!isPlain">
-      <label class="ml-auto flex gap-1 items-center">
+      <label class="ml-auto flex items-center gap-1">
         <span>展开全部</span>
         <input
           v-model="showAll"
@@ -28,7 +28,7 @@
   <div
     ref="tocRoot"
     style="max-height: calc(100% - 2rem);"
-    class="overflow-auto overscroll-contain pr-4 pl-8"
+    class="overflow-auto overscroll-contain pl-8 pr-4"
   >
     <table-of-contents-node
       :nodes="nodes"

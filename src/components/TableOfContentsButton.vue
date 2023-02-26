@@ -3,7 +3,7 @@
     v-show="!show"
     id="__toc-open"
     title="显示文章目录"
-    class="floating-button text-lg bottom-24"
+    class="bottom-24 text-lg floating-button"
     aria-haspopup="dialog"
     aria-controls="__toc"
     :aria-expanded="show"
