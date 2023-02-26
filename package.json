@@ -61,7 +61,7 @@
     "@unocss/eslint-config": "0.50.1",
     "@unocss/transformer-directives": "0.50.1",
     "@vue/runtime-core": "3.2.47",
-    "eslint": "8.34.0",
+    "eslint": "8.35.0",
     "glob": "8.1.0",
     "glob-promise": "6.0.2",
     "got": "12.5.3",
