@@ -23,7 +23,6 @@ specifiers:
   '@sniptt/guards': 0.2.0
   '@total-typescript/ts-reset': 0.3.7
   '@types/hast': 2.3.4
-  '@types/html-escaper': 3.0.0
   '@types/node': 18.14.1
   '@unocss/eslint-config': 0.50.1
   '@unocss/reset': 0.50.1
@@ -37,7 +36,6 @@ specifiers:
   glyph-segregator: 0.6.0
   got: 12.5.3
   hast-util-select: 5.0.5
-  html-escaper: 3.0.3
   iles: 0.9.2
   isbot: 3.6.6
   katex: 0.16.4
@@ -71,7 +69,6 @@ specifiers:
 dependencies:
   '@giscus/vue': 2.2.6_vue@3.2.47
   '@sniptt/guards': 0.2.0
-  '@types/html-escaper': 3.0.0
   '@unocss/reset': 0.50.1
   '@vueuse/components': 9.13.0_vue@3.2.47
   '@vueuse/core': 9.13.0_vue@3.2.47
@@ -79,7 +76,6 @@ dependencies:
   fuse.js: 6.6.2
   glyph-segregator: 0.6.0
   hast-util-select: 5.0.5
-  html-escaper: 3.0.3
   iles: 0.9.2_435aevtanapkguv7m72cl6trbi
   isbot: 3.6.6
   katex: 0.16.4
@@ -942,10 +938,6 @@ packages:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
     dependencies:
       '@types/unist': 2.0.6
-
-  /@types/html-escaper/3.0.0:
-    resolution: {integrity: sha512-OcJcvP3Yk8mjYwf/IdXZtTE1tb/u0WF0qa29ER07ZHCYUBZXSN29Z1mBS+/96+kNMGTFUAbSz9X+pHmHpZrTCw==}
-    dev: false
 
   /@types/http-cache-semantics/4.0.1:
     resolution: {integrity: sha512-SZs7ekbP8CN0txVG2xVRH6EgKmEm31BOxA07vkFaETzZz1xh+cbt8BcI0slpymvwhx5dlFnQG2rTlPVQn+iRPQ==}
@@ -3351,10 +3343,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       whatwg-encoding: 2.0.0
-    dev: false
-
-  /html-escaper/3.0.3:
-    resolution: {integrity: sha512-RuMffC89BOWQoY0WKGpIhn5gX3iI54O6nRA0yC124NYVtzjmFWBIiFd8M0x+ZdX0P9R4lADg1mgP8C7PxGOWuQ==}
     dev: false
 
   /html-void-elements/2.0.1:
