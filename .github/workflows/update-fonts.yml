@@ -28,6 +28,7 @@ jobs:
           PLAUSIBLE_TOKEN: ${{ secrets.PLAUSIBLE_TOKEN }}
       - uses: peter-evans/create-pull-request@v4
         with:
+          author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
           commit-message: 'chore: update font cache'
           title: 'chore: update font cache'
           branch: create-pull-request/update-fonts
