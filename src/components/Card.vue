@@ -18,7 +18,7 @@
           <span
             v-if="title"
             class="sr-only"
-          >{{ defaultTitle[type] }}</span>
+          >{{ defaultTitle[type] }}: </span>
           <span v-html="title || defaultTitle[type]" />
         </deep-heading>
         <span
