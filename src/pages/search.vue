@@ -3,6 +3,12 @@ title: 搜索
 </page>
 
 <template layout="base">
+  <Head>
+    <meta
+      name="robots"
+      content="noindex"
+    >
+  </Head>
   <fuse-search
     client:load
     :data="data"

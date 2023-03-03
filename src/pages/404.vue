@@ -3,6 +3,12 @@ title: 404 Not Found
 </page>
 
 <template layout="base">
+  <Head>
+    <meta
+      name="robots"
+      content="noindex"
+    >
+  </Head>
   <div class="mt-20 flex flex-col items-center gap-6">
     <span class="text-3xl">404 Not Found</span>
     <span class="text-lg">没有找到您要的页面诶 🤔</span>

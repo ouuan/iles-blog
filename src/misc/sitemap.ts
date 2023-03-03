@@ -15,8 +15,8 @@ const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
 export default async function generateSitemap(pages: RouteToRender[]) {
   const items = pages.filter((page) => {
-    if (page.path === '/404' || page.path === '/search') return false;
     if (!page.outputFilename.endsWith('.html')) return false;
+    if (page.rendered.includes('<meta name="robots" content="noindex">')) return false;
     const canonical = page.rendered.match(/<link rel="canonical" href="(.+?)">/)?.[1];
     if (canonical === undefined) return true;
     const canonicalPath = new URL(canonical).pathname;
