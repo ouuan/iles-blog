@@ -1,0 +1,89 @@
+---
+title: 当你的技术栈与软工交集为空（x
+date: 2023-03-02T21:09:09+08:00
+image: tech-stack.jpg
+description: 2023 年春季学期清华大学软件工程课程的游记，记录一下课程的学习过程，在小作业与大作业中遇到的问题。
+tags:
+-   Web
+-   学习记录
+---
+
+很好，你已经学会了 Vue、Rust、Actix、GitHub Actions、pnpm、Vitest、Caddy
+
+现在你可以使用 React、Python、Django、GitLab CI、yarn、Jest、Nginx 来完成软工作业了（
+
+<Excerpt />
+
+![技术栈交集为空的 meme](tech-stack.jpg)
+
+（其实这里面比较有问题的就只有 React，其他都还好，~~只是数量多凑一点 meme 效果更好~~）
+
+## 小作业
+
+### Django 后端小作业
+
+每一处需要修改的代码都列出来了，还有详细的注释告诉你要干什么。Django 完全没学，就根据提示查了一处文档，代码的整体逻辑也没搞清楚。
+
+感觉写完之后理解了 ChatGPT，看着注释和示例补全代码根本就不需要学会如何写代码嘛（
+
+### 学 React
+
+小作业应该不需要怎么学 React，但还是把 [Learn React (Beta)](https://beta.reactjs.org/learn) 完整过了一遍。
+
+之前都在 Twitter 上云 React，学了之后终于有喜欢 Vue 的自信了（~~所以说 X 自信就是要允许 Y 才能有，以 X 自信为名打压 Y 到底是什么操作~~
+
+<Card title="Vue 用户初学 React 感到不适的一些点" fold>
+
+-   我希望 HTML 放在统一、独立的位置，不分散在多处，不和 JS 代码在结构上混在一起。
+-   `v-if` 要用 if-else / `?:` / `&&` 实现：我不希望在 JSX 外部写 if-else；表达式的括号可能引入额外的缩进；`?:` 实现多级 else if 可能看不清；修改代码时不像 `v-if` 只需要添加一行不影响其他行。总之就是感觉很丑（
+-   `v-for` 要自己使用 JS 计算得到。
+-   不支持 named slot（可以用 prop 替代但感觉不是很优雅）。
+-   event handler 不能 `count += 1` 必须 `() => count += 1`。
+-   虽然只是个语法糖，但似乎没有 `v-model` 等价物。
+-   没有 event modifier (`@click.stop`)，需要手动 `e.stopPropagation()`。
+-   需要用 setter function 来修改 state，`useState` 返回两个变量。
+-   state 是 snapshot，反直觉。教程里说这样可以避免一些 timing mistake，但我感觉在 Vue 里一般只要传值而不是 ref 就行？确实有一定意义但我还是更希望符合直觉。
+-   修改 object / array state 很麻烦，使用 Immer 的话似乎就和 Vue 差不多了。
+-   state 绑定在树的每个位置上，而非存在 component 里。
+-   `useMemo` 需要手动指定依赖，`computed` 不需要。
+
+本来想把 `useEffect` 也列出来，但 React 的 [这种设计思路](https://beta.reactjs.org/learn/lifecycle-of-reactive-effects#thinking-from-the-effects-perspective) 似乎也有一定道理。
+
+但当我写出 `useEffect(() => () => clearInterval(timerRef.current), [])` 的时候我还是不明白了，这也能“从 Effect 的角度思考”吗，给个 `onUnmounted` 不好吗。
+
+</Card>
+
+<Card title="高情商与低情商" fold>
+
+我在群里问了个问题，结果助教全都跑来加我好友，草（
+
+那我也不客气了，上来就问为什么换成 React，bksw（
+
+![和助教的消息记录](eq.png)
+
+~~不难看出，这里面情商最低的是我~~
+
+</Card>
+
+### React (Next.js) 前端小作业
+
+上来就看到 ESLint 是 4 空格缩进、优先双引号，这能忍吗（。特意去确认了一下，除了前端助教参与的几个项目，随便找一个项目都是 2 空格缩进、优先单引号（
+
+再一写代码，发现不对劲，这个 ESLint 有啥 rule 啊，怎么怎么写都没 lint error，给我整不会了（
+
+于是直接上了 [`@ouuan/eslint-config-ts`](https://github.com/ouuan/eslint-config)，理论上来说我应该整一个给 tsx 用的 config，但 ts 的 config 配合上小作业模板原有的应该也凑合着能用吧（
+
+写完后的感觉和 Django 小作业差不多，React 都白学了，啥都不会就能写完（
+
+> 这是你前端小作业的最后一个 Step 了，如果你已经完成了，我相信你已经充分掌握了 Next.js 的入门知识。
+> 
+> 事实上这份前端小作业几乎可以作为大作业的起始框架。除了 Next.js 框架本身，其包含了：
+>
+> - 代码风格检查与修正插件 ESLint，配置文件为 `.eslintrc.json`
+> - 单元测试框架 Jest
+
+不是，你是认真的吗，先不谈学会多少能算是《充分掌握了入门知识》，这个 eslintrc 真的能用吗（
+
+第二天早上起来再看了下代码，发现组件 unmount 时没有 `clearInterval`，而这需要在允许（推荐）的代码范围之外进行修改，怎么回事（
+
+网络请求也是，unmount 时没有 abort / ignore，但要改的话交互逻辑也会有些变化，就懒得修了，一个简陋的小作业而已（
