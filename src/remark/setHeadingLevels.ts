@@ -11,7 +11,25 @@ function dfs(u: Content, level: number) {
     u.attributes.push({
       type: 'mdxJsxAttribute',
       name: 'headingLevel',
-      value: level.toString(),
+      value: {
+        type: 'mdxJsxAttributeValueExpression',
+        value: level.toString(),
+        data: {
+          estree: {
+            type: 'Program',
+            sourceType: 'module',
+            body: [
+              {
+                type: 'ExpressionStatement',
+                expression: {
+                  type: 'Literal',
+                  value: level,
+                },
+              },
+            ],
+          },
+        },
+      },
     });
   }
 
