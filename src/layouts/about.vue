@@ -11,7 +11,6 @@
         :href="page.meta.href"
         :filename="page.meta.filename"
         :frontmatter="page.frontmatter"
-        :title-link="false"
       />
       <section
         class="article-style"

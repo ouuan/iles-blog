@@ -102,7 +102,7 @@ withDefaults(defineProps<{
   titleLink?: boolean;
 }>(), {
   tagMatched: false,
-  titleLink: true,
+  titleLink: false,
 });
 </script>
 

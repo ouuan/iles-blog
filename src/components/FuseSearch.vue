@@ -48,6 +48,7 @@
             class="standard-card"
           >
             <post-head
+              title-link
               :href="result.meta.href"
               :filename="result.meta.filename"
               :frontmatter="result.meta.frontmatter"
