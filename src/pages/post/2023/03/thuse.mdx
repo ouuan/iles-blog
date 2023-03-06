@@ -87,3 +87,35 @@ tags:
 第二天早上起来再看了下代码，发现组件 unmount 时没有 `clearInterval`，而这需要在允许（推荐）的代码范围之外进行修改，怎么回事（
 
 网络请求也是，unmount 时没有 abort / ignore，但要改的话交互逻辑也会有些变化，就懒得修了，一个简陋的小作业而已（
+
+### CI/CD 小作业
+
+[前一天的 Power TUNA](https://tuna.moe/event/2023/welcome-and-ipsec/) 上还有人问为什么 TUNA 有很多海外流量，第二天就看到了在 Dockerfile 里硬编码 TUNA（
+
+### 小作业的一些锅
+
+deploy 之后发现一堆锅，它们不影响我的小作业得分，只会影响我能不能交上数学课作业，但我还是修了，数学课作业则是没写完就交了（
+
+#### Next.js static HTML export 有 dynamic route 时报错
+
+在 Next.js 13.0.7 之前，具体来说是 [13.0.7-canary.5](https://github.com/vercel/next.js/releases/tag/v13.0.7-canary.5) 之前，通过 `next export` 得到 static HTML export 后，如果访问一个能匹配上 dynamic route 的 static route，会报“Application error: a client-side exception has occurred”。例如，有 `pages/[id].tsx` 和 `pages/list.tsx` 时，访问 `/list.html` 就会报错。
+
+简单看了一下这个版本的 changelog，有几个疑似和这个 bug 相关的，但我没能确认具体是哪个。本来想在本地 build Next.js 来进一步确认，但我一 build 就报一万个类型错误，搞了半天也没搞好，就放弃了。反正 bump 一下就修好了，~~开课前为啥不 bump 一下啊~~。
+
+#### Next.js static HTML export 的 Nginx 路由配置
+
+感觉网上搜到的一些 Nginx 路由配置都很迷惑：`$uri` 是匹配不到 HTML 文件的，需要 `$uri.html`；`$uri/` 则可能匹配到目录，导致 403；动态路由如果不专门写路由配置的话，就不能直接访问到正确的 HTML，static HTML export 的作用就没有了，而且，fallback 到 `/index.html` 可能导致加载一些不需要的页面内容和 JS，实际上比直接 SPA 更劣。
+
+#### 用户名格式检查
+
+说来惭愧，我一开始也没意识到用户名没校验格式的问题，还是配路由的时候才想到用户名里会不会有 slash。
+
+现在要修的话确实麻烦，所以只要归结为《由于小作业的简化》就好了（
+
+#### ~~忘记关测试用 Docker container~~
+
+第二天早上起来一看，Plausible 特别卡，再一看，load avg 都快两位数了，原来是在 VPS 上测试后端部署忘关了 🌚 不要随便在生产环境顺便测小作业（
+
+### 玩小作业
+
+把 game of life 当成冬日绘板画画，动态更新时钟，从 LifeWiki 获取随机 pattern，这是一个作业写不完的人能干的出来的吗，共享后端是这样用的吗（
