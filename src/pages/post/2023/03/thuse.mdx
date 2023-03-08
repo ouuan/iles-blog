@@ -132,6 +132,22 @@ deploy 之后发现一堆锅，它们不影响我的小作业得分，只会影�
 
 这里是一段 13 天后才能公开的内容，在这放个预告防止到时候忘了（
 
+### Node.js 和浏览器的不同 timer
+
+队友问了一个神奇的 bug，说是 `clearInterval` clear 不掉，我看了半天都没发现问题，最后发现开头有个 `import { setInterval } from 'timers'`。
+
+之前还真没注意过，timer 有 Node.js 和浏览器两个版本，Node.js 的 `setInterval` 返回的是一个 object，浏览器返回的是一个 `number`。
+
+-   直接写 `setInterval` 时，在 TypeScript 中会被认为返回 `NodeJS.Timer`，而实际运行时在哪运行就用哪个版本的函数。
+-   如果写的是 `window.setInterval`，在 TypeScript 中会被认为返回 `number`，在 Node.js 中运行会报错。
+-   如果是 `import { setInterval } from 'timers'`，即使是在浏览器中运行也会使用 Node.js 版本的函数。
+
+这里比较重要的是 `setInterval` 和 `clearInterval` 要配套，不能一个用 Node.js 的一个用浏览器的，否则会 clear 不掉甚至报错。
+
+一般来说直接写（不 `window.` 也不 `import from 'timers'`）就是最好的，虽然看起来 TypeScript 会将 `number` 误认为是 `NodeJS.Timer`，但这个 `number` 本来就不该被当作一个 `number` 来使用，这样的 typing 反而是好的。
+
+这里如果再仔细研究一下可以单独写一篇博客了，但还是算了吧（
+
 ## 大作业
 
 ### 组队
