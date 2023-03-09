@@ -18,9 +18,8 @@
 .mojikumi-line-start::before,
 .mojikumi-line-end::after {
   content: " ";
-  font-family: var(--default-serif-font);
   line-height: 0;
-  letter-spacing: 0.2416em;
+  letter-spacing: 0.242em;
 }
 
 .no-mojikumi {
