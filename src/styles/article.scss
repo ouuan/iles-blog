@@ -163,4 +163,11 @@
   .inline-img img {
     @apply inline h-6;
   }
+
+  del {
+    background-color: rgba(255, 0, 0, 0.15);
+  }
+  ins {
+    background-color: rgba(0, 255, 0, 0.15);
+  }
 }
