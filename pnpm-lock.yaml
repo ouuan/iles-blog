@@ -21,7 +21,7 @@ specifiers:
   '@ouuan/eslint-config-vue': 1.2.4
   '@ouuan/tsconfig-vue': 0.3.0
   '@sniptt/guards': 0.2.0
-  '@total-typescript/ts-reset': 0.3.7
+  '@total-typescript/ts-reset': 0.4.2
   '@types/hast': 2.3.4
   '@types/node': 18.14.1
   '@unocss/eslint-config': 0.50.1
@@ -102,7 +102,7 @@ devDependencies:
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.4_ycpbpc6yetojsgtrx3mwntkhsu
   '@ouuan/tsconfig-vue': 0.3.0
-  '@total-typescript/ts-reset': 0.3.7
+  '@total-typescript/ts-reset': 0.4.2
   '@types/hast': 2.3.4
   '@types/node': 18.14.1
   '@unocss/eslint-config': 0.50.1_ycpbpc6yetojsgtrx3mwntkhsu
@@ -908,8 +908,8 @@ packages:
     engines: {node: '>= 10'}
     dev: false
 
-  /@total-typescript/ts-reset/0.3.7:
-    resolution: {integrity: sha512-yXt2BRRVCJVvzWaxac5n0nCXzIrQEBE/MeYlNQ8/Iq7UeelNmm/AdnUAu18ilSS893mbEQ4u6whPt/HvOPc4rw==}
+  /@total-typescript/ts-reset/0.4.2:
+    resolution: {integrity: sha512-vqd7ZUDSrXFVT1n8b2kc3LnklncDQFPvR58yUS1kEP23/nHPAO9l1lMjUfnPrXYYk4Hj54rrLKMW5ipwk7k09A==}
     dev: true
 
   /@tsconfig/node-lts-strictest-esm/18.12.1:
