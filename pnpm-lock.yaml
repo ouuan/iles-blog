@@ -52,7 +52,7 @@ specifiers:
   rollup-plugin-analyzer: 4.0.0
   sass: 1.59.2
   shiki: 0.14.1
-  simple-git: 3.16.1
+  simple-git: 3.17.0
   sitemap: 7.1.1
   ts-exhaustive-check: 1.0.0
   tsup: 6.6.3
@@ -83,7 +83,7 @@ dependencies:
   plausible-tracker: 0.3.8
   rehype-plugin-image-native-lazy-loading: 1.2.0
   shiki: 0.14.1
-  simple-git: 3.16.1
+  simple-git: 3.17.0
   sitemap: 7.1.1
   ts-exhaustive-check: 1.0.0
   unified: 10.1.2
@@ -5215,8 +5215,8 @@ packages:
       simple-concat: 1.0.1
     dev: true
 
-  /simple-git/3.16.1:
-    resolution: {integrity: sha512-xzRxMKiy1zEYeHGXgAzvuXffDS0xgsq07Oi4LWEEcVH29vLpcZ2tyQRWyK0NLLlCVaKysZeem5tC1qHEOxsKwA==}
+  /simple-git/3.17.0:
+    resolution: {integrity: sha512-JozI/s8jr3nvLd9yn2jzPVHnhVzt7t7QWfcIoDcqRIGN+f1IINGv52xoZti2kkYfoRhhRvzMSNPfogHMp97rlw==}
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
