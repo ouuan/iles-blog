@@ -44,6 +44,8 @@ export default defineConfig({
   async extendFrontmatter(frontmatter, filename) {
     if (filename.includes('/post/')) {
       frontmatter.layout ||= 'post';
+    } else if (filename.includes('/hidden/')) {
+      frontmatter.layout ||= 'hidden';
     }
 
     frontmatter.tags = frontmatter.tags?.length

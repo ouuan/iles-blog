@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /functions
+Disallow: /hidden
 Disallow: /verification-follow_it-*
 Sitemap: https://ouuan.moe/sitemap.xml
