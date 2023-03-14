@@ -92,7 +92,7 @@ export default defineConfig({
     withImageSrc(src, file) {
       const prefix = /^[@~]/.test(src) ? '' : file.path
         .replace(__dirname, '')
-        .replace('/src/pages/post', '@/images')
+        .replace(/\/src\/pages\/(post|hidden)\//, '@/images/')
         .replace(/[^/]+$/, '');
       const suffix = src.includes('?') ? '' : '?preset=normal';
       return `${prefix}${src}${suffix}`;
