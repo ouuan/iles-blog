@@ -92,6 +92,28 @@ tags:
 
 [前一天的 Power TUNA](https://tuna.moe/event/2023/welcome-and-ipsec/) 上还有人问为什么 TUNA 有很多海外流量，第二天就看到了在 Dockerfile 里硬编码 TUNA（
 
+### 为子目录设置 commit 邮箱
+
+作业经常会需要（或者说最好需要）使用一些与平时不同的 commit 邮箱，而 SECoder 的邮箱验证似乎还坏了，就更需要了。
+
+以前碰到这种需求我都在每个 repo 设 local git config，但在软工可能有好几个 repo，不仅麻烦而且可能忘记，就需要更好的解决方案。
+
+其实简单搜一下就很容易搜到，毕竟这是个很常见的需求：
+
+-   在 `~/.gitconfig` 中添加
+
+    ```
+    [includeIf "gitdir:~/some/path/**"]
+        path = ~/some/path/.gitconfig
+    ```
+
+-   在 `~/some/path/.gitconfig` 中添加
+
+    ```
+    [user]
+        email = 2021000000@secoder.net
+    ```
+
 ### 小作业的一些锅
 
 deploy 之后发现一堆锅，它们不影响我的小作业得分，只会影响我能不能交上数学课作业，但我还是修了，数学课作业则是没写完就交了（
