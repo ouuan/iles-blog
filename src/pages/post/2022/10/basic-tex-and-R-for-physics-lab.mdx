@@ -285,7 +285,7 @@ $v = \SI{1.91981 \pm 0.114514 e3}{\kilo\metre / \hour}$
 ### 读取数据
 
 ```r
-data <- readr::read_csv(here::here("data.csv"))
+data <- readr::read_csv(file = "data.csv")
 ```
 
 ### 平均数、标准偏差
@@ -329,11 +329,9 @@ lambda <- co["lambda"]
 
 `nls` 需要传入 `start` 参数作为拟合的起点，可以自己大致估计一下参数大概是多少，如果估计的偏差太大，可能导致最后拟合的结果出错。
 
-### 画图
+### 简陋的函数图像
 
-画出来好像还挺容易的，但要画得好看还得学一学，所以咕了，暂时在用 Excel（
-
-但是画个丑陋的图可以用来检查函数拟合的情况：
+画个简陋的图可以用来检查函数拟合的情况：
 
 ```r
 plot(data)
@@ -341,3 +339,26 @@ curve(a * cos(2 * pi * (14.5 - x) / lambda), add = TRUE)
 ```
 
 如果是在 non-interactive 模式下（例如使用 `R -f foo.R` 运行），生成的图像默认会放在 `Rplots.pdf` 中。
+
+### ggplot 画散点 / 折线图
+
+```r
+library(tidyverse)
+
+# 导入字体
+library(extrafont)
+font_import()
+loadfonts()
+fonts()
+fonttable()
+
+data <- readr::read_csv(file = "data.csv")
+
+p <- data %>%
+    ggplot(aes(a, b + c)) + # 以表中的 a 为横坐标，b + c 为纵坐标
+    geom_point() + # 散点
+    geom_line() + # 折线
+    labs(x = "a", y = "b") + # 坐标轴标题
+    theme(text = element_text(family = "Source Han Serif SC")) # 字体
+ggsave("plot.png", plot = p)
+```
