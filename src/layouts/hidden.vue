@@ -2,7 +2,11 @@
   <Head>
     <meta
       name="robots"
-      content="noindex"
+      content="noindex,nofollow"
+    >
+    <meta
+      name="referrer"
+      content="no-referrer"
     >
   </Head>
   <div class="flex flex-row-reverse justify-center">
