@@ -4,11 +4,13 @@ import type { Plugin } from 'unified';
 import type { Content, Root } from 'mdast';
 import { fileURLToPath } from 'url';
 import { resolve } from 'path';
-import {
-  BUNDLED_LANGUAGES,
+import type {
   Highlighter,
   ILanguageRegistration,
   Lang,
+} from 'shiki';
+import {
+  BUNDLED_LANGUAGES,
   getHighlighter,
   renderToHtml,
 } from 'shiki';

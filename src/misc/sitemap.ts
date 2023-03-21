@@ -3,9 +3,9 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import {
   ErrorLevel,
-  SitemapItemLoose,
   SitemapStream,
   streamToPromise,
+  type SitemapItemLoose,
 } from 'sitemap';
 import { Readable } from 'stream';
 import xmlFormat from 'xml-formatter';

@@ -1,5 +1,6 @@
 import { sub as subDate } from 'date-fns';
-import { PageInfo, FontInfo, glyphSegregator } from 'glyph-segregator';
+import type { PageInfo, FontInfo } from 'glyph-segregator';
+import { glyphSegregator } from 'glyph-segregator';
 import got from 'got';
 import type { RouteToRender } from 'iles';
 import { dirname, resolve } from 'path';

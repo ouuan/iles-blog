@@ -89,7 +89,7 @@ import {
   usePageCount,
   usePostCount,
   usePosts,
-  Post,
+  type Post,
 } from '~/composables/usePosts';
 
 const props = withDefaults(defineProps<{
