@@ -19,7 +19,7 @@ specifiers:
   '@islands/headings': 0.8.2
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.5
-  '@ouuan/tsconfig-vue': 1.0.0
+  '@ouuan/tsconfig-vue': 1.1.0
   '@sniptt/guards': 0.2.0
   '@total-typescript/ts-reset': 0.4.2
   '@types/hast': 2.3.4
@@ -101,7 +101,7 @@ devDependencies:
   '@islands/headings': 0.8.2_j5vhtyk5hysulswi2ekrqmqpcq
   '@islands/images': 0.8.2
   '@ouuan/eslint-config-vue': 1.2.5_j4766f7ecgqbon3u7zlxn5zszu
-  '@ouuan/tsconfig-vue': 1.0.0
+  '@ouuan/tsconfig-vue': 1.1.0
   '@total-typescript/ts-reset': 0.4.2
   '@types/hast': 2.3.4
   '@types/node': 18.15.10
@@ -852,16 +852,18 @@ packages:
       - supports-color
     dev: true
 
-  /@ouuan/tsconfig-base/1.0.0:
-    resolution: {integrity: sha512-3bws2mlzmdrz7A3En+Q8j/vhPkTKedLWhdz/uVOP0XVJB6rBWHCIX3AW/o2zHULk7WKT5B0xZRHXVki7CjqNIA==}
+  /@ouuan/tsconfig-base/1.1.0:
+    resolution: {integrity: sha512-XaqUpvM0qPtBZcRbpakqb7mrvWVjherTOEU5akDbwcfFem0NokRCog8c5g6MHSKCf2ywwCgFCAROQ4D6/fLMgw==}
     dependencies:
-      '@tsconfig/node-lts-strictest-esm': 18.12.1
+      '@tsconfig/esm': 1.0.2
+      '@tsconfig/node-lts': 18.12.1
+      '@tsconfig/strictest': 2.0.0
     dev: true
 
-  /@ouuan/tsconfig-vue/1.0.0:
-    resolution: {integrity: sha512-Wecift0AaoF7tN5Y5TamT3YW9IrWv3xsOGWS54i/COa97LhkB65s5jrsc5vEYWsF4DuHztroO1m5dSUnSVYdDA==}
+  /@ouuan/tsconfig-vue/1.1.0:
+    resolution: {integrity: sha512-Zs3+a4+js0ixSYXb7IUoC9m0DkhXVEdOyvNAxYn47BivEuOzR0VaS9jdxWi7drMX6H4ykYqn4pcqG7ZkmmuBLw==}
     dependencies:
-      '@ouuan/tsconfig-base': 1.0.0
+      '@ouuan/tsconfig-base': 1.1.0
     dev: true
 
   /@pkgr/utils/2.3.1:
@@ -927,8 +929,16 @@ packages:
     resolution: {integrity: sha512-vqd7ZUDSrXFVT1n8b2kc3LnklncDQFPvR58yUS1kEP23/nHPAO9l1lMjUfnPrXYYk4Hj54rrLKMW5ipwk7k09A==}
     dev: true
 
-  /@tsconfig/node-lts-strictest-esm/18.12.1:
-    resolution: {integrity: sha512-LvBLmaC6Q/txTddLc11OeMHF9XjJFzlilkETJuvBlUvHy9pPiMsoH3nxWZM1FMSO53zp4mJP6gzOzxKEq0me7Q==}
+  /@tsconfig/esm/1.0.2:
+    resolution: {integrity: sha512-awiISx+G4L+7k97nKnfA5QF6rukawiuycMPfASFHG/0fqjrUlYBuNISy3Yjl1SHIpVi57lYf7dc6L/FoQQCKcA==}
+    dev: true
+
+  /@tsconfig/node-lts/18.12.1:
+    resolution: {integrity: sha512-UkIaMWDwJ+qJX/os8lzYh7m47qQJY7sIp1WZiEStASrpzczp27+jA0fJES+IjnS2OlDDLeBghNrVkKw8iYIRdA==}
+    dev: true
+
+  /@tsconfig/strictest/2.0.0:
+    resolution: {integrity: sha512-E0dpiZNdwO20c8d3seh7OmjAvDpwoRkTcU6M8cvggzB45Bd45tyTU2XJeA5Wfq+8NzVGhunvqOJ30AjSkywMXA==}
     dev: true
 
   /@types/acorn/4.0.6:
