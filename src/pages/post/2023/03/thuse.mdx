@@ -319,3 +319,7 @@ deploy 之后发现一堆锅，它们不影响我的小作业得分，只会影�
 之前一直随机报错 `The "path" argument must be of type string. Received an instance of Array`，后来发现是我直接用了最新最热的 [tsconfig 里 `extends` 写数组](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#supporting-multiple-configuration-files-in-extends)，然后 Nuxt 读取 tsconfig 的时候寄了。改成单个 `extends` 或者把 Nuxt 更新到 edge channel 就 ok 了。
 
 另外还碰到 [一个 bug](https://github.com/nuxt/nuxt/issues/15113)，只能把路径改成英文。
+
+#### npmmirror 更新不及时
+
+CI 挂在了奇怪的地方，是 npmmirror 更新不及时，一个刚更新几分钟的包下不下来。npmmirror 的首页写的是每 10min 更新一次，但我等了它半小时还没更新。然后看到 npmmirror 上每个包的页面上有一个“SYNC”按钮，点一下就可以更新，草（
