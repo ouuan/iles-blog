@@ -329,3 +329,9 @@ CI 挂在了奇怪的地方，是 npmmirror 更新不及时，一个刚更新几
 感觉这个软工就和最新最热扯不开关系了（
 
 碰到一个非常神秘的，一个 up-to-date with master 的 MR 在合并之后挂 CI，说是 lock file 有问题。本来我都没想管了，结果晚上发现博客也挂 CI 了，再一看，原来是 pnpm 发布 v8 了，草。
+
+#### nuxt dev 报错 “Body is unusable”
+
+[Body is unusable (undici) · Issue #19245 · nuxt/nuxt](https://github.com/nuxt/nuxt/issues/19245) 是一个非常玄学的 issue，我在部署到 SECoder 的时候遇到了，队友在 WSL2 上遇到了，但我在本地（Arch Linux）没遇到过。我让队友试着在 Docker 里跑 dev，似乎和 issue 里描述的一样，偶尔会遇到，但重试一下就好了；而且 WSL2 里加载非常慢，直接在 Windows 上运行 Docker 会快很多。
+
+HMR 需要 WebSocket，于是在 Docker 里跑 dev 的时候发现 Vite 默认的 ws 端口是 24678，唤醒了一些远古的回忆（；结果去搜索引擎确认 ~~自己的 DNA 没有刻错~~ 的时候搜到的全是“原神‘港口驶过几艘船，二四六七八’任务攻略”，绷不住了（
