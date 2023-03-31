@@ -55,6 +55,7 @@ export default defineConfig({
       aisan: '#FF5800',
       emma: '#84C36E',
       mia: '#A9A898',
+      setsuna: '#D81C2F',
       qfour: '#D9DB83',
       liella: '#DA57D8',
       kanon: '#FF7F27',
