@@ -361,3 +361,9 @@ HMR 需要 WebSocket，于是在 Docker 里跑 dev 的时候发现 Vite 默认�
 #### ~~姓游就要用尤大的 Vue，yóu だけにっ！~~
 
 突然发现另一个队长姓游的队也用的 Vue，而其他队暂时没发现有用 Vue 的（我暂时只找到了 1/4 队伍的域名，剩下有找不到的也有懒得找的）。~~难道是因为和尤大一样姓 yóu 吗，这下[<span class="text-aisan">爱姐</span>](https://zh.moegirl.org.cn/宫下爱)狂喜了（~~
+
+#### undici 发送带 `Content-Length: 0` 的 DELETE 请求
+
+这是第 114514 次被 undici 背刺了，具体请看 [Sending a DELETE request with "Content-Length: 0" fails with a RequestContentLengthMismatchError · Issue #2046 · nodejs/undici](https://github.com/nodejs/undici/issues/2046)。
+
+而这个 `Content-Length: 0` 是由已经没在维护的 [`http-proxy`](https://github.com/http-party/node-http-proxy) 加上的。不知为何，甚至不是给其他 method 加 Content-Length 的时候忘记排除 DELETE 了，而是专门给 DELETE 加的。更神秘的是，这段代码是在十年前只有一百多行的 [initial commit](https://github.com/http-party/node-http-proxy/commit/4d131567211bcefc6ef0b0592d374fef7bd5abd8#diff-0855adca187963032d89850159dc18eacfb9f206c036887e19b1877e69cc0ac1R20) 就加上了。反正给这段打个 patch 就好了。
