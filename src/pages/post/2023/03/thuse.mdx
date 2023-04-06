@@ -367,3 +367,11 @@ HMR 需要 WebSocket，于是在 Docker 里跑 dev 的时候发现 Vite 默认�
 这是第 114514 次被 undici 背刺了，具体请看 [Sending a DELETE request with "Content-Length: 0" fails with a RequestContentLengthMismatchError · Issue #2046 · nodejs/undici](https://github.com/nodejs/undici/issues/2046)。
 
 而这个 `Content-Length: 0` 是由已经没在维护的 [`http-proxy`](https://github.com/http-party/node-http-proxy) 加上的。不知为何，甚至不是给其他 method 加 Content-Length 的时候忘记排除 DELETE 了，而是专门给 DELETE 加的。更神秘的是，这段代码是在十年前只有一百多行的 [initial commit](https://github.com/http-party/node-http-proxy/commit/4d131567211bcefc6ef0b0592d374fef7bd5abd8#diff-0855adca187963032d89850159dc18eacfb9f206c036887e19b1877e69cc0ac1R20) 就加上了。反正给这段打个 patch 就好了。
+
+#### SECoder commit 统计
+
+之前还在想 SECoder 的数据统计什么时候开，没想到一开吓一跳（
+
+它似乎是统计了所有 commit，包括没 merge 到 master 的以及被 force-push 覆盖掉的，结果我差不多到了 rk2 的两倍（，但要是只算 master 的话其实进 top10 都还差一点。应该主要是搭前端代码框架的时候，有 20 多个 commit rebase 了好几次，后来也经常 force-push 修小的 typo。这么说来 GitHub 只统计 master 还是挺好的，虽然我个人项目也经常会在 master 上疯狂 force-push（
+
+但是 SECoder 没有 MR 评论数量的统计，其实我觉得这个才是我应该霸榜的地方（
