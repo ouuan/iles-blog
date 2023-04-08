@@ -27,7 +27,7 @@
     "fuse.js": "6.6.2",
     "glyph-segregator": "0.6.0",
     "hast-util-select": "5.0.5",
-    "iles": "0.9.2",
+    "iles": "0.9.5",
     "isbot": "3.6.8",
     "katex": "0.16.4",
     "mdast-util-to-hast": "12.3.0",
