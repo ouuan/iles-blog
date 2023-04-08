@@ -72,3 +72,35 @@ lzx 上课的时候说，早八晚 10min 也可以来，别晚了就不来了。
 其实我也没在六教自习过。见识到了神奇的插座，要斜着插（地线或者零线及火线稍微往外拔一点）才有电。还见识到了神奇的桌子，桌板可以脱离底座移动（
 
 习题课助教：应该是老师强调了习题课比较重要，所以才会有这么多人来。数了下来了 19 个人，整个班有 60 人（
+
+## 4.8
+
+虽然只是在吐槽演的不像，但莫名感觉有被骂到，草（
+
+![这是 IQ 200 的感觉吗，单纯，单纯的阴暗逼吧w](iq200.jpg)
+
+感觉学不完了，于是没去 tunight，然后看到群友都在喷，幸好没去（
+
+研究了半天如何在 Vivado 中使用 neovim，最后发现 Verilog 的 language server 都太拉胯了，比起 Vivado 的 lint 都几乎没法用，而 Vivado 自带的文本编辑器可以复制代码文件路径，所以还是手动打开 neovim 比较好。还是把研究了一会儿得到的脚本在这放一个，虽然没啥用：
+
+```bash
+#!/bin/bash
+
+# vivado-nvim.sh "[file name]" [line number]
+
+set -euo pipefail
+
+unset LD_LIBRARY_PATH
+
+NVIM_LISTEN_ADDRESS=/tmp/vivado-nvim.pipe
+
+if [[ ! -e $NVIM_LISTEN_ADDRESS ]]; then
+    exec konsole --name "vivado-nvim" -e nvim --listen $NVIM_LISTEN_ADDRESS "$1" "+$2"
+else
+    nvim --server $NVIM_LISTEN_ADDRESS --remote "$1"
+    nvim --server $NVIM_LISTEN_ADDRESS --remote-send ":$2<CR>"
+    i3-msg '[instance="vivado-nvim"] focus'
+fi
+```
+
+今天本来想写数学课作业的，结果先是讨论了半天数设选题，又学了一会儿 Verilog，一天就结束了。寄，真把两门数学课上成 P/F 了，但我真的能 P 吗（
