@@ -387,3 +387,11 @@ HMR 需要 WebSocket，于是在 Docker 里跑 dev 的时候发现 Vite 默认�
 ~~要是有万能的[喵森](https://zh.moegirl.org.cn/宫森葵)来协调大家的开发进度就好了~~；<span class="heimu">软工中的总集篇：要是部署挂了赶紧换一个旧版镜像，可以说是没写完而不是部署挂了，就可以只扣 1 分而不是 2 分了。</span> 突然想到的，但这么一想，好想在软工结束后的暑假二周目一下白箱，~~现在先拜一拜喵森吧（~~
 
 只不过还有一个问题，Python 实在是，真的能比 Rust 写的快吗（，虽然看队友写了很多奇妙错误，但要是没有类型检查之类的（Python 可以一定程度上检查，但看起来队友并没有做）我大概也能写出不少 🌚
+
+### 大作业第五周
+
+#### Nuxt v3.3.3 起 nuxt-vitest 报错
+
+[Nuxt v3.3.3 causes tests to fail (Unhandled Errors) · Issue #122 · danielroe/nuxt-vitest](https://github.com/danielroe/nuxt-vitest/issues/122)
+
+想着大例会结束后是升级依赖的好时机，结果一 bump 测试挂了。去 git bisect 了一下 Nuxt，Nuxt 的构建比 Next 轻松多了，又快又不报错。bisect 出来之后本来还在想没时间也没头绪继续研究下去了，这个 issue 也已经一周了，不知道作者会不会继续咕着。结果晚上一看，被点了个心，开了个 PR，再一看，原来 bisect 出来的那个 PR 就是 nuxt-vitest 的作者写的，我都没发现（
