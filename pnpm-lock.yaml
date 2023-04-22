@@ -21,8 +21,8 @@ dependencies:
     specifier: 0.51.5
     version: 0.51.5
   '@vueuse/components':
-    specifier: 10.0.2
-    version: 10.0.2(vue@3.2.47)
+    specifier: 10.1.0
+    version: 10.1.0(vue@3.2.47)
   '@vueuse/core':
     specifier: 10.1.0
     version: 10.1.0(vue@3.2.47)
@@ -1761,23 +1761,11 @@ packages:
   /@vue/shared@3.2.47:
     resolution: {integrity: sha512-BHGyyGN3Q97EZx0taMQ+OLNuZcW3d37ZEVmEAyeoA9ERdGvm9Irc/0Fua8SNyOtV1w6BS4q25wbMzJujO9HIfQ==}
 
-  /@vueuse/components@10.0.2(vue@3.2.47):
-    resolution: {integrity: sha512-pjZy9/EdYdawraSrY8r1BpTTtuY8/ePjTI5bdhbUMeqnKnoN/tAXl4VH2xhonDxgXiHCN3qqJe4hnU4RFgo3fw==}
+  /@vueuse/components@10.1.0(vue@3.2.47):
+    resolution: {integrity: sha512-U3c5tPUAxfwWoBSpFbCNFMEM8/jSZ0+5M1n9YWcahyb+uRNo4UmsofX/Hzs6K56PSm0g+uuhZVwSnMq8ttD8Lw==}
     dependencies:
-      '@vueuse/core': 10.0.2(vue@3.2.47)
-      '@vueuse/shared': 10.0.2(vue@3.2.47)
-      vue-demi: 0.14.0(vue@3.2.47)
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
-    dev: false
-
-  /@vueuse/core@10.0.2(vue@3.2.47):
-    resolution: {integrity: sha512-/UGc2cXbxbeIFLDSJyHUjI9QZ4CJJkhiJe9TbKNPSofcWmYhhUgJ+7iw9njXTKu/Xc3Z6UeXVR9fosW1+cyrnQ==}
-    dependencies:
-      '@types/web-bluetooth': 0.0.16
-      '@vueuse/metadata': 10.0.2
-      '@vueuse/shared': 10.0.2(vue@3.2.47)
+      '@vueuse/core': 10.1.0(vue@3.2.47)
+      '@vueuse/shared': 10.1.0(vue@3.2.47)
       vue-demi: 0.14.0(vue@3.2.47)
     transitivePeerDependencies:
       - '@vue/composition-api'
@@ -1807,21 +1795,8 @@ packages:
       '@unhead/vue': 1.0.20(vue@3.2.47)
       vue: 3.2.47
 
-  /@vueuse/metadata@10.0.2:
-    resolution: {integrity: sha512-APSjlABrV+Q74c+FR0kFETvcN9W2pAaT3XF3WwqWUuk4srmVxv7DY4WshZxK2KYk1+MVY0Fus6J1Hk/JXVm6Aw==}
-    dev: false
-
   /@vueuse/metadata@10.1.0:
     resolution: {integrity: sha512-cM28HjDEw5FIrPE9rgSPFZvQ0ZYnOLAOr8hl1XM6tFl80U3WAR5ROdnAqiYybniwP5gt9MKKAJAqd/ab2aHkqg==}
-    dev: false
-
-  /@vueuse/shared@10.0.2(vue@3.2.47):
-    resolution: {integrity: sha512-7W2l6qZaFvla3zAeEVo8hNHkNRKCezJa3JjZAKv3K4KsevXobHhVNr+RHaOVNK/6ETpFmtqiK+0pMIADbHjjag==}
-    dependencies:
-      vue-demi: 0.14.0(vue@3.2.47)
-    transitivePeerDependencies:
-      - '@vue/composition-api'
-      - vue
     dev: false
 
   /@vueuse/shared@10.1.0(vue@3.2.47):
