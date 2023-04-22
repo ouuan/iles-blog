@@ -41,8 +41,7 @@
 
 <script setup lang="ts">
 import GiscusComponent from '@giscus/vue';
-import { usePreferredDark } from '@vueuse/core';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 
 import useTheme from '~/composables/useTheme';
 import site from '~/site';
@@ -55,12 +54,7 @@ defineProps<{
   term: string;
 }>();
 
-const colorMode = useTheme();
-const preferredDark = usePreferredDark();
-const theme = computed(() => {
-  if (colorMode.value === 'auto') return preferredDark.value ? 'dark' : 'light';
-  return colorMode.value;
-});
+const theme = useTheme();
 
 const loading = ref(true);
 const positiveReacted = ref(false);

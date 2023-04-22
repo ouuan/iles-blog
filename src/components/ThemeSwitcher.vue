@@ -44,7 +44,7 @@ import { ref } from 'vue';
 import { vOnClickOutside } from '@vueuse/components';
 import useTheme from '~/composables/useTheme';
 
-const theme = useTheme();
+const { store: theme } = useTheme();
 
 const name = {
   auto: '跟随系统',
