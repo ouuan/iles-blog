@@ -42,11 +42,11 @@ dependencies:
     specifier: 0.9.5
     version: 0.9.5(@types/node@18.15.11)(esbuild@0.17.7)(sass@1.61.0)
   isbot:
-    specifier: 3.6.8
-    version: 3.6.8
+    specifier: 3.6.10
+    version: 3.6.10
   katex:
-    specifier: 0.16.4
-    version: 0.16.4
+    specifier: 0.16.6
+    version: 0.16.6
   mdast-util-to-hast:
     specifier: 12.3.0
     version: 12.3.0
@@ -3764,8 +3764,8 @@ packages:
   /isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
 
-  /isbot@3.6.8:
-    resolution: {integrity: sha512-V8XUXN0/UYxfgrui4o38pmOve2eO/1KjluxR1G8Qnu5gqlUiNrvtX06t1W5n8vFtrtKfHj96iFYuPL39jXUe8g==}
+  /isbot@3.6.10:
+    resolution: {integrity: sha512-+I+2998oyP4oW9+OTQD8TS1r9P6wv10yejukj+Ksj3+UR5pUhsZN3f8W7ysq0p1qxpOVNbl5mCuv0bCaF8y5iQ==}
     engines: {node: '>=12'}
     dev: false
 
@@ -3892,8 +3892,8 @@ packages:
       commander: 8.3.0
     dev: true
 
-  /katex@0.16.4:
-    resolution: {integrity: sha512-WudRKUj8yyBeVDI4aYMNxhx5Vhh2PjpzQw1GRu/LVGqL4m1AxwD1GcUp0IMbdJaf5zsjtj8ghP0DOQRYhroNkw==}
+  /katex@0.16.6:
+    resolution: {integrity: sha512-XVB7X8jEogjJ+OY+a9JdE+VOk9i7znela0HP6WaDbpB4sUh8ghrG0Ccluu2MA2tcJbFAViBC9aVXus2UvkEr8A==}
     hasBin: true
     dependencies:
       commander: 8.3.0
