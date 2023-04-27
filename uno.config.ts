@@ -54,6 +54,7 @@ export default defineConfig({
       nijigasaki: '#F8B656',
       aisan: '#FF5800',
       emma: '#84C36E',
+      lanzhu: '#F69992',
       mia: '#A9A898',
       setsuna: '#D81C2F',
       qfour: '#D9DB83',
