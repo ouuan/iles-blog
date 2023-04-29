@@ -1,0 +1,520 @@
+---
+title: DDPP 第五章学习笔记
+date: 2023-04-06T16:52:53+08:00
+image: ddpp-5.png
+tags:
+-   ddpp
+-   学习笔记
+---
+
+[DDPP5](https://wakerly.org/DDPP/) 第五章 “Verilog Hardware Description Language” 的学习笔记。
+
+也就是初学 (System)Verilog 的笔记。
+
+<Excerpt />
+
+本来想寒假学，结果还是拖到了数字逻辑实验开始用 FPGA，只不过手上有模块了再来学也挺好的。
+
+虽然从创建到发布拖了很久，但其实大部分内容都是新建文件后一周内写的，只是后来感觉学的东西已经差不多能应付上课了，就一直咕着没把最后一点学完 & 写完（
+
+<Card title="SystemVerilog" type="info">
+
+DDPP5 中讲的是 Verilog 而不是 SystemVerilog，我根据在其他地方找到的一些资料补充了少量 SystemVerilog 的内容。
+
+</Card>
+
+## neovim 配置
+
+用的是老师推荐的 Vivado 2019.2 WebPack，而它自带的文本编辑器多少有点拉胯，所以研究了一下配 neovim。
+
+最后选择的是 [veridian](https://github.com/vivekmalneedi/veridian) + 通过 [null-ls](https://github.com/jose-elias-alvarez/null-ls.nvim) 使用 Vivado 的 `xvlog`。一开始我还看 veridian 没在维护而且 star 少（~~但它好歹最后更新是在 2021，Vivado 还在用 2019~~），先试了另外几个，后来发现，不说别的，只有 veridian 支持 hover。同时使用 `xvlog` 是觉得还是 Vivado 自带的 lint 比较靠谱。
+
+veridian 就是用 [lspconfig](https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md#veridian)，记得同时装 [verible](https://github.com/chipsalliance/verible) 才能使用某些 feature（在 lspconfig 里只需启用 veridian）。可以把 `root_dir` 设为 `util.root_pattern('*.xpr', '.git')` 来检测 Vivado 项目的根目录。
+
+null-ls 的配置如下，因为 `xvlog` 实际上是一个不能禁用文件输出的 simulator，采取了一些措施来防止它到处倒垃圾。
+
+```lua
+local null_ls = require "null-ls"
+local utils = require "null-ls.utils"
+local helpers = require "null-ls.helpers"
+
+local xvlog_sv = {
+  name = "xvlog",
+  method = null_ls.methods.DIAGNOSTICS,
+  filetypes = { "systemverilog" },
+  generator = null_ls.generator {
+    command = "bwrap", -- only permit writing in /tmp
+    args = {
+      "--ro-bind", "/", "/",
+      "--bind", "/tmp/xvlog", "/tmp/xvlog",
+      "--dev", "/dev",
+      "/home/ouuan/Xilinx/Vivado/2019.2/bin/xvlog",
+      "--sv", "$FILENAME",
+    },
+    cwd = function(params)
+      -- output in /tmp
+      local dir = '/tmp/xvlog/' .. params.bufnr
+      vim.fn.mkdir(dir, 'p')
+      return dir
+    end,
+    to_temp_file = true,
+    format = "line",
+    check_exit_code = { 0, 1 },
+    on_output = helpers.diagnostics.from_patterns {
+      {
+        pattern = '(.+): %[.+%] (.+) %[.+:(%d+)%]',
+        groups = { "severity", "message", "row" },
+        overrides = {
+          severities = {
+            ["ERROR"] = 1,
+            ["WARNING"] = 2,
+            ["INFO"] = 3,
+          },
+        },
+      },
+    },
+  },
+}
+
+null_ls.setup {
+  sources = {
+    xvlog_sv,
+  },
+  root_dir = utils.root_pattern("*.xpr", ".git")
+}
+```
+
+另外可以用 [vim-xdc-syntax](https://github.com/amal-khailtash/vim-xdc-syntax) 添加管脚约束文件的高亮。
+
+Vivado 的 custom text editor 使用下面的脚本。是针对 [i3](https://i3wm.org/) 配的，给 konsole 设了 name 参数，i3 设成 `assign [instance="konsole"]`（`instance` 而非 `class`）就可以不把这个 konsole 挪到其他 konsole 所在的 workspace，并且可以在打开新文件时 focus 过去。
+
+```bash
+#!/bin/bash
+
+# vivado-nvim.sh "[file name]" [line number]
+
+set -euo pipefail
+
+unset LD_LIBRARY_PATH
+
+NVIM_LISTEN_ADDRESS=/tmp/vivado-nvim.pipe
+
+if [[ ! -e $NVIM_LISTEN_ADDRESS ]]; then
+    exec konsole --name "vivado-nvim" -e nvim --listen $NVIM_LISTEN_ADDRESS "$1" "+$2"
+else
+    nvim --server $NVIM_LISTEN_ADDRESS --remote "$1"
+    nvim --server $NVIM_LISTEN_ADDRESS --remote-send ":$2<CR>"
+    i3-msg '[instance="vivado-nvim"] focus'
+fi
+```
+
+## 基础语法
+
+### module
+
+Verilog 以 module 为基本单位（和前端的 component 有点类似）。
+
+例子：
+
+```system-verilog
+module inhibit (
+    input  in,
+    input  invin,
+    output out
+);
+  assign out = in & ~invin;
+endmodule
+```
+
+convention 是每个文件只写一个 module。
+
+### signal (net & variable)
+
+一个 1-bit 的 signal 有四种取值：0、1、x（未知）、z（高阻抗）。
+
+位运算：`&`、`|`、`~`、`^`、`~^`/`^~`。
+
+signal 有两大类：*net* 和 *variable*：
+
+-   net 表示线路，一般是 `wire`，还可以是 `supply0`、`supply1` 等（我用 `supply1` 的时候出现了神秘的问题，没细究，反正用恒为 1 的 `logic` 也差不多）。
+-   variable 用于 procedural statement 中，不一定对应到物理上的线路，可以是 `reg` 或者 `integer`。其中 `reg` 就是变量的意思（名字取得不太好），表示单个 bit 或者 vector，与基于 flip-flop 的寄存器无关。`integer` 是有符号整型，一般不用来存储数据或信号，而是用于 for 循环之类的地方。
+
+input 只能是 net，而 output 可以是 net 或 `reg`。不写 `wire` / `reg` 时默认是 `wire`。
+
+在 SystemVerilog 中推荐用 `logic` 来代替 `reg`。
+
+### 数字字面量 & parameter
+
+直接写十进制数会得到一个 signed number。
+
+可以指定位数和进制：`1'b0` 是 1 bit 的 0，`4'ha` 是 4 bit 的 10（十六进制的 A），`8'b01x0z1x1` 的一些 bit 是未知 / 高阻抗。如果后面写的值的位数超过前面指定的位数，高位会被扔掉，如果少了则会高位补零（或者补 `x` 或 `z`，如果最高位是 `x` 或 `z`）。这样得到的会是一个 unsigned vector，可以加上 `s` 得到 signed vector：`4'sb1101`。
+
+`parameter` 用来设置带默认值的参数：`parameter SIZE = 32, MSB = SIZE - 1, LSB = 0`，`parameter ESC = 7'h1b`。 `parameter` 一般用作常量，而在 [instance statement](#structural-model) 中可以被修改。
+
+### vector & 算术运算
+
+多个 bit 可以组成一个 vector，net、`reg`、`parameter` 都可以是 vector。
+
+vector 的下标可以是左边（MSB）大（`reg [7:0] byte1, byte2`）也可以是右边（LSB）大（`reg [1:16] bus`），起止的下标都可以指定。左边的下标对应字面量中左边的 bit。`byte1[7]` 是 `byte1` 最左边的 bit，`bus[16]` 是 `bus` 最右边的 bit。`bus[1:8]` 和 `bus[9:16]` 是 `bus` 的左右两边。读取越界会读到 `x`，写入会忽略越界的部分。
+
+`{}` 用来连接 vector，例如 `{2'b10, 2'b01}` 等于 `4'b1001`，`{2{byte1}, 2{byte2}}` 等于 `{byte1, byte1, byte2, byte2}`。
+
+vector 可以按位进行位运算，在二元运算中短的会高位补零后进行运算。
+
+二元位运算符也有一元的版本，表示将 vector 内所有 bit 运算在一起得到 1-bit 的结果，例如 `&byte1` 是 `1'b1` 表示 `byte1` 的所有 bit 都是 1。
+
+vector 之间进行赋值时会截低位或高位补零。
+
+vector 之间可以进行算术：`+`、`-`、`*`、`/`、`%`、`**`、`<<`、`>>`、`<<<`（算术左移）、`>>>`（算术右移）。
+
+算术的高位和低位基于左右而与下标大小无关。
+
+除法和取模在某些情况下可能不 synthesizable，除非除数是 2 的次幂。synthesizable 时也可能会生成除法器的电路而非常昂贵。
+
+逻辑移位得到 unsigned，算术移位保持原来的 signed/unsigned，算术右移高位补符号位。二元算术中只要有一个是 unsigned 就会将另一个转成 unsigned 再计算。signal 可以声明为 signed：`reg signed [15:0] a`。
+
+### array
+
+array 是相同类型的一列东西（一列 `reg`、`integer`、`wire` 等）。array 也可以指定下标范围，而与 vector 相反，声明 array 时框放在右边，例如 `reg [7:0] byte1, mem1[0:255]` 表示一个 8-bit `reg` 和一个由 256 个 8-bit `reg` 组成的 array。
+
+array 可以嵌套为高维数组，而访问只能访问单个下标，不能像 vector 一样一下访问一个区间。总之除了能指定下标范围都和 C 的数组差不多。
+
+### 逻辑运算
+
+含 `x` / `z` 或者全 0 的 vector（或者 `1'b0`）是 false，不含 `x` / `z` 且含 1 的 vector（或者 `1'b1`）是 true。false 的值是 `1'b0`，true 的值是 `1'b1`。
+
+逻辑运算符和比较运算符和 C 是一样的。比较时如果一侧是 unsigned 则会按 unsigned 比较。比较运算在电路中可能需要比较器（尤其是两侧都不是常量时），所以可能是昂贵的。
+
+三目运算符 `?:` 和 C 是一样的。
+
+在 test bench 中，带 `x` / `z` 的值在比较时结果为 `x`（用在条件判断时即为 false），可以使用 `===` / `!==` 来逐位比较（`x === x`, `z === z`），但它们不能用在 synthesizable module 中。
+
+### compiler directives
+
+``` `include ``` 和 ``` `define ```，和 C 是一样的。
+
+## model
+
+### structural model
+
+可以使用 *instance statement* 来写 structural model，说白了就是将其他 module 实例化并连线。
+
+built-in gate 有：
+
+-   `and`、`nand`、`or`、`nor`、`xor`、`xnor`，接受任意个输入
+-   `buf`、`not`，接受单个输入
+-   `bufif0`、`bufif1`、`notif0`、`notif1`，三态门，接受一个 data input 和一个 enable input（data input 在前，enable input 在后），if 表示 enable 的 active level
+
+使用 built-in gate 的例子：（built-in gate 的 port 没有名字，只能通过顺序指定，output 在前）
+
+```system-verilog
+module inhibit (
+    input  in,
+    input  invin,
+    output out
+);
+  wire notinvin;
+  not U1 (notinvin, invin);
+  and U2 (out, in, notinvin);
+endmodule
+```
+
+使用其他 module 的例子：（可以指定每个 port 的名字从而不依赖于顺序）
+
+```system-verilog
+module silly_xor (
+    input  in1,
+    input in2,
+    output out
+);
+  wire inh1, inh2, notinh2, notout;
+  inhibit U1 (
+      .out(inh1),
+      .in(in1),
+      .invin(in2)
+  );
+  inhibit U2 (
+      .out(inh2),
+      .in(in2),
+      .invin(in1)
+  );
+  not U3 (notinh2, inh2);
+  inhibit U4 (
+      .out(notout),
+      .in(notinh2),
+      .invin(inh1)
+  );
+  not U5 (out, notout);
+endmodule
+```
+
+修改 `parameter` 的例子：
+
+```system-verilog
+module maj #(
+    WID = 1
+) (
+    output [WID-1:0] out,
+    input  [WID-1:0] i0,
+    input  [WID-1:0] i1,
+    input  [WID-1:0] i2
+);
+  assign out = i0 & i1 | i0 & i2 | i1 & i2;
+endmodule
+```
+
+然后就可以 `maj #(8) U1 (.out(W), .i0(X), .i1(Y), .i2(Z))` 或者 `maj #(.WID(8)) U1 (.out(W), .i0(X), .i1(Y), .i2(Z))` 了。
+
+不指定 `parameter` 时会使用其默认值，`parameter` 只能在 instance statement 也就是 structural model 中被修改，在其他类型的 model 中只能使用默认值。
+
+可以使用 `generate` block，作用类似于 `v-for`、`v-if`，里面可以用 `for`（循环变量需要是 `genvar`）、`if`、`case`（被判断的要是 parameter），例如：
+
+```system-verilog
+genvar i;
+generate
+  for (i = 0; i < N; i = i + 1) begin
+    half_adder u0 (a[i], b[i], sum[i], cout[i]);
+  end
+endgenerate
+```
+
+### dataflow model
+
+可以使用 *continuous-assignment statement* 来写 dataflow model，也就是 `assign`，例如：
+
+```system-verilog
+module is_prime (
+    input [3:0] N,
+    output F
+);
+  assign F = N[3] ? (N[0] & (N[1] ^ N[2])) : (N[0] | (~N[2] & N[1]));
+endmodule
+```
+
+### behavioral model
+
+#### `always` & `begin`-`end` block
+
+`always` statement 用来执行一句 procedural statement，begin-end block 用来将若干 procedural statement 合成一句。begin-end block 里的语句是顺序执行的，而 `always` 是和 module 中的其他语句一起并行执行的。
+
+在 SystemVerilog 中，推荐使用 `always_comb`、`always_ff`、`always_latch` 来代替 `always`，分别用于组合逻辑、ff 和 latch（但一般不会特意去写 latch）。`always_comb` 会检查条件判断语句没有漏情况，避免意外生成 latch。`always_ff` 需要加形如 `always_ff @(posedge clk)` 的 sensitivity list。
+
+如果 begin-end 里有 local `logic` 则需要给 block 起名字（在 `begin` 的后面写上 `: name`）才能在 simulation 之类的地方看到可读的变量名。
+
+```system-verilog
+module alarm_circuit (
+    input panic,
+    input enable,
+    input exiting,
+    input window,
+    input door,
+    input garage,
+    output logic alarm
+);
+  always_comb begin : blk
+    logic secure;
+    secure = window & door & garage;
+    alarm  = panic | (enable & ~exiting & ~secure);
+  end
+endmodule
+```
+
+#### 赋值
+
+procedural statement 中有两种赋值，blocking 的 `=` 和 non-blocking 的 `<=`。`=` 表示立即赋值，而 `<=` 会将赋值推迟至整个 `always` 的结尾（右侧表达式的计算是立刻进行的），从而在 `always` 剩下的部分中左侧变量的值依然是赋值前的。
+
+赋值最好遵循下面的规则：
+
+-   在组合逻辑中，只使用 `=`
+-   在时序逻辑中，只使用 `<=`
+-   不要在同一个 block 中混合使用两种赋值
+-   不要在不同的 `always` 中对同一个变量赋值
+
+#### `if`-`else` 语句
+
+和 C 的语法是一样的，唯一的不同就是大括号变成 `begin` - `end`。
+
+#### `case` 语句
+
+```system-verilog
+module prime (
+    input [3:0] n,
+    output logic f
+);
+  always_comb
+    case (n)
+      4'd2, 4'd3, 4'd5, 4'd7, 4'd11, 4'd13: f = 1;
+      default: f = 0;
+    endcase
+endmodule
+```
+
+虽然并非必须，但一般来说，选项应当是不重复且指定了宽度的字面量。
+
+即使选项覆盖了所有可能，加上一个 `default` 可以在 simulation 中正确处理带 `x` 的值。
+
+`casez` 是允许使用通配符 `?` 的匹配，例如选项可以是 `4'b10??`。
+
+#### 循环语句
+
+有很多种循环语句，但推荐使用的只有一种，就是 `for (integer i = 0; i <= 7; i = i + 1)`。
+
+#### function 和 task
+
+function 和 task 是一段可复用的 procedural statement，写起来和 module 差不多，需要定义在 module 内部（可以通过 ``` `include ``` 来在不同 module 中复用）。
+
+function 有单个返回值（可以在函数名的前面给返回值设置类型，也可以省略，默认类型是 1-bit），但不能有 `output` / `inout` port，而是以 function 自身的名字作为返回值的名字，代码中需要对这个函数名进行赋值。function 中不能设置延时。
+
+```system-verilog
+module sillier_xor (
+    input in1,
+    input in2,
+    output logic out
+);
+  function inhibit(input in, input inv_in);
+    inhibit = in & ~inv_in;
+  endfunction
+
+  always_comb begin
+    logic inh1, inh2;
+    inh1 = inhibit(in1, in2);
+    inh2 = inhibit(in2, in1);
+    out  = ~inhibit(~inh2, inh1);
+  end
+endmodule
+```
+
+task 没有返回值，但可以有 `output` / `inout` port，（用于 simulation 时）可以设置延时。
+
+```system-verilog
+module lock_sim;
+
+  ...
+
+  task clock();
+    #500;
+    clk = 1;
+    #500;
+    clk = 0;
+  endtask
+
+  ...
+
+endmodule
+```
+
+有一些内置的 task 和 function，用于 simulation：
+
+-   `$write`：和 `printf` 差不多。
+-   `$display`：在 `$write` 的基础上多个换行。
+-   `$monitor`：每次信号发生改变时都输出，后指定的 monitor 会覆盖之前的。
+-   `$monitoroff` / `$monitoron`
+-   `$fflush`：flush 输出。
+-   `$time`：输出当前的 simulated time。
+-   `$random`：返回一个随机数，接受种子作为参数，不指定种子的话初次运行的种子是固定的。
+-   `$stop`：停止模拟，如果传参 `(1)` 则会显示当前的 simulated time 和代码位置。
+
+## timescale & 指定延迟
+
+``` `timescale 1ns / 10ps ``` 指定以 1ns 作为延时的单位，以 10ps 作为模拟的精度。
+
+`assign` 时可以指定延迟：`assign #5 a = b & c;`
+
+procedural model 中可以用 delay statement (`#500;`) 来暂停。
+
+## simulation (test bench)
+
+语法上和 synthesizable module 没有区别（只不过有个 `initial`，就是只执行一遍的 `always`，一般不用于 synthesizable module）。写起来一般是一个没有输入输出、有一个被测试 module 的实例、有一个 `initial` block 的 module，看看例子就行。
+
+懒得改 DDPP 上的代码了，直接复制一份数字逻辑实验的代码（
+
+```system-verilog
+`timescale 1ns / 1ps
+
+module lock_sim;
+  logic clk = 0;
+  logic rst = 0;
+  logic mode = 1;
+  logic [3:0] digit_input = 0;
+  wire unlocked, incorrect, alert;
+
+  lock #(
+      .ADMIN_PASSWORD(16'ha73f)
+  ) lock_inst (
+      .clk(clk),
+      .rst(rst),
+      .mode(mode),
+      .digit_input(digit_input),
+      .unlocked(unlocked),
+      .incorrect(incorrect),
+      .alert(alert)
+  );
+
+  task clock();
+    #500;
+    clk = 1;
+    #500;
+    clk = 0;
+  endtask
+
+  task reset();
+    rst = 1;
+    #500;
+    rst = 0;
+    #500;
+  endtask
+
+  task input_password(input [15:0] password);
+    reset();
+    digit_input = password[15:12];
+    clock();
+    digit_input = password[11:8];
+    clock();
+    digit_input = password[7:4];
+    clock();
+    digit_input = password[3:0];
+    clock();
+  endtask
+
+  initial begin
+    input_password(16'ha73f);  // admin password
+    input_password(16'h1234);  // incorrect
+
+    mode = 0;
+    input_password(16'h1234);  // set password
+
+    mode = 1;
+    input_password(16'h4321);  // incorrect
+    input_password(16'h1234);  // correct
+    input_password(16'ha73f);  // admin password
+
+    // incorrect three times
+    input_password(16'h4321);
+    input_password(16'h4321);
+    input_password(16'h4321);
+
+    input_password(16'h1234);  // locked
+
+    mode = 0;
+    input_password(16'h4321);  // cannot set password
+
+    mode = 1;
+    input_password(16'h1234);  // locked
+    input_password(16'h4321);  // incorrect
+    input_password(16'ha73f);  // admin password
+    input_password(16'h1234);  // correct
+    input_password(16'h4321);  // incorrect
+  end
+endmodule
+```
+
+通过使用 `$display`，可以更直观地输出结果，从而不需要对着波形图看；或者自动检查结果是否正确，在出错时输出。
+
+有时可以通过文件读写来更方便地编写测试数据、检查输出结果。
+
+## 有关 synthesize 的一些注意事项
+
+-   长串的 `if`、`else if`、`else if`……可能导致电路也有一长串，使用 `case` 可能会更优。
+-   组合逻辑中的循环可能会创建同一套电路的多个副本，如果要用同一个电路，可能需要改写成时序逻辑。
+-   根据具体使用的 tool，有些 language feature 是不能被 synthesize 的。
+-   为了更好的 synthesize 结果而需要把代码写成什么样，需要依具体使用的 tool 而定。
