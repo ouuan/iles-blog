@@ -32,7 +32,7 @@ onMounted(async () => {
       ).href,
     );
     if (res.status === 200) {
-      const data = await res.json();
+      const data: any = await res.json();
       visitorCount.value = data.visitors;
     }
   } catch (e) {
