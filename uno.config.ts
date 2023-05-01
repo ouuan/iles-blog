@@ -3,6 +3,7 @@ import {
   presetIcons,
   presetUno,
 } from 'unocss';
+import { cssProperty } from '@unocss/preset-mini/rules';
 import transformerDirective from '@unocss/transformer-directives';
 
 export default defineConfig({
@@ -10,6 +11,7 @@ export default defineConfig({
     presetIcons(),
     presetUno(),
   ],
+  blocklist: [cssProperty[0]?.[0] as RegExp],
   rules: [
     [
       /^font-(serif|sans|mono|kai|latin)$/,
