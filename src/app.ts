@@ -64,7 +64,6 @@ export default defineApp({
           href: '/favicon-16x16.png',
         },
         { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#a07e5b' },
         { rel: 'canonical', href: computed(() => new URL(frontmatter.canonical || route.path, site.url).href) },
         {
           rel: 'alternate',
