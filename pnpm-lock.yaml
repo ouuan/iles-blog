@@ -92,8 +92,8 @@ devDependencies:
     specifier: 4.20230404.0
     version: 4.20230404.0
   '@iconify-json/mdi':
-    specifier: 1.1.50
-    version: 1.1.50
+    specifier: 1.1.51
+    version: 1.1.51
   '@islands/excerpt':
     specifier: 0.9.0
     version: 0.9.0
@@ -667,8 +667,8 @@ packages:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
 
-  /@iconify-json/mdi@1.1.50:
-    resolution: {integrity: sha512-SgbT5w5eHCdOG74ZWPz7HlTGk6VsifIJhNi6lAsxj/5Nlqt6Cz4LlQmSa9eecU9p075Jub2aAx/o7YI+GCahRQ==}
+  /@iconify-json/mdi@1.1.51:
+    resolution: {integrity: sha512-fyf4N7GBaUw2A//v3vjsJ440qd69c+pN4PazOp6901ALM3QcKGAVWcISOhZ1J6jVF2zNsxrwMYHoOoP2UrAkCw==}
     dependencies:
       '@iconify/types': 2.0.0
     dev: true
