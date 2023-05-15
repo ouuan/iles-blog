@@ -68,13 +68,13 @@ description: 如果喜欢 ouuan 的博客或者其他项目，可以扫码赞赏
         </p>
         <div class="my-4">
           <span>sha256</span>
-          <pre>877c0b52ea6cddb99cb510da8cd02d099abf3f94874d6290fb7abd5f688bd092  alipay-donate.png
-75a49c81a772ba3cbe00e489b3542275053707e00f8c2884653fa3bb3642ace0  wechat-donate.png</pre>
+          <pre>065939a6a9d67a4ae6a53e1732bae0a3063d852f94a63d39b5a3193226096565  alipay-donate.png
+a2905f45d2a705de7974656c7e98394e7ea568b14665d0346d0f69f3d0d04bbe  wechat-donate.png</pre>
         </div>
         <div class="my-4">
           <span>BLAKE3</span>
-          <pre>6569d9733bc5f1df7f254cfa29135e3f306cc6318d1cf3fc9bf8c50d813c31c6  alipay-donate.png
-7c55f893ee9b149831434aecad4a8d5df4a033a2b21dc4ebcc4ae0b32f4685d8  wechat-donate.png</pre>
+          <pre>1c0692de813ee433046a0c7b3f56b9bbedc0d2fd052e196fadd952323a4b4775  alipay-donate.png
+55431cd11d922b5b479641f8b22c457a3b2c4bbef6ad90a29e1024d75ceaf53a  wechat-donate.png</pre>
         </div>
       </Card>
     </div>
