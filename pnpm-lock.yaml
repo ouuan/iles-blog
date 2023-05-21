@@ -84,8 +84,8 @@ dependencies:
     specifier: 3.3.4
     version: 3.3.4
   xml-formatter:
-    specifier: 3.3.2
-    version: 3.3.2
+    specifier: 3.4.1
+    version: 3.4.1
 
 devDependencies:
   '@cloudflare/workers-types':
@@ -6569,11 +6569,11 @@ packages:
         optional: true
     dev: false
 
-  /xml-formatter@3.3.2:
-    resolution: {integrity: sha512-ld34F1b7+2UQGNkfsAV4MN3/b7cdUstyMj3XJhzKFasOPtMToVCkqmrNcmrRuSlPxgH1K9tXPkqr75gAT3ix2g==}
+  /xml-formatter@3.4.1:
+    resolution: {integrity: sha512-C7VwnZpz662mZlKtrdREucsABAIlmdph/nMEUszTMsRAGGPMSNfyNOU4UaPBqxXYVadb9uSpc1Xibbj6XpbGRA==}
     engines: {node: '>= 14'}
     dependencies:
-      xml-parser-xo: 4.0.4
+      xml-parser-xo: 4.1.0
     dev: false
 
   /xml-js@1.6.11:
@@ -6587,8 +6587,8 @@ packages:
     resolution: {integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==}
     engines: {node: '>=12'}
 
-  /xml-parser-xo@4.0.4:
-    resolution: {integrity: sha512-wdjXcsgKaVeTJ+TKbahl38jCPkXPvVWnkpCMZwjL1Thavj2Vj7UuGBNR5z297Gh80kpHgs8rWJAhPWkm3rlZrw==}
+  /xml-parser-xo@4.1.0:
+    resolution: {integrity: sha512-9mQMLmq8J++XlQH9WF57oQxFVbR3YM6dPPtTuV+++aMe2gRoRU/kj819/6IptUmfhC1d2DSFiYxEcpkoLabeJw==}
     engines: {node: '>= 14'}
     dev: false
 
