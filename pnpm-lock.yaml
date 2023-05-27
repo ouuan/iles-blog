@@ -60,8 +60,8 @@ dependencies:
     specifier: 0.14.2
     version: 0.14.2
   simple-git:
-    specifier: 3.18.0
-    version: 3.18.0
+    specifier: 3.19.0
+    version: 3.19.0
   sitemap:
     specifier: 7.1.1
     version: 7.1.1
@@ -5539,8 +5539,8 @@ packages:
       simple-concat: 1.0.1
     dev: true
 
-  /simple-git@3.18.0:
-    resolution: {integrity: sha512-Yt0GJ5aYrpPci3JyrYcsPz8Xc05Hi4JPSOb+Sgn/BmPX35fn/6Fp9Mef8eMBCrL2siY5w4j49TA5Q+bxPpri1Q==}
+  /simple-git@3.19.0:
+    resolution: {integrity: sha512-hyH2p9Ptxjf/xPuL7HfXbpYt9gKhC1yWDh3KYIAYJJePAKV7AEjLN4xhp7lozOdNiaJ9jlVvAbBymVlcS2jRiA==}
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
