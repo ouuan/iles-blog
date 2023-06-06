@@ -9,5 +9,4 @@ dist-ssr
 logs
 node_modules
 third_party
-
-!.ncurc.cjs
+/public/
