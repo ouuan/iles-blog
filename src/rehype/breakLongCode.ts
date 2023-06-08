@@ -9,10 +9,11 @@ function maxPartLength(parts: string[]) {
 }
 
 const breakLongCode: Plugin<[], Root> = () => (root) => {
-  selectAll(':not(pre) > code', root).forEach((node) => {
+  selectAll(':not(pre) > code, a', root).forEach((node) => {
     if (node.children.length !== 1) return;
     const child = node.children[0];
     if (child?.type !== 'text') return;
+    if (node.tagName === 'a' && child.value !== node.properties?.href) return;
     if (maxPartLength(child.value.split(/\s/)) <= 10) return;
     let parts = child.value.split(/\b/);
     if (maxPartLength(parts) > 12) {
