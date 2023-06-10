@@ -170,4 +170,18 @@
   ins {
     background-color: rgba(0, 255, 0, 0.15);
   }
+
+  .footnotes {
+    @apply text-sm;
+
+    ol {
+      counter-reset: list;
+    }
+    ol > li {
+      counter-increment: list;
+    }
+    ol > li::marker {
+      content: "[" counter(list, decimal) "]\a0";
+    }
+  }
 }
