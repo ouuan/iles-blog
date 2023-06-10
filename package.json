@@ -62,7 +62,7 @@
     "eslint": "8.41.0",
     "got": "12.6.1",
     "mdast-util-mdx": "2.0.1",
-    "micromark": "3.1.0",
+    "micromark": "3.2.0",
     "rehype-katex": "6.0.3",
     "remark-definition-list": "1.2.0",
     "remark-gfm": "3.0.1",

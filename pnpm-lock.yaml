@@ -1,4 +1,8 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
 
 overrides:
   vite-plugin-image-presets: ^0.3.4
@@ -140,14 +144,14 @@ devDependencies:
     specifier: 2.0.1
     version: 2.0.1
   micromark:
-    specifier: 3.1.0
-    version: 3.1.0
+    specifier: 3.2.0
+    version: 3.2.0
   rehype-katex:
     specifier: 6.0.3
     version: 6.0.3
   remark-definition-list:
     specifier: 1.2.0
-    version: 1.2.0(micromark@3.1.0)(remark-parse@10.0.2)(unified@10.1.2)
+    version: 1.2.0(micromark@3.2.0)(remark-parse@10.0.2)(unified@10.1.2)
   remark-gfm:
     specifier: 3.0.1
     version: 3.0.1
@@ -4164,14 +4168,14 @@ packages:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
     dev: true
 
-  /mdast-util-definition-list@1.2.1(micromark@3.1.0):
+  /mdast-util-definition-list@1.2.1(micromark@3.2.0):
     resolution: {integrity: sha512-0NvEWM5suUmvyIR58z+MjDgGruu9HsV5k8sKoWlbYgROFnwTs6dcCWmzOcVeUN9nJ/jxUFvb1iDZNuNFLzD9VQ==}
     dependencies:
       '@types/mdast': 3.0.10
       mdast-util-from-markdown: 1.2.0
       mdast-util-to-hast: 12.3.0
       mdast-util-to-markdown: 1.5.0
-      micromark-extension-definition-list: 1.3.0(micromark@3.1.0)
+      micromark-extension-definition-list: 1.3.0(micromark@3.2.0)
       unist-builder: 3.0.0
     transitivePeerDependencies:
       - micromark
@@ -4200,7 +4204,7 @@ packages:
       '@types/unist': 2.0.6
       decode-named-character-reference: 1.0.2
       mdast-util-to-string: 3.1.0
-      micromark: 3.1.0
+      micromark: 3.2.0
       micromark-util-decode-numeric-character-reference: 1.0.0
       micromark-util-decode-string: 1.0.2
       micromark-util-normalize-identifier: 1.0.0
@@ -4395,13 +4399,13 @@ packages:
       micromark-util-types: 1.0.2
       uvu: 0.5.6
 
-  /micromark-extension-definition-list@1.3.0(micromark@3.1.0):
+  /micromark-extension-definition-list@1.3.0(micromark@3.2.0):
     resolution: {integrity: sha512-PgVRXNoD3CgQtDUldmo54UMtkI2nZUVuhzBsEk7Fm4Eq8QnNgFbaxMdnVCovuCxBd0hO2PydYi9NC099HMebZg==}
     peerDependencies:
       micromark: ^3.0.5
     dependencies:
       assert: 2.0.0
-      micromark: 3.1.0
+      micromark: 3.2.0
       micromark-core-commonmark: 1.0.6
       micromark-factory-space: 1.0.0
       micromark-util-chunked: 1.0.0
@@ -4689,8 +4693,8 @@ packages:
   /micromark-util-types@1.0.2:
     resolution: {integrity: sha512-DCfg/T8fcrhrRKTPjRrw/5LLvdGV7BHySf/1LOZx7TzWZdYRjogNtyNq885z3nNallwr3QUKARjqvHqX1/7t+w==}
 
-  /micromark@3.1.0:
-    resolution: {integrity: sha512-6Mj0yHLdUZjHnOPgr5xfWIMqMWS12zDN6iws9SLuSz76W8jTtAv24MN4/CL7gJrl5vtxGInkkqDv/JIoRsQOvA==}
+  /micromark@3.2.0:
+    resolution: {integrity: sha512-uD66tJj54JLYq0De10AhWycZWGQNUvDI55xPgk2sQM5kn1JYlhbCMTtEeT27+vAhW2FBQxLlOmS3pmA7/2z4aA==}
     dependencies:
       '@types/debug': 4.1.7
       debug: 4.3.4
@@ -5277,14 +5281,14 @@ packages:
       unist-util-visit: 2.0.3
     dev: false
 
-  /remark-definition-list@1.2.0(micromark@3.1.0)(remark-parse@10.0.2)(unified@10.1.2):
+  /remark-definition-list@1.2.0(micromark@3.2.0)(remark-parse@10.0.2)(unified@10.1.2):
     resolution: {integrity: sha512-qc1x5JT/rria8LWbBx8EI5NYElpnf2jA7oaOM2tzqpMAZ2bLd7ejgrQ8AH6JV5oUqf+DeBR37TQzPx+iZO/DIA==}
     peerDependencies:
       remark-parse: ^10.0.0
       unified: ^10.1.0
     dependencies:
-      mdast-util-definition-list: 1.2.1(micromark@3.1.0)
-      micromark-extension-definition-list: 1.3.0(micromark@3.1.0)
+      mdast-util-definition-list: 1.2.1(micromark@3.2.0)
+      micromark-extension-definition-list: 1.3.0(micromark@3.2.0)
       remark-parse: 10.0.2
       unified: 10.1.2
     transitivePeerDependencies:
