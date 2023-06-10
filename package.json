@@ -25,7 +25,7 @@
     "@vueuse/core": "10.1.2",
     "date-fns": "2.30.0",
     "fuse.js": "6.6.2",
-    "glyph-segregator": "0.6.1",
+    "glyph-segregator": "0.6.2",
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
     "isbot": "3.6.10",
