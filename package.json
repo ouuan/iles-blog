@@ -60,7 +60,7 @@
     "@unocss/transformer-directives": "0.52.4",
     "@vue/runtime-core": "3.3.4",
     "eslint": "8.41.0",
-    "got": "12.6.1",
+    "got": "13.0.0",
     "mdast-util-mdx": "2.0.1",
     "micromark": "3.2.0",
     "rehype-katex": "6.0.3",
