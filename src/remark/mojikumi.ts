@@ -12,6 +12,7 @@ const fullStops = '。．';
 const commas = '、，';
 const halfWidthPauseOrStop = `${commas}${colons}${fullStops}`;
 const space = ' ';
+const dot = '.';
 const leftSingleQuote = '‘';
 const rightSingleQuote = '’';
 const latin = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -26,6 +27,7 @@ const leftRules = [
   [halfWidthPauseOrStop, space],
   [closingBrackets, space],
   [rightSingleQuote, latin],
+  [closingBrackets, dot],
 ] as const;
 
 const leftNarrowRules = [
