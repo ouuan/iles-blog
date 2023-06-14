@@ -181,6 +181,29 @@ fork 时会将原来的 `mm_struct` 以及 page table 复制一份，但是将�
 3.  如果有 link 到共享库，会进行动态链接，将共享库 private, file-backed map
 4.  修改 program counter
 
+<Card title="关于共享库的 map 方式" fold type="info">
+
+下面是一封发送于 2022.12.18，尚未收到回复的邮件：
+
+> Dear Drs. Randy Bryant and Dave O'Hallaron,
+> 
+> I am a student at Tsinghua University and I am writing to ask a question about the book CS:APP3e.
+> 
+> In “9.8.3 The execve Function Revisited” on page 837, it is stated that shared libraries are “mapped into the shared region of the user’s virtual address space”. In Figure 9.31, it is stated that “Memory-mapped region for shared libraries” are “Shared, file-backed”.
+> 
+> However, I believe that shared libraries are actually mapped as private objects rather than shared objects. I have come to this conclusion for the following reasons:
+> 
+> 1.  If there is data in the shared library, it should be copy-on-write, and should not be shared among different processes.
+> 2.  /proc/self/maps shows that all mappings to shared libraries of my shell are private.
+> 3.  The source code and comments of dl-load indicate that the mapping should be private. (See https://github.com/bminor/glibc/blob/71e408e45dcacf429a94b2807f75aaadd8d37cb9/elf/dl-load.h#L32-L49 and https://github.com/bminor/glibc/commit/9b8a44cd18fbf1aedeb03e19f4bcdb06b0ee409b.)
+> 
+> I have checked the errata but did not find this issue addressed. I am writing to you in the hope that you can provide an explanation of this statement or add it to the errata. Thank you for your attention to this matter.
+> 
+> Sincerely,  
+> Yufan You
+
+</Card>
+
 ### mmap
 
 `void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset)`
