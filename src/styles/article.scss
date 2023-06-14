@@ -172,7 +172,10 @@
   }
 
   .footnotes {
-    @apply text-sm;
+    @apply b-t-2 b-t-dashed b-gray-5 dark:b-gray-9; // <hr>
+    @apply my-9 pt-3;
+
+    @apply text-sm opacity-90;
 
     ol {
       counter-reset: list;
