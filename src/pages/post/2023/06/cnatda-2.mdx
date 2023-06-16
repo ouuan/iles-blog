@@ -1,0 +1,406 @@
+---
+title: CNATDA 第二章学习笔记
+date: 2023-06-12T20:42:32+08:00
+image: cnatda-2.png
+tags:
+-   cnatda
+-   学习笔记
+---
+
+《Computer Networking A Top-Down Approach (8th Edition)》第二章 “Application Layer” 的学习笔记。
+
+<Excerpt />
+
+## Principles of Network Applications
+
+application architecture 主要分为 client-server 和 P2P 两种。
+
+*process* 即在某个 end system 上运行的程序（进程），不同 end system 上的 process 在网络上互相发送 message 以进行通信（注：message 即 application-layer packet）。
+
+在一次通信中，发起通信的一方被称作 *client*，等待接收消息的一方被称作 *server*。（注：在 P2P 中，client 和 server 的身份不是固定的。）
+
+process 和网络，或者说和 transport layer 之间以 *socket* 作为 API。
+
+host 由 IP 地址识别，而 process 由 IP 地址 + 端口识别。
+
+一个 application 可以选择 TCP 或者 UDP 来提供 transport service。TCP 提供 connection-oriented service（需要通过 handshaking 建立 TCP connection）和 reliable data transfer service（保证接收到 & 保序），以及 congestion control。UDP 则这些都不提供。一般会根据是否 loss-tolerant（是否允许丢失部分数据）以及对延时的敏感度来进行选择。
+
+TLS (Transport Layer Security) 可以在 TCP 的基础上提供 encryption、data integrity、end-point authentication。它自身位于 application layer（或者可以说是 application 与 transport layer 之间 🤔），不与 TCP、UDP 并列。
+
+application-layer protocol 决定了 message 的结构以及相应的行为。常见的 application-layer protocol 包括 HTTP、SMTP、Telnet、FTP、SIP、RTP、DASH 等。有的 application 会使用专有而非 public domain 的 application-layer protocol。
+
+## The Web and HTTP
+
+HTTP (HyperText Transfer Protocol) 是 Web 的 application-layer protocol，定义了 client (browser) 如何向 server 请求文件（web page）、server 如何将文件传输给 client。
+
+HTTP 的默认端口是 80。
+
+HTTP 不存储 client 的信息，是一个 *stateless protocol*。
+
+HTTP（1.0、1.1、2）基于 TCP，有 persistent connection 和 non-persistent connection 两种工作方式：
+
+-   non-persistent connection：每次 request-response 都会建立一个新的 TCP connection，收到 response 后立刻关闭 TCP connection。
+-   persistent connection：同一对 client-server 的多次 request-response（例如一个页面引用的多个资源）可以共用同一个 TCP connection（在闲置一段时间后自动关闭），并且无需等待 response 就可以连续发送多个 request（被称作 *pipelining*），从而省下每次建立 TCP connection 耗费的 RTT (round-trip time)。
+
+HTTP message 是纯文本，格式如下。
+
+HTTP request:[^fig2.8]
+
+[^fig2.8]: p103, Figure 2.8: General format of an HTTP request message
+
+![General format of an HTTP request message](cnatda-fig-2.8.png)
+
+```http
+GET /wireshark-labs/INTRO-wireshark-file1.html HTTP/1.1
+Host: gaia.cs.umass.edu
+User-Agent: curl/8.1.2
+Accept: */*
+```
+
+HTTP response:[^fig2.9]
+
+[^fig2.9]: p104, Figure 2.9: General format of an HTTP response message
+
+![General format of an HTTP response message](cnatda-fig-2.9.png)
+
+```http
+HTTP/1.1 200 OK
+Date: Tue, 13 Jun 2023 11:14:57 GMT
+Server: Apache/2.4.6 (CentOS) OpenSSL/1.0.2k-fips PHP/7.4.33 mod_perl/2.0.11 Perl/v5.16.3
+Last-Modified: Tue, 13 Jun 2023 05:59:01 GMT
+ETag: "51-5fdfc882a3e6f"
+Accept-Ranges: bytes
+Content-Length: 81
+Content-Type: text/html; charset=UTF-8
+
+<html>
+Congratulations!  You've downloaded the first Wireshark lab file!
+</html>
+```
+
+server 可以通过 Cookie 识别用户，cookie 通过 response 中的 `Set-Cookie` header 设置，在之后的每次 request 中通过 `Cookie` header 发给 server。
+
+机构可以设置 Web cache，使用户先向 Web cache 发送请求，若 cache hit 则直接由 Web cache 发给用户，若 cache miss 则 Web cache 向 origin server 发送请求再返回给用户。Web cache 可以减小延迟，降低带宽压力。（与之类似的 CDN 则在[后文](#content-distribution-networks)有详细讲解。）
+
+可以通过 `If-Modified-Since` header 进行 *conditional GET*，若没有修改则会返回 body 为空的 304 Not Modified。
+
+HTTP/2 提供了 request and response multiplexing、prioritization、server push 来优化性能：
+
+-   multiplexing：persistent connection 减少了建立 TCP connection 带来的 RTT，但又引入了 Head of Line (HOL) blocking，即共用一个 TCP connection 时较小的资源需要等待较大的资源加载完毕，所以在 HTTP/1.1 中浏览器经常还是会建立多个 TCP 连接，除了解决 HOL blocking，也可以在 TCP 的 congestion control 中取得更多带宽。HTTP/2 则将每个 message 划分成了多个小的 frame，并交替发送不同 message 的 frame（frame interleaving），从而小的资源无需等待大的资源发送完毕。
+-   prioritization：同时发送多个请求时，可以为每个 response 设置优先级，让 server 优先发送高优先级的 response。除此之外，还可以设置 response 之间的依赖关系。
+-   server push：一个 request 可以有多个 response，即除了对应于 request 的 response，server 还可以额外 *push*，例如在返回一个 HTML 页面时可以 push 这个页面引用的其他资源。
+
+HTTP/3 使用基于 UDP 的 QUIC 代替了 TCP。
+
+## Electronic Mail in the Internet
+
+e-mail 系统有三个主要组件：user agent、mail server 和 SMTP (Simple Mail Transfer Protocol)。
+
+发送邮件时，Alice 写完邮件后由她的 user agent 发送到她的 mail server，她的 mail server 再发到 Bob 的 mail server 中属于 Bob 的 mailbox，之后 Bob 再通过他的 user agent 从他的 mail server 获取他的 mailbox 中的邮件并阅读。
+
+发送方的 mail server 会维护一个待发送邮件列表，如果接收方的 mail server 在当时不可用，则会等待一段时间后再次尝试，多次失败则会退回。
+
+mail server 使用 SMTP 向其他 mail server 发送邮件，发送方作为 SMTP client，接收方作为 SMTP server。
+
+SMTP 的默认端口是 25。
+
+SMTP 是一个比 HTTP 还古老的协议，带来的后果之一是它整个 message 都只能包含 ASCII。
+
+一次 SMTP 通信如下所示：[^smtp-example]
+
+[^smtp-example]: [SMTP transport example - Simple Mail Transfer Protocol - Wikipedia](https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol#SMTP_transport_example)
+
+```plain
+S: 220 smtp.example.com ESMTP Postfix
+C: HELO relay.example.org
+S: 250 Hello relay.example.org, I am glad to meet you
+C: MAIL FROM:<bob@example.org>
+S: 250 Ok
+C: RCPT TO:<alice@example.com>
+S: 250 Ok
+C: RCPT TO:<theboss@example.com>
+S: 250 Ok
+C: DATA
+S: 354 End data with <CR><LF>.<CR><LF>
+C: From: "Bob Example" <bob@example.org>
+C: To: "Alice Example" <alice@example.com>
+C: Cc: theboss@example.com
+C: Date: Tue, 15 Jan 2008 16:02:43 -0500
+C: Subject: Test message
+C:
+C: Hello Alice.
+C: This is a test message with 5 header fields and 4 lines in the message body.
+C: Your friend,
+C: Bob
+C: .
+S: 250 Ok: queued as 12345
+C: QUIT
+S: 221 Bye
+```
+
+其中 `HELO`、`MAIL FROM`、`RCPT TO`、`DATA`、`QUIT` 等是 *command*，用来进行 handshake 等操作。如果要向同一个 mail server 连续发送多封邮件，可以只 `HELO`、`QUIT` 一次（但要 `MAIL FROM`、`RCPT TO` 多次）从而共用一个 TCP 连接。`DATA` 后是邮件的内容，这一内容的开头是邮件的 header，结尾是仅包含 `.` 的一行。
+
+email 是 user agent → mail server → mail server → user agent 而非 user agent → user agent，一大原因是如果 user agent 经常不在线则直接发很可能收不到邮件，需要用 mail server 来提高在线率以及提供对方不在线时重试的机制。
+
+从 user agent 发到 mail server 时可以使用 SMTP 或 HTTP，从 mail server 拉取到 user agent 时可以使用 HTTP 或 IMAP (Internet Mail Access Protocol)（不能用 SMTP，因为 SMTP 是 push protocol，不能用来 pull）。
+
+## DNS—The Internet’s Directory Service
+
+### Services Provided by DNS
+
+host 由 hostname 或 IP 地址识别，hostname 对人类更友好，而 IP 地址对路由器更友好。
+
+将 hostname 翻译为 IP 地址是 DNS 的主要任务。DNS 是由多个层级的 DNS server 共同构成的 distributed database，也是使得 application 能够查询这个 distributed database 的 application-layer protocol。
+
+DNS 被很多其他 application-layer protocol 所使用，例如在 HTTP/SMTP 中，可以使用 hostname 来访问网站 / mail server，这时就会调用 DNS。
+
+DNS 在提供 hostname 到 IP 地址的翻译的同时，还提供了下列功能：
+
+-   host aliasing: 可以让一个 host 在有 canonical hostname 的同时还有其他 alias。
+-   mail server aliasing: 可以让同一个 hostname 在作为 Web server 和作为 mail server 时指向不同的 host。
+-   load distribution: 可以让同一个 hostname 指向多个 host，在返回查询结果时进行 rotate（即改变位于首位的 IP 地址）。
+
+### Overview of How DNS Works
+
+由于下列原因，DNS 必须是分布式的，单点式的 DNS 无法 scale：
+
+-   single point of failure
+-   traffic volume 过大
+-   离部分用户距离过远，带来较大的延时
+-   难以维护（数据总量大，更新频繁）
+
+一般来说，DNS 分为以下几层：
+
+1.  root DNS server: 分散在世界各地的 13 个不同 root server 各自的共上千个 copy，用来查询 TLD server
+2.  top-level domain (TLD) server: 每个 TLD 有自己的 TLD server (or server cluster)，用来查询 authoritative DNS server
+3.  authoritative DNS server: 每个 subdomain 有自己的 authoritative DNS server，可以是组织自己维护的或者由服务商提供的，用来查询 hostname 到 IP 地址的映射
+
+除此之外，TLD server 和 authoritative DNS server 之间还可能有 intermediate DNS server。
+
+在上述 DNS server 的 hierarchy 之外，还有 local DNS server（就是电脑的网络设置里设的 DNS 服务器），作为 proxy 来代替 requesting host 向 DNS server 进行查询。
+
+从逻辑上来说，向一个 DNS server 进行查询时，如果它自己不知道最终的 answer (IP 地址)，它可以让你换一个 DNS server 继续查 (iterative query)，或者帮你向其他 DNS server 发送查询 (recursive query) 然后返回最终的结果。而在实际中，如上文所述，一般是向 local DNS server 查询时会进行 recursive query，而 local DNS server 再从 root DNS server 向下直到 authoritative DNS server 进行 iterative query。
+
+为了减少查询的数量，DNS 设有 caching。每个查询的发起者（requesting host 或者 local DNS server）会将收到的查询结果保存一段时间，cache miss 才会向其他 DNS server 发起查询。例如，常用的 TLD server 的 IP 地址往往都在 cache 中，大大减少了 root DNS server 收到的请求数量。
+
+### DNS Records
+
+DNS distributed database 存储的信息单元是 *resource record* (RR)。
+
+每个 RR 包含 type、name、value、TTL 四项信息，其中 TTL 表示 cache 多久过期。常见的 type 包括以下几个：
+
+-   A: name 是 hostname，value 是 IP 地址，表示一个 hostname 到 IP 地址的映射。
+-   NS: name 是 domain，value 是其 name server 的 hostname，表示可以在这个 name server 进行这个 domain 的进一步查询。
+-   CNAME: name 是 alias hostname，value 是 canonical hostname，用来提供 host aliasing。
+-   MX: name 是 alias hostname，value 是 canonical hostname，用来提供 mail server aliasing。
+
+对一个 hostname 来说 authoritative 的 DNS server 会包含被查询的 host 的 A record。不 authoritative 的 DNS server 则会包含相应的 NS record，以及这个 name server 的 A record。
+
+下面是一个例子：
+
+| type |           name            |           value           |
+| :--: | :-----------------------: | :-----------------------: |
+|  NS  |            `.`            |   `a.root-servers.net.`   |
+|  A   |   `a.root-servers.net.`   |       `198.41.0.4`        |
+|  NS  |          `moe.`           |    `ns1.dns.nic.moe.`     |
+|  A   |    `ns1.dns.nic.moe.`     |     `156.154.144.114`     |
+|  NS  |       `ouuan.moe.`        | `amos.ns.cloudflare.com.` |
+|  A   | `amos.ns.cloudflare.com.` |      `172.64.35.120`      |
+|  A   |       `ouuan.moe.`        |     `172.67.181.123`      |
+
+在 registar 购买域名时可以填写 name server 的信息，由 registar 负责将相应的 NS 以及 A record 添加到 TLD server。可以使用域名商的 DNS server、其他服务商（例如 Cloudflare）的 DNS server 或者自己搭建的 DNS server 作为 authoritative DNS server。
+
+DNS 最初只能静态更新（通过配置文件等方式），后来有了 DDNS 来通过 DNS message 动态更新。
+
+### DNS Messages
+
+DNS message 通过 UDP 发送到 port 53。
+
+DNS message 的结构如下图所示：[^fig-2.21]
+
+[^fig-2.21]: p133, Figure 2.21: DNS message format
+
+![DNS message format](cnatda-fig-2.21.png)
+
+identification 由 client 设置，即用来识别 query 和 reply 对应关系的 ID。
+
+flags 包括以下几个：
+
+-   query or reply: 这条 message 是 query 还是 reply
+-   authoritative or not: 返回的结果是否是最终的答案
+-   recursion desired: client 是否希望 server 进行 recursive query
+-   recursion available: server 是否可以进行 recursive query
+
+4 个 section 中都包含若干 RR。
+
+在 query 中，question section 里会包含 name 和 type。
+
+对于 type A 的查询：
+
+-   如果 reply 是 authoritative 的（向 authoritative DNS server 查询，或者进行了 recursive query），则会在 answer section 中列出所查询的 A record。
+-   如果不是 authoritative 的，则会在 authority section 中列出 NS record，在 additional section 中列出这些 name server 的 A record。
+
+在 additional section 中，还可能列出 canonical hostname 的 A record 之类的。
+
+## Peer-to-Peer File Distribution
+
+在传输大文件时，client-server 的架构在用户数量增多时需要更大的 server bandwidth 才能保证用户的下载速度，而 P2P 的架构则是 self-scalable 的。（书中有简化模型的定量计算。）
+
+BitTorrent 是较为流行的 P2P file distribution protocol。在 BitTorrent 中，以 chunk 为下载文件的基本单位。一个 peer 刚加入 torrent 时没有 trunk 所以只能下载，在获取到一些 trunk 后就会开始上传给其他 peer，下载完成后可以自私地离开或者无私地保种。
+
+每个 torrent 会有（至少）一个 tracker，peer 在加入/离开时会通知 tracker，并在过程中定期告知 tracker 自己仍在活动。tracker 会给每个 peer 提供一些其他 peer 的 IP 地址和端口。
+
+在下载过程中，每个 peer 拥有一部分 chunk，并向其他 peer 请求 chunk。每个 peer 需要决定优先下载哪个 trunk 以及上传给谁。
+
+优先下载的 trunk 可以采用 *rarest first* 的策略，即优先下载已知的 peer 中拥有人数最少的 chunk，这样的话就能使得各个 trunk 较为均匀地在 peer 间分布。
+
+在下载过程中，会采用被称作“tit-for-tat”的策略决定上传给谁：上传给自己（即从他那下载）的速度最快的几个 peer 被称作“unchoked”，除此之外还会每隔一段时间随机选择一个 peer 被称作“optimistically unchoked”，最后做出的选择就是上传给“unchoked”和“optimistically unchoked”的这些 peer。这个策略实际上可以被绕过，但不被绕过时它提供了一个激励大家上传的机制。（注：在下载完毕后保种时，会使用另外的策略。[^seed-choking]）
+
+[^seed-choking]: [seed_choking_algorithm - libtorrent](https://www.libtorrent.org/reference-Settings.html#seed_choking_algorithm_t)
+
+除了通过 tracker，还可以通过 Distributed Hash Table (DHT，一种 P2P 架构的 distributed database) 来获取 peer。
+
+## Video Streaming and Content Distribution Networks
+
+### HTTP Streaming and DASH
+
+视频需要耗费大量的流量（以及存储空间），而 streaming 时需要保证至少有视频 bitrate 这么多的带宽才能避免卡顿，所以一般会根据可用的带宽选择不同质量的视频版本。
+
+最基础的 streaming 方式是 HTTP streaming，即通过 HTTP GET 获取视频文件至缓冲区并播放，但这样无法适应不同用户的不同带宽，更无法适应同一个用户随时间变化的带宽。
+
+在 Dynamic Adaptive Streaming over HTTP (DASH) 中，视频被编码为多个不同质量的版本，client 每次获取一个几秒的视频片段，并根据可用带宽动态调整选择的版本。
+
+在开始播放之前，client 首先会获取 manifest file 来得到各个视频版本的 URL 以及 bitrate。在播放过程中，通过 HTTP GET 请求以及 byte range header 获取视频片段，同时计算可用带宽，决定接下来选择的视频版本。
+
+### Content Distribution Networks
+
+和 DNS 类似，video streaming 往往也不能仅通过单个 data center 实现，因为：
+
+-   离部分用户过远，虽然 streaming 对延时要求不高，但更多的 communication link 很可能意味着更低的 bottleneck bandwidth。
+-   同一个视频会在同一个 communication link 上被传输多次，造成网络资源以及资费的浪费。
+-   single point of failure
+
+为了解决这些问题，video-streaming company 往往会使用 Content Distribution Networks (CDN) 来分发视频。
+
+CDN 会在全球各地放置 server (cluster)，在每个节点存放一份 content 的 copy，在处理 user request 时尽量由最好（最近）的节点负责响应。
+
+CDN 可以是 private CDN（例如 Google 的 CDN）或者 third-party CDN（例如 Akamai、Limelight、Level-3，~~书中竟然没提到 Cloudflare~~）。
+
+CDN 通常有两种放置策略：
+
+-   Enter Deep: 放在 access ISP，cluster 数量多，性能更好，维护成本更高。
+-   Bring Home: 放在 IXP，cluster 数量少，维护成本更低，性能相对差。
+
+CDN 的更新有 push 和 pull 两种方式，push 就是内容更新时 push 到各个 cluster，pull 则与 cache 类似，在 cache miss 时再从上游获取并（在 stream 给用户的同时）保存下来。
+
+将用户重定向到 CDN 节点的一种方式是通过 DNS：authoritative DNS server 返回 CDN 的 DNS server 的 NS record，然后再由 CDN 的 DNS server 进行节点选择并返回节点的 IP 地址。
+
+（基于 DNS 进行 CDN 重定向时），选择节点的两种方式是：
+
+-   geographically closest: 由 local DNS server 的 IP 确定地理位置，然后选择最近的节点。这样做的主要问题在于，地理位置近不一定意味着网络距离近/带宽高，并且 local DNS server 有可能离用户很远。
+
+-   real-time measurements: 可以每隔一段时间向各个 local DNS server 发送探测信号来检测网络性能，这样做的主要问题在于 DNS server 可能会拒绝响应这样的探测。
+
+### Case Studies: Netflix and YouTube
+
+Netflix 和 YouTube 都是大型 video streaming 服务商，但它们的架构有很大不同，这很大程度上是由于它们视频类型的不同（剧 vs UGC）。
+
+#### Netflix
+
+Netflix 使用 Amazon cloud 运行 Web server 以及视频处理，而使用私有的 CDN 分发视频。
+
+Netflix 的私有 CDN cluster 安装在 ISP 和 IXP 中，其中 IXP 的 cluster 往往容量较大，可以装下整个 Netflix 的所有视频的各个版本，而 ISP 的 cluster 往往容量较小，只存放最热门的视频。
+
+Netflix 不使用 pull-caching，而是在每天的低峰期采用 push 进行更新。
+
+因为 Netflix 的私有 CDN 只负责分发视频，它不需要使用 DNS redirect，直接由 Web server 告诉 client IP 地址即可。
+
+#### YouTube
+
+<Card title="Google 的 network infrastructure">
+
+Google 部署了一个庞大的 private network and CDN infrastructure，包含以下三级 server clusters：
+
+1.  约 20 个“mega data center”，分布在北美、欧洲和亚洲，每个 cluster 有数十万服务器，用来 serve dynamic content。
+2.  约 90 个部署在 IXP 的 cluster，每个 cluster 有数百个服务器，用来 serve 包括 YouTube 视频在内的 static content。
+3.  数百个部署在 access ISP 的 cluster，每个 cluster 有数十个服务器，用来进行 TCP splitting 以及 server static content，例如网页上的静态资源。
+
+在访问 Google 的服务时，不同内容往往会来自不同层级的 cluster。
+
+这些 cluster 通过 Google 的 private network 连接，使得它们之间的很多通信都不依赖于 public Internet，与用户的通信也往往只涉及到 access ISP 这一层。
+
+</Card>
+
+YouTube 使用 Google 的私有 CDN 分发视频，并且使用 pull-caching 和 DNS redirect。在选择节点时，会综合考虑 client 到 cluster 的 RTT 以及负载均衡。
+
+在用户上传视频时，会在 Google 的 data center 进行处理。
+
+## Socket Programming: Creating Network Applications
+
+一般来说，编写 network application 需要编写 client program 和 server program。
+
+### Socket Programming with UDP
+
+使用 UDP 时，每次发送 datagram[^datagram] 都需要指定 address（IP 地址 & 端口），接收 datagram 时也会收到对方的 address。
+
+[^datagram]: 在书中 1.5 节，transport-layer packet 被称作 “segment”，network-layer packet 被称作 “datagram”，但实际上 UDP 的 “D” 就是 “datagram”，而 TCP 的 packet 才叫 “segment”。ref: [networking - Definition of Network Units: Fragment, Segment, Packet, Frame, Datagram - Stack Overflow](https://stackoverflow.com/questions/11636405/definition-of-network-units-fragment-segment-packet-frame-datagram)
+
+~~一看就懂但书上解释了半天的~~ 例子：
+
+```python
+from socket import *
+serverName = 'hostname'
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_DGRAM) # AF_INET 表示 IPv4 地址，SOCK_DGRAM 表示 UDP
+message = input('Input lowercase sentence:')
+clientSocket.sendto(message.encode(), (serverName, serverPort))
+modifiedMessage, serverAddress = clientSocket.recvfrom(2048) # 2048 是 buffer size
+print(modifiedMessage.decode())
+clientSocket.close()
+```
+
+```python
+from socket import *
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+serverSocket.bind(('', serverPort))
+print(”The server is ready to receive”)
+while True:
+    message, clientAddress = serverSocket.recvfrom(2048)
+    modifiedMessage = message.decode().upper()
+    serverSocket.sendto(modifiedMessage.encode(), clientAddress)
+```
+
+### Socket Programming with TCP
+
+TCP 是一个 connection-oriented protocol，在 server 上分为 welcoming socket 和 connection socket，一开始需要通过 welcoming socket 建立 connection 并得到 connection socket，而在建立了 connection 之后就无需再指定对方的 address。
+
+（下面的代码除了换成 TCP 还对上面的 UDP 代码有若干没有本质区别的修改，要是我写肯定会避免，但是从书上复制就懒得改了。）
+
+```python
+from socket import *
+serverName = 'servername'
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_STREAM) # SOCK_STREAM 是 TCP
+clientSocket.connect((serverName, serverPort))
+sentence = input('Input lowercase sentence:')
+clientSocket.send(sentence.encode())
+modifiedSentence = clientSocket.recv(1024)
+print('From Server: ', modifiedSentence.decode())
+clientSocket.close()
+```
+
+```python
+from socket import *
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.bind(('', serverPort))
+serverSocket.listen(1) # 1 是 connection queue 的最大长度
+print('The server is ready to receive')
+while True:
+    connectionSocket, addr = serverSocket.accept()
+    sentence = connectionSocket.recv(1024).decode()
+    capitalizedSentence = sentence.upper()
+    connectionSocket.send(capitalizedSentence.encode())
+    connectionSocket.close()
+```
