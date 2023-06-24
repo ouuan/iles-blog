@@ -29,7 +29,7 @@
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
     "isbot": "3.6.12",
-    "katex": "0.16.7",
+    "katex": "0.16.8",
     "mdast-util-to-hast": "12.3.0",
     "plausible-tracker": "0.3.8",
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
