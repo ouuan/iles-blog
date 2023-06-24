@@ -1,0 +1,342 @@
+---
+title: CNATDA 第三章学习笔记
+date: 2023-06-20T20:50:58+08:00
+image: cnatda-3.png
+tags:
+-   cnatda
+-   学习笔记
+---
+
+《Computer Networking: A Top-Down Approach (8th Edition)》第三章 “Transport Layer” 的学习笔记。
+
+<Excerpt />
+
+## Introduction and Transport-Layer Services
+
+transport layer 将 application-layer message 封装于 transport-layer segment，然后交给 network layer 进行传输，将 network layer 提供的 host-to-host logical communication 扩展为了 process-to-process (application-to-application) logical communication。
+
+Internet 的 network-layer protocol 是 Internet Protocol (IP)，IP 提供的是 “best-effort delivery service”，就是说它会尽力但并不保证 datagram 能成功传输，也不保证传输到的顺序以及数据的完整性、正确性。
+
+UDP 仅提供 process-to-process delivery 和 error checking，同样是一个 unreliable service。TCP 在 UDP 的基础上还提供 reliable data transfer 和 congestion control。
+
+<Card title="segment or datagram?">
+
+在 CNATDA 中，network layer packet 被统称为 “segment”，但一般应当是 TCP 的 packet 被称作 “segment”，而 UDP 的 packet 被称作 “datagram”（UDP 名字中的 “D” 就是 “datagram”）。为了方便，我也将 network layer packet 统称为 “segment”，但在特指时，称作 “TCP segment”、“UDP datagram” 和 “IP datagram”，语境明确时也可能略去协议名。
+
+</Card>
+
+## Multiplexing and Demultiplexing
+
+<dfn>multiplexing</dfn> 指的是将多个信道的信息合并到一个信道进行传输，而 <dfn>demultiplexing</dfn> 指的是将这个合并后的信息再拆分到多个信道去。
+
+一般来说，一个 host 会有很多 application 从而有很多 socket，但只有一个 transport layer 以及一个 network layer。
+
+-   在发送方，transport layer 从多个 socket 收集 message 并发送给 network layer 的过程被称作 multiplexing；
+-   在接收方，transport layer 从 network layer 接收到 message 后传递给正确的 socket 的过程被称作 demultiplexing。
+
+multiplexing 以及 demultiplexing 需要每个 socket 有 unique identifier：
+
+-   在 UDP 中，只以 port 作为 socket identifier
+-   在 TCP 中，以 destination port 和 source IP 作为 socket identifier
+
+## Connectionless Transport: UDP
+
+UDP 仅提供 multiplexing and demultiplexing 以及 error checking，但在一些 application 中它比 TCP 更加适合，主要因为下列原因：
+
+-   更好地控制何时发送数据、发送什么数据：TCP 有 congestion control，可能会延迟发送的时间；在传输失败时会重新发送，可能耗时很久才传输成功。
+-   无需建立连接：建立 TCP connection 会产生 delay。
+-   无连接状态：保存 TCP connection state 需要占用系统资源。
+-   small header overhead：TCP segment header 有 20 byte 的 overhead，UDP 只有 8 byte。
+
+一些使用 UDP 的例子：
+
+-   DNS 使用 UDP 来避免建立 TCP 连接的 delay。
+-   在 HTTP/3 中，使用基于 UDP 的 application-layer protocol QUIC 来提供 reliable data transfer 并避免建立 TCP 连接的 delay。
+-   在 network management (SNMP) 中，使用 UDP 以在网络非常拥堵时发送消息。
+-   在 multimedia application 尤其是即时通话中经常会使用 UDP，因为对延时敏感而 loss-tolerant。
+
+但是，尤其是传输 multimedia 时，在没有 congestion control 的情况下传输大量数据可能导致网络拥堵，进而导致 UDP 大量丢包而 TCP 传输缓慢。
+
+UDP datagram 的结构为：
+
+-   source port (16 bits)
+-   destination port (16 bits)
+-   length (16 bits): 整个 datagram（包含 header 和 data）的 byte 数
+-   checksum (16 bits)：将 UDP datagram 以及 IP header 的一些 field 以 16 bits 为单位视作 ones’ complement integer 加在一起（即在进位时加 1），最后取反（即按位取反）；校验时只需检查 sum 是否全 1
+-   application data (message)
+
+UDP 的 checksum 只能用来进行 error detecting，不能用来进行 error correcting，错误时可以直接扔掉或者通知 application。
+
+虽然在很多 link-layer protocol 中也有 error checking，但并不能保证一路上所有 link 都有 error checking；并且，error 可能不是在 link-to-link 的传输过程中产生的，例如可能是存储在 router 中时产生的。所以，UDP 要提供 checksum，这也是体现了 end-to-end principle 的一个例子。
+
+## Principles of Reliable Data Transfer
+
+<Card type="info" title="关于这部分的详细程度">
+
+这部分我写的比较简略，仅作为摘要，更循序渐进的讲解以及实现细节等需要看书。
+
+</Card>
+
+### Stop-And-Wait
+
+在 stop-and-wait protocol 中，sender 每次确认 receiver 收到了 packet 才会发下一个 packet。
+
+1.  checksum: 传输过程中可能出错，需要进行 error detection
+2.  acknowledgment (ACK):
+    -   需要告诉 sender 没有丢包
+    -   收到 packet 时需要告诉 sender 是否出错
+3.  retransmission: 未收到 ACK 或收到 negative acknowledgment (NAK) 时需要重新传输
+4.  sequence number: retransmission 可能是因为 ACK 的传输出了问题，这会导致 duplicate packet，sequence number 的作用之一是识别 duplicate packet；在 stop-and-wait protocol 中，用 0/1 作为 sequence number 即可，这也被称作 *alternating-bit protocol*
+5.  timeout: 丢包需要通过超时来检测，超时了就 retransmit；如果等待太久性能会受影响，所以 timeout 一般被设为较有可能是丢包的值而非几乎能确定是丢包的值
+6.  ACK with sequence number: 通过超时检测丢包可能带来 duplicate packet（ACK 传输出错或用时过长），需要通过在 ACK 中加入 sequence number 来标识 acknowledge 的是哪个 packet，以此也可以通过上一个 packet 的 ACK 代替表示当前 packet 出错的 NAK
+
+### Pipelined Reliable Data Transfer
+
+stop-and-wait 虽然 work，但每次都要等上一个 packet 成功传输才能传下一个，性能太差。
+
+同时传输多个 packet 被称作 *pipelining*，这意味着：
+
+-   sequence number 需要更大的值域（不止是 1 bit 的 0/1），至少正在传输的这些 packet 需要互不相同的 sequence number
+-   sender 需要 buffer 以支持多个 packet 的 retransmission，receiver 也可能需要 buffer
+
+有两种基础的实现方法：go-back-n (GBN) 和 selective repeat (SR)。
+
+### Go-Back-N
+
+receiver: 只接受按正确顺序依次收到的 packet，顺序错误的 packet 直接扔掉（顺序正确但有 error 的 packet 通过发送上一个 packet 的 ACK 进行 negative acknowledgment）。
+
+sender:
+
+-   有一个 sliding window 表示当前有效的 sequence number 范围
+-   window 内前一半已发送尚未收到 ACK，后一半 sequence number 尚未使用
+-   如果 window 内所有 sequence number 均已被使用，将不能发送新的 packet
+-   收到的 ACK 被视作 *cumulative acknowledgment*，即在这个 ACK 的 sequence number 之前的 packet 也被视作已 ACK
+-   收到 ACK 时将 window 滑动到这个 ACK 之后
+-   所有未 ACK 的 packet 共用一个 timer
+-   retransmit 时发送 window 内所有尚未 ACK 的 packet
+
+GBN 的好处是 receiver 不需要 buffer，坏处是一个 packet 出错就要把整个 window 内的 packet 重新发送。
+
+### Selective Repeat
+
+sender:
+
+-   sliding window 与 GBN 类似，但前一半中除了开头（如果有）一定未 ACK，后面的可能已 ACK 也可能没有
+-   ACK、timer、retransmission 都是每个 packet 独立的
+-   收到 window 开头的 ACK 时滑动到首个未 ACK 处（如果均已 ACK 则是未使用处）
+
+receiver:
+
+-   也需要维护一个 sliding window，但这个 window 和 sender 的不保证一致，其开头是尚未收到的最小的 sequence number
+-   收到非 window 开头的 packet 时需要 buffer 下来
+-   收到 window 开头的 packet 时将已 buffer 的 packet 连续段按顺序传给 application，并滑动 window
+-   收到 window 开头减去 window 大小到 window 开头减一这个范围内的 packet 时（这表示之前对这个 packet 的 ACK 的传输出了问题或者耗时过长），也需要 ACK
+-   无论收到的是哪个 packet，如果有 error 则直接不管（因为 ACK 对每个 packet 独立，不能通过设置 ACK 的 sequence number 来表示 negative acknowledgment；也可以选择引入 NAK，若不引入则只能不管）
+
+需要注意的是，由于 sender 和 receiver 的 window 可能不同，window 大小不能超过 sequence number 值域的一半。
+
+最后，（无论是 GBN 还是 SR），因为 sequence number 的值域有限（循环使用），如果一个 duplicate packet (duplicate ACK) 的传输耗时太久，可能会占用重复的 sequence number，在实践中采取的解决方法一般是在一个 packet 传输了几分钟后便认为它已经没了。
+
+## Connection-Oriented Transport: TCP
+
+### The TCP Connection
+
+TCP connection 在两个 end system 中都建立了一些 state variable，但它只是 logical connection，并没有在 network core 中建立 circuit（与 circuit-switched network 不同）。
+
+TCP connection 是 full-duplex 的，即建立连接后双方都可以向对方发送信息；是 point-to-point 的，即不能 multicasting。
+
+TCP connection 是通过 *three-way handshake* 建立的。通过 TCP 发送 message 时会先放入 send buffer，接收到 message 时会先放入 receive buffer。
+
+TCP 会根据 maximum transmission unit (MTU，link-layer frame 的最大 size) 计算出合适的 maximum segment size (MSS，segment 包含的 data (application message) 的最大 size) 使得 data 加上 TCP header 和 IP header 后不超过 MTU。
+
+### TCP Segment Structure
+
+TCP segment 的结构如下图所示：[^fig-3.29]
+
+[^fig-3.29]: p231, Figure 3.29: TCP segment structure
+
+![TCP segment structure](cnatda-fig-3.29.png)
+
+其中 “options” 是可选且可变长的，所以 TCP header 是可变长的，但一般是 20 byte。
+
+各项的含义（部分）见下文。
+
+### Sequence Numbers and Acknowledgment Numbers
+
+TCP 将发送的所有 message 连在一起视作一个无结构但有序的 byte stream，segment 的 sequence number 表示的是 message 的第一个 byte 在 byte stream 中的位置。双方（client 和 server）的 sequence number 是分别计算的。
+
+为了尽量避免 sequence number 与留存在网络中的其他 segment 发生冲突，以及其他安全原因，一次连接中的首个 byte 的 sequence number 一般不是 0，而是随机选择。
+
+acknowledgment number 是期待收到的下个（尚未收到的首个）byte 的 sequence number，是 cumulative acknowledgment。
+
+收到顺序错误的 segment 时，TCP 没有规定如何处理，但一般都会 buffer 下来。
+
+一个 segment 中可以同时包含 acknowledgment 和 data，这时 acknowledgment 被称作 “piggybacked on the data segment”。也可以只有 acknowledgment 没有 data，此时 segment 仍有 sequence number，设为下一个 byte 的 sequence number。
+
+### Round-Trip Time Estimation and Timeout
+
+一个 segment 的 sample RTT ($s$) 指的是 segment 进入 network layer 直到 acknowledgment 被接收的用时。
+
+在多数 TCP implementation 中，在计算一个 segment 的 sample RTT 时不会再去计算正在同时传输的其他 segment 的 sample RTT，并且只会计算一次就传输成功的 segment 的 sample RTT，不会计算 retransmission 的 sample RTT。
+
+estimated RTT ($e$) 是计算出的这些 sample RTT 的 exponential weighted moving average (EWMA)，用来平缓 RTT 的波动：$e \gets \frac 78 e + \frac 18 s$
+
+dev RTT ($d$) 用来衡量 RTT 波动的大小：$d \gets \frac 34 d + \frac 14 |s - e|$
+
+timeout interval ($t$) 在 estimated RTT 的基础上根据 dev RTT 提供了一定的冗余：$t = e + 4d$
+
+timeout interval 的初始值一般是 1 秒。在发生 retransmission 时，timeout interval 会翻倍，而在得到新的 sample RTT 后（即某个 segment 一次就传输成功后）又会回到正常的计算方式。
+
+### Reliable Data Transfer
+
+TCP 一般只使用一个 retransmission timer，用来给 oldest segment 计时。
+
+虽然 TCP 和 GBN 有些类似，但 TCP 在 retransmit 时一次只传一个 segment，而 receiver 往往也会 buffer 顺序错误的 segment。
+
+retransmission 在两种情况下发生：timeout 或者收到三个 duplicate ACK（即相同 sequence number 的第四个 ACK；这被称作 *fast retransmit*）。这意味着只收到一个或两个 duplicate ACK 的时候还是会等到 timeout 才 retransmit，因为这往往意味着只是顺序错误而不是丢包。[^fast-retransmit]
+
+[^fast-retransmit]: [3 Fast Retransmit - RFC2001](https://datatracker.ietf.org/doc/html/rfc2001#section-3)
+
+一般还会实现 delayed ACK，即只 ACK 一个 segment 时会尝试等到下一个 segment 一起 ACK（但不会等超过 500ms）。这样可以减少通信量，尤其是经过等待后 ACK 可以被 piggyback 时。[^delayed-ack]但是 cumulative ACK 以及 duplicate ACK 都会立即发送不会等待。
+
+[^delayed-ack]: [4.2.3.2  When to Send an ACK Segment - RFC1122](https://datatracker.ietf.org/doc/html/rfc1122#page-97)
+
+### Flow Control
+
+receiver 有一个 buffer，但 application 不一定会立刻从 buffer 中读取，如果 application 读得太慢，就需要 sender 不要发太快来避免 buffer overflow。
+
+TCP header 中包含 receive window ($\mathrm{rwnd}$) 表示 buffer 的剩余空间，而 sender 需要保证已发送未被 ACK 的数据总量不超过 $\mathrm{rwnd}$。
+
+$\mathrm{rwnd}$ 为 0 会阻断 sender 发送更多 segment，而为了让 receiver 有机会告诉 sender 更新后的 $\mathrm{rwnd}$，防止通信被一直阻断下去，sender 需要发送 probing of zero window，即 1 byte 的 data，可以以以指数上升的间隔发送。[^zero-window-probing-793] [^zero-window-probing-1122]（~~好多以~~）
+
+[^zero-window-probing-793]: [Managing the Window - RFC793](https://datatracker.ietf.org/doc/html/rfc793#page-42)
+[^zero-window-probing-1122]: [4.2.2.17 Probing Zero Windows - RFC1122](https://datatracker.ietf.org/doc/html/rfc1122#page-92)
+
+### TCP Connection Management
+
+书上只讲了最基本的情况，没有讲各种 corner case，说是可以去看《TCP/IP Illustrated》（
+
+建立 TCP connection：
+
+1.  client 向 server 发 SYN segment: SYN flag set，sequence number 是 client ISN（initial sequence number，第一个 byte 的 sequence number 是 client ISN + 1）
+2.  server 收到 SYN segment，建立 buffer 和 state，向 client 发 SYNACK segment: SYN flag set，ACK 了 SYN segment，sequence number 是 server ISN
+3.  client 收到 SYNACK segment，建立 buffer 和 state，向 server 发 SYNACK 的 ACK，可以携带 application data
+
+或者也可以拆开看：
+
+-   client 和 server 互发 SYN，client 先发，SYN 不携带 application data，sequence number 用来表示 ISN
+-   收到 SYN 要 ACK，ACK 可以 piggyback 到 SYN 或者 application data 上
+-   收到 SYN 时会建立 buffer 以及 state variable
+
+在断开连接时，双方会互相发送 FIN package (FIN flag set)，以及相应的 ACK。首先提出断开连接的一方在发送最后一个 ACK 后会等待一段时间（一般是 30s）再真的断开连接，以给对方机会 retransmit FIN segment，防止这最后一个 ACK 丢包导致对方一直等着。
+
+如果尝试连接到一个不接受 TCP 连接的端口，会返回 RST flag set 的 segment。
+
+<Card title="SYN flood attack">
+
+如果 server 在收到 SYN 时就建立 buffer 以及 state 会带来遭受 SYN flood attack 的可能，即向 server 发送大量 SYN segment 而不发送后续的 ACK，从而占用 server 的大量资源。
+
+SYN flood attack 的一个防范方式是使用 SYN cookie：在收到 SYN segment 时不建立 buffer 以及 state variable 等，而是计算 low resolution timestamp + 双方 IP + 双方 port + server secret 的 hash，将 timestamp (5 bits) + MSS (encoded to 3 bits) + hash (24 bits) 作为 server ISN，在收到 SYN segment 时不建立 buffer 和 state，而在收到 ACK 时根据 ACK number 得到 server ISN，检查 hash 是否正确并得到 MSS 然后再建立 buffer 和 state。
+
+</Card>
+
+## Principles of Congestion Control
+
+congestion 会导致：
+
+-   large queue delay
+-   router buffer overflow 会导致丢包以及 retransmission
+-   large delay 会导致 premature timeout 以及 unneeded retransmission
+-   在传输路径上如果在一个 router 处发生了丢包，在此之前的 router 的 work 都浪费了
+
+congestion control 分为两大类：
+
+-   end-to-end: 不依赖于 network layer，依靠 retransmission 或 delay 增大等现象推断出 congestion。
+-   network-assisted: router 提供 congestion feedback（一个 bit 表示 link 是否 congested，或者更复杂的信息，例如 available bit rate），可以是由 router 发一个新的 packet，或者修改正在传输的其他 packet，一方收到 feedback 后再发给另一方。
+
+## TCP Congestion Control
+
+### Classic TCP Congestion Control
+
+classic TCP congestion control 是 end-to-end 的。
+
+TCP 使用 congestion window ($\mathrm{cwnd}$) 来限制发送速率。$\mathrm{cwnd}$ 的效果与 receive window ($\mathrm{rwnd}$) 类似，会将 unacknowledged 的数据总量限制在 $\min(\mathrm{cwnd}, \mathrm{rwnd})$ 之内，从而将发送速率限制在约 $\mathrm{cwnd} / \mathrm{RTT}$。
+
+classic TCP congestion control 的基本原则：
+
+-   retransmission 是 congestion 的征兆，需要减小 $\mathrm{cwnd}$
+-   segment 被 acknowledge 是没有 congestion 的征兆，可以增大 $\mathrm{cwnd}$
+-   增大 $\mathrm{cwnd}$ 相当于是在进行试探，即不断增大发送速率来试探增大到多大会发生 congestion
+
+具体分为三种模式：
+
+-   slow start: 初始状态以及 timeout 后转移到的状态，从 $\mathrm{cwnd} = 1\ \mathrm{MSS}$ 开始，每个 RTT $\mathrm{cwnd}$ 翻倍，直到 $\mathrm{cwnd \geqslant \mathrm{ssthresh}}$，转移到 congestion avoidance。
+-   congestion avoidance: 每个 RTT 内 $\mathrm{cwnd}$ 增大 $1\ \mathrm{MSS}$。
+-   fast recovery: fast retransmit 后转移到的状态，从 $\mathrm{cwnd} = \mathrm{ssthresh} + 3\ \mathrm{MSS}$ 开始，每个 duplicate ACK 都让 $\mathrm{cwnd}$ 增大 $1\ \mathrm{MSS}$，直到收到非 duplicate 的新的 ACK，转移到 congestion avoidance。
+    
+具体细节如下图所示：[^fig-3.51]
+
+[^fig-3.51]: p268, Figure 3.51: FSM description of TCP congestion control
+
+![FSM description of TCP congestion control](cnatda-fig-3.51.png)
+
+正常情况下会在 congestion avoidance 和 fast recovery 之间反复切换，此时 $\mathrm{cwnd}$ 的增长是线性的，降低是减半，称其是 *additive-increase, multiplicative-decrease* (AIMD) 的。AIMD congestion control 会导致 $\mathrm{cwnd}$ 呈锯齿状变化。
+
+TCP congestion control 有多个版本，上文描述的是 TCP Reno，如果用 slow start 来代替 fast recovery 则是更古老的 TCP Tahoe。
+
+TCP Reno 的锯齿状 $\mathrm{cwnd}$ 变化曲线实际上没能快速恢复到导致 congestion 的临界值，会产生较大的浪费。一个优化后的版本是 TCP CUBIC，它修改了 congestion avoidance 阶段的上升曲线，使其是一个三次函数曲线，如下图所示：[^fig-3.54]
+
+[^fig-3.54]: p272, Figure 3.54: TCP congestion avoidance sending rates: TCP Reno and TCP CUBIC
+
+![TCP congestion avoidance sending rates: TCP Reno and TCP CUBIC](cnatda-fig-3.54.png)
+
+### Network-Assisted Explicit Congestion Notification
+
+[Explicit Congestion Notification (ECN)](https://datatracker.ietf.org/doc/html/rfc3168) 是 network-assisted congestion control 的一种手段，它对 TCP 和 IP 都进行了扩展。
+
+ECN 使用了 IP datagram header 的两个 bit，一个用来告诉 router 通信双方是 ECN-capable 的，另一个由 router 设置，表示自己处于 congestion（一般会在丢包实际发生前就设置）。
+
+在一方收到 router 的 congestion 信息后，会在发给另一方的 ACK segment 里设置 ECE (explicit congestion notification echo) flag，另一方收到 ECE 后会将 congestion window 减半，并在下一个 segment 里设置 CWR (congestion window reduced) flag。
+
+除了 TCP，还有其他 transport-layer protocol 利用了 ECN，例如与 UDP 类似但提供了 congestion control 的 DCCP，为 data center 设计的 DCTCP、DCQCN 等。
+
+### Delayed-based Congestion Control
+
+delay-based congestion control 也能在丢包发生前就检测到 congestion。
+
+TCP Vegas 会检测历史最大的 throughput（$\mathrm{cwnd} / \mathrm{RTT}$），若当前的 throughput 明显小于历史最大值，则说明发生了 congestion。
+
+BBR 的思路类似，并采用了一些机制使其在与非 delay-based 的 congestion control 竞争时保持 fair。Google 在 2016 年已经在内部的 B4 网络中采用 BBR 替换了 TCP CUBIC。
+
+此外，还有 TIMELY、Compound TCP、FAST 等 delay-based congestion control protocol。
+
+### Fairness
+
+假设有 $K$ 个 TCP 连接共用一个 transmission rate 为 $R$ 的 bottleneck link，并且这个 link 上没有其他数据传输。如果每个连接的 throughput 都大约是 $R/K$，则称所使用的 congestion control mechanism 是 fair 的。
+
+在各方的 RTT 相同且只有 TCP 连接时，AIMD congestion control 是 fair 的，如下图所示[^fig-3.57]，addictive increase 是沿 45 度方向的，multiplicative decrease 是朝着原点的，所以会趋向 fair。
+
+但是，在各方 RTT 不同时，RTT 小的往往能获得更大的 throughput。
+
+[^fig-3.57]: p278, Figure 3.57: Throughput realized by TCP connections 1 and 2
+
+![Throughput realized by two TCP connections](cnatda-fig-3.57.png)
+
+在有 UDP 连接参与时，由于 UDP 没有 congestion control，可能会导致 unfair。
+
+上面讨论的 fairness 是对于 connection 而言的，而对于 application / host 就不一定 fair 了，因为可以建立多个 parallel TCP connection，例如浏览器一般就会这样做。
+
+## Evolution of Transport-Layer Functionality
+
+虽然 Internet 只有 TCP 和 UDP 两个 transport-layer protocol，但 transport-layer functionality 依然在不断演化。
+
+现在有非常多不同版本的 TCP 实现（例如上文提到的 TCP CUBIC、BBR 等），或是解决了旧版实现中的一些问题，或是更适配于特定的应用场景（网络环境）。
+
+QUIC 是一个基于 UDP 的 application-layer protocol，有下列 feature：
+
+-   需要 handshake 建立连接，且所有数据都是加密的。connection-establishment handshake 和 authentication and encryption handshake 被合并在了一起，从而比 TLS 更快。
+-   以 stream 为单位传输 application data，而多个 stream 可以放在单个 packet 中传输。
+-   reliable data transfer，其中 in-order delivery 是对每个 stream 分别保序，所以不同 stream 之间不会带来阻塞 (HOL blocking)。
+-   与 TCP 类似的 congestion control。
+
+作为一个 application-level protocol，QUIC 可以比 transport-layer protocol 更频繁地更新。

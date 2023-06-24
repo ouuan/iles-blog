@@ -341,9 +341,7 @@ YouTube 使用 Google 的私有 CDN 分发视频，并且使用 pull-caching 和
 
 ### Socket Programming with UDP
 
-使用 UDP 时，每次发送 datagram[^datagram] 都需要指定 address（IP 地址 & 端口），接收 datagram 时也会收到对方的 address。
-
-[^datagram]: 在书中 1.5 节，transport-layer packet 被称作 “segment”，network-layer packet 被称作 “datagram”，但实际上 UDP 的 “D” 就是 “datagram”，而 TCP 的 packet 才叫 “segment”。ref: [networking - Definition of Network Units: Fragment, Segment, Packet, Frame, Datagram - Stack Overflow](https://stackoverflow.com/questions/11636405/definition-of-network-units-fragment-segment-packet-frame-datagram)
+使用 UDP 时，每次发送 datagram 都需要指定 address（IP 地址 & 端口），接收 datagram 时也会收到对方的 address。
 
 ~~一看就懂但书上解释了半天的~~ 例子：
 
