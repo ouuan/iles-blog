@@ -55,7 +55,7 @@
     "@ouuan/tsconfig-vue": "1.0.0",
     "@total-typescript/ts-reset": "0.4.2",
     "@types/hast": "2.3.4",
-    "@types/node": "18.16.17",
+    "@types/node": "18.16.18",
     "@unocss/eslint-config": "0.53.3",
     "@unocss/transformer-directives": "0.53.3",
     "@vue/runtime-core": "3.3.4",
