@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -44,10 +44,10 @@ dependencies:
     version: 5.0.5
   iles:
     specifier: 0.9.5
-    version: 0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.3)
+    version: 0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.6)
   isbot:
-    specifier: 3.6.10
-    version: 3.6.10
+    specifier: 3.6.12
+    version: 3.6.12
   katex:
     specifier: 0.16.7
     version: 0.16.7
@@ -83,7 +83,7 @@ dependencies:
     version: 0.53.1(postcss@8.4.21)(vite@4.1.4)
   vite:
     specifier: 4.1.4
-    version: 4.1.4(@types/node@18.16.17)(sass@1.63.3)
+    version: 4.1.4(@types/node@18.16.17)(sass@1.63.6)
   vue:
     specifier: 3.3.4
     version: 3.3.4
@@ -165,8 +165,8 @@ devDependencies:
     specifier: 4.0.0
     version: 4.0.0
   sass:
-    specifier: 1.63.3
-    version: 1.63.3
+    specifier: 1.63.6
+    version: 1.63.6
   tsup:
     specifier: 6.7.0
     version: 6.7.0(postcss@8.4.21)(typescript@5.1.3)
@@ -706,7 +706,7 @@ packages:
       vue: ^3.2.45
     dependencies:
       feed: 4.2.2
-      iles: 0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.3)
+      iles: 0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.6)
       pathe: 0.2.0
       vue: 3.3.4
     dev: true
@@ -1641,7 +1641,7 @@ packages:
       chokidar: 3.5.3
       fast-glob: 3.2.12
       magic-string: 0.30.0
-      vite: 4.1.4(@types/node@18.16.17)(sass@1.63.3)
+      vite: 4.1.4(@types/node@18.16.17)(sass@1.63.6)
     transitivePeerDependencies:
       - rollup
     dev: false
@@ -1653,7 +1653,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.3)
+      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.6)
       vue: 3.3.4
 
   /@volar/language-core@1.4.1:
@@ -3716,7 +3716,7 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /iles@0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.3):
+  /iles@0.9.5(@types/node@18.16.17)(esbuild@0.17.7)(sass@1.63.6):
     resolution: {integrity: sha512-c59OVY7rYUi0QNRVD4Zb4ot/AXVw3bi1NGjjsgeI/Mw4wcfKbDk32A1qQ4GPJpIuic4WeKof7d2mLpPGg3gYUw==}
     engines: {node: ^14.18 || >= 16.0.0}
     hasBin: true
@@ -3743,7 +3743,7 @@ packages:
       picocolors: 1.0.0
       unist-util-visit: 4.1.2
       unplugin-vue-components: 0.21.2(esbuild@0.17.7)(vite@4.3.0-beta.3)(vue@3.3.4)
-      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.3)
+      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.6)
       vue: 3.3.4
       vue-router: 4.1.6(vue@3.3.4)
     transitivePeerDependencies:
@@ -4028,8 +4028,8 @@ packages:
   /isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
 
-  /isbot@3.6.10:
-    resolution: {integrity: sha512-+I+2998oyP4oW9+OTQD8TS1r9P6wv10yejukj+Ksj3+UR5pUhsZN3f8W7ysq0p1qxpOVNbl5mCuv0bCaF8y5iQ==}
+  /isbot@3.6.12:
+    resolution: {integrity: sha512-dGc3jRIORywaaqs4G5wj+58i5/l1eoI75q7XNiyW9Sgfoyr3QkyDZUXw+cuB7AOFq/0aruCQrGLrnKJlQarP/g==}
     engines: {node: '>=12'}
     dev: false
 
@@ -5625,8 +5625,8 @@ packages:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
     dev: false
 
-  /sass@1.63.3:
-    resolution: {integrity: sha512-ySdXN+DVpfwq49jG1+hmtDslYqpS7SkOR5GpF6o2bmb1RL/xS+wvPmegMvMywyfsmAV6p7TgwXYGrCZIFFbAHg==}
+  /sass@1.63.6:
+    resolution: {integrity: sha512-MJuxGMHzaOW7ipp+1KdELtqKbfAWbH7OLIdoSMnVe3EXPMTmxTmlaZDCTsgIpPCs3w99lLo9/zDKkOrJuT5byw==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
@@ -6386,7 +6386,7 @@ packages:
       acorn: 8.8.2
       chokidar: 3.5.3
       esbuild: 0.17.7
-      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.3)
+      vite: 4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.6)
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.6
 
@@ -6470,7 +6470,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4(@types/node@18.16.17)(sass@1.63.3)
+      vite: 4.1.4(@types/node@18.16.17)(sass@1.63.6)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -6486,7 +6486,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite@4.1.4(@types/node@18.16.17)(sass@1.63.3):
+  /vite@4.1.4(@types/node@18.16.17)(sass@1.63.6):
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -6516,11 +6516,11 @@ packages:
       postcss: 8.4.21
       resolve: 1.22.1
       rollup: 3.13.0
-      sass: 1.63.3
+      sass: 1.63.6
     optionalDependencies:
       fsevents: 2.3.2
 
-  /vite@4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.3):
+  /vite@4.3.0-beta.3(@types/node@18.16.17)(sass@1.63.6):
     resolution: {integrity: sha512-fitATqiujzSy82No2+TRXz7s+zngmsggt6RyQOeTx0bxkDWE6Gi6HsckJGPTQWxxJOba8x1pMSKlsQglM90OLA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -6549,7 +6549,7 @@ packages:
       esbuild: 0.17.7
       postcss: 8.4.21
       rollup: 3.20.2
-      sass: 1.63.3
+      sass: 1.63.6
     optionalDependencies:
       fsevents: 2.3.2
 
