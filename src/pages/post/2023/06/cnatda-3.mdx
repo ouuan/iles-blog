@@ -290,6 +290,12 @@ TCP Reno 的锯齿状 $\mathrm{cwnd}$ 变化曲线实际上没能快速恢复到
 
 ![TCP congestion avoidance sending rates: TCP Reno and TCP CUBIC](cnatda-fig-3.54.png)
 
+<Card title="TCP splitting">
+
+如果 RTT 过大，slow start 可能导致初次连接时 response time 较大（一般会有 $4 \cdot \mathrm{RTT}$ 左右）。TCP splitting 在 client 和 data center 之间增设了一个 frontend server 作为代理，frontend server 与 data center 之间建立了 persistent TCP connection 来避免 slow start，而 client 和 frontend server 之间的 RTT 较小，slow start 的影响就较小。
+
+</Card>
+
 ### Network-Assisted Explicit Congestion Notification
 
 [Explicit Congestion Notification (ECN)](https://datatracker.ietf.org/doc/html/rfc3168) 是 network-assisted congestion control 的一种手段，它对 TCP 和 IP 都进行了扩展。
