@@ -334,6 +334,12 @@ CS:APP 中没有提到这种方式，但只要理解了上面这几种 free list
 
 我自己写 malloc lab 的时候试着写了个 Splay，发现一般情况下还是比 segregated fit 慢不少，内存利用率也不一定有明显提升，不知道其他平衡树 / 特殊场景下性能如何。倒是在网上看到有说红黑树可以在 malloc lab 拿高分（~~谁用好的算法拿高分啊，不是考验对着数据调参的能力吗，我觉得我对数据过拟合的 segregated fit 分已经够高了~~）（~~虚假的 segregated fit：按 block size segregate 来寻找 fit；真正的 segregated fit：按测试数据 segregate 分别进行 fit~~）。
 
+### malloc lab
+
+CS:APP 经典 lab 的代码似乎是可以公开的（
+
+https://github.com/ouuan/course-assignments/tree/master/csapp/malloc-lab
+
 ## Garbage Collection
 
 可以通过 block 之间以及 stack、register、global 变量对 block 的引用关系找到不可达的 block 而进行 garbage collection。
