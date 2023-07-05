@@ -1,0 +1,225 @@
+---
+title: CNATDA 第四章学习笔记
+date: 2023-06-26T15:29:59+08:00
+image: cnatda-4.png
+tags:
+-   cnatda
+-   学习笔记
+---
+
+《Computer Networking: A Top-Down Approach (8th Edition)》第四章 “The Network Layer: Data Plane” 的学习笔记。
+
+<Excerpt />
+
+## Overview of Network Layer
+
+Network Layer 可以被细分为 data plane 和 control plane 两部分。
+
+data plane 的主要功能是 *forwarding*（也称作 *switching*），即一个 router 将 input link 收到的数据转发到正确的 output link。
+
+control plane 的主要功能是 *routing*，即决定从 sending host 到 receiving host 的路径。
+
+router 中会有一个 *forwarding table*，从 packet header 中选取某些 field 用来 index forwarding table，得到 outgoing link interface。
+
+计算 forwarding table 则是 control plane 的任务，有两种实现方式：
+
+-   the traditional approach: router 之间根据 routing protocol 互相通信，根据 routing algorithm 计算得到 forwarding table。
+-   the SDN approach: router 只实现 forwarding，而 routing 由一个 remote controller 完成：router 向 remote controller 发送信息，由 remote controller 计算得到 forwarding table 发给 router。这个 remote controller 通常是由软件实现的，所以这种方法被称作 *software-defined networking* (SDN)。
+
+## What’s Inside a Router?
+
+router 一般包含以下部分：
+
+-   input ports
+    -   incoming link 的 physical layer 和 link layer
+    -   input queue
+    -   lookup:
+        -   从 forwarding table 查 output port
+        -   将 control packet（例如包含 routing protocol information 的 packet）forward 到 routing processor
+
+-   switching fabric: 连接 input ports 和 output ports
+
+-   output ports
+    -   outgoing link 的 link layer 和 physical layer
+    -   output queue
+
+-   routing processor: 得到 forwarding table，进行 network management
+    -   traditional: 执行 routing protocol
+    -   SDN: 与 remote controller 通信
+
+为了保证通信速度，forwarding 的用时需要在 ns 级，所以要用硬件实现；而 control plane 的用时一般在 ms 或 s 级，可以用软件实现。
+
+### Input Port Processing and Destination-Based Forwarding
+
+多个 input port 可以合并到一个 line card 上。
+
+forwarding table 会从 routing processor 给每个 line card 都复制一份，从而可以在每个局部分别计算，不需要集中计算。
+
+对于 destination-based forwarding，forwarding table 一般是 index 为 IP 地址前缀，value 为 link interface，采用 longest prefix matching。
+
+lookup 通常要在 ns 级别的时间内完成，而 forwarding table 很大，不仅需要通过硬件实现，还需要使用特殊的算法或存储器，例如使用 TCAM。
+
+input port processing 除了 lookup 还有 physical-layer 和 link-layer processing，还需要检查/更新 packet version、checksum、TTL，更新 network management 的 counter。
+
+### Switching
+
+switching 有多种形式：
+
+-   via memory: packet 从 input port 复制到 memory 再复制到 output port，如果使用集中的 memory 而非每个 line card 分别的 memory，则传输速率会受 memory 的速率限制。
+-   via bus: 将 packet 加上一个 switch-internal label 再通过 bus 发送给所有 output port，收到后根据 label 决定是否保留这个 packet，传输速率会受 bus 的速率限制。
+-   via interconnection network: 每个 input port 对应一个 bus，每个 output port 对应一个 bus，每对 input port bus 和 output port bus 之间都有 crosspoint，通过控制 crosspoint 来控制从哪传到哪（结构和 ROM 类似）。这是 non-blocking 的，只要两个 packet 的 output port 不同就可以同时传输。
+
+### Input Queuing
+
+如果 switching fabric 的速率达到了所有 input port 的速率之和，则不会发生 input queuing，否则可能要等待其他 packet 在 switching fabric 上传输。
+
+以 switching via interconnection network 为例，只有多个 packet 传输到同一个 output port 才会发生 input queuing，但是一个 packet 即使没有和它 output port 相同的 packet 也可能因为 input queue 中在它前面的其他 packet 而被 block，即 HOL blocking。
+
+### Output Queuing
+
+如果 packet 到达 output port 的速率超过了 output line 的速率，则会发生 output queuing。
+
+若 packet 到达时 buffer 已经满了，则需要决定 drop 哪个 packet。在 buffer 满之前进行 packet dropping 或 marking 称作 active queue management (AQM)，例如 [ECN](/post/2023/06/cnatda-3#network-assisted-explicit-congestion-notification)、random early detection (RED) 等。
+
+### How Much Buffering Is “Enough”?
+
+有 $N$ 个 independent TCP flow 经过一个带宽为 $C$ 的 link 时，buffer 需要有 $\mathrm{RTT} \cdot C / \sqrt N$。
+
+更大的 buffer 能减少 packet loss，但可能会增加 delay。TCP 可能会使得 buffer 一直不被清空，从而导致 queuing delay 是 constant 且 persistent 的，这被称作 *bufferbloat*，可以通过一些 AQM 措施来缓解。
+
+### Packet Scheduling
+
+-   FIFO (FCFS)
+-   priority queuing  
+    （在 non-preemptive priority queuing 中，如果低优先级的 packet 已经开始传输，高优先级的 packet 再到来不会打断传输。）
+-   weighted fair queuing (WFQ): 给每种 packet 类型一个 weight，决定选择这种类型的频率。
+
+packet scheduling 可以根据 IP datagram header 中的各种信息优先传输或 block 某一类 packet。*Order on Protecting and Promoting an Open Internet* (2015) 规定了 net neutrality 的三条原则：no blocking、no throttling、no paid prioritization。而 *Restoring Internet Freedom Order* (2017) 则收回了这些限制，而是注重于 ISP transparency。
+
+## The Internet Protocol (IP)
+
+### IPv4 Datagram Format
+
+IPv4 datagram 的格式如下图所示：[^fig-4.17]
+
+[^fig-4.17]: p331, Figure 4.17: IPv4 datagram format
+
+![IPv4 datagram format](cnatda-fig-4.17.png)
+
+-   version: 例如 IPv4、IPv6
+-   header length: 因为可能有 options，header 是不定长的
+-   type of service (TOS): 用来识别各种类型的流量，例如 real-time datagram (对延时敏感)，其中有 2 个 bit 用于 [ECN](/post/2023/06/cnatda-3#network-assisted-explicit-congestion-notification)
+-   datagram length: header + data 的长度，为放入 Ethernet frame，一般不超过 1500 bytes
+-   identifier、flags、fragmentation offset: 用于 IP fragmentation，在 IPv6 中已被弃用
+-   TTL: 为了防止死循环，TTL 每经过一个 router 会减一，到 0 就会被 drop
+-   protocol: transport-layer protocol，用来连接 network layer 和 transport layer
+-   header checksum: 只计算 header 不计算 data，使用 ones’ complement sum；header 每经过一个 router 都会更新，checksum 也要相应地更新
+-   source and destination IP address
+-   options: 由于会影响性能，在 IPv6 中已被弃用
+-   data: 一般是 transport-layer segment，但也可能是 ICMP message 之类的其他数据
+
+### IPv4 Addressing
+
+一般来说，每个 host 有至少一个 interface 来接入网络，每个 router 有多个 interface 来与其他 router 或 host 连接。每个（接入 Internet 而不在 NAT 后的）interface 都有一个 IP address。
+
+多个 host 和 router 之间可以通过 Ethernet switch、wireless access point 等方式互相连接，构成一个 routerless network。在 IP 中，这被称作一个 *subnet*，即 interface 之间由 link 连接、不经过 router 和 host 而构成的连通块。
+
+一个 subnet 会有一个 subnet address，例如 223.1.1.0/24，而其中的 IP address 包括 223.1.1.1、223.1.1.2、223.1.1.3 等。
+
+Internet 分配 IP address 的方案是 classless interdomain routing (CIDR)，其规定了 subnet address 的格式，例如 `/24` 表示前 24 位是这个 subnet 的地址（network prefix），这个 subnet 中的 IP address 的后 8 位可以取其他值。这样的地址分配方案和 router lookup 使用的 longest prefix matching 配合在一起可以减少 lookup table 的表项。
+
+在 CIDR 之前，曾使用过 classful addressing，相当于是 mask length 只能是 8、16、24，分别被称作 class A, B, C network，这使得不同 class 之间的 address 数量相差过大，难以按需选择，容易造成浪费，最终促成了 classless 的 CIDR。
+
+longest prefix matching 也使得 address aggregation 成为可能：可以在 lookup table 中将多个有 common prefix 的 subnet 合并为一个更大的 subnet address，即使这些 subnet 并没有覆盖这个大的 subnet address 中的所有 address，没覆盖到的部分还可以由更小的 subnet address（更长的 prefix）override。
+
+255.255.255.255 是一个特殊的 IP address，表示 broadcast，destination address 为 broadcast address 的 datagram 会发送给整个 subnet 内的所有 host，还有可能发送给 neighbour。
+
+### Obtaining Addresses
+
+#### Obtaining a Block of Addresses
+
+IP address 由 ICANN 管理，ISP 以及 organization 可以从由 ICANN 管理的 Internet registry (Address Supporting Organization) 处获得 IP address block。 
+
+ISP 可以将其拥有的 IP address block 再进行细分来提供给用户。
+
+#### Obtaining a Host Address: DHCP
+
+router 的 IP address 一般是手动（半自动）配置的，而 host 的 IP address 通常是通过 Dynamic Host Configuration Protocol (DHCP) 自动进行的。
+
+使用 DHCP 能减少手动配置的工作量，尤其是在 host 经常移动时（例如笔记本电脑在教室和寝室之间移动），手动配置几乎是不可能的。
+
+DHCP 可以给 host 提供一个固定或临时的 IP address，除此之外还能提供 subnet mask、first-hop router address (default gateway)、local DNS server address 等信息。
+
+每个 subnet 一般都会有至少一个 DHCP server，或者一个知道 DHCP server address 的 DHCP relay agent（一个 router）。
+
+使用 DHCP 获取 IP address 的步骤如下：
+
+1.  host 发送 DHCP discover message：通过 UDP 发送到 255.255.255.255、port 67，包含一个 transaction ID（由于 DHCP 使用 broadcast，需要通过 transaction ID 区分不同 host）。
+2.  DHCP server 收到 DHCP discover message 后发送 DHCP offer message，是一个发送到 port 68 的 broadcast，包含 transaction ID、proposed IP address、IP address lease time（proposed IP address 的有效时间，一般是几个小时或几天）、DHCP server address 等信息。
+3.  host 收到 DHCP offer message 后，选择其中一个（如果收到了多个）发送 DHCP request message，包含和 DHCP offer message 类似的信息，也是一个 broadcast（虽然此时已知 DHCP server address，但可能有多个 DHCP server，broadcast 可以让其他 server 知道可以取消 address reservation 了[^dhcp-request-broadcast]）。
+4.  DHCP server 收到 DHCP request message 后回应 DHCP ACK message。
+
+（实际上，DHCP offer 和 ACK 也可能不是 broadcast。[^dhcp-offer-ack-broadcast]）
+
+[^dhcp-request-broadcast]: [Why is broadcast used at the DHCPREQUEST step? - Network Engineering Stack Exchange](https://networkengineering.stackexchange.com/a/48881)
+[^dhcp-offer-ack-broadcast]: [Why are DHCP Offer and Ack broadcasted? - Stack Overflow](https://stackoverflow.com/a/10757849)
+
+host 收到 DHCP ACK message 后就可以在 lease time 内使用这个 IP address 了。DHCP 还提供了延长 lease time 的机制。
+
+### Network Address Translation (NAT)
+
+subnet 需要一段连续的 IP address，如果设备数量增长超过了原来的 IP address block 大小，新地址的分配将会变得困难。而且，每个设备都有一个 globally unique address 对于 IPv4 来说难以承担。Network Address Translation (NAT) 可以解决（缓解）这些问题。
+
+使用 NAT 时，subnet 内使用 IP address space reserved for private network（10.0.0.0/8、172.16.0.0/12、192.168.0.0/16），有一个 router 与外界连接并进行 NAT，这个 router 对外界表现为 a single device with a single IP address，通过 NAT translation table 在 private address + port 和 WAN-side address + port 之间进行转换（使用不同的 NAT port 来区分不同的 host 以及 application port）。这个 router 的 public address 从 ISP（可以通过 DHCP）获得，而它作为 DHCP server 为 subnet 内部提供 private address。
+
+NAT 一般会改变 port，而有时需要使用特定的 port 不能改变，可以通过 NAT traversal 来实现。<span class="heimu">（勾起了一些远古的 MC 联机回忆，虽然当时并没成功（</span>
+
+### IPv6
+
+为了解决 IPv4 address 即将耗尽的问题，IPv6 被研发了出来。除了将 IP address 从 32 bits 扩展到 128 bits，IPv6 还顺带解决了 IPv4 中的一些其他问题。
+
+IPv6 datagram 的格式如下图所示：[^fig-4.26]
+
+[^fig-4.26]: p349, Figure 4.26: IPv6 datagram format
+
+![IPv6 datagram format](cnatda-fig-4.26.png)
+
+IPv6 的主要变化：
+
+-   在 unicast 和 broadcast 的基础上引入了 anycast，即向多个地址之一发送信息，例如可以用来向多个有相同内容的 server 发送 anycast 来获取其中最近的一个的 response。
+-   使用定长 (40 bytes) 的 header。
+-   引入了 *flow label* 使得 router 可以对 flow 进行特殊处理。
+-   删除了 fragmentation 功能以提高性能。
+-   删除了 checksum，因为 transport-layer segment 一般已经有 checksum 了，每次修改 TTL 都更新 checksum 也非常耗时。
+-   删除了 options，而 next header 不一定是 transport-layer protocol，也可以是 option。
+-   TOS 改为 traffic class，TTL 改为 hop limit，datagram length 改为 payload length（不含 header length），protocol 改为 next header。
+
+network-layer protocol 的改动非常困难，IPv4 到 IPv6 的转换至今仍在进行中。
+
+新的设备（router）可以同时支持 IPv4 和 IPv6，但旧的设备只能支持 IPv4，为了使它们共存，可以采用 *tunneling*，即将 IPv6 datagram 作为 IPv4 的 payload 进行传输，两个 IPv6 router 之间的一系列 IPv4 router 被称作 *tunnel*。
+
+### Generalized Forwarding and SDN
+
+generalized forwarding 基于“match-plus-action”的原则，比起 destination-based forwarding，“match”时可以考虑 IP header 中 destination 以外的其他 field，也可以考虑 link-layer header、transport-layer header、ingress port 等；“action”除了 forward 还可以是 drop、修改 header field 等。
+
+OpenFlow 是一个 generalized forwarding 的协议，规定了 match 时可以/不能使用哪些 field，以及可以采取哪些 action。设计一个 flow table，就可以实现各种功能，例如 forwarding、load balancing、NAT、firewall 等。
+
+P4 (Programming Protocol-independent Packet Processors) 是一个用来实现 generalized forwarding 的 programming language，可以比 flow table 更加灵活。
+
+## Middleboxes
+
+在 network 中，除了基础的 forwarding，还有一些用来实现其他功能的设施，称作 *middlebox*：
+
+-   NAT translation
+-   security services，例如 firewall、email filter
+-   performance enhancement，例如 Web cache、load balancing、TCP splitter
+
+为了降低运营维护的成本，有的 middlebox 用软件甚至云服务代替硬件来实现，称作 network function virtualization (NFV)。
+
+middlebox 在一定程度上破坏了 network 的 layered architecture：很多 middlebox 位于 network layer，却依赖于 transport layer 甚至 application layer 的信息。例如 NAT 会修改 IP address 和 port，firewall 可能依赖于 application message 的内容。
+
+Internet architecture 的基本原则是“the goal is connectivity, the tool is the Internet Protocol, and the intelligence is end to end rather than hidden in the network”。[^rfc-1958]在 network layer 中只有 IP 一个 protocol、将 complexity 放在 end system，可以简化 network layer 的功能，保证 connectivity，而 middlebox 在一定程度上破坏了这样的原则。
+
+[^rfc-1958]: [2. Is there an Internet Architecture? - RFC1958](https://datatracker.ietf.org/doc/html/rfc1958#section-2)
+
+尽管在架构上有些不完美，但 middlebox 承担着非常重要的功能，并不会消亡。
