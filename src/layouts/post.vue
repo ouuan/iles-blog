@@ -1,10 +1,5 @@
 <template layout="base">
-  <div class="flex flex-row-reverse justify-center">
-    <table-of-contents
-      v-if="needToc"
-      client:load
-      :headings="page.meta.headings"
-    />
+  <div class="flex justify-center">
     <div :class="['grow m-4 standard-card', { 'max-w-200': needToc }]">
       <article
         itemprop="mainEntity"
@@ -45,6 +40,11 @@
         :frontmatter="page.frontmatter"
       />
     </div>
+    <table-of-contents
+      v-if="needToc"
+      client:load
+      :headings="page.meta.headings"
+    />
   </div>
 </template>
 
