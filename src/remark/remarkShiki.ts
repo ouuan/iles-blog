@@ -46,19 +46,23 @@ const CUSTOM_LANGUAGES = {
   'hcl-csapp': {
     id: 'hcl-csapp',
     scopeName: 'source.hcl.csapp',
+    displayName: 'HCL (CS:APP)',
     path: resolve(fileURLToPath(import.meta.url), '../../../third_party/hcl-syntax-highlight/hcl.tmLanguage.json'),
   },
   caddyfile: {
     id: 'caddyfile',
     scopeName: 'source.Caddyfile',
+    displayName: 'Caddyfile',
     path: resolve(fileURLToPath(import.meta.url), '../../../third_party/vscode-caddyfile/syntaxes/caddyfile.tmLanguage.json'),
   },
 } as { [id: string]: ILanguageRegistration | undefined };
 
+function getBundledLanguage(name: string) {
+  return BUNDLED_LANGUAGES.find((lang) => lang.id === name || lang.aliases?.includes(name));
+}
+
 function isBundledLanguage(name: string): name is Lang {
-  return BUNDLED_LANGUAGES.find(
-    (lang) => lang.id === name || lang.aliases?.includes(name),
-  ) !== undefined;
+  return getBundledLanguage(name) !== undefined;
 }
 
 function highlightWithTheme(highlighter: Highlighter, code: string, lang: string, theme: 'dark' | 'light', from: number, to: number) {
@@ -108,6 +112,12 @@ async function highlight(code: string, lang: string, from: number, to: number) {
   };
 }
 
+function getDisplayName(name: string): string {
+  if (name === 'plain') return 'plain text';
+  const lang = getBundledLanguage(name) ?? CUSTOM_LANGUAGES[name];
+  return lang?.displayName || name;
+}
+
 async function processNode(child: Content, index: number, siblings: Content[]) {
   if (child.type !== 'code') {
     if ('children' in child) {
@@ -133,7 +143,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
     attributes: [{
       type: 'mdxJsxAttribute',
       name: 'lang',
-      value: lang || 'plain text',
+      value: getDisplayName(lang || 'plain'),
     }, {
       type: 'mdxJsxAttribute',
       name: 'darkHtml',
