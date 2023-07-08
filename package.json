@@ -18,7 +18,7 @@
     "typecheck": "vue-tsc --noEmit && tsc -p functions --noEmit"
   },
   "dependencies": {
-    "@giscus/vue": "2.2.8",
+    "@giscus/vue": "2.3.0",
     "@sniptt/guards": "0.2.0",
     "@unocss/reset": "0.53.4",
     "@vueuse/components": "10.2.1",
