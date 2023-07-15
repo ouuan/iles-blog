@@ -1,0 +1,225 @@
+---
+title: CNATDA 第六章学习笔记
+date: 2023-07-11T13:01:10+08:00
+image: cnatda-6.png
+tags:
+-   cnatda
+-   学习笔记
+---
+
+《Computer Networking: A Top-Down Approach (8th Edition)》第六章 “The Link Layer and LANs” 的学习笔记。
+
+<Excerpt />
+
+## Introduction to the Link Layer
+
+link layer 的主要功能是将 datagram 从一个 node 传输到另一个 node，还可以提供下列 service：
+
+-   framing: 将 network-layer datagram 封装在 link-layer frame 中进行传输。
+-   link access: 通过 medium access control (MAC) protocol 控制 frame 在 link 上如何传输。这对于 point-to-point link 来说是简单的，但在 broadcast link 中会遇到 multiple access problem，需要 MAC protocol 来进行协调。
+-   reliable delivery: 通过与 TCP 类似的方式（acknowledgement、retransmission）来保证单个 link 上的 reliable delivery。这在出错率较高时可以避免单个 link 的传输错误导致 end-to-end retransmission，而在出错率较低时会造成不必要的 overhead，所以一般是出错率较高的 wireless link 才会提供 reliable delivery。
+-   error detection and correction
+
+在 host 中，link layer 一般实现于外接的 network adapter (network interface controller, NIC) 中，由硬件实现。host 中还会有软件用来连接 link layer 和 network layer。
+
+## Error-Detection and -Correction Techniques
+
+参见 [DDPP 第二章的相关内容](/post/2023/01/ddpp-2#codes-for-detecting-and-correcting-errors)。
+
+## Multiple Access Links and Protocols
+
+在 broadcast link 中，同时只能有一方发送信息。如果多方同时发送，则会产生 collision，每一方发送的信息都会丢失。为了解决 multiple access problem，需要使用 multiple access protocol 来进行协调。
+
+一个理想的 multiple access protocol 能做到：
+
+-   只有一方发送时，完全利用带宽
+-   多方同时发送时，均分全部的带宽
+-   decentralized，没有 single point of failure
+-   simple, inexpensive to implement
+
+multiple access protocol 有非常多，总体可以分为三大类：channel partitioning protocols、ramdom access protocols、taking-turns protocols。
+
+### Channel Partitioning Protocols
+
+将单个 channel 分成多个 channel。
+
+TDM (time-division multiplexing) 将时间分成 time frames，将每个 time frame 分成 time slots，将每个 time frame 内的各个 time slot 分配给各个 node。
+
+FDM (frequency-division multiplexing) 利用不同的频率作为不同的 channel。
+
+TDM 和 FDM 都能完全避免 collision，但在只有一方发送时效率非常低：唯一的 active sender 不能使用分配给其他 node 的 channel。
+
+CDMA (code-division multiple access) 通过给每个 node 分配一个 code 来允许各方同时发送，在 wireless channel 中较为常用。
+
+### Random Access Protocols
+
+通过随机的等待时间来在 collision 发生后错开发送时机。
+
+#### ALOHA
+
+假设传输每个 frame 的用时相同，将时间划分为长度为这一用时的 slots，所有 node 是同步的，只在 slot 的开头发送信息，发生 collision 后能在这一 slot 内检测到。
+
+slotted ALOHA 在没有 collision 时在每个 slot 开头发送 frame，在发生了 collision 后在每个 slot 开头以 $p$ 的概率进行 retransmission 直到发送成功为止。
+
+如果一个 slot 中没有任何一方发送信息或者有多方同时发送信息则这个 slot 就浪费掉了，只有恰好有一方发送信息的 slot 才是 successful slot。
+
+其 efficiency 就是 successful slot 的占比，有 $n$ 个 active slot 时，efficiency 为 $np(1-p)^{n-1}$，在 $n$ 很大时，其最大值是 $1/e \approx 0.37$。
+
+pure ALOHA 不进行 time slot 的划分，或者说是每一方的 time slot 不是同步的，这样更加去中心化，但 efficiency 只有 slotted ALOHA 的一半。
+
+#### CSMA(/CD)
+
+CSMA (carrier sense multiple access) 基于 “listen before speaking” 的原则，进行 *carrier sensing*。
+
+如果再加上 “If someone else begins talking at the same time, stop talking” 的原则，即 *collision detection*，则是 CSMA/CD。
+
+在理想状态下，carrier sensing 可以完全消除 collision。但实际上，由于 propagation delay，一方开始发送到另一方收到需要时间，在这段时间内可能另一方也发送了信息。
+
+在 CSMA/CD 中，遇到 collision 需要等待一段时间再 retransmit，等待时间通常由 binary exponential backoff 得到：在一个范围内随机选择等待时间，每多 retransmit 一次这个范围就加倍。在 Ethernet 中，第 $n$ 次 retransmission 会在 $0, 1, \ldots, 2^{n-1}$ 中随机选择一个数 $k$，然后等待传输 $512 \cdot k$ bits 的用时，而 $n$ 超过 $10$ 时也取 $10$。这里 retransmission 次数是每个 frame 分别计算的，新的 frame 会从 $0$ 开始。
+
+CSMA/CD 的 efficiency 约为 $\dfrac{1}{1 + 5 d_{\mathrm{prop}} / d_{\mathrm{trans}}}$，其中 $d_{\mathrm{prop}}$ 表示 propagation delay，$d_{\mathrm{trans}}$ 表示一个 maximum-size frame 的传输用时。
+
+### Taking-Turns Protocols
+
+轮流让各方发送信息，如果一方不想发送则交给下一位。
+
+在 polling protocol 中，设有一个 master node，它轮流 poll 每个 node 来让它发送至多若干个 frame，发完再 poll 下一个。polling protocol 是 centralized 的，有 single point of failure；并且，对 inactive node 的 poll 会造成浪费。
+
+token-passing protocol 是 decentralized 的，有一个 token 在各个 node 之间环状地传递，拿着 token 就可以发送至多若干个 frame，发送完（或者不想发送）就把 token 交给下一个。token-passing protocol 在有任何一个 node 出错时就会卡住，需要采取一些 recovery procedure。
+
+### DOCSIS: The Link-Layer Protocol for Cable Internet Access
+
+DOCSIS 用于 cable access network，将 residential cable modems 连接到 cable modem termination system (CMTS)。它同时用到了多种 multiple access protocol，是一个很好的例子。
+
+使用 FDM 分为 downstream 和 upstream 两个 channel，其中 downstream channel 由 CMTS 向 cable modem 发送，sender 唯一，比较简单。
+
+upstream channel 被分成了若干 mini-slots（与 TDM 类似），而这些 mini-slots 是由 CMTS 动态分配的，需要由 cable modem 发送 mini-slot-request frame，这些 request 在一些特殊的 mini-slots 以 random access 的方式发送，通过是否收到来自 CMTS 的 mini-slot 分配来判断 request 是否成功发送，使用 binary exponential backoff。
+
+## Switched Local Area Networks
+
+### Link-Layer Addressing
+
+host 和 router 的每个 interface (adapter) 都有一个 link-layer address：MAC address (physical address / LAN address)。
+
+MAC address 的长度为 6 bytes，与 IP address 不同，物理上的每个 interface 的 MAC address 是固定的，不会因移动而变化。MAC address 由 IEEE 管理，在全球范围内是唯一的。
+
+如果使用 broadcast link，多个 interface 都会收到同样的 frame。只有 MAC address 符合时才会接收，否则会丢弃（不会传递给 network layer）。
+
+MAC broadcast address 是 `ff:ff:ff:ff:ff:ff`。
+
+### Address Resolution Protocol
+
+ARP 用来将 subnet 内部的 IP address 翻译为 MAC address。
+
+每个 host / router 会维护一张 ARP table，用来记录 IP address 和 MAC address 的对应关系。表项有过期时间，到期自动删除。
+
+如果在 ARP table 内没有查询到需要的 IP address，则会发送一个 ARP query（一个 broadcast packet），具有这个 IP address 的 interface 在收到 ARP query 后会回复 ARP response（一般不是 broadcast，因为此时 broadcast 可能造成浪费；但是若采用 broadcast 也有助于发现 address conflict[^arp-response-broadcast]），收到 ARP response 后更新 ARP table。通过这样的机制，ARP table 可以自动建立，不需要任何手动配置。
+
+[^arp-response-broadcast]: [ethernet - ARP Replies can they be Broadcast - Network Engineering Stack Exchange](https://networkengineering.stackexchange.com/questions/7136/arp-replies-can-they-be-broadcast)
+
+如果要向 subnet 外发送信息，则需要向 gateway (first-hop router) 发送信息，所以需要查询的是 gateway 的 MAC address。
+
+### Ethernet
+
+Ethernet 是现在最常用的 wired LAN。
+
+Ethernet 通常使用 hub 或 switch 来连接各个 interface。hub 会将收到的每个 bit 转发给其他所有 interface，可能产生 collision。switch 则根据 MAC address 进行转发，不会产生 collision。
+
+Ethernet frame 包含：
+
+1.  preamble (8 bytes): 31 个 “10” 和 1 个 “11”，用来标识 frame 的开头，并同步时钟。
+2.  destination MAC address (6 bytes)
+3.  source MAC address (6 bytes)
+4.  type (2 bytes): upper layer protocol，例如 IP、ARP。
+5.  data (46 \~ 1500 bytes): 如果需要传送的数据不足 46 bytes 需要进行填充。通过 type 以及 data 中的 header（例如 IP header）来判断 data 的长度。
+6.  CRC checksum (4 bytes)
+
+Ethernet 是 connectionless、unreliable 的。
+
+Ethernet 既是 link-layer protocol，也是 physical layer protocol，而且实际上是一类而非一个 protocol。例如，10BASE-T、10BASE-2、100BASE-T、1000BASE-LX、10GBASE-T、40GBASE-T 是不同的 Ethernet technology。开头表示 10Mbps、100Mbps、1Gbps、10Gbps、40Gbps 的传输速度，BASE 表示 media 只传送 Ethernet traffic，最后是不同的 physical media。
+
+### Link-Layer Switches
+
+switch 和 router 的功能类似，但它工作于 link layer，而且是 *transparent* 的，其他设备感受不到 switch 的存在，也不需要手动进行任何配置。
+
+switch 的每个 interface 都有一个 output buffer，与 router 类似。
+
+switch 维护了一张 switch table，表示每个 MAC address 对应的 switch 的 interface，以及表项的过期时间。
+
+对于从 interface $x$ 收到的 destination MAC address 为 $\alpha$ 的 frame：
+
+1.  若 $\alpha$ 不在 switch table 中，broadcast；
+2.  若 switch table 中 $\alpha$ 对应 interface $x$，discard；
+3.  若 switch table 中 $\alpha$ 对应 interface $y \ne x$，forward to $y$。
+
+switch 是 *self-learning* 的：如果在 interface $x$ 收到 source MAC address 为 $\alpha$ 的 frame，则会在 switch table 中记录 $\alpha$ 到 $x$ 的对应关系。
+
+相对于 hub，switch 的优点有：
+
+-   没有 collision，可以优化性能。
+-   可以将不同 technology 的 link (media) 连接在一起。
+-   switch 还提供了一些 network management 功能，例如自动检测异常的 adapter 并禁用、对流量进行统计。
+
+switch 减少了 broadcast，在提升性能的同时也增强了安全性。但是 attacker 可以设法用 bogus entries 将 switch table 填满，使得大部分 frame 被 broadcast，这被称作 *switch poisoning*。
+
+switch 和 router 都可以将多个 host 连接在一起：
+
+-   switch 不需要手动配置；性能一般更好。只能连成生成树，不能连出环；如果同一个 subnet 内有太多 host 可能影响性能；可能遭受 broadcast storm。
+-   router 需要手动配置；性能可能略差。可以随便连，从而可以提供多条 route 供 routing protocol 选择；提供 firewall 来防止遭受 broadcast storm。
+
+一般来说多至数百个 host 时用 switch 即可，有更多 host 的话则需要适当使用 router 来进行中转。
+
+### Virtual Local Area Networks (VLANs)
+
+有时，物理上的 switch 会对网络管理造成一些限制：
+
+-   一个 switch 一般有很多 port，但希望设置的 subnet 大小（为了安全等原因想分成不同的 subnet）可能和 port 数量不符。
+-   如果要在不同 subnet 之间移动 host，需要更改物理连线。
+
+VLAN 可以用来解决这些问题。
+
+VLAN 通过软件控制一个 switch 上哪些 port 属于同一个 subnet。为了将两个 subnet 相连，需要将它们连到同一个 router 上，为了方便这样操作，支持 VLAN 的 switch 往往自带一个 router。
+
+可以使用 VLAN trunking 来将多个 switch 上的 port 合并为一个 VLAN：每个 switch 上有一个 trunk port，将需要 trunking 的 switch 的 trunk port 相连，发送到 VLAN 的 frame 会被 forward 到 trunk port。trunking 时所属 VLAN 的识别通过扩展的 Ethernet frame format 802.1Q 来实现，在 header 中添加 VLAN tag 来表示所属的 VLAN。
+
+除了基于 switch port 的 VLAN，还有基于 MAC address 的 VLAN，以及基于 network-layer protocol 的 VLAN。
+
+## Multiprotocol Label Switching (MPLS)
+
+MPLS 基于 fixed-length label 进行 switch，在 link-layer header 和 IP header 之间添加 MPLS header，需要在支持 MPLS 的 router 之间进行传输，switch 时不需要管 IP header。
+
+MPLS 有 switch 速度快、便于进行 traffic management 等优点。
+
+（书中对它的介绍过于简略，感觉说了和没说差不多，我就在此基础上再简略一点（（
+
+## Data Center Networking
+
+很多大型互联网公司都有由数万台 server 组成的 data center。data center 对外接入 Internet，而其内部又有一套 data center network。
+
+data center 主要提供三部分的功能：向终端用户 serve content，进行 distributed computation，对外提供 cloud computing 服务。
+
+data center 中的 host 被称作 *blade*，一般数十个 blade 会放在一起组成一个 *rack*，连到同一个 switch（top of rack, TOR switch）上，而整个 data center 通过多级 router 和 switch 构成一个 hierarchy，其中 access router 的下方可以分为多个 VLAN。如下图所示：[^fig-6.30]
+
+[^fig-6.30]: p506, Figure 6.30: A data center network with a hierarchical topology
+
+![A data center network with a hierarchical topology](cnatda-fig-6.30.png)
+
+在 data center 中，一个 application 通常由很多 host 来提供同样的服务，而对外只提供一个 IP address。load balancer 通过类似 NAT 的方式，将 request 均衡地分配给各个 host 进行处理。
+
+树状的网络结构使得一个 data center 可以有数万台 server，但 host-to-host capacity 还是会受限，尤其是两个 host 的 LCA 位于较高层级时。为了解决这一问题，可以：
+
+-   使用更高速的 router 和 switch，但这会大大增加开销。
+-   尽量将需要互相通信的 host 放在较低的同一棵子树内，但这不一定做得到（可能大量 host 都需要互相通信），也会影响 host 位置的灵活性。
+-   增加 interconnection 的数量，从而增加 host-to-host 的路径数量，在优化性能的同时也可以提升系统的可靠性。例如，每个 TOR switch 连接到 8 个 tier-2 switch，每个 tier-2 switch 连接到 16 个 tier-1 switch…… 这也被称作 *Clos network*。
+
+data center 通常使用 SDN 来对网络进行集中管理。
+
+为了支持 cloud computing、更方便地进行管理，通常会使用 virtual machine (VM) 等技术将 software 和 hardware 解耦。为了让 VM 能方便地在不同 host 之间移动，可以将 ARP 的 broadcast 机制改为类似于 DNS 的机制，存储 VM 的 IP address 到 TOR switch 的映射关系。
+
+data center network 通常具有极低的延迟以及较小的 buffer size，而 congestion control 需要快速作出反应，传统的 TCP 不再适用，通常会使用为 data center 设计的 TCP 等方式来进行优化。
+
+modular data center (MDC) 是一个内有至多数千个 host 的 container，用来作为 data center 的组成部分。在 MDC 的部分 component 坏掉时，MDC 可以继续以 degraded performance 工作，而在坏掉的 component 过多时则会报废。
+
+很多公司会自己定制 data center 中的各个组成部分，包括 network adapter、switch、router、software、networking protocol。
+
+Amazon 通过 “availability zone” 提高了服务的可靠性，即将 data center 在邻近但不同的地理位置上进行复刻，从而提供 fault tolerance，而地理位置上的邻近保证了 low latency，便于同步。
