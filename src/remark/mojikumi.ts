@@ -70,6 +70,7 @@ function dfs(u: Parent) {
       let lastIndex = 0;
 
       function checkLineStartEnd(index: number) {
+        if (lastIndex > index) return;
         const c = s[index];
         if (!c) return;
         if (lineStartRule.includes(c) || lineEndRule.includes(c)) {
@@ -141,6 +142,8 @@ function dfs(u: Parent) {
           }
 
           lastIndex = i;
+
+          if (rightRuleMatched) i -= 1;
         } else {
           checkLineStartEnd(i - 1);
         }
