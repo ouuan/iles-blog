@@ -3,7 +3,7 @@
 import type { Plugin } from 'unified';
 import type { Root } from 'mdast';
 
-const addHeadingForCard: Plugin<[], Root> = () => (root) => {
+const addHeadingForCard: Plugin<[], Root> = () => (root: Root) => {
   let hasH2 = false;
   root.children = root.children.reduce((children, child) => {
     if (child.type === 'heading' && child.depth === 2) {

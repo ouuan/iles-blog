@@ -40,7 +40,7 @@ function dfs(u: Content, level: number) {
   }
 }
 
-const setHeadingLevels: Plugin<[], Root> = () => (root) => {
+const setHeadingLevels: Plugin<[], Root> = () => (root: Root) => {
   let level = 1;
   for (const child of root.children) {
     if (child.type === 'heading') {

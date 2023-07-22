@@ -2,7 +2,7 @@ import type { Plugin } from 'unified';
 import type { Root } from 'mdast';
 import { visit } from 'unist-util-visit';
 
-const checkRelativeLinks: Plugin<[], Root> = () => (root) => {
+const checkRelativeLinks: Plugin<[], Root> = () => (root: Root) => {
   visit(root, 'link', (node) => {
     if (node.type !== 'link') return;
     const { url } = node;
