@@ -156,7 +156,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
   };
 }
 
-const remarkShiki: Plugin<[], Root> = () => async (root) => {
+const remarkShiki: Plugin<[], Root> = () => async (root: Root) => {
   await Promise.all(root.children.map(processNode));
 };
 
