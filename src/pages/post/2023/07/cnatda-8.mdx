@@ -89,6 +89,8 @@ digital signature 验证的是 message 和 public key 的对应关系，还需�
 
 就是上面这些东西的一个实例，没啥新东西：结合 digital signature 和使用 session key 的 encryption 即可；需要双方互相知道对方的 public key（分别用于 digital signature 的验证和 session key 的传输），public key 可以由 CA 认证。
 
+（好怪，为啥不讲 SPF、DKIM、DMARC。）
+
 ### PGP
 
 PGP 提供了 sign、encrypt、sign and encrypt 等功能，public key 通过用户之间的 web of trust 而非 CA 来 certify，可以线下举办 key-signing party 来互相 sign[^sign]。
