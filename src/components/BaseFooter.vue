@@ -16,6 +16,13 @@
         <span class="i-mdi-heart text-red dark:text-red-7" />
       </a>
       <span>{{ author }}</span>
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-x-1">
+      <span>
+        当前有
+        <visitor-count-realtime client:idle />
+        人在线
+      </span>
       <span class="i-mdi-circle-small" />
       <span title="实际上，为了保护用户隐私，同一用户的多次访问只有在同一天内使用同一浏览器在同一ip下才会被算作同一人">
         共有
@@ -29,11 +36,10 @@
         class="underline"
         href="https://github.com/ElMassimo/iles"
       >îles</a>
-      及
       <a
         class="underline"
         href="https://github.com/ouuan/iles-blog/blob/master/package.json"
-      >很多其他项目</a>
+      >等项目</a>
       <span class="i-mdi-circle-small" />
       <span>由 ouuan 设计/制作</span>
       <span class="i-mdi-circle-small" />
@@ -41,11 +47,6 @@
         class="underline"
         href="https://github.com/ouuan/iles-blog"
       >源代码</a>
-      <span class="i-mdi-circle-small" />
-      <a
-        class="underline"
-        href="https://github.com/ouuan/iles-blog/discussions"
-      >Discussions</a>
     </div>
   </footer>
   <meta

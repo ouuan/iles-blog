@@ -46,5 +46,6 @@ declare module '@vue/runtime-core' {
     TextJustifyFix: typeof import('./src/components/TextJustifyFix.vue')['default']
     ThemeSwitcher: typeof import('./src/components/ThemeSwitcher.vue')['default']
     VisitorCount: typeof import('./src/components/VisitorCount.vue')['default']
+    VisitorCountRealtime: typeof import('./src/components/VisitorCountRealtime.vue')['default']
   }
 }
