@@ -1,0 +1,527 @@
+---
+title: 配一下 mpv
+date: 2023-08-08T01:48:26+08:00
+image: https://raw.githubusercontent.com/mpv-player/mpv.io/426aa6b9d64d1866b93b63f1ec40cacb891a1869/source/images/mpv-logo-128.png
+tags:
+-   mpv
+-   Arch Linux
+-   经验分享
+---
+
+mpv 是一款 ~~神似 vim 的~~ 媒体播放器，就是说第一眼有点劝退，配置项很多，但如果能花点时间进行配置还是挺香的，而且可以写脚本实现各种功能。
+
+<Excerpt />
+
+自从开始用 Linux 后我一直用的是 vlc，但总感觉有点捞（，最明显的是在暂停继续 / 快进后退时，经常会卡几秒，而且不是卡住不动而是边放边卡，感觉非常神秘，不知道能不能修，反正我之前简单搜过没修好。而 mpv 默认就没有这样的问题，早就想用了，但之前被它简陋的 UI 以及复杂的配置劝退了，拖到现在才入坑。
+
+<Card type="warn">
+
+我是 [Arch Linux](https://archlinux.org/) + [i3](https://i3wm.org/) + [nnn](https://github.com/jarun/nnn) 用户，下面有一些配置可能不适用于其他用户。
+
+</Card>
+
+## 入坑
+
+### 参考资料
+
+-   [mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv)
+-   `/usr/share/doc/mpv/`
+-   [Reference Manual - mpv.io](https://mpv.io/manual/stable/) (`man mpv`)
+-   <span class="heimu">Google</span>
+-   <span class="heimu">ChatGPT</span>
+
+### 配置文件
+
+-   `~/.config/mpv/mpv.conf`: 主配置文件
+-   `~/.config/mpv/input.conf`: key binding 配置
+-   `~/.config/mpv/scripts/`: 脚本，放里面就会运行
+-   `~/.config/mpv/script-opts/`: 脚本的配置，例如 `~/.config/mpv/script-opts/osc.conf`
+-   `/usr/share/mpv/scripts/`: 一些自带的脚本，可以 symlink 到 `~/.config/mpv/scripts/`
+
+有个冷知识 (?) 可以注意一下：
+
+> Every *flag* option has a *no-flag* counterpart, e.g. the opposite of the `--fs` option is `--no-fs`. `--fs=yes` is same as `--fs`, `--fs=no` is the same as `--no-fs`.
+
+## 输出
+
+其实我不是很懂这些，但这两天进行各种尝试的感觉是，~~少配点吧，默认挺好的（~~
+
+### gpu-next
+
+```ini
+vo=gpu-next
+```
+
+这个最直接的作用是可以读取 Dolby Vision metadata，不会出现颜色错误之类的。（可以用 [4K Dolby Vision video test](https://www.demolandia.net/4k-video-test/dolby-vision/page-1.html) 测试。）
+
+~~而且最新最热不香吗（~~；~~虽然我总感觉用 “next” 而不是版本号之类的，<span class="heimu">有一种新↗↘的美（（</span>~~
+
+### 输出质量
+
+```ini
+profile=gpu-hq
+```
+
+[High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations) 给出了一些选项，其中 `profile=gpu-hq` 一般都是要加的。
+
+`scale` 和 `cscale` 在片源分辨率不低于显示器分辨率时影响几乎没有，片源分辨率低时影响也不大，没必要加。主要是加了之后在 `gpu-next` 下不知道为什么有时候会黑屏，而且 `ewa_lanczossharp` 在 `gpu-next` 中 deprecated 了，需要用 `ewa_lanczos` 然后调 `scale-blur`。
+
+后面的 interpolation 感觉也没必要，可能造成 “soap opera effect”，而且万一性能没跟上掉帧之类的就更惨了。
+
+### 音量均衡
+
+```ini
+af=loudnorm
+```
+
+以前听歌和看视频之间切换时经常要调音量，加上这个就好了。
+
+## 快捷键
+
+key binding 很看个人习惯，就别抄我的了，可以抄 `/usr/share/doc/mpv/input.conf`。如果你没啥习惯的话就直接用默认的吧（
+
+<Card title="完整 <code>input.conf</code>" fold>
+
+```
+Ctrl+0          apply-profile reset-all ; show-text 已重置所有设置
+
+SPACE           osd-msg cycle pause
+LEFT            seek -2
+RIGHT           seek  2
+Shift+LEFT      seek -30
+Shift+RIGHT     seek  30
+h               seek -2
+l               seek  2
+H               seek -30
+L               seek  30
+.               frame-step
+,               frame-back-step
+0               seek 0   absolute-percent exact
+^               seek 0   absolute-percent exact
+$               seek 100 absolute-percent exact
+PGUP            add chapter -1
+PGDWN           add chapter  1
+u               revert-seek
+
+WHEEL_UP        add volume  5
+WHEEL_DOWN      add volume -5
+DOWN            add volume -5
+UP              add volume  5
+j               add volume -5
+k               add volume  5
+m               cycle mute
+
+[               multiply speed 1/1.1
+]               multiply speed 1.1
+-               multiply speed 0.5
++               multiply speed 2.0
+=               set speed 1.0
+
+b               add brightness  1
+B               add brightness -1
+
+MBTN_LEFT_DBL   cycle fullscreen
+f               cycle fullscreen
+ESC             set fullscreen no
+
+Ctrl+=          set video-rotate 0 ; set video-pan-x 0 ; set video-pan-y 0 ; set video-zoom 0
+Ctrl++          add video-zoom  0.1
+Ctrl+-          add video-zoom -0.1
+Ctrl+WHEEL_UP   script-message cursor-centric-zoom 0.1
+Ctrl+WHEEL_DOWN script-message cursor-centric-zoom -0.1
+Ctrl+MBTN_LEFT  script-binding drag-to-pan
+r               script-message rotate-video  90
+R               script-message rotate-video -90
+
+v               cycle sub-visibility
+
+o               script-binding add-subtitle
+O               script-binding add-audio
+Ctrl+o          script-binding add-video
+
+t               script-binding select-subtitle
+T               script-binding select-audio
+Ctrl+t          script-binding select-video
+
+Alt++           add sub-scale +0.05
+Alt+-           add sub-scale -0.05
+Alt+=           set sub-scale 1
+Ctrl+j          add sub-pos  1
+Ctrl+k          add sub-pos -1
+Ctrl+h          add audio-delay -0.05
+Ctrl+l          add audio-delay  0.05
+
+>               playlist-next
+<               playlist-prev
+
+p               script-message cycle-commands "apply-profile playmode-shuffle ; playlist-shuffle ; show-text 随机播放" "apply-profile playmode-loopfile ; playlist-unshuffle ; show-text 单曲循环" "apply-profile playmode-playall ; playlist-unshuffle ; show-text 顺序播放" "apply-profile playmode-pause ; playlist-unshuffle ; show-text 播完暂停"
+
+a               ab-loop
+
+s               screenshot
+S               screenshot video
+Ctrl+s          screenshot window
+
+Ctrl+q          quit
+Ctrl+Q          set save-position-on-quit no ; quit
+
+i               script-binding stats/display-stats-toggle
+:               script-binding console/enable
+```
+
+</Card>
+
+### 避免误触未知快捷键
+
+```ini
+no-input-default-bindings
+```
+
+### ~~每根毛都看得清清楚楚~~
+
+用鼠标放大、拖拽画面，需要 [`mpv-image-viewer/scripts/image-positioning.lua`](https://github.com/occivink/mpv-image-viewer/blob/master/scripts/image-positioning.lua)。
+
+```
+Ctrl+WHEEL_UP   script-message cursor-centric-zoom 0.1
+Ctrl+WHEEL_DOWN script-message cursor-centric-zoom -0.1
+Ctrl+MBTN_LEFT  script-binding drag-to-pan
+r               script-message rotate-video  90
+R               script-message rotate-video -90
+```
+
+```ini
+no-window-dragging # for drag-to-pan
+```
+
+### 选择 track
+
+感觉 subtitle / audio track 只能 cycle 非常不好用；添加字幕几乎只能 drag and drop，对于 i3 + nnn 用户来说虽然有 [dragdrop 插件](https://github.com/jarun/nnn/blob/master/plugins/dragdrop) 但也挺麻烦的。于是写了两个脚本（需要安装 `kdialog`）。
+
+#### 添加 track 文件
+
+```lua
+local mp = require 'mp'
+local utils = require 'mp.utils'
+
+local add_track = function(type, filter)
+  local cwd = mp.get_property('working-directory')
+  local parent_dir = utils.split_path(cwd)
+
+  local dialog_result = mp.command_native {
+    name = 'subprocess',
+    args = {
+      'kdialog',
+      '--title',
+      'Add ' .. type .. ' - mpv',
+      '--getopenfilename',
+      type == 'sub' and parent_dir or cwd,
+      filter,
+    },
+    capture_stdout = true,
+  }
+
+  if dialog_result.status == 0 and dialog_result.stdout ~= nil then
+    local path = dialog_result.stdout:gsub('\n', '')
+    local add_result = mp.commandv(type .. '-add', path)
+    if add_result == true then
+      mp.osd_message(type .. ' added: ' .. path)
+      return
+    end
+  end
+
+  mp.osd_message('Failed to add ' .. type)
+end
+
+mp.add_key_binding(
+  nil,
+  'add-audio',
+  function()
+    add_track(
+      'audio',
+      'Audio files (*.3ga *.aa *.aac *.aax *.act *.aiff *.alac *.amr *.ape *.au *.awb *.dct *.dss *.dvf *.flac *.gsm *.iklax *.ivs *.m4a *.m4b *.m4p *.m4r *.m4v *.mka *.mlp *.mmf *.mp3 *.mpc *.msv *.nmf *.ogg *.oga *.mogg *.opus *.ra *.ram *.rm *.rmp *.sln *.spx *.thd *.tsa *.tta *.voc *.vox *.wav *.wma *.wv *.webm)'
+    )
+  end
+)
+
+mp.add_key_binding(
+  nil,
+  'add-video',
+  function()
+    add_track(
+      'video',
+      'Video files (*.3g2 *.3gp *.amv *.asf *.avi *.drc *.flv *.f4v *.f4p *.f4a *.f4b *.gif *.gifv *.m4v *.mkv *.mng *.mov *.mp4 *.m4p *.m4v *.mpg *.mpeg *.m2v *.mxf *.nsv *.ogg *.ogv *.qt *.rm *.rmvb *.roq *.svi *.vob *.webm *.wmv *.yuv)'
+    )
+  end
+)
+
+mp.add_key_binding(
+  nil,
+  'add-subtitle',
+  function()
+    add_track(
+      'sub',
+      'Subtitle files (*.aqt *.ass *.dat *.dks *.dks *.jss *.sub *.ttxt *.mpl *.txt *.pjs *.psb *.rt *.s2k *.sbt *.smi *.son *.srt *.ssa *.sst *.ssf *.stl *.sub *.svcd *.srt *.usf *.idx *.ssf *.vsf *.zeg *.vtt)'
+    )
+  end
+)
+```
+
+```
+o               script-binding add-subtitle
+O               script-binding add-audio
+Ctrl+o          script-binding add-video
+```
+
+#### 选择已有 track
+
+```lua
+local mp = require 'mp'
+
+local select_track = function(type)
+  local args = {
+    'kdialog',
+    '--title',
+    'Select ' .. type .. ' track - mpv',
+    '--geometry',
+    '1280x720',
+    '--radiolist',
+    'Select ' .. type .. ' track',
+    'no',
+    '(no ' .. type .. ')',
+    'on', -- the last one takes effect when there are multiple on
+  }
+
+  local count = mp.get_property_number('track-list/count')
+  for i = 0, count - 1 do
+    local track = mp.get_property_native('track-list/' .. i)
+    if track.type == type then
+      table.insert(args, tostring(track.id))
+      table.insert(
+        args,
+        (track.title or track.lang or tostring(track.id))
+        .. (type == 'audio' and (' (' .. track['demux-channel-count'] .. ' channels)') or '')
+      )
+      table.insert(args, track.selected and 'on' or 'off')
+    end
+  end
+
+  local dialog_result = mp.command_native {
+    name = 'subprocess',
+    args = args,
+    capture_stdout = true,
+  }
+
+  if dialog_result.status == 0 and dialog_result.stdout ~= nil then
+    local sel = dialog_result.stdout:gsub('\n', '')
+    local set_result = mp.commandv('set', type, sel)
+    if set_result == true then
+      local current = mp.get_property_native('current-tracks/' .. type)
+      mp.osd_message(type .. ' chosen: ' .. (current == nil and '(none)' or current.title or current.lang or current.id))
+      return
+    end
+  end
+
+  mp.osd_message('Failed to select ' .. type)
+end
+
+mp.add_key_binding(nil, 'select-audio',    function() select_track('audio') end)
+mp.add_key_binding(nil, 'select-video',    function() select_track('video') end)
+mp.add_key_binding(nil, 'select-subtitle', function() select_track('sub')   end)
+```
+
+```
+t               script-binding select-subtitle
+T               script-binding select-audio
+Ctrl+t          script-binding select-video
+```
+
+### 重置设置
+
+我这里只重置了会被我的 key binding 修改的设置。
+
+```
+Ctrl+0          apply-profile reset-all ; show-text 已重置所有设置
+```
+
+```ini
+[reset-all]
+profile-desc="重置所有设置"
+volume=100
+mute=no
+speed=1
+brightness=0
+video-zoom=0
+video-pan-x=0
+video-pan-y=0
+video-rotate=0
+sub-visibility=yes
+sub-scale=1
+sub-pos=100
+audio-delay=0
+ab-loop-a=no
+ab-loop-b=no
+```
+
+## 听歌
+
+### 播放模式 profiles
+
+我是觉得下面这几种播放模式比较常用（列表循环不太常用），而看视频时一般播完暂停比较好，作为默认。随机播放/单曲循环的时候一般不需要保存播放进度。
+
+```ini
+profile=playmode-pause
+
+[playmode-pause]
+profile-desc="播完暂停"
+keep-open=always
+loop-file=no
+loop-playlist=inf
+shuffle=no
+save-position-on-quit
+
+[playmode-shuffle]
+profile-desc="随机播放"
+keep-open=yes
+loop-file=no
+loop-playlist=inf
+shuffle
+no-save-position-on-quit
+
+[playmode-loopfile]
+profile-desc="单文件循环"
+keep-open=yes
+loop-file=inf
+loop-playlist=inf
+shuffle=no
+no-save-position-on-quit
+
+[playmode-playall]
+profile-desc="顺序播放"
+keep-open=yes
+loop-file=no
+loop-playlist=no
+shuffle=no
+save-position-on-quit
+```
+
+另外可以加一个 `no-keep-open-pause`，播完暂停时后退不会暂停。
+
+### 切换播放模式
+
+```
+p               script-message cycle-commands "apply-profile playmode-shuffle ; playlist-shuffle ; show-text 随机播放" "apply-profile playmode-loopfile ; playlist-unshuffle ; show-text 单曲循环" "apply-profile playmode-playall ; playlist-unshuffle ; show-text 顺序播放" "apply-profile playmode-pause ; playlist-unshuffle ; show-text 播完暂停"
+```
+
+（需要 [`cycle-commands.lua`](https://github.com/CogentRedTester/mpv-scripts/blob/master/cycle-commands.lua)。）
+
+### playerctl
+
+装了 [mpv-mpris](https://github.com/hoyon/mpv-mpris) 就可以用 [`playerctl`](https://github.com/altdesktop/playerctl) 了。
+
+关闭所有 mpv：（当然 `killall` 也行就是比较暴力）
+
+```bash
+alias stopplay='playerctl -a -p mpv stop'
+```
+
+用 i3 的话，可以利用 playerctl 设快捷键，用 [`bumblebee-status` 的 `playerctl` module](https://bumblebee-status.readthedocs.io/en/main/modules.html#playerctl) 显示正在播放的媒体信息。
+
+### 从命令行播放音乐
+
+我一般都是用若干 alias 来从命令行播放音乐（所以很少在网易云上听（
+
+```bash
+play() {
+    stopplay >/dev/null 2>&1
+    bk mpv --profile=playmode-shuffle --no-video --no-resume-playback "$@"
+}
+
+alias playjp='play ~/Music/日本語の歌/'
+...
+```
+
+其中 `bk` 是一个我用了很多年的小 trick：
+
+```bash
+bk_noalias() {
+    nohup "$@" </dev/null >/dev/null 2>/dev/null &
+    disown
+}
+alias bk='bk_noalias '  # alias 末尾空格可以继续接 alias
+```
+
+## 杂项
+
+### OSC
+
+显示总时长而非剩余时长：
+
+```ini
+# ~/.config/mpv/script-opts/osc.conf
+
+timetotal=yes
+```
+
+全屏时移动鼠标显示 OSC，非全屏时一直显示且不遮挡画面：
+
+
+```ini
+# ~/.config/mpv/script-opts/osc.conf
+
+# it does nothing when visibility is not always
+boxvideo=yes
+```
+
+```ini
+# ~/.config/mpv/mpv.conf
+
+[osc-not-fullscreen]
+profile-cond=not fullscreen
+script-opts=osc-visibility=always
+
+[osc-fullscreen]
+profile-cond=fullscreen
+script-opts=osc-visibility=auto
+```
+
+### autoload
+
+打开一个文件时自动加载同目录下的其他文件。
+
+```bash
+ln -s /usr/share/mpv/scripts/autoload.lua ~/.config/mpv/scripts/
+```
+
+### 自动找 track
+
+模糊匹配字幕和音轨文件：（实际上也没有多 fuzzy，只是部分匹配而已）
+
+```ini
+sub-auto=fuzzy
+audio-file-auto=fuzzy
+```
+
+### OSD
+
+```ini
+osd-on-seek=msg-bar
+osd-playing-msg="File: ${filename}"
+osd-duration=2000
+```
+
+快进后退的时候显示一下具体位置；切换文件时显示一下文件名；显示久一点。
+
+### 截图
+
+```ini
+screenshot-directory=~/screenshots
+screenshot-template="%F - %P - %#01n"
+```
+
+截图文件名是视频文件名 + 时间戳 + 版本（有了版本可以同一个位置截多张图，进行对比）。
+
+### 暂停图标
+
+试过在暂停的时候显示一个图标，后来还是觉得去掉好一点，改成了 `osd-msg cycle pause`。
+
+想要的话可以参考 [@CogentRedTester - OSD-info when video is paused](https://github.com/mpv-player/mpv/issues/8155#issuecomment-707726802)。需要注意的是这里用到了 “⏸”，而 color emoji 会显示为乱码，只能用 monochrome emoji，可以装一个 Noto Emoji Monochrome 加在 fontconfig 里。
