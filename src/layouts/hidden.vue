@@ -9,11 +9,7 @@
       content="no-referrer"
     >
   </Head>
-  <div class="flex flex-row-reverse justify-center">
-    <table-of-contents
-      client:load
-      :headings="page.meta.headings"
-    />
+  <div class="flex justify-center">
     <div class="m-4 max-w-200 grow standard-card">
       <article>
         <post-head
@@ -29,6 +25,10 @@
       </article>
       <giscus-comments />
     </div>
+    <table-of-contents
+      client:load
+      :headings="page.meta.headings"
+    />
   </div>
 </template>
 
