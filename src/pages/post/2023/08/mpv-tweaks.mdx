@@ -20,6 +20,8 @@ mpv 是一款 ~~神似 vim 的~~ 媒体播放器，就是说第一眼有点劝�
 
 </Card>
 
+完整配置：[ouuan/dotfiles/.config/mpv](https://github.com/ouuan/dotfiles/tree/master/.config/mpv)
+
 ## 入坑
 
 ### 参考资料
@@ -60,6 +62,7 @@ vo=gpu-next
 
 ```ini
 profile=gpu-hq
+hwdec=auto-safe
 ```
 
 [High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations) 给出了一些选项，其中 `profile=gpu-hq` 一般都是要加的。
@@ -67,6 +70,8 @@ profile=gpu-hq
 `scale` 和 `cscale` 在片源分辨率不低于显示器分辨率时影响几乎没有，片源分辨率低时影响也不大，没必要加。主要是加了之后在 `gpu-next` 下不知道为什么有时候会黑屏，而且 `ewa_lanczossharp` 在 `gpu-next` 中 deprecated 了，需要用 `ewa_lanczos` 然后调 `scale-blur`。
 
 后面的 interpolation 感觉也没必要，可能造成 “soap opera effect”，而且万一性能没跟上掉帧之类的就更惨了。
+
+`hwdec` 可以实测一下来看要不要开，之前我测的时候结果变化还挺大的，感觉是 CPU 连续一段时间工作性能会下降，而且不同视频效果也不同，可以设个 key binding 控制开关，实时看 stats。
 
 ### 音量均衡
 
@@ -78,103 +83,80 @@ af=loudnorm
 
 ## 快捷键
 
-key binding 很看个人习惯，就别抄我的了，可以抄 `/usr/share/doc/mpv/input.conf`。如果你没啥习惯的话就直接用默认的吧（
-
-<Card title="完整 <code>input.conf</code>" fold>
-
-```
-Ctrl+0          apply-profile reset-all ; show-text 已重置所有设置
-
-SPACE           osd-msg cycle pause
-LEFT            seek -2
-RIGHT           seek  2
-Shift+LEFT      seek -30
-Shift+RIGHT     seek  30
-h               seek -2
-l               seek  2
-H               seek -30
-L               seek  30
-.               frame-step
-,               frame-back-step
-0               seek 0   absolute-percent exact
-^               seek 0   absolute-percent exact
-$               seek 100 absolute-percent exact
-PGUP            add chapter -1
-PGDWN           add chapter  1
-u               revert-seek
-
-WHEEL_UP        add volume  5
-WHEEL_DOWN      add volume -5
-DOWN            add volume -5
-UP              add volume  5
-j               add volume -5
-k               add volume  5
-m               cycle mute
-
-[               multiply speed 1/1.1
-]               multiply speed 1.1
--               multiply speed 0.5
-+               multiply speed 2.0
-=               set speed 1.0
-
-b               add brightness  1
-B               add brightness -1
-
-MBTN_LEFT_DBL   cycle fullscreen
-f               cycle fullscreen
-ESC             set fullscreen no
-
-Ctrl+=          set video-rotate 0 ; set video-pan-x 0 ; set video-pan-y 0 ; set video-zoom 0
-Ctrl++          add video-zoom  0.1
-Ctrl+-          add video-zoom -0.1
-Ctrl+WHEEL_UP   script-message cursor-centric-zoom 0.1
-Ctrl+WHEEL_DOWN script-message cursor-centric-zoom -0.1
-Ctrl+MBTN_LEFT  script-binding drag-to-pan
-r               script-message rotate-video  90
-R               script-message rotate-video -90
-
-v               cycle sub-visibility
-
-o               script-binding add-subtitle
-O               script-binding add-audio
-Ctrl+o          script-binding add-video
-
-t               script-binding select-subtitle
-T               script-binding select-audio
-Ctrl+t          script-binding select-video
-
-Alt++           add sub-scale +0.05
-Alt+-           add sub-scale -0.05
-Alt+=           set sub-scale 1
-Ctrl+j          add sub-pos  1
-Ctrl+k          add sub-pos -1
-Ctrl+h          add audio-delay -0.05
-Ctrl+l          add audio-delay  0.05
-
->               playlist-next
-<               playlist-prev
-
-p               script-message cycle-commands "apply-profile playmode-shuffle ; playlist-shuffle ; show-text 随机播放" "apply-profile playmode-loopfile ; playlist-unshuffle ; show-text 单曲循环" "apply-profile playmode-playall ; playlist-unshuffle ; show-text 顺序播放" "apply-profile playmode-pause ; playlist-unshuffle ; show-text 播完暂停"
-
-a               ab-loop
-
-s               screenshot
-S               screenshot video
-Ctrl+s          screenshot window
-
-Ctrl+q          quit
-Ctrl+Q          set save-position-on-quit no ; quit
-
-i               script-binding stats/display-stats-toggle
-:               script-binding console/enable
-```
-
-</Card>
+key binding 很看个人习惯，可以对着 `/usr/share/doc/mpv/input.conf` 修改。如果没啥习惯可以直接用默认的。
 
 ### 避免误触未知快捷键
 
 ```ini
 no-input-default-bindings
+```
+
+这个可能会影响通过脚本设置快捷键，如果不想影响脚本可以 `no-input-builtin-bindings`。
+
+### 右键菜单
+
+[Thomas Carmichael / mpvcontextmenu · GitLab](https://gitlab.com/carmanaught/mpvcontextmenu)
+
+把 `mpvcontextmenu` 文件夹放进 `scripts`。需要安装 `gjs`。
+
+```
+MBTN_RIGHT      script-message mpv_context_menu_gtk
+```
+
+调整字体：
+
+```ini
+# script-opts/menu-engine.conf
+
+fontFace=monospace
+fontSize=15
+```
+
+它附带了通过 GUI 打开文件的功能：（需要安装 `kdialog` 或 `zenity`）
+
+```ini
+# script-opts/gui-dialogs.conf
+
+dialogPref=kdialog
+```
+
+```
+o               script-binding add_subtitle_dialog
+O               script-binding add_audio_dialog
+Ctrl+o          script-binding add_files_dialog
+Ctrl+O          script-binding append_files_dialog
+```
+
+### 快进
+
+长按 → 快进：
+
+```
+RIGHT           script-binding fast-forward
+```
+
+```lua
+local mp = require 'mp'
+
+local repeated = false
+
+local function on_key(e)
+  if e.event == 'repeat' then
+    if not repeated then
+      repeated = true
+      mp.command('multiply speed 4')
+    end
+  elseif e.event == 'up' or e.event == 'press' then
+    if repeated then
+      mp.command('multiply speed 0.25')
+    else
+      mp.command('seek 2')
+    end
+    repeated = false
+  end
+end
+
+mp.add_key_binding(nil, 'fast-forward', on_key, { repeatable = true, complex = true })
 ```
 
 ### ~~每根毛都看得清清楚楚~~
@@ -195,91 +177,22 @@ no-window-dragging # for drag-to-pan
 
 ### 选择 track
 
-感觉 subtitle / audio track 只能 cycle 非常不好用；添加字幕几乎只能 drag and drop，对于 i3 + nnn 用户来说虽然有 [dragdrop 插件](https://github.com/jarun/nnn/blob/master/plugins/dragdrop) 但也挺麻烦的。于是写了两个脚本（需要安装 `kdialog`）。
-
-#### 添加 track 文件
-
-```lua
-local mp = require 'mp'
-local utils = require 'mp.utils'
-
-local add_track = function(type, filter)
-  local cwd = mp.get_property('working-directory')
-  local parent_dir = utils.split_path(cwd)
-
-  local dialog_result = mp.command_native {
-    name = 'subprocess',
-    args = {
-      'kdialog',
-      '--title',
-      'Add ' .. type .. ' - mpv',
-      '--getopenfilename',
-      type == 'sub' and parent_dir or cwd,
-      filter,
-    },
-    capture_stdout = true,
-  }
-
-  if dialog_result.status == 0 and dialog_result.stdout ~= nil then
-    local path = dialog_result.stdout:gsub('\n', '')
-    local add_result = mp.commandv(type .. '-add', path)
-    if add_result == true then
-      mp.osd_message(type .. ' added: ' .. path)
-      return
-    end
-  end
-
-  mp.osd_message('Failed to add ' .. type)
-end
-
-mp.add_key_binding(
-  nil,
-  'add-audio',
-  function()
-    add_track(
-      'audio',
-      'Audio files (*.3ga *.aa *.aac *.aax *.act *.aiff *.alac *.amr *.ape *.au *.awb *.dct *.dss *.dvf *.flac *.gsm *.iklax *.ivs *.m4a *.m4b *.m4p *.m4r *.m4v *.mka *.mlp *.mmf *.mp3 *.mpc *.msv *.nmf *.ogg *.oga *.mogg *.opus *.ra *.ram *.rm *.rmp *.sln *.spx *.thd *.tsa *.tta *.voc *.vox *.wav *.wma *.wv *.webm)'
-    )
-  end
-)
-
-mp.add_key_binding(
-  nil,
-  'add-video',
-  function()
-    add_track(
-      'video',
-      'Video files (*.3g2 *.3gp *.amv *.asf *.avi *.drc *.flv *.f4v *.f4p *.f4a *.f4b *.gif *.gifv *.m4v *.mkv *.mng *.mov *.mp4 *.m4p *.m4v *.mpg *.mpeg *.m2v *.mxf *.nsv *.ogg *.ogv *.qt *.rm *.rmvb *.roq *.svi *.vob *.webm *.wmv *.yuv)'
-    )
-  end
-)
-
-mp.add_key_binding(
-  nil,
-  'add-subtitle',
-  function()
-    add_track(
-      'sub',
-      'Subtitle files (*.aqt *.ass *.dat *.dks *.dks *.jss *.sub *.ttxt *.mpl *.txt *.pjs *.psb *.rt *.s2k *.sbt *.smi *.son *.srt *.ssa *.sst *.ssf *.stl *.sub *.svcd *.srt *.usf *.idx *.ssf *.vsf *.zeg *.vtt)'
-    )
-  end
-)
-```
+裸的 mpv 添加 / 选择 track 很不方便，有了 `mpvcontextmenu` 就好很多了，但我在发现它之前就自己写了两个脚本，现在有了它就把添加文件的删了，但选择 track 还是保留下来：
 
 ```
-o               script-binding add-subtitle
-O               script-binding add-audio
-Ctrl+o          script-binding add-video
+t               script-binding select-subtitle
+T               script-binding select-audio
+Ctrl+t          script-binding select-video
 ```
-
-#### 选择已有 track
 
 ```lua
 local mp = require 'mp'
 
-local select_track = function(type)
+local function select_track(type)
   local args = {
     'kdialog',
+    '--icon',
+    'mpv',
     '--title',
     'Select ' .. type .. ' track - mpv',
     '--geometry',
@@ -298,7 +211,8 @@ local select_track = function(type)
       table.insert(args, tostring(track.id))
       table.insert(
         args,
-        (track.title or track.lang or tostring(track.id))
+        (track.title or tostring(track.id))
+        .. (track.lang and (' (' .. track.lang .. ')') or '')
         .. (type == 'audio' and (' (' .. track['demux-channel-count'] .. ' channels)') or '')
       )
       table.insert(args, track.selected and 'on' or 'off')
@@ -324,16 +238,26 @@ local select_track = function(type)
   mp.osd_message('Failed to select ' .. type)
 end
 
-mp.add_key_binding(nil, 'select-audio',    function() select_track('audio') end)
-mp.add_key_binding(nil, 'select-video',    function() select_track('video') end)
-mp.add_key_binding(nil, 'select-subtitle', function() select_track('sub')   end)
+mp.add_key_binding(nil, 'select-audio', function() select_track('audio') end)
+mp.add_key_binding(nil, 'select-video', function() select_track('video') end)
+mp.add_key_binding(nil, 'select-subtitle', function() select_track('sub') end)
+
+local function confirm_not_stereo()
+  local audio = mp.get_property_native('current-tracks/audio')
+  if audio == nil then
+    return
+  end
+  local channel_count = audio['demux-channel-count'];
+  if channel_count ~= 2 then
+    mp.set_property('pause', 'yes')
+    select_track('audio')
+  end
+end
+
+mp.register_event('file-loaded', confirm_not_stereo)
 ```
 
-```
-t               script-binding select-subtitle
-T               script-binding select-audio
-Ctrl+t          script-binding select-video
-```
+顺便还会在打开文件时检测当前是否是双声道，如果不是（例如是环绕声）则弹出音轨选择。
 
 ### 重置设置
 
@@ -363,6 +287,37 @@ ab-loop-b=no
 ```
 
 ## 听歌
+
+### 播放列表管理
+
+[jonniek/mpv-playlistmanager: Mpv lua script to create and manage playlists](https://github.com/jonniek/mpv-playlistmanager)
+
+```
+P               script-binding showplaylist
+```
+
+```ini
+key_moveup=k UP
+key_movedown=j DOWN
+key_movepageup=Ctrl+u PGUP
+key_movepagedown=Ctrl+d PGDWN
+key_movebegin=^ 0 HOME
+key_moveend=$ END
+key_selectfile=d-d
+key_unselectfile=p
+key_playfile=l ENTER
+key_removefile=x BS
+key_closeplaylist=ESC P h
+
+showamount=20
+text_padding_y=15
+curtain_opacity=0.3
+style_ass_tags={\fs11}
+slice_longfilenames=yes
+slice_longfilenames_amount=120
+```
+
+~~其他都还好，这个 `dd` / `p` 确实太 Vim 了（~~
 
 ### 播放模式 profiles
 
@@ -457,7 +412,7 @@ alias bk='bk_noalias '  # alias 末尾空格可以继续接 alias
 显示总时长而非剩余时长：
 
 ```ini
-# ~/.config/mpv/script-opts/osc.conf
+# script-opts/osc.conf
 
 timetotal=yes
 ```
@@ -466,14 +421,14 @@ timetotal=yes
 
 
 ```ini
-# ~/.config/mpv/script-opts/osc.conf
+# script-opts/osc.conf
 
 # it does nothing when visibility is not always
 boxvideo=yes
 ```
 
 ```ini
-# ~/.config/mpv/mpv.conf
+# mpv.conf
 
 [osc-not-fullscreen]
 profile-cond=not fullscreen
@@ -491,6 +446,8 @@ script-opts=osc-visibility=auto
 ```bash
 ln -s /usr/share/mpv/scripts/autoload.lua ~/.config/mpv/scripts/
 ```
+
+（其实 playlistmanager 也可以启用这个功能，只不过官方有维护 `autoload.lua` 就用官方的吧。）
 
 ### 自动找 track
 
@@ -525,3 +482,130 @@ screenshot-template="%F - %P - %#01n"
 试过在暂停的时候显示一个图标，后来还是觉得去掉好一点，改成了 `osd-msg cycle pause`。
 
 想要的话可以参考 [@CogentRedTester - OSD-info when video is paused](https://github.com/mpv-player/mpv/issues/8155#issuecomment-707726802)。需要注意的是这里用到了 “⏸”，而 color emoji 会显示为乱码，只能用 monochrome emoji，可以装一个 Noto Emoji Monochrome 加在 fontconfig 里。
+
+### 在线播放
+
+mpv 使用了 yt-dlp，可以直接播放很多视频网站的视频/直播，yt-dlp 还可以直接从浏览器获取 Cookies：
+
+```ini
+ytdl-raw-options=cookies-from-browser=firefox
+```
+
+### WakaTime
+
+有点逆天，但是怎么不行呢（（
+
+本来是想着写个记录播放历史，但感觉有点肝不动，然后想到了 WakaTime（
+
+```lua
+local mp = require 'mp'
+local msg = require 'mp.msg'
+local utils = require 'mp.utils'
+
+local opts = {
+  enabled = true,
+  wakatime_cli = 'wakatime',
+  wakatime_home = '',
+}
+
+require 'mp.options'.read_options(opts)
+
+local timer
+local last_path = nil
+local timeout = true
+
+-- treat pause and shutdown as "save"
+local function heartbeat(write)
+  if not opts.enabled then
+    return
+  end
+
+  local abs_path = nil
+  local path = mp.get_property('path')
+  if not path then
+    if not write or not last_path then
+      return
+    end
+    abs_path = last_path
+  elseif path:sub(1, 1) == '/' then
+    abs_path = path
+  end
+
+  if not abs_path then
+    local pwd = mp.get_property('working-directory')
+    local result = mp.command_native {
+      name = 'subprocess',
+      args = { 'realpath', utils.join_path(pwd, path) },
+      playback_only = false,
+      capture_stdout = true,
+    }
+    if result.status ~= 0 then
+      return
+    end
+    abs_path = result.stdout:gsub('\n$', '')
+  end
+
+  if not write and not timeout and abs_path == last_path then
+    return
+  end
+  timer:kill()
+  timer:resume()
+  timeout = false
+
+  local version = mp.get_property('mpv-version'):match("([0-9.]*)$")
+  local suffix = abs_path:match("%.([^%.]+)$")
+  local language = (suffix or 'unknown') .. '-' ..
+      (mp.get_property('current-tracks/audio/lang') or
+        mp.get_property('current-tracks/video/lang') or
+        mp.get_property('current-tracks/sub/lang') or 'unknown')
+  local dir = abs_path:match(".*/(.+)/.*")
+
+  local args = {
+    opts.wakatime_cli,
+    '--entity', abs_path,
+    '--plugin', 'mpv/' .. version .. ' mpv-wakatime/0.1',
+    '--language', language,
+    '--project', dir,
+  }
+
+  if write then
+    table.insert(args, '--write')
+  end
+
+  local envs = opts.wakatime_home == '' and {} or { 'WAKATIME_HOME=' .. opts.wakatime_home }
+
+  msg.verbose(table.concat(envs, ' ') .. ' ' .. table.concat(args, ' '))
+
+  mp.command_native {
+    name = 'subprocess',
+    args = args,
+    env = envs,
+    detach = true,
+    playback_only = false,
+  }
+
+  last_path = abs_path
+end
+
+mp.register_event('file-loaded', function()
+  heartbeat(false)
+end)
+
+timer = mp.add_periodic_timer(120, function()
+  timeout = true
+  local paused = mp.get_property_native('pause')
+  if not paused then
+    heartbeat(false)
+  end
+end)
+
+mp.observe_property('pause', 'bool', function(_, paused)
+  heartbeat(paused)
+end)
+
+mp.register_event('shutdown', function()
+  heartbeat(true)
+end)
+```
+
+和记录代码不用同一个账号就不会污染数据了，可以建个新文件夹作为 mpv 的 `WAKATIME_HOME`。
