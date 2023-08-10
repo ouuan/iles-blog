@@ -125,8 +125,16 @@
   }
 
   :not(pre) > code {
-    @apply bg-gray-1 dark:bg-gray-13 rd-1 px-1 py-0.5 mx-0.5;
-    @apply whitespace-pre-wrap text-3.5 leading-4.5;
+    @apply bg-gray-1 dark:bg-gray-13 rd-1 mx-0.5;
+  }
+
+  kbd {
+    @apply bg-gray-0 dark:bg-gray-14 rd-2 b-2 b-gray-2 dark:b-gray-12 shadow-sm;
+  }
+
+  :not(pre) > code,
+  kbd {
+    @apply whitespace-pre-wrap text-3.5 leading-4.5 px-1 py-0.5;
   }
 
   table {
