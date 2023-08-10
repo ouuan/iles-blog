@@ -48,30 +48,61 @@ mpv 是一款 ~~神似 vim 的~~ 媒体播放器，就是说第一眼有点劝�
 
 其实我不是很懂这些，但这两天进行各种尝试的感觉是，~~少配点吧，默认挺好的（~~
 
-### gpu-next
-
-```ini
-vo=gpu-next
-```
-
-这个最直接的作用是可以读取 Dolby Vision metadata，不会出现颜色错误之类的。（可以用 [4K Dolby Vision video test](https://www.demolandia.net/4k-video-test/dolby-vision/page-1.html) 测试。）
-
-~~而且最新最热不香吗（~~；~~虽然我总感觉用 “next” 而不是版本号之类的，<span class="heimu">有一种新↗↘的美（（</span>~~
-
 ### 输出质量
 
 ```ini
 profile=gpu-hq
+profile=vo-gpu
+
+[vo-gpu]
+vo=gpu
+scale=ewa_lanczossharp
+cscale=ewa_lanczossharp
+video-sync=display-resample
+interpolation
+tscale=oversample
+```
+
+就是 [High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations)。
+
+`scale` 和 `cscale` 是用于 upscale，片源分辨率低于显示器才有用，虽然 `ewa_lanczossharp` 性能开销较大，但只用于低分辨率就还好。和 `spline36` 在视觉上的差异几乎没有，性能不够就别用，性能够的话用不用都行。
+
+interpolation 可以参考 [Interpolation · mpv Wiki](https://github.com/mpv-player/mpv/wiki/Interpolation)，`tscale=oversample` 不会造成 “soap opera effect”（如果用 SVP 就可能会有）。可以找个人物动作之类的片段开 A-B loop 对比（
+
+### 硬件解码
+
+```ini
 hwdec=auto-safe
 ```
 
-[High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations) 给出了一些选项，其中 `profile=gpu-hq` 一般都是要加的。
+`hwdec` 可以实测一下来看要不要开，之前我测的时候结果变化还挺大的，感觉主要是 CPU 连续工作一段时间性能会下降，而且不同视频效果也不同，可以设 key binding 控制开关，实时看 stats。
 
-`scale` 和 `cscale` 在片源分辨率不低于显示器分辨率时影响几乎没有，片源分辨率低时影响也不大，没必要加。主要是加了之后在 `gpu-next` 下不知道为什么有时候会黑屏，而且 `ewa_lanczossharp` 在 `gpu-next` 中 deprecated 了，需要用 `ewa_lanczos` 然后调 `scale-blur`。
+```
+g               cycle-values hwdec no auto-safe
 
-后面的 interpolation 感觉也没必要，可能造成 “soap opera effect”，而且万一性能没跟上掉帧之类的就更惨了。
+i               script-binding stats/display-stats-toggle
+```
 
-`hwdec` 可以实测一下来看要不要开，之前我测的时候结果变化还挺大的，感觉是 CPU 连续一段时间工作性能会下降，而且不同视频效果也不同，可以设个 key binding 控制开关，实时看 stats。
+### gpu-next
+
+```ini
+[vo-gpu-next]
+vo=gpu-next
+scale=spline36
+cscale=spline36
+video-sync=audio
+interpolation=no
+```
+
+这个最直接的作用是可以读取 Dolby Vision metadata，不会出现颜色错误之类的。（可以用 [4K Dolby Vision video test](https://www.demolandia.net/4k-video-test/dolby-vision/page-1.html) 测试。）
+
+但还是不太稳定，`scale=ewa_lanczossharp` 可能会偶尔黑屏，`video-sync=display-resample` 会闪屏。
+
+可以设个快捷键切换，需要 [`cycle-commands.lua`](https://github.com/CogentRedTester/mpv-scripts/blob/master/cycle-commands.lua)。
+
+```
+G               script-message cycle-commands 'apply-profile vo-gpu-next ; show-text "vo: gpu-next"' 'apply-profile vo-gpu ; show-text "vo: gpu"'
+```
 
 ### 音量均衡
 
@@ -84,6 +115,8 @@ af=loudnorm
 ## 快捷键
 
 key binding 很看个人习惯，可以对着 `/usr/share/doc/mpv/input.conf` 修改。如果没啥习惯可以直接用默认的。
+
+虽然感觉没太大参考价值，但是：[input.conf · ouuan/dotfiles](https://github.com/ouuan/dotfiles/blob/master/.config/mpv/input.conf)。
 
 ### 避免误触未知快捷键
 
@@ -129,39 +162,19 @@ Ctrl+O          script-binding append_files_dialog
 
 ### 快进
 
-长按 → 快进：
+长按 <kbd>→</kbd> 快进。
+
+[`fast-forward.lua`](https://github.com/ouuan/dotfiles/blob/master/.config/mpv/scripts/fast-forward.lua)
 
 ```
 RIGHT           script-binding fast-forward
 ```
 
-```lua
-local mp = require 'mp'
-
-local repeated = false
-
-local function on_key(e)
-  if e.event == 'repeat' then
-    if not repeated then
-      repeated = true
-      mp.command('multiply speed 4')
-    end
-  elseif e.event == 'up' or e.event == 'press' then
-    if repeated then
-      mp.command('multiply speed 0.25')
-    else
-      mp.command('seek 2')
-    end
-    repeated = false
-  end
-end
-
-mp.add_key_binding(nil, 'fast-forward', on_key, { repeatable = true, complex = true })
-```
-
 ### ~~每根毛都看得清清楚楚~~
 
-用鼠标放大、拖拽画面，需要 [`mpv-image-viewer/scripts/image-positioning.lua`](https://github.com/occivink/mpv-image-viewer/blob/master/scripts/image-positioning.lua)。
+用鼠标放大、拖拽画面。
+
+[`mpv-image-viewer/scripts/image-positioning.lua`](https://github.com/occivink/mpv-image-viewer/blob/master/scripts/image-positioning.lua)
 
 ```
 Ctrl+WHEEL_UP   script-message cursor-centric-zoom 0.1
@@ -177,87 +190,17 @@ no-window-dragging # for drag-to-pan
 
 ### 选择 track
 
-裸的 mpv 添加 / 选择 track 很不方便，有了 `mpvcontextmenu` 就好很多了，但我在发现它之前就自己写了两个脚本，现在有了它就把添加文件的删了，但选择 track 还是保留下来：
+裸的 mpv 添加 / 选择 track 很不方便，有了 `mpvcontextmenu` 就好很多了，但我在发现它之前就自己写了两个脚本，现在有了它就把添加文件的删了，但选择 track 还是保留下来。
+
+顺便还会在打开文件时检测当前是否是双声道，如果不是（例如是环绕声）则弹出音轨选择。
+
+[`select-track.lua`](https://github.com/ouuan/dotfiles/blob/master/.config/mpv/scripts/select-track.lua)
 
 ```
 t               script-binding select-subtitle
 T               script-binding select-audio
 Ctrl+t          script-binding select-video
 ```
-
-```lua
-local mp = require 'mp'
-
-local function select_track(type)
-  local args = {
-    'kdialog',
-    '--icon',
-    'mpv',
-    '--title',
-    'Select ' .. type .. ' track - mpv',
-    '--geometry',
-    '1280x720',
-    '--radiolist',
-    'Select ' .. type .. ' track',
-    'no',
-    '(no ' .. type .. ')',
-    'on', -- the last one takes effect when there are multiple on
-  }
-
-  local count = mp.get_property_number('track-list/count')
-  for i = 0, count - 1 do
-    local track = mp.get_property_native('track-list/' .. i)
-    if track.type == type then
-      table.insert(args, tostring(track.id))
-      table.insert(
-        args,
-        (track.title or tostring(track.id))
-        .. (track.lang and (' (' .. track.lang .. ')') or '')
-        .. (type == 'audio' and (' (' .. track['demux-channel-count'] .. ' channels)') or '')
-      )
-      table.insert(args, track.selected and 'on' or 'off')
-    end
-  end
-
-  local dialog_result = mp.command_native {
-    name = 'subprocess',
-    args = args,
-    capture_stdout = true,
-  }
-
-  if dialog_result.status == 0 and dialog_result.stdout ~= nil then
-    local sel = dialog_result.stdout:gsub('\n', '')
-    local set_result = mp.commandv('set', type, sel)
-    if set_result == true then
-      local current = mp.get_property_native('current-tracks/' .. type)
-      mp.osd_message(type .. ' chosen: ' .. (current == nil and '(none)' or current.title or current.lang or current.id))
-      return
-    end
-  end
-
-  mp.osd_message('Failed to select ' .. type)
-end
-
-mp.add_key_binding(nil, 'select-audio', function() select_track('audio') end)
-mp.add_key_binding(nil, 'select-video', function() select_track('video') end)
-mp.add_key_binding(nil, 'select-subtitle', function() select_track('sub') end)
-
-local function confirm_not_stereo()
-  local audio = mp.get_property_native('current-tracks/audio')
-  if audio == nil then
-    return
-  end
-  local channel_count = audio['demux-channel-count'];
-  if channel_count ~= 2 then
-    mp.set_property('pause', 'yes')
-    select_track('audio')
-  end
-end
-
-mp.register_event('file-loaded', confirm_not_stereo)
-```
-
-顺便还会在打开文件时检测当前是否是双声道，如果不是（例如是环绕声）则弹出音轨选择。
 
 ### 重置设置
 
@@ -319,7 +262,7 @@ slice_longfilenames_amount=120
 
 ~~其他都还好，这个 `dd` / `p` 确实太 Vim 了（~~
 
-### 播放模式 profiles
+### 播放模式
 
 我是觉得下面这几种播放模式比较常用（列表循环不太常用），而看视频时一般播完暂停比较好，作为默认。随机播放/单曲循环的时候一般不需要保存播放进度。
 
@@ -361,13 +304,11 @@ save-position-on-quit
 
 另外可以加一个 `no-keep-open-pause`，播完暂停时后退不会暂停。
 
-### 切换播放模式
+快捷键切换：
 
 ```
 p               script-message cycle-commands "apply-profile playmode-shuffle ; playlist-shuffle ; show-text 随机播放" "apply-profile playmode-loopfile ; playlist-unshuffle ; show-text 单曲循环" "apply-profile playmode-playall ; playlist-unshuffle ; show-text 顺序播放" "apply-profile playmode-pause ; playlist-unshuffle ; show-text 播完暂停"
 ```
-
-（需要 [`cycle-commands.lua`](https://github.com/CogentRedTester/mpv-scripts/blob/master/cycle-commands.lua)。）
 
 ### playerctl
 
@@ -493,119 +434,10 @@ ytdl-raw-options=cookies-from-browser=firefox
 
 ### WakaTime
 
+[`wakatime.lua`](https://github.com/ouuan/dotfiles/blob/master/.config/mpv/scripts/wakatime.lua)
+
 有点逆天，但是怎么不行呢（（
 
 本来是想着写个记录播放历史，但感觉有点肝不动，然后想到了 WakaTime（
-
-```lua
-local mp = require 'mp'
-local msg = require 'mp.msg'
-local utils = require 'mp.utils'
-
-local opts = {
-  enabled = true,
-  wakatime_cli = 'wakatime',
-  wakatime_home = '',
-}
-
-require 'mp.options'.read_options(opts)
-
-local timer
-local last_path = nil
-local timeout = true
-
--- treat pause and shutdown as "save"
-local function heartbeat(write)
-  if not opts.enabled then
-    return
-  end
-
-  local abs_path = nil
-  local path = mp.get_property('path')
-  if not path then
-    if not write or not last_path then
-      return
-    end
-    abs_path = last_path
-  elseif path:sub(1, 1) == '/' then
-    abs_path = path
-  end
-
-  if not abs_path then
-    local pwd = mp.get_property('working-directory')
-    local result = mp.command_native {
-      name = 'subprocess',
-      args = { 'realpath', utils.join_path(pwd, path) },
-      playback_only = false,
-      capture_stdout = true,
-    }
-    if result.status ~= 0 then
-      return
-    end
-    abs_path = result.stdout:gsub('\n$', '')
-  end
-
-  if not write and not timeout and abs_path == last_path then
-    return
-  end
-  timer:kill()
-  timer:resume()
-  timeout = false
-
-  local version = mp.get_property('mpv-version'):match("([0-9.]*)$")
-  local suffix = abs_path:match("%.([^%.]+)$")
-  local language = (suffix or 'unknown') .. '-' ..
-      (mp.get_property('current-tracks/audio/lang') or
-        mp.get_property('current-tracks/video/lang') or
-        mp.get_property('current-tracks/sub/lang') or 'unknown')
-  local dir = abs_path:match(".*/(.+)/.*")
-
-  local args = {
-    opts.wakatime_cli,
-    '--entity', abs_path,
-    '--plugin', 'mpv/' .. version .. ' mpv-wakatime/0.1',
-    '--language', language,
-    '--project', dir,
-  }
-
-  if write then
-    table.insert(args, '--write')
-  end
-
-  local envs = opts.wakatime_home == '' and {} or { 'WAKATIME_HOME=' .. opts.wakatime_home }
-
-  msg.verbose(table.concat(envs, ' ') .. ' ' .. table.concat(args, ' '))
-
-  mp.command_native {
-    name = 'subprocess',
-    args = args,
-    env = envs,
-    detach = true,
-    playback_only = false,
-  }
-
-  last_path = abs_path
-end
-
-mp.register_event('file-loaded', function()
-  heartbeat(false)
-end)
-
-timer = mp.add_periodic_timer(120, function()
-  timeout = true
-  local paused = mp.get_property_native('pause')
-  if not paused then
-    heartbeat(false)
-  end
-end)
-
-mp.observe_property('pause', 'bool', function(_, paused)
-  heartbeat(paused)
-end)
-
-mp.register_event('shutdown', function()
-  heartbeat(true)
-end)
-```
 
 和记录代码不用同一个账号就不会污染数据了，可以建个新文件夹作为 mpv 的 `WAKATIME_HOME`。
