@@ -52,36 +52,31 @@ mpv 是一款 ~~神似 vim 的~~ 媒体播放器，就是说第一眼有点劝�
 
 ```ini
 profile=gpu-hq
-profile=vo-gpu
+profile=vo-gpu-high
 
-[vo-gpu]
+[vo-gpu-high]
 vo=gpu
 scale=ewa_lanczossharp
 cscale=ewa_lanczossharp
 video-sync=display-resample
-interpolation
+interpolation=yes
 tscale=oversample
+
+[vo-gpu-low]
+vo=gpu
+scale=spline36
+cscale=spline36
+video-sync=display-resample
+interpolation=no
 ```
 
-就是 [High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations)。
+参考 [High quality configurations - mpv - ArchWiki](https://wiki.archlinux.org/title/Mpv#High_quality_configurations)。
 
 `scale` 和 `cscale` 是用于 upscale，片源分辨率低于显示器才有用，虽然 `ewa_lanczossharp` 性能开销较大，但只用于低分辨率就还好。和 `spline36` 在视觉上的差异几乎没有，性能不够就别用，性能够的话用不用都行。
 
 interpolation 可以参考 [Interpolation · mpv Wiki](https://github.com/mpv-player/mpv/wiki/Interpolation)，`tscale=oversample` 不会造成 “soap opera effect”（如果用 SVP 就可能会有）。可以找个人物动作之类的片段开 A-B loop 对比（
 
-### 硬件解码
-
-```ini
-hwdec=auto-safe
-```
-
-`hwdec` 可以实测一下来看要不要开，之前我测的时候结果变化还挺大的，感觉主要是 CPU 连续工作一段时间性能会下降，而且不同视频效果也不同，可以设 key binding 控制开关，实时看 stats。
-
-```
-g               cycle-values hwdec no auto-safe
-
-i               script-binding stats/display-stats-toggle
-```
+如果播放一些高码率视频，可能会性能不够，所以可以两个 profile 切换。
 
 ### gpu-next
 
@@ -101,13 +96,31 @@ interpolation=no
 可以设个快捷键切换，需要 [`cycle-commands.lua`](https://github.com/CogentRedTester/mpv-scripts/blob/master/cycle-commands.lua)。
 
 ```
-G               script-message cycle-commands 'apply-profile vo-gpu-next ; show-text "vo: gpu-next"' 'apply-profile vo-gpu ; show-text "vo: gpu"'
+G               script-message cycle-commands 'apply-profile vo-gpu-low ; show-text "vo gpu-low"' 'apply-profile vo-gpu-next ; show-text "vo gpu-next"' 'apply-profile vo-gpu-high ; show-text "vo gpu high"'
+```
+
+### 硬件解码
+
+```ini
+hwdec=auto-safe
+```
+
+`hwdec` 可以实测一下来看要不要开，之前我测的时候结果变化还挺大的，感觉主要是 CPU 连续工作一段时间性能会下降，而且不同视频效果也不同，可以设 key binding 控制开关，实时看 stats。
+
+```
+g               cycle-values hwdec no auto-safe
+
+i               script-binding stats/display-stats-toggle
 ```
 
 ### 音量均衡
 
 ```ini
 af=loudnorm
+```
+
+```
+n               cycle-values af "" loudnorm
 ```
 
 以前听歌和看视频之间切换时经常要调音量，加上这个就好了。
@@ -441,3 +454,16 @@ ytdl-raw-options=cookies-from-browser=firefox
 本来是想着写个记录播放历史，但感觉有点肝不动，然后想到了 WakaTime（
 
 和记录代码不用同一个账号就不会污染数据了，可以建个新文件夹作为 mpv 的 `WAKATIME_HOME`。
+
+### 拆分 `mpv.conf`
+
+配置都写在一起感觉最大的问题在于 profile 要写最底下，导致不能把不同板块的配置完全拆开。可以用 `include` 来拆成多个配置文件。
+
+```ini
+include=~~home/conf.d/output.conf
+include=~~home/conf.d/playmode.conf
+include=~~home/conf.d/osc.conf
+...
+```
+
+注意 `~~home/` 是 mpv home，`~/` 才是 `$HOME`。
