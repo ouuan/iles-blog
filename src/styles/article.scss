@@ -125,7 +125,7 @@
   }
 
   :not(pre) > code {
-    @apply bg-gray-1 dark:bg-gray-13 rd-1 mx-0.5;
+    @apply bg-gray-1 dark:bg-gray-13 rd-1;
   }
 
   kbd {
