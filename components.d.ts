@@ -16,7 +16,6 @@ declare module '@vue/runtime-core' {
     CopyButton: typeof import('./src/components/CopyButton.vue')['default']
     CopyrightNotice: typeof import('./src/components/CopyrightNotice.vue')['default']
     DeepHeading: typeof import('./src/components/DeepHeading.vue')['default']
-    FuseSearch: typeof import('./src/components/FuseSearch.vue')['default']
     GiscusComments: typeof import('./src/components/GiscusComments.vue')['default']
     GiscusCommentsInner: typeof import('./src/components/GiscusCommentsInner.vue')['default']
     Head: typeof import('@vueuse/head')['Head']

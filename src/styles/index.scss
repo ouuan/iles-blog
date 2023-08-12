@@ -30,13 +30,6 @@ span[class*="i-mdi-"] {
   @apply flex;
 }
 
-span.exact-matched {
-  @apply bg-#FFD30D dark:bg-#5A4900;
-}
-span.fuzzy-matched {
-  @apply bg-#FFEB93 dark:bg-#4C3E00 text-gray-10 dark:text-gray-4;
-}
-
 html body {
   @apply visible;
 }

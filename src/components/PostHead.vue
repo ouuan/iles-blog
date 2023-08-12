@@ -12,9 +12,7 @@
         ]"
         :href="titleLink ? href : undefined"
       >
-        <slot name="title">
-          {{ frontmatter.title }}
-        </slot>
+        {{ frontmatter.title }}
       </component>
     </h1>
     <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-footer md:text-sm">
@@ -67,7 +65,7 @@
       </span>
       <span
         v-if="frontmatter.tags"
-        :class="['flex flex-wrap justify-center gap-x-2 gap-y-1', tagMatched && 'fuzzy-matched']"
+        class="flex flex-wrap justify-center gap-x-2 gap-y-1"
       >
         <span
           v-for="tag of frontmatter.tags"
@@ -98,10 +96,8 @@ withDefaults(defineProps<{
   frontmatter: ReturnType<typeof usePage>['frontmatter'];
   href: string;
   filename: string;
-  tagMatched?: boolean;
   titleLink?: boolean;
 }>(), {
-  tagMatched: false,
   titleLink: false,
 });
 </script>

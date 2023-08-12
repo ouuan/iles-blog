@@ -133,11 +133,6 @@ export default defineConfig({
   ssg: {
     sitemap: false,
 
-    manualChunks(id) {
-      if (id.includes('fuse.js@')) return 'fuse-js';
-      return null;
-    },
-
     async onSiteRendered({ pages }) {
       await Promise.all([
         generateFonts(pages),
