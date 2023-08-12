@@ -36,7 +36,7 @@
 import { computed, ref } from 'vue';
 
 const pattern = ref('');
-const href = computed(() => `/search?q=${pattern.value}`);
+const href = computed(() => `/search?${new URLSearchParams({ q: pattern.value })}`);
 
 function onKeyPress(e: KeyboardEvent) {
   if (e.key === 'Enter') {

@@ -10,7 +10,7 @@
     <span>
       <a
         class="text-link active:text-active hover:text-hover"
-        :href="`https://github.com/${repo}/discussions/categories/comments?discussions_q=${term}`"
+        :href="`https://github.com/${repo}/discussions/categories/comments?${searchParam}`"
       >评论</a>加载中…
     </span>
     <span class="i-mdi-loading motion-safe:animate-spin" />
@@ -50,9 +50,11 @@ const repo: `${string}/${string}` = import.meta.env.DEV ? 'ouuan/giscus-test' : 
 const repoId = import.meta.env.DEV ? 'R_kgDOHsXSjg' : site.giscusRepoId;
 const categoryId = import.meta.env.DEV ? 'DIC_kwDOHsXSjs4CQWK2' : site.giscusCategoryId;
 
-defineProps<{
+const props = defineProps<{
   term: string;
 }>();
+
+const searchParam = new URLSearchParams({ discussions_q: props.term });
 
 const theme = useTheme();
 
