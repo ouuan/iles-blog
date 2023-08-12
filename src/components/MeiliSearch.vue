@@ -9,7 +9,12 @@
           class="flex items-center"
           for="__search_keywords"
         >
-          <span class="i-mdi-magnify text-xl" />
+          <span
+            :class="[
+              'text-xl',
+              pending ? 'i-mdi-loading motion-safe:animate-spin' : 'i-mdi-magnify',
+            ]"
+          />
           <span class="sr-only">搜索关键词</span>
         </label>
         <input
@@ -46,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue';
+import { computed, ref, shallowRef } from 'vue';
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core';
 
 interface SearchResultHit {
@@ -74,6 +79,8 @@ const delimiter = `--${Math.random().toFixed(16)}--`;
 // initially undefined, null on error
 const searchResult = shallowRef<SearchResult | null>();
 
+const pending = ref(false);
+
 async function search() {
   return fetch(`${import.meta.env.MEILI_URL}/indexes/blog-posts/search`, {
     method: 'POST',
@@ -99,6 +106,7 @@ watchDebounced(pattern, async () => {
     searchResult.value = undefined;
     return;
   }
+  pending.value = true;
   try {
     const response = await search();
     if (!response.ok) {
@@ -108,6 +116,7 @@ watchDebounced(pattern, async () => {
   } catch {
     searchResult.value = null;
   }
+  pending.value = false;
 }, { debounce: 300, immediate: true });
 
 const hint = computed(() => {
