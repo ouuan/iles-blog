@@ -44,7 +44,7 @@
     "xml-formatter": "3.5.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20230717.1",
+    "@cloudflare/workers-types": "4.20230807.0",
     "@iconify-json/mdi": "1.1.54",
     "@islands/excerpt": "0.9.0",
     "@islands/feed": "0.8.1",
@@ -54,7 +54,7 @@
     "@ouuan/tsconfig-vue": "1.0.0",
     "@total-typescript/ts-reset": "0.4.2",
     "@types/hast": "2.3.5",
-    "@types/node": "18.17.0",
+    "@types/node": "18.17.5",
     "@unocss/eslint-config": "0.55.0",
     "@unocss/transformer-directives": "0.55.0",
     "@vue/runtime-core": "3.3.4",
