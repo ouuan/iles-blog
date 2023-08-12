@@ -9,7 +9,17 @@ title: 搜索
       content="noindex"
     >
   </Head>
+
+  <meili-search client:load />
 </template>
 
 <script setup lang="ts">
+useHead({
+  link: [
+    {
+      rel: 'preconnect',
+      href: import.meta.env.MEILI_URL,
+    },
+  ],
+});
 </script>

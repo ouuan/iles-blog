@@ -28,6 +28,9 @@ jobs:
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
       - run: npx pnpm build
+        env:
+          MEILI_URL: ${{ secrets.MEILI_URL }}
+          MEILI_SEARCH_KEY: ${{ secrets.MEILI_SEARCH_KEY }}
       - name: Download muffet
         uses: nick-fields/retry@v2
         with:
@@ -77,3 +80,15 @@ jobs:
           workflow: blog-posts.yml
           repo: ouuan/ouuan
           token: ${{ secrets.PROFILE_POST_LIST_TOKEN }}
+
+  update-documents:
+    needs: build
+    if: github.repository_owner == 'ouuan' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install -r meili/requirements.txt
+      - run: python meili/update-documents.py
+        env:
+          MEILI_URL: ${{ secrets.MEILI_URL }}
+          MEILI_ADMIN_KEY: ${{ secrets.MEILI_ADMIN_KEY }}

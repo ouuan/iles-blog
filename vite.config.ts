@@ -22,4 +22,8 @@ export default defineConfig({
       external: builtinModules,
     },
   },
+  define: {
+    'import.meta.env.MEILI_URL': JSON.stringify(process.env.MEILI_URL),
+    'import.meta.env.MEILI_SEARCH_KEY': JSON.stringify(process.env.MEILI_SEARCH_KEY),
+  },
 });

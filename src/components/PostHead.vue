@@ -12,7 +12,10 @@
         ]"
         :href="titleLink ? href : undefined"
       >
-        {{ frontmatter.title }}
+        <search-result-highlight
+          :text="frontmatter.title"
+          :delimiter="highlightDelimiter"
+        />
       </component>
     </h1>
     <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-footer md:text-sm">
@@ -77,10 +80,13 @@
           <span class="i-mdi-tag-outline mr-1" />
           <span class="sr-only">标签</span>
           <a
-            :href="`/tag/${tag}`"
+            :href="`/tag/${removeDelimiter(tag)}`"
             class="hover:underline"
           >
-            {{ tag }}
+            <search-result-highlight
+              :text="tag"
+              :delimiter="highlightDelimiter"
+            />
           </a>
         </span>
       </span>
@@ -92,14 +98,21 @@
 import { format, formatISO } from 'date-fns';
 import site from '~/site';
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   frontmatter: ReturnType<typeof usePage>['frontmatter'];
   href: string;
   filename: string;
   titleLink?: boolean;
+  highlightDelimiter?: string;
 }>(), {
   titleLink: false,
+  highlightDelimiter: undefined,
 });
+
+function removeDelimiter(str: string) {
+  if (!props.highlightDelimiter) return str;
+  return str.replace(new RegExp(props.highlightDelimiter, 'g'), '');
+}
 </script>
 
 <style lang="scss" scoped>
