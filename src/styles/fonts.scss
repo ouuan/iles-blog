@@ -35,4 +35,11 @@
   --default-kai-font: "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
   --default-emoji-font: "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --default-latin-font: "Noto Serif", Georgia, "Times New Roman", Times, serif;
+
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
 }

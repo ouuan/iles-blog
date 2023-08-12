@@ -117,13 +117,6 @@
     @apply b-t-2 b-t-dashed b-gray-5 dark:b-gray-9;
   }
 
-  code,
-  kbd,
-  samp,
-  pre {
-    @apply font-mono;
-  }
-
   :not(pre) > code {
     @apply bg-gray-1 dark:bg-gray-13 rd-1;
   }
