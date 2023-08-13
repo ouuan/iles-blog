@@ -6,7 +6,7 @@
       @click="opened = true"
     >
       <span class="i-mdi-gift" />
-      <span>赞赏支持</span>
+      <span>打赏作者</span>
     </button>
     <div
       v-else
