@@ -68,7 +68,7 @@
     "remark-math": "5.1.1",
     "remark-parse": "10.0.2",
     "rollup-plugin-analyzer": "4.0.0",
-    "sass": "1.65.1",
+    "sass": "1.66.1",
     "tsup": "7.2.0",
     "typescript": "5.1.6",
     "vite-plugin-compression": "0.5.1",
