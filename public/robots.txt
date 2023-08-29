@@ -4,3 +4,9 @@ Disallow: /functions
 Disallow: /hidden
 Disallow: /verification-follow_it-*
 Sitemap: https://ouuan.moe/sitemap.xml
+
+# DuckDuckGo lists font files in search results
+User-agent: DuckDuckBot
+Disallow: /*.ttf$
+Disallow: /*.woff$
+Disallow: /*.woff2$
