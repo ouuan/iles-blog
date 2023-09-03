@@ -6,6 +6,7 @@
       :page-index="1"
       :href-prefix="`/tag/${tag}/page`"
       :title="`标签: ${tag}`"
+      :feed="`/tag/${tag}/feed.xml`"
     />
   </div>
 </template>

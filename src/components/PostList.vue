@@ -9,7 +9,15 @@
     >
       {{ title }}
     </h1>
-    <span class="mr-2">共 {{ postCount }} 篇文章</span>
+    <div class="mr-2 flex items-center gap-2">
+      <span>共 {{ postCount }} 篇文章</span>
+      <a
+        v-if="feed"
+        class="i-mdi-rss text-5"
+        title="RSS 订阅"
+        :href="feed"
+      />
+    </div>
   </div>
   <ol class="my-6 flex flex-col gap-4 b-l-4 b-area">
     <template
@@ -102,6 +110,7 @@ const props = withDefaults(defineProps<{
   title: string;
   note?: string;
   displayVisitor?: boolean;
+  feed?: string;
 }>(), {
   sort: 'created-desc',
   filter: () => true,
@@ -109,6 +118,7 @@ const props = withDefaults(defineProps<{
   displayTime: 'date',
   note: undefined,
   displayVisitor: false,
+  feed: undefined,
 });
 
 const propRefs = toRefs(props);
