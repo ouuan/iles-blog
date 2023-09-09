@@ -111,8 +111,8 @@ devDependencies:
     specifier: 1.2.5
     version: 1.2.5(eslint@8.48.0)(typescript@5.2.2)
   '@ouuan/tsconfig-vue':
-    specifier: 1.0.0
-    version: 1.0.0
+    specifier: 1.1.1
+    version: 1.1.1
   '@total-typescript/ts-reset':
     specifier: 0.5.1
     version: 0.5.1
@@ -1079,16 +1079,18 @@ packages:
       - supports-color
     dev: true
 
-  /@ouuan/tsconfig-base@1.0.0:
-    resolution: {integrity: sha512-3bws2mlzmdrz7A3En+Q8j/vhPkTKedLWhdz/uVOP0XVJB6rBWHCIX3AW/o2zHULk7WKT5B0xZRHXVki7CjqNIA==}
+  /@ouuan/tsconfig-base@1.1.1:
+    resolution: {integrity: sha512-kWSdYffb1IEVeoijKyY1SDkKcRjT0+BsfefNMvO49kDel3Yza+JgA3UjIjEFdNfk8hJlu9R2YGZRlQDB1SIFKQ==}
     dependencies:
-      '@tsconfig/node-lts-strictest-esm': 18.12.1
+      '@tsconfig/esm': 1.0.4
+      '@tsconfig/node-lts': 18.12.5
+      '@tsconfig/strictest': 2.0.2
     dev: true
 
-  /@ouuan/tsconfig-vue@1.0.0:
-    resolution: {integrity: sha512-Wecift0AaoF7tN5Y5TamT3YW9IrWv3xsOGWS54i/COa97LhkB65s5jrsc5vEYWsF4DuHztroO1m5dSUnSVYdDA==}
+  /@ouuan/tsconfig-vue@1.1.1:
+    resolution: {integrity: sha512-yj/8u35F+okClhLuyWRsASH/sg9cNS87HQj7wiat31Dx8aQnCvmYJqZKr0TBc3ZDDWFY/wjwi2tCGNE6NmXD1Q==}
     dependencies:
-      '@ouuan/tsconfig-base': 1.0.0
+      '@ouuan/tsconfig-base': 1.1.1
     dev: true
 
   /@pkgr/utils@2.3.1:
@@ -1179,8 +1181,17 @@ packages:
     resolution: {integrity: sha512-AqlrT8YA1o7Ff5wPfMOL0pvL+1X+sw60NN6CcOCqs658emD6RfiXhF7Gu9QcfKBH7ELY2nInLhKSCWVoNL70MQ==}
     dev: true
 
-  /@tsconfig/node-lts-strictest-esm@18.12.1:
-    resolution: {integrity: sha512-LvBLmaC6Q/txTddLc11OeMHF9XjJFzlilkETJuvBlUvHy9pPiMsoH3nxWZM1FMSO53zp4mJP6gzOzxKEq0me7Q==}
+  /@tsconfig/esm@1.0.4:
+    resolution: {integrity: sha512-bix9CWljCxyD06nGQRDYdmTw0wevvEDyrLKjbDocGV31JQYbfqqgMV1yFeJ9aDgorKQ9yDLrak8poiggsB5Liw==}
+    deprecated: Use the tsconfig base for your runtime instead of general 'esm', e.g. 'node18'
+    dev: true
+
+  /@tsconfig/node-lts@18.12.5:
+    resolution: {integrity: sha512-KJZX0kQ5FBv77WDVzmQ9y1dUjaJCNXAAz3LSsg5cMwH0AUijVdDQtII+IVprEXdb13U9GjVOBxBzyRvr/ozPxw==}
+    dev: true
+
+  /@tsconfig/strictest@2.0.2:
+    resolution: {integrity: sha512-jt4jIsWKvUvuY6adJnQJlb/UR7DdjC8CjHI/OaSQruj2yX9/K6+KOvDt/vD6udqos/FUk5Op66CvYT7TBLYO5Q==}
     dev: true
 
   /@types/acorn@4.0.6:
