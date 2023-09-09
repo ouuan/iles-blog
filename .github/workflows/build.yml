@@ -15,7 +15,7 @@ jobs:
       env:
         TZ: Asia/Shanghai
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
@@ -86,7 +86,7 @@ jobs:
     if: github.repository_owner == 'ouuan' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: pip install -r meili/requirements.txt
       - run: python meili/update-documents.py
         env:

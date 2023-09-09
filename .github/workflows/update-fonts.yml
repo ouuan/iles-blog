@@ -11,7 +11,7 @@ jobs:
     container: # https://stackoverflow.com/a/74341376
       image: node:lts
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: recursive
