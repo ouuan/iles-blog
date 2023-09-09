@@ -20,7 +20,7 @@
   "dependencies": {
     "@giscus/vue": "2.3.0",
     "@sniptt/guards": "0.2.0",
-    "@unocss/reset": "0.55.3",
+    "@unocss/reset": "0.55.7",
     "@vueuse/components": "10.4.0",
     "@vueuse/core": "10.4.0",
     "date-fns": "2.30.0",
@@ -38,7 +38,7 @@
     "ts-exhaustive-check": "1.0.0",
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
-    "unocss": "0.55.3",
+    "unocss": "0.55.7",
     "vite": "4.1.4",
     "vue": "3.3.4",
     "xml-formatter": "3.5.0"
@@ -55,8 +55,8 @@
     "@total-typescript/ts-reset": "0.5.1",
     "@types/hast": "2.3.5",
     "@types/node": "18.17.11",
-    "@unocss/eslint-config": "0.55.3",
-    "@unocss/transformer-directives": "0.55.3",
+    "@unocss/eslint-config": "0.55.7",
+    "@unocss/transformer-directives": "0.55.7",
     "@vue/runtime-core": "3.3.4",
     "eslint": "8.48.0",
     "got": "13.0.0",
