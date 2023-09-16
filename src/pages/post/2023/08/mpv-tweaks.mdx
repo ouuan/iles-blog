@@ -467,3 +467,11 @@ include=~~home/conf.d/osc.conf
 ```
 
 注意 `~~home/` 是 mpv home，`~/` 才是 `$HOME`。
+
+#### directory-specific config
+
+[`exrc.lua`](https://github.com/ouuan/dotfiles/blob/master/.config/mpv/scripts/exrc.lua)（写得比较粗糙，能用就行（
+
+mpv 提供了 [“File-specific Configuration Files”](https://mpv.io/manual/stable/#file-specific-configuration-files) 功能，但是它不安全。受 [More secure .exrc (.nvimrc) handling · Issue #20911 · neovim/neovim](https://github.com/neovim/neovim/issues/20911) 启发，可以在加载 exrc 前询问用户。
+
+（我是学日语的时候听教材音频，想自动切成单曲循环。）
