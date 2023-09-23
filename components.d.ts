@@ -20,7 +20,7 @@ declare module '@vue/runtime-core' {
     GiscusCommentsInner: typeof import('./src/components/GiscusCommentsInner.vue')['default']
     Head: typeof import('@vueuse/head')['Head']
     HomePage: typeof import('./src/components/HomePage.vue')['default']
-    Island: typeof import('./node_modules/.pnpm/iles@0.9.5_@types+node@18.17.15_esbuild@0.18.8_sass@1.66.1/node_modules/iles/dist/client/app/components/Island.vue')['default']
+    Island: typeof import('./node_modules/.pnpm/iles@0.9.5_@types+node@18.17.18_esbuild@0.18.8_sass@1.68.0/node_modules/iles/dist/client/app/components/Island.vue')['default']
     MeiliSearch: typeof import('./src/components/MeiliSearch.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
