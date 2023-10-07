@@ -77,7 +77,7 @@ dependencies:
     version: 5.0.0
   unocss:
     specifier: 0.56.1
-    version: 0.56.1(postcss@8.4.25)(vite@4.1.4)
+    version: 0.56.1(postcss@8.4.31)(vite@4.1.4)
   vite:
     specifier: 4.1.4
     version: 4.1.4(@types/node@18.17.19)(sass@1.68.0)
@@ -166,7 +166,7 @@ devDependencies:
     version: 1.68.0
   tsup:
     specifier: 7.2.0
-    version: 7.2.0(postcss@8.4.25)(typescript@5.2.2)
+    version: 7.2.0(postcss@8.4.31)(typescript@5.2.2)
   typescript:
     specifier: 5.2.2
     version: 5.2.2
@@ -1713,7 +1713,7 @@ packages:
       sirv: 2.0.3
     dev: false
 
-  /@unocss/postcss@0.56.1(postcss@8.4.25):
+  /@unocss/postcss@0.56.1(postcss@8.4.31):
     resolution: {integrity: sha512-8jUS5ynopvMbZmdUQhGv+lvKziuAPHHl9LaZzCJ4uHgPOwITNXWTi4dmNbytdYC3iYPQ++8eOph93VPCxdqVsw==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -1725,7 +1725,7 @@ packages:
       css-tree: 2.3.1
       fast-glob: 3.3.1
       magic-string: 0.30.3
-      postcss: 8.4.25
+      postcss: 8.4.31
     dev: false
 
   /@unocss/preset-attributify@0.56.1:
@@ -1921,7 +1921,7 @@ packages:
       '@vue/shared': 3.3.4
       estree-walker: 2.0.2
       magic-string: 0.30.0
-      postcss: 8.4.21
+      postcss: 8.4.31
       source-map-js: 1.0.2
 
   /@vue/compiler-ssr@3.2.47:
@@ -5049,11 +5049,6 @@ packages:
       thenify-all: 1.6.0
     dev: true
 
-  /nanoid@3.3.4:
-    resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
   /nanoid@3.3.6:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -5336,7 +5331,7 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /postcss-load-config@4.0.1(postcss@8.4.25):
+  /postcss-load-config@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -5349,7 +5344,7 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.0.6
-      postcss: 8.4.25
+      postcss: 8.4.31
       yaml: 2.3.1
     dev: true
 
@@ -5361,16 +5356,8 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /postcss@8.4.21:
-    resolution: {integrity: sha512-tP7u/Sn/dVxK2NnruI4H9BG+x+Wxz6oeZ1cJ8P6G/PZY0IKk4k/63TDsQf2kQq3+qoJeLm2kIBUNlZe3zgb4Zg==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.4
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
-
-  /postcss@8.4.25:
-    resolution: {integrity: sha512-7taJ/8t2av0Z+sQEvNzCkpDynl0tX3uJMCODi6nT3PfASC7dYCWV9aQ+uiCf+KBD4SEFcu+GvJdGdwzQ6OSjCw==}
+  /postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -6206,7 +6193,7 @@ packages:
     resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
     dev: true
 
-  /tsup@7.2.0(postcss@8.4.25)(typescript@5.2.2):
+  /tsup@7.2.0(postcss@8.4.31)(typescript@5.2.2):
     resolution: {integrity: sha512-vDHlczXbgUvY3rWvqFEbSqmC1L7woozbzngMqTtL2PGBODTtWlRwGDDawhvWzr5c1QjKe4OAKqJGfE1xeXUvtQ==}
     engines: {node: '>=16.14'}
     hasBin: true
@@ -6230,8 +6217,8 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss: 8.4.25
-      postcss-load-config: 4.0.1(postcss@8.4.25)
+      postcss: 8.4.31
+      postcss-load-config: 4.0.1(postcss@8.4.31)
       resolve-from: 5.0.0
       rollup: 3.20.2
       source-map: 0.8.0-beta.0
@@ -6443,7 +6430,7 @@ packages:
     engines: {node: '>= 10.0.0'}
     dev: true
 
-  /unocss@0.56.1(postcss@8.4.25)(vite@4.1.4):
+  /unocss@0.56.1(postcss@8.4.31)(vite@4.1.4):
     resolution: {integrity: sha512-jjkcyXfW90CUjN4tBV6SrHX9ifi5GQgcwAQlMRB0copJEW3ejM/nyZnRgNexaV7hi7Ao76XMVqCKbOC5B+IuOA==}
     engines: {node: '>=14'}
     peerDependencies:
@@ -6459,7 +6446,7 @@ packages:
       '@unocss/cli': 0.56.1
       '@unocss/core': 0.56.1
       '@unocss/extractor-arbitrary-variants': 0.56.1
-      '@unocss/postcss': 0.56.1(postcss@8.4.25)
+      '@unocss/postcss': 0.56.1(postcss@8.4.31)
       '@unocss/preset-attributify': 0.56.1
       '@unocss/preset-icons': 0.56.1
       '@unocss/preset-mini': 0.56.1
@@ -6658,7 +6645,7 @@ packages:
     dependencies:
       '@types/node': 18.17.19
       esbuild: 0.16.17
-      postcss: 8.4.21
+      postcss: 8.4.31
       resolve: 1.22.1
       rollup: 3.13.0
       sass: 1.68.0
@@ -6692,7 +6679,7 @@ packages:
     dependencies:
       '@types/node': 18.17.19
       esbuild: 0.17.7
-      postcss: 8.4.21
+      postcss: 8.4.31
       rollup: 3.20.2
       sass: 1.68.0
     optionalDependencies:
