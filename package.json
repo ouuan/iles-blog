@@ -39,7 +39,7 @@
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
     "unocss": "0.56.5",
-    "vite": "4.1.4",
+    "vite": "4.4.11",
     "vue": "3.3.4",
     "xml-formatter": "3.5.0"
   },
