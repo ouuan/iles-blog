@@ -1,0 +1,238 @@
+---
+title: CNATDA 第七章学习笔记
+date: 2023-09-20T11:08:47+08:00
+image: cnatda-7.png
+tags:
+-   cnatda
+-   学习笔记
+---
+
+《Computer Networking: A Top-Down Approach (8th Edition)》第七章 “Wireless and Mobile Networks” 的学习笔记。
+
+<Excerpt />
+
+## Introduction
+
+“wireless” 和 “mobile” 往往是密不可分的，但它们实际上面临着不同的挑战，需要不同的解决方案。
+
+wireless network 一般包含 wireless host、wireless link 和 base station，但不是所有 wireless network 都有 base station。
+
+根据 wireless hop 的次数、是否有 base station (infrastructure)，wireless network 可以大致分为四种：
+
+-   single-hop, infrastructure-based: 大部分 wireless network，例如 802.11 和 4G LTE
+-   single-hop, infrastructure-less: 例如 Bluetooth
+-   multi-hop, infrastructure-based: 例如 wireless mesh network
+-   multi-hop, infrastructure-less: 例如 mobile ad hoc network (MANET)、vehicular ad hoc network (VANET)
+
+## Wireless Links and Network Characteristics
+
+wireless network 面临着几个主要问题：
+
+-   信号衰减：长距离传输、穿越障碍
+-   信号干扰：其他同频段信号、环境噪音
+-   multipath propagation：同一信号的多个部分从 sender 到 receiver 可能会走不同的路径
+
+总之，wireless network 通常有更多 bit error，所以往往除了 wired network 也会使用的 CRC error detection codes，还会使用 link-layer reliable-data-transfer protocol。
+
+*signal-to-noise ratio* (SNR) 是接收到的信号强度与噪音之比，*bit error rate* (BER) 是 bit error 发生的概率。
+
+wireless network 通过 modulation scheme 来决定如何 encoding 和 transmission。对于同一个 modulation scheme，SNR 越高 BER 越低；对于同样的 SNR，transmission rate 越高的 modulation scheme BER 越高。所以，往往会根据实际的 channel condition 动态选用 modulation scheme（例如在 BER 满足一定限制的情况下尽可能提高 transmission rate）。
+
+wireless network 中的 multiple access 也更加复杂，例如，A 和 C 分别能传输信号到 B，但因为障碍物或距离等原因，A 和 C 接收不到彼此发送的信号，这可能导致 undetectable collision。
+
+## CDMA
+
+CDMA (code division multiple access) 是一种常用于 wireless network 的 multiple access protocol，属于 [channel partitioning protocol](/post/2023/07/cnatda-6#channel-partitioning-protocols)。
+
+在 CDMA 中，每个装有 1 bit 的 time slot 会被再分为多个 mini-slot，sender 将每个 slot 内的 data（mini-slot 全 0 / 全 1）异或上一个 code，理想状态下，receiver 再异或上这个 code 就可以得到 data。实际上，会有其他信号产生干扰，而合适地选取 code 可以在有干扰的情况下依然能够读取出 data。这相当于是在 code space 而非 time / frequency 上进行 channel partitioning。
+
+（书中没有说明具体细节，例如如何选取 code，如何处理不同 sender 的信号强度不同。）
+
+## Wi-Fi: 802.11 Wireless LANs
+
+Wi-Fi 的全称为 “IEEE 802.11 wireless LAN”，有 802.11b/g/n/ac/ax/af/ah 等版本，不同版本有不同的最大传输速率、传输距离以及使用的频段。
+
+### The 802.11 Wireless LAN Architecture
+
+802.11 architecture 的 building block 是 *basic service set* (BSS)，每个 BSS 包含一个被称作 *access point* (AP) 的 base station 以及连接到 AP 的若干 wireless station（即 host）。
+
+802.11 可以通过 AP 连接为 infrastructure wireless LAN，也可以没有 AP 而只由几个 host 互相连接成 ad hoc network（不对外连接到 Internet）。本书只讨论 infrastructure wireless LAN。
+
+每个 AP 有一个 *service set identifier* (SSID)，即 Wi-Fi 的名称。可以为 AP 设置 channel number，2.4GHz 频段共有 11 个 channel number，但相差不到 5 的 channel 会相交，彼此不相交的 channel 最多只能有 3 个（1、6、11）。
+
+AP 会周期性地广播 *beacon frame* 来告诉 wireless device 自己的存在，wireless device 可以监听 beacon frame 来进行 *passive scanning*。除此之外，也可以主动发送 probe frame 来进行 *active scanning*。
+
+找到 AP 后，wireless device 需要在可用的 AP 中选择一个（802.11 standard 中没有规定选择 AP 的算法），发送 association request，AP 返回 association response，就建立了连接。
+
+### The 802.11 MAC Protocol
+
+#### CSMA/CA
+
+802.11 使用的 [MAC protocol](/post/2023/07/cnatda-6#multiple-access-links-and-protocols) 是称作 *CSMA with collision avoidance* (CSMA/CA) 的 [random access protocol](/post/2023/07/cnatda-6#random-access-protocols)，和 Ethernet 使用的 [CSMA/CD](/post/2023/07/cnatda-6#csmacd) 类似，但又有很大不同：
+
+-   CSMA/CA 是 “collision avoidance” 而非 CSMA/CD 的 “collision detection”，这意味着它不是在检测 collision 时中断传输，而是不进行检测，通过其他机制尽量避免 collision。这是因为 wireless network 中很难进行 collision detection：
+    -  [前文](#wireless-links-and-network-characteristics)中提到过，wireless network 中可能存在 undetectable collision；
+    -  collision detection 需要在发送的同时接收信号，而无线信号在发送端的强度会远高于接收端的强度，这也加大了 collision detection 的难度。
+-   802.11 引入了 link-layer [reliable-data-transfer](/post/2023/06/cnatda-3#principles-of-reliable-data-transfer)。
+
+其完整流程为：
+
+1.  等待一小段时间（distributed inter-frame space, DIFS) 来看 channel 是否 idle。
+2.  如果 channel buzy，进入 binary exponential backoff（只在 channel idle 时 countdown，channel buzy 则不计入等待时间）。
+3.  经历了足够长的 channel idle 后，发送整个 frame（不检测 collision）。
+4.  AP 接收到 frame 后，等待一小段时间（short inter-frame space, SIFS），然后发送 ACK。
+5.  如果 sender 接收到了 ACK，则结束或继续发送下一个 frame；否则进入 binary exponential backoff，进行 retransmission。
+
+其中，检测到 channel buzy 时直接进入 backoff，是为了避免 channel 变为 idle 时多个 sender 同时发送而产生 collision。这与 CSMA/CD 不同，因为如果有 collision detection 的话，即使发生了这样的 collision 也代价不大，就无需通过 backoff 来避免。
+
+#### RTS/CTS
+
+wireless network 中不仅 collision detection 非常困难，carrier sense 也比较困难，光靠上面这些机制还是很可能出现 collision，所以 802.11 还提供了另一种可选的机制：使用 *request to send* (RTS) frame 和 *clear to send* (CTS) frame 来显式地预留出通信权：
+
+1.  sender 发送 RTS，告诉 AP 需要预留出的时长（传输 data 和 ACK 的用时）。
+2.  AP 发送 CTS，告诉 sender 可以发送，以及告诉其他 station 一段时间内不要发送。
+3.  sender 发送 data。
+4.  AP 发送 ACK，除了普通的 ACK，也是告诉其他 station 可以发送了。
+
+使用 RTS/CTS 可以保证 data 和 ACK 的传输不会出现 collision，而 RTS/CTS frame 自身非常短，如果产生 collision 代价是较小的。然而，RTS/CTS 自身会消耗资源、产生延时，所以一般只有在 data 较大时才会使用，wireless station 一般会设置一个发送 RTS 的 frame length threshold，很多时候这个 threshold 比 maximum frame length 还大，实际上就是禁用了 RTS。
+
+#### Use 802.11 as Point-to-Point Link
+
+上面说的是常见的 802.11 对 multiple access 的处理，除此之外，802.11 也可以通过 directional antenna 作为 point-to-point link 使用。
+
+### The IEEE 802.11 Frame
+
+802.11 frame 的结构如下图所示：[^fig-7.13]
+
+[^fig-7.13]: p554, Figure 7.13: The 802.11 frame
+
+-   type、subtype：这决定了 association、RTS、CTS、ACK、data 等 frame 类型。
+
+-   duration: 这是 RTS/CTS（预留一段时长）所需的。
+
+-   address: 由于 AP 起到中介的作用，在 infrastructure wireless LAN 中 frame 需要包含三个 address（在 ad hoc mode 中需要四个，此处不讨论）：
+
+    -   前两个是 802.11 收发双方（station 和 AP）的 MAC address：这是 802.11 通信所需的。
+    -   第三个是 AP 连接到的 router interface 的 MAC address：AP 工作在 link layer，router 感知不到 AP 的存在；在 AP 向 station 发送时，station 可以从 address 3 得到 router 的 MAC address；在 station 向 AP 发送时，AP 可以从 address 3 知道 Ethernet frame 需要发给谁。总之，address 3 是 Ethernet 通信所需的。
+
+    不同场合下每个 address 分别代表什么是不同的，这由 frame control 中的 “to AP” 和 “from AP” 决定。
+
+-   sequence number: 这是 link-layer reliable-data-transfer 所需的。
+
+-   payload: 802.11 允许 2312 bytes 的 payload，但由于 Ethernet 的限制，一般不会超过 1500。
+
+![The 802.11 frame](cnatda-fig-7.13.png)
+
+### Mobility in the Same IP Subnet
+
+当 host 从一个 BSS 移动到另一个 BSS 时，如果两个 BSS 处于同一个 IP subnet 中，mobility issue 就比较容易解决：直接保持 IP address 不变即可。而如果两个 AP 由 [switch](/post/2023/07/cnatda-6#link-layer-switches) 连接，还需要处理 switch interface 改变的问题，由于 switch 的 self-learning，一个处理方式是在和新的 AP 建立 association 后立刻发送一个 broadcast Ethernet frame 来告诉 switch 换了一个 interface。
+
+如果使用 [VLAN](/post/2023/07/cnatda-6#virtual-local-area-networks-vlans)，可以将很多（地理位置不同的）AP 放在同一个 IP subnet 中，从而较为轻松地解决 mobility issue。
+
+### Advanced Features in 802.11
+
+#### 802.11 Rate Adaptation
+
+如[上文](#wireless-links-and-network-characteristics)所述，不同环境下 SNR 不同会导致最佳的 transmission rate 不同。在 802.11 中，ACK 可以用作 rate adaptation 的 hint，在没收到 ACK 时降低 transmission rate，在连续收到很多 ACK 时提高 transmission rate，这与 [TCP 的 congestion control](/post/2023/06/cnatda-3#classic-tcp-congestion-control) 类似。
+
+#### 802.11 Power Management
+
+一个 802.11 node 往往不需要一直通信，在不进行通信的时候可以 sleep 来 save power：
+
+1.  node 可以在 header 中设置 power management flag 来告诉 AP 自己即将 sleep。
+2.  如果 AP 接收到一个发送给正在 sleep 的 node 的 frame，会将其存在 buffer 中。
+3.  AP 发送的 beacon frame 中包含一个有 buffered frame 的 node list，node 会在 AP 发送 beacon frame 前 wake up，根据自己是否有 buffered frame 来请求 AP 发送这些 buffered frame 或继续 sleep。
+
+一般来说，AP 会周期性地每 100ms 发送一次 beacon frame，而一次 wakeup 只需 250μs，所以不进行通信的 station 可以在 99% 的时间内 sleep。
+
+## Personal Area Networks: Bluetooth
+
+Bluetooth 使用 TDM 进行 channel partitioning，同时在 79 个 frequency channel 中进行 pseudo-random 的 channel hopping (*frequency-hopping spread spectrum*, FHSS) 来降低外界干扰的影响。
+
+Bluetooth network 是 ad hoc (infrastructure-less) 的，一个 Bluetooth network 包含最多 8 个 active device，其中一个是 master device，它决定传输的 clock、frequency-hopping pattern、power，邀请 client 进入 Bluetooth network，通过 polling 来控制 client 何时通信。network 中还可以有最多 255 个 parked device，会长期处于 sleep mode，周期性地接收 beacon message，只有切换为 active 才能进行通信。
+
+Bluetooth network 的建立过程为：
+
+1.  neighbor discovery:
+    1.  master 广播 inquiry message，在 32 个不同的 frequency 发送至多 128 遍，因为此时还没有协商好 frequency-hopping pattern。
+    2.  client 收到 inquiry message 后，随机等待 0\~300ms 来避免 collision，然后发送 response，包含 client 的 device ID。
+2.  Bluetooth paging:
+    1.  master 向特定的 client 发送 paging invitation，依然是在 32 个不同的 frequency。
+    2.  client 收到 paging invitation 后返回 acknowledgment。
+    3.  master 向 client 发送 frequency-hopping pattern、clock synchronization information 以及 active member address。
+    4.  使用 frequency-hopping pattern 来 poll client，以确认 client 连上了。
+
+## Mobility Management: Principles
+
+<Card type="hint" title="7.4 Cellular Networks: 4G and 5G">
+
+7.4 这一节，感觉可以直接跳过，或者简单扫一眼。
+
+-   7.4.1：没看 7.5、7.6 的话感觉会完全不知道它在说什么，看了 7.6 之后也不太需要回过头来看这里了。
+-   7.4.2~7.4.5：非常简略，没什么东西。
+-   7.4.6：5G 的科普，除了大家耳熟能详的以及过于简略的，感觉就一条：5G 为了提升 transmission rate，base station 需要建得更密集。
+
+说到底，这样编排说是为了将 “wireless” 和 “mobility” 这两方面的问题分开讨论。但是，“wireless” 的部分在 802.11 已经讲得差不多了，细节上会有差异但书上也没有细讲。其实讲 cellular network 主要就是要讲它的 mobility，所以 7.5、7.6 就够了。
+
+</Card>
+
+mobility 指的是 mobile device 到网络的接入点发生变化，而从 network layer 的角度来看，只有 access network 发生了变化且需要保持连接（例如 TCP connection）不中断，才会带来 mobility issue。如果设备在每个 session 只连到同一个接入点，则不需要特殊处理。
+
+在 cellular network 中，有两方面的 mobility issue:
+
+-   handover: cellular network 中有很多 base station，每个 base station 覆盖一个 cell 提供服务。从一个 base station 移动到另一个 base station 时，需要进行 handover 来改变 mobile device 连接到的 base station。
+-   roaming on visited networks: 每个 cellular subscriber 会有一个 *home network*，提供了 subscriber 信息的集中管理。home network 提供服务的范围是有限的，如果 mobile device 移动到了 home network 之外，可能就需要连接到由其他 cellular provider 提供的 *visited network*，此时需要特别的机制来处理 routing。
+
+mobile device 的接入点随时可能发生变化，而 home network 会跟踪 device 当前接入的 visited network，所以外界可以通过 home network 来找到 mobile device 当前的位置从而进行通信。
+
+具体的 routing 有两种方式：
+
+-   indirect: mobile device 有一个固定的 IP，外界向这个 IP 发送消息会发到 home network 的 gateway，而 home network 与 visited network 的 gateway 之间建立了 tunnel，最后由 visited network 的 gateway 与 mobile device 通信。也就是说，外界与 mobile device 通信需要经过 home network 中转。
+-   direct: 向 mobile device 发送消息时，一开始先查询 mobile device 所在的 visited network，后续则直接与 visited network 通信。
+
+indirect routing 的缺点在于 *triangle routing problem*，即通过 home network 中转可能带来很大的浪费。direct routing 的问题在于，需要特殊的机制来完成一开始的 visited network 查询以及后续 visited network 变更时的通知，也就是说需要通信另一方的配合。
+
+## Mobility Management in 4G/5G Networks
+
+### Attach to Visited Network
+
+连接到 base station 时，mobile device 会提供自己的 IMSI (*international mobile subscriber identity*)。visited network 的 MME (*mobility management entity*) 会从 local cache 或 home network 的 HSS (*home subscriber server*) 获取到 mobile device 的 authentication、encryption、quality of service 等信息，并通知 home network 的 HSS，mobile device 现在位于这个 visited network。
+
+然后，会建立两个 tunnel，从 mobile device 到 visited network 的 *serving gateway*，再从 serving gateway 到 home network 的 PDN (*packet data network*) gateway。这两个 tunnel 使用 *GPRS tunneling protocol* (GTP)，原理类似于 [IPv6 tunneling](/post/2023/06/cnatda-4#ipv6)。
+
+<Card type="question" title="local breakout">
+
+书上前后提到两次 local breakout，给我整懵了，它到底是 direct 还是 indirect（；好像也不重要，当它不存在就好（
+
+</Card>
+
+### Handover Management
+
+handover 是 mobile device 从一个 base station 转移到邻近的另一个 base station 的过程。这可能是从信号差的 base station 转到信号好的，或者是从拥挤的转到畅通的。mobile device 会周期性地向当前连接到的 base station (称作 *source* base station) 报告它接收到的各个 base station 的信号强度等信息，而 source base station 可以根据它掌握的信息来做出 handover 的决定。
+
+（在同一个 network 中）handover 的过程如下：
+
+1.  source base station 选择一个 *target* base station，发送 handover request。
+2.  如果 target base station 同意，会提前分配好连接所需的资源（从而让 handover 能够尽快完成），然后发送 handover request acknowledge，包含连接所需的各项信息。
+3.  source base station 告诉 mobile device 连接到 target base station 所需的信息。此时在 mobile device 看来 handover 已经结束了，可以和 target base station 进行通信。
+4.  source base station 停止向 mobile device 转发，而是转发给 target base station。
+5.  target base station 告诉 MME 自己是这个 mobile device 新连接到的 base station，MME 会更新 serving gateway 到 base station 的 tunnel 的 end point。
+6.  target base station 告诉 source base station，新的 tunnel 已经配置好了，source base station 可以释放为这个 mobile device 提供的资源了。
+7.  target base station 向 mobile device 发送之前由 source base station 转发来的 datagram，之后就可以正常通信了。
+
+## Wireless and Mobility: Impact on Higher-Layer Protocols
+
+### Impact on TCP
+
+TCP 以 retransmission 作为 congestion 的标志进行 congestion control，但在 wireless network 中，bit error 更加常见，而 handover 时也会带来 delay 或丢包，所以 retransmission 不一定意味着 network congestion，如果在 wireless network 中沿用一般的 TCP congestion control 可能会有性能问题。
+
+目前的解决途径有：
+
+-   local recovery：在 link layer 提供 reliable data transfer，减少 bit error 的影响。
+-   split-connection：在 sender 到 base station、base station 到 receiver 分别建立连接。base station 到 mobile host 的连接可以是标准的 TCP 连接，也可以是其他连接。
+-   让通信双方意识到 wireless link 的存在，并区分出 retransmission 是否由 congestion 引起。
+
+### Impact on Applications
+
+-   wireless network 的 bandwidth 通常较小，所以为 mobile device 提供服务时更需要减少传输的数据量。
+-   mobility 使得 location-aware / context-aware application 成为可能。
