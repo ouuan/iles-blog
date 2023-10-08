@@ -5,7 +5,6 @@ image: cnatda-8.png
 tags:
 -   cnatda
 -   学习笔记
--   WIP
 ---
 
 《Computer Networking: A Top-Down Approach (8th Edition)》第八章 “Security in Computer Networks” 的学习笔记。
@@ -89,7 +88,11 @@ digital signature 验证的是 message 和 public key 的对应关系，还需�
 
 就是上面这些东西的一个实例，没啥新东西：结合 digital signature 和使用 session key 的 encryption 即可；需要双方互相知道对方的 public key（分别用于 digital signature 的验证和 session key 的传输），public key 可以由 CA 认证。
 
-（好怪，为啥不讲 SPF、DKIM、DMARC。）
+<Card type="question" title="SPF、DKIM、DMARC">
+
+为啥不讲 SPF、DKIM、DMARC 🤔
+
+</Card>
 
 ### PGP
 
@@ -191,11 +194,52 @@ IPsec 可以手动配置 key，但大型的 VPN 往往需要使用 Internet Key 
 
 ## Securing Wireless LANs and 4G/5G Cellular Networks
 
-<Card type="wip">
+security 在 wireless network 中更加重要，因为 attacker 只需要将设备置于 sender 的 transmission range 内就可以窃听。
 
-未完待续…… 🕊️
+wireless network security 主要需要两个功能：
 
-</Card>
+-   mutual authentication: mobile device 和 access point / base station 需要互相认证对方。
+-   encryption: 通信内容需要加密。一般使用 symmetric key cryptography (AES)，需要进行 shared symmetric key derivation。
+
+### Authentication and Key Agreement in 802.11 Wireless LANs
+
+802.11 的认证由 authentication server (AS) 进行，AS 可以和 AP 一体，也可以通过网络连接。
+
+802.11 的 security specification 有 WEP、WPA1、WPA2、WPA3，其中 WEP 有严重的漏洞。
+
+总体上的步骤为：
+
+1.  在 AP 广播自己的存在时，会附带其支持的 security mechanism，mobile device 连接到 AP 时可以选择要使用哪个。
+2.  mobile device 和 AS 预先有一个 pre-shared key（PSK，也就是 Wi-Fi 密码），会根据这个 PSK 进行 mutual authentication 和 shared symmetric key derivation。
+3.  AS 把 shared symmetric key 告诉 AP。
+4.  使用 shared symmetric key 进行加密通信。
+
+WPA 的核心是一套 four-way handshake，其中前两步完成 mutual authentication 和 shared symmetric key derivation（后两步用于 group key derivation，书中不涉及）：
+
+1.  AS 生成一个 AS nonce，发给 mobile device。
+2.  mobile device 生成一个 mobile nonce，根据双方的 nonce、双方的 MAC address 以及 PSK 得到 shared symmetric key，然后向 AS 发送 mobile nonce，以及编码了 AS nonce 和 PSK 的 HMAC。
+
+mobile device 和 AS 的通信通过 EAP (extensible authentication protocol) 进行，它在 mobile device 到 AP 使用 EAP over LAN，在 AP 到 AS 使用 RADIUS 或更新的 DIAMETER 协议。
+
+### Authentication and Key Agreement in 4G/5G Cellular Networks
+
+cellular network 使用存储在 SIM card 和 HSS 中的 PSK 进行认证。在 4G LTE 中，步骤如下：
+
+1.  1.  mobile device 向 base station 发送 attach message。
+    2.  MME 向 HSS 发送 IMSI 以及 visited network information。
+2.  1.  HSS 计算出能证明自己身份的 auth token，以及用于证明 mobile device 身份的 expected auth response，将它们发送给 MME。
+    2.  MME 将 auth token 发给 mobile device。
+3.  1.  mobile device 根据 auth token 认证 HSS。
+    2.  mobile device 计算出 auth response，发送给 MME。
+4.  1.  MME 比较 HSS 发送的 expected auth response 和 mobile device 发送的 auth response 来认证 mobile device。
+    2.  MME 将下一步需要用到的 key 发给 base station。
+5.  base station 和 mobile device 进行 shared symmetric key derivation，会在 control plane 和 data plane 使用不同的 key。
+
+5G 的认证有一些不同：
+
+-   authentication decision 从 MME 挪到了 HSS，使得 visited network 的 middleman 作用更小。
+-   新增了两种 authentication protocol，一种和 4G 类似但使用了 EAP，一种不需要 PSK 而适用于 IoT。
+-   使用了 public key cryptography 来加密 IMSI。
 
 ## Operational Security: Firewalls and Intrusion Detection Systems
 
