@@ -1,0 +1,406 @@
+---
+title: Computer Organization and Design 第二章学习笔记
+date: 2023-09-21T13:16:23+08:00
+image: cod-2.png
+tags:
+    - cod
+    - 学习笔记
+---
+
+《Computer Organization and Design RISC-V Edition: The Hardware/Software Interface (2nd Edition)》第二章 “Instructions: Language of the Computer” 的学习笔记。
+
+<Excerpt />
+
+主要是在讲 RISC-V。可以参考 [Specifications – RISC-V International](https://riscv.org/technical/specifications/)（比 x86 短多了）。
+
+（P.S. 其他书我是认真看了第一章但懒得写，这本（如果看过 CS:APP 的话）建议直接跳过第一章（
+
+## Registers
+
+RISC-V (RV32) 的 register 是 32-bit 的，而 32-bit 称作一个 word（与 x86 不同）。
+
+有 32 个 register，用 `x0`~`x31` 来标识，每个 register 根据其功能还有一个（或多个）别名。
+
+`x0` / `zero` 的值固定为 0，能起到很多作用，例如在 `sub` 中作为被减数来取负、作为 destination 来丢弃结果、在 conditional branch（不接受 immediate）中作为比较的参数。
+
+其他寄存器在硬件层面上没有区别，但有用于 procedure 的 convention：
+
+-   `x1` / `ra` 是 return address（call 是 `jal x1, foo`，return 是 `jalr x0, 0(x1)`）。
+
+-   `x2` / `sp` 是 stack pointer。
+
+-   `x3` / `gp` 是 global pointer（指向 static variable 的位置）。
+
+-   `x4` / `tp` 是 thread pointer。
+
+-   `x8` / `fp` 可以用作 frame pointer。
+
+-   `x10`-`x17` (`a0`-`a7`) 用来存放前 8 个参数或返回值（一般单个返回值就是 `x10`）。
+
+-   `x8`-`x9` (`s0`-`s1`), `x18`-`x27` (`s2`-`s11`) 是 (callee-)saved。
+
+-   `x5`-`x7` (`t0`-`t2`), `x28`-`x31` (`t3`-`t6`) 是 temporary (caller-saved)。
+
+<Card title="register 那么快，怎么不多来点（">
+
+限制 register 的数量有助于在硬件实现时加快电路，从而提升 clock frequency。
+
+并且，register 的编号需要被编码在 instruction 中，限制 register 的数量也可以缩短 instruction 的长度。
+
+</Card>
+
+## Basic Instructions
+
+### op1 = op2 op op3
+
+`add`, `sub`, `addi`, `and`, `or`, `xor`, `andi`, `ori`, `xori`, `sll`, `srl`, `sra`, `slli`, `srli`, `srai`, `slt`, `sltu`, `slti`, `sltiu`
+
+-   `add x5, x6, x7`: `x5 = x6 + x7`
+-   `addi x5, x6, 20`: `x5 = x6 + 20`，其中 immediate 是 12-bit signed integer。
+-   `slt x5, x6, x7`: `x5 = x6 < x7 ? 1 : 0`
+
+<Card title="immediate 的妙用">
+
+    -   `addi` 在 immediate 为负时可以做减法
+    -   `addi` 在 immediate 为 0 时相当于 register 间的 move
+    -   `xori` 以 -1 为 operand 可以起到 NOT 的效果
+
+</Card>
+
+### Data Transfer
+
+load word: `lw x5, 40(x6)`: `x5 = Memory[x6 + 40]`
+
+store word: `sw x5, 40(x6)`: `Memory[x6 + 40] = x5`
+
+half word、byte: `lh`, `lhu`, `sh`, `lb`, `lbu`, `sb`，其中 `u` 用来决定高位补零还是符号位。
+
+### Conditional Branch
+
+`beq`, `bne`, `blt`, `bltu`, `bge`, `bgeu`
+
+`blt x5, x6, 100`: `if (x5 < x6) goto PC+100`
+
+<Card title="剩下的比较函数？">
+
+lt 和 gt、ge 和 le 只需将操作数互换即可，所以不需要额外的 instruction（但可以有额外的 [pseudoinstruction](#pseudoinstructions)）。
+
+lt 和 ge 结果是相反的，在硬件上容易实现，所以不是 lt 和 le / gt 和 ge。
+
+`slt` 则不需要 `sge`，因为将结果存下来一般只需和 0 比较 eq / ne 即可。
+
+</Card>
+
+### Unconditional Branch
+
+`jal x1, 100`: `x1 = PC+4; goto PC+100`
+
+`jalr x1, 100(x5)`: `x1 = PC+4; goto x5+100`
+
+## Instruction Format
+
+RISC-V 的 instruction 都是 32 bits 长，有若干种不同的 instruction format。
+
+其中 “rs” 是 register source，“rd” 是 register destination，“funct” 用作 additional opcode。
+
+R-type:
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-7">
+            <span>funct7</span>
+            <span>(7 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs2</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs1</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-3">
+            <span>funct3</span>
+            <span>(3 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rd</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+I-type：
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-12">
+            <span>imm[11:0]</span>
+            <span>(12 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs1</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-3">
+            <span>funct3</span>
+            <span>(3 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rd</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+S-type：
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-7">
+            <span>imm[11:5]</span>
+            <span>(7 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs2</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs1</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-3">
+            <span>funct3</span>
+            <span>(3 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>imm[4:0]</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+可以看出，在不同的 format 中，会尽量保留 rs、rd、opcode、funct3 的位置不变，以简化电路（其中保持 opcode 位置不变对于识别 instruction format 是必要的）。
+
+## Wide Immediates and Addresses
+
+### Wide Immediates
+
+超过 12 bits 的 immediate 可以通过两条 instruction `lui` (load upper immediate) 和 `addi` load 到 register，其中 `lui` 是 U-type：
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-20">
+            <span>imm[31:12]</span>
+            <span>(20 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rd</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+`auipc` 可以用来进行更大范围的 PC-relative branch，和 `lui` 类似，会将 PC 加上一个只有高位的 immediate 存于 register。
+
+<Card title="<code>lui</code> 和 <code>addi</code> 不一定恰好是高位和低位">
+
+由于 immediate 是 signed 的，如果 `addi` 的 sign bit 是 1，实际上是在做减法，需要将 `lui` 的参数加一。
+
+</Card>
+
+### Addressing in Branches
+
+branch 使用的 address 必须是偶数，而且 branch instruction 使用了特殊的编码格式。
+
+unconditional branch 使用 B-type，和 S-type 类似：
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-7">
+            <span>imm[12],[10:5]</span>
+            <span>(7 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs2</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rs1</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-3">
+            <span>funct3</span>
+            <span>(3 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>imm[4:1],[11]</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+`jal` 使用 J-type，和 U-type 类似：
+
+<div class="overflow-auto">
+    <div class={[
+        'grid grid-cols-32 min-w-150',
+        '[&>div]:b-footer [&>div]:b-2 [&>div]:b-r-0 [&>div:last-child]:b-r-2',
+        '[&>div]:grid [&>div]:justify-items-center'
+    ]}>
+        <div class="col-span-7">
+            <span>imm[20],[10:5]</span>
+            <span>(7 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>imm[4:1],[11]</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-8">
+            <span>imm[19:12]</span>
+            <span>(8 bits)</span>
+        </div>
+        <div class="col-span-5">
+            <span>rd</span>
+            <span>(5 bits)</span>
+        </div>
+        <div class="col-span-7">
+            <span>opcode</span>
+            <span>(7 bits)</span>
+        </div>
+    </div>
+</div>
+
+`jalr` 使用 I-type。
+
+通过对 immediate 的重排：
+
+-   所有格式中 immediate 的符号位都在同一位。
+-   I、S、B、U 中 `imm[10:5]` 位置相同。
+-   S、B 中 `imm[4:1]` 位置相同。
+-   I、J 中 `imm[4:1]` 位置相同，U、J 中 `imm[19:12]` 位置相同。
+
+<Card title="<code>jalr</code> 的 format">
+
+`jalr` 需要读取 register，所以当然不是 J-type。而 RISC-V 的设计选择了不为其单独再引入一种 instruction format：
+
+>   Note that the JALR instruction does not treat the 12-bit immediate as multiples of 2 bytes,
+>   unlike the conditional branch instructions. This avoids one more immediate format in hardware.
+>   In practice, most uses of JALR will have either a zero immediate or be paired with a LUI or
+>   AUIPC, so the slight reduction in range is not significant.[^jalr-format]
+
+[^jalr-format]: 《The RISC-V Instruction Set Manual Volume I: Unprivileged ISA (20191213)》2.5 Control Transfer Instructions
+
+</Card>
+
+<Card title="16-bit instructions">
+
+instruction address 必须是偶数，但不一定是 4 的倍数。这是因为，RISC-V 有允许 16-bit instruction 的 “‘C’ Standard Extension for Compressed Instructions”。
+
+>   The base RISC-V ISA has fixed-length 32-bit instructions that must be naturally aligned on 32-bit
+>   boundaries. However, the standard RISC-V encoding scheme is designed to support ISA extensions
+>   with variable-length instructions, where each instruction can be any number of 16-bit instruction
+>   parcels in length and parcels are naturally aligned on 16-bit boundaries. The standard compressed
+>   ISA extension described in Chapter 16 reduces code size by providing compressed 16-bit instructions
+>   and relaxes the alignment constraints to allow all instructions (16 bit and 32 bit) to be aligned on
+>   any 16-bit boundary to improve code density. [^rvc]
+
+[^rvc]: 《The RISC-V Instruction Set Manual Volume I: Unprivileged ISA (20191213)》1.5 Base Instruction-Length Encoding
+
+</Card>
+
+## Synchronization in Parallelism
+
+在 parallel execution 中，需要 processor 支持 atomic operation 来实现各种 synchronization，例如 lock。
+
+RISC-V 提供一对命令 `lr.w` (load-reserved word) 和 `sc.w` (store-conditional word) 来实现 “atomically read and modify a memory location”：
+
+1.  `lr.w` 接受两个 register 作为 operand，分别是 destination 和 address，它单独一个命令自身的效果和 `lw` 类似；
+2.  `sc.w` 接受三个 register 作为 operand，后两个是 source 和 address，若在 `lr.w` 和 `sc.w` 之间 address 处被修改过则 store 会失败。第一个 operand 用来存放结果（0 表示成功，非零表示失败）、。
+
+实现 atomic swap：（交换 `(x20)` 和 `x23`）
+
+```riscv
+again:
+    lr.w x10, (x20)
+    sc.w x11, x23, (x20)
+    bne  x11, x0, again
+    addi x23, x10, 0
+```
+
+实现 lock：（`(x20)` 为 0/1 表示 lock free/acquired）
+
+```riscv
+acquire:
+    addi x12, x0, 1
+again:
+    lr.w x10, (x20)
+    bne  x10, x0, again
+    sc.w x11, x12, (x20)
+    bne  x11, x0, again
+
+release:
+    sw   x0, 0(x20)
+```
+
+<Card title="<code>lr.w</code> 的 format">
+
+单看 `lr.w` 的话，似乎可以和 `lw` 一样使用 I-type 而接受一个 address offset。但是，`sc.w` 需要三个 register，只能用 R-type，而 `lr.w` 和 `sc.w` 一定是挨在一起用的，没道理只给一个提供 offset，所以它们使用了同样的 R-type。
+
+</Card>
+
+## Pseudoinstructions
+
+为了方便编写汇编，汇编中可以使用一些在 hardware 上不存在的 *pseudoinstruction*。例如：
+
+-   `nop`: `addi x0, x0, 0`
+-   `mv rd, rs`: `addi rd, rs, 0`
+-   `not rd, rs`: `xori rd, rs, -1`
+-   `neg rd, rs`: `sub rd, x0, rs`
+-   `bgt rs, rt, offset`: `blt rt, rs, offset`
+-   `bnez rs, offset`: `bne rs, x0, offset`
+-   `ble rs, rt, offset`: `bge rt, rs, offset`
+-   `jal offset`: `jal x1, offset`
+-   `ret`: `jalr x0, 0(x1)`
+
+详见《The RISC-V Instruction Set Manual Volume I: Unprivileged ISA》Chapter 25 RISC-V Assembly Programmer’s Handbook。
