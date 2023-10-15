@@ -6,4 +6,8 @@
   :root {
     --text-color: initial !important;
   }
+
+  code, pre {
+    @apply whitespace-pre-wrap;
+  }
 }
