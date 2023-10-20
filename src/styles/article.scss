@@ -130,6 +130,10 @@
     @apply whitespace-pre-wrap text-3.5 leading-4.5 px-1 py-0.5;
   }
 
+  pre, code, samp {
+    text-align: initial;
+  }
+
   table {
     @apply min-w-120 mx-auto;
 

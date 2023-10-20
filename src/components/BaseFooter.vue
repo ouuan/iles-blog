@@ -17,7 +17,7 @@
       </a>
       <span>{{ author }}</span>
     </div>
-    <div class="flex flex-wrap items-center justify-center gap-x-1">
+    <div class="flex flex-wrap items-center justify-center gap-x-1 print:hidden">
       <span>
         当前有
         <visitor-count-realtime client:idle />
@@ -30,7 +30,7 @@
         人到访过这里
       </span>
     </div>
-    <div class="flex flex-wrap items-center justify-center gap-x-1">
+    <div class="flex flex-wrap items-center justify-center gap-x-1 print:hidden">
       基于
       <a
         class="underline"
