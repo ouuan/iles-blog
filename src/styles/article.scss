@@ -38,7 +38,7 @@
   }
 
   a {
-    @apply text-link;
+    @apply text-link contrast-more:underline;
     &:hover {
       @apply text-hover underline;
     }
