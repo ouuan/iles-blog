@@ -41,7 +41,7 @@ dependencies:
     version: 5.0.5
   iles:
     specifier: 0.9.5
-    version: 0.9.5(@types/node@18.18.9)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2)
+    version: 0.9.5(@types/node@18.18.13)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2)
   isbot:
     specifier: 3.7.1
     version: 3.7.1
@@ -80,7 +80,7 @@ dependencies:
     version: 0.57.7(postcss@8.4.31)(vite@4.1.4)
   vite:
     specifier: 4.1.4
-    version: 4.1.4(@types/node@18.18.9)(sass@1.69.5)
+    version: 4.1.4(@types/node@18.18.13)(sass@1.69.5)
   vue:
     specifier: 3.3.9
     version: 3.3.9(typescript@5.3.2)
@@ -90,8 +90,8 @@ dependencies:
 
 devDependencies:
   '@cloudflare/workers-types':
-    specifier: 4.20231025.0
-    version: 4.20231025.0
+    specifier: 4.20231121.0
+    version: 4.20231121.0
   '@iconify-json/mdi':
     specifier: 1.1.55
     version: 1.1.55
@@ -120,8 +120,8 @@ devDependencies:
     specifier: 2.3.8
     version: 2.3.8
   '@types/node':
-    specifier: 18.18.9
-    version: 18.18.9
+    specifier: 18.18.13
+    version: 18.18.13
   '@unocss/eslint-config':
     specifier: 0.57.7
     version: 0.57.7(eslint@8.54.0)(typescript@5.3.2)
@@ -536,8 +536,8 @@ packages:
       '@babel/helper-validator-identifier': 7.22.20
       to-fast-properties: 2.0.0
 
-  /@cloudflare/workers-types@4.20231025.0:
-    resolution: {integrity: sha512-TkcZkntUTOcvJ4vgmwpNfLTclpMbmbClZCe62B25/VTukmyv91joRa4eKzSjzCZUXTbFHNmVdOpmGaaJU2U3+A==}
+  /@cloudflare/workers-types@4.20231121.0:
+    resolution: {integrity: sha512-+kWfpCkqiepwAKXyHoE0gnkPgkLhz0/9HOBIGhHRsUvUKvhUtm3mbqqoGRWgF1qcjzrDUBbrrOq4MYHfFtc2RA==}
     dev: true
 
   /@esbuild/android-arm64@0.16.17:
@@ -1170,7 +1170,7 @@ packages:
       vue: ^3.2.45
     dependencies:
       feed: 4.2.2
-      iles: 0.9.5(@types/node@18.18.9)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2)
+      iles: 0.9.5(@types/node@18.18.13)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2)
       pathe: 0.2.0
       vue: 3.3.9(typescript@5.3.2)
     dev: true
@@ -1527,8 +1527,8 @@ packages:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
     dev: false
 
-  /@types/node@18.18.9:
-    resolution: {integrity: sha512-0f5klcuImLnG4Qreu9hPj/rEfFq6YRc5n2mAjSsH+ec/mJL+3voBH0+8T7o8RpFjH7ovc+TRsL/c7OYIQsPTfQ==}
+  /@types/node@18.18.13:
+    resolution: {integrity: sha512-vXYZGRrSCreZmq1rEjMRLXJhiy8MrIeVasx+PCVlP414N7CJLHnMf+juVvjdprHyH+XRy3zKZLHeNueOpJCn0g==}
     dependencies:
       undici-types: 5.26.5
 
@@ -1538,7 +1538,7 @@ packages:
   /@types/sax@1.2.4:
     resolution: {integrity: sha512-pSAff4IAxJjfAXUG6tFkO7dsSbTmf8CtUpfhhZ5VhkRpC4628tJhh3+V6H1E+/Gs9piSzYKT5yzHO5M4GG9jkw==}
     dependencies:
-      '@types/node': 18.18.9
+      '@types/node': 18.18.13
     dev: false
 
   /@types/semver@7.5.0:
@@ -1563,7 +1563,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.18.9
+      '@types/node': 18.18.13
     dev: false
     optional: true
 
@@ -1928,7 +1928,7 @@ packages:
       '@unocss/core': 0.57.7
       '@unocss/reset': 0.57.7
       '@unocss/vite': 0.57.7(vite@4.1.4)
-      vite: 4.1.4(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.1.4(@types/node@18.18.13)(sass@1.69.5)
     transitivePeerDependencies:
       - rollup
     dev: false
@@ -2148,7 +2148,7 @@ packages:
       chokidar: 3.5.3
       fast-glob: 3.3.2
       magic-string: 0.30.5
-      vite: 4.1.4(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.1.4(@types/node@18.18.13)(sass@1.69.5)
     transitivePeerDependencies:
       - rollup
     dev: false
@@ -2160,7 +2160,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.3.0-beta.3(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.3.0-beta.3(@types/node@18.18.13)(sass@1.69.5)
       vue: 3.3.9(typescript@5.3.2)
 
   /@volar/language-core@1.10.10:
@@ -4216,7 +4216,7 @@ packages:
     engines: {node: '>= 4'}
     dev: true
 
-  /iles@0.9.5(@types/node@18.18.9)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2):
+  /iles@0.9.5(@types/node@18.18.13)(esbuild@0.18.8)(sass@1.69.5)(typescript@5.3.2):
     resolution: {integrity: sha512-c59OVY7rYUi0QNRVD4Zb4ot/AXVw3bi1NGjjsgeI/Mw4wcfKbDk32A1qQ4GPJpIuic4WeKof7d2mLpPGg3gYUw==}
     engines: {node: ^14.18 || >= 16.0.0}
     hasBin: true
@@ -4243,7 +4243,7 @@ packages:
       picocolors: 1.0.0
       unist-util-visit: 4.1.2
       unplugin-vue-components: 0.21.2(esbuild@0.18.8)(vite@4.3.0-beta.3)(vue@3.3.9)
-      vite: 4.3.0-beta.3(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.3.0-beta.3(@types/node@18.18.13)(sass@1.69.5)
       vue: 3.3.9(typescript@5.3.2)
       vue-router: 4.1.6(vue@3.3.9)
     transitivePeerDependencies:
@@ -6851,7 +6851,7 @@ packages:
       '@unocss/transformer-directives': 0.57.7
       '@unocss/transformer-variant-group': 0.57.7
       '@unocss/vite': 0.57.7(vite@4.1.4)
-      vite: 4.1.4(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.1.4(@types/node@18.18.13)(sass@1.69.5)
     transitivePeerDependencies:
       - postcss
       - rollup
@@ -6906,7 +6906,7 @@ packages:
       acorn: 8.10.0
       chokidar: 3.5.3
       esbuild: 0.18.8
-      vite: 4.3.0-beta.3(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.3.0-beta.3(@types/node@18.18.13)(sass@1.69.5)
       webpack-sources: 3.2.3
       webpack-virtual-modules: 0.4.6
 
@@ -7002,7 +7002,7 @@ packages:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4(@types/node@18.18.9)(sass@1.69.5)
+      vite: 4.1.4(@types/node@18.18.13)(sass@1.69.5)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -7018,7 +7018,7 @@ packages:
       - supports-color
     dev: true
 
-  /vite@4.1.4(@types/node@18.18.9)(sass@1.69.5):
+  /vite@4.1.4(@types/node@18.18.13)(sass@1.69.5):
     resolution: {integrity: sha512-3knk/HsbSTKEin43zHu7jTwYWv81f8kgAL99G5NWBcA1LKvtvcVAC4JjBH1arBunO9kQka+1oGbrMKOjk4ZrBg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -7043,7 +7043,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.18.9
+      '@types/node': 18.18.13
       esbuild: 0.16.17
       postcss: 8.4.31
       resolve: 1.22.1
@@ -7052,7 +7052,7 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
-  /vite@4.3.0-beta.3(@types/node@18.18.9)(sass@1.69.5):
+  /vite@4.3.0-beta.3(@types/node@18.18.13)(sass@1.69.5):
     resolution: {integrity: sha512-fitATqiujzSy82No2+TRXz7s+zngmsggt6RyQOeTx0bxkDWE6Gi6HsckJGPTQWxxJOba8x1pMSKlsQglM90OLA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -7077,7 +7077,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.18.9
+      '@types/node': 18.18.13
       esbuild: 0.17.7
       postcss: 8.4.31
       rollup: 3.20.2
