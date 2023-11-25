@@ -27,7 +27,7 @@
     "glyph-segregator": "0.6.3",
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
-    "isbot": "3.7.0",
+    "isbot": "3.7.1",
     "katex": "0.16.9",
     "mdast-util-to-hast": "12.3.0",
     "plausible-tracker": "0.3.8",
