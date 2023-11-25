@@ -58,7 +58,7 @@
     "@unocss/eslint-config": "0.57.7",
     "@unocss/transformer-directives": "0.57.7",
     "@vue/runtime-core": "3.3.8",
-    "eslint": "8.53.0",
+    "eslint": "8.54.0",
     "got": "13.0.0",
     "mdast-util-mdx": "2.0.1",
     "micromark": "3.2.0",
