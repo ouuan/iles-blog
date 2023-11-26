@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20231121.0",
-    "@iconify-json/mdi": "1.1.55",
+    "@iconify-json/mdi": "1.1.56",
     "@islands/excerpt": "0.9.0",
     "@islands/feed": "0.8.1",
     "@islands/headings": "0.8.2",
