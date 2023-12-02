@@ -55,7 +55,7 @@ import { isString } from '@sniptt/guards';
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt;
 
-if (page.frontmatter.description.length < 50) {
+if (page.frontmatter.description.length < 32) {
   throw new Error(`${page.meta.href}: Description too short.`);
 } else if (page.frontmatter.description.length > 150) {
   throw new Error(`${page.meta.href}: Description too long.`);
