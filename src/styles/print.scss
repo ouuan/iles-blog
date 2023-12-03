@@ -10,4 +10,8 @@
   code, pre {
     @apply whitespace-pre-wrap;
   }
+
+  .debug {
+    @apply hidden;
+  }
 }
