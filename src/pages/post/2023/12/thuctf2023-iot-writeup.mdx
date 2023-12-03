@@ -1,0 +1,79 @@
+---
+title: THUCTF2023 IoT 赛道 WriteUp
+date: 2023-12-02T11:29:37+08:00
+image: /images/2023/10/thuctf2023/poster.webp
+description: 我的 THUCTF2023 IoT（硬件安全）赛道的 WriteUp。
+tags:
+-   writeup
+-   ctf
+---
+
+~~IoT x 数字逻辑实验 √~~
+
+<Excerpt />
+
+## Barcode
+
+~~我不理解这道题为什么会突然出现在 IoT 赛道（~~
+
+运行代码得到 flag `THUCTF{God_say_let_s_there_be_code_1}`，~~但是这个 “let’s there be” 是什么鬼（~~
+
+```python
+from PIL import Image
+
+im = Image.open("output.png")
+data = im.load()
+
+b = ""
+
+for i in range(12, im.size[0], 24):
+    b += "1" if data[i, 0] == (0, 0, 0) else "0"
+
+print("".join([chr(int(b[i : i + 7], 2)) for i in range(0, len(b), 7)]))
+```
+
+## STM32
+
+首先你要明白这题不需要你给 STM32 编程（，虽然后来想起来感觉很蠢，但我一上来先装了个 STM32 IDE，装完感觉不对（
+
+然后需要把线连对，而把线连对最主要的是把 pin 看对，芯片把圆圈放在左上角，晶振多出来一个直角的那个角是一号脚，编号是逆时针转圈依次编。
+
+### UART
+
+把 USB to TTL 输出的 3V3 和 GND 接到板子和晶振，把晶振的输出接到 OSCIN，把 UART TX (PA9) 接到 USB to TTL 的 RX，然后就可以通过串口读到 flag。
+
+### USB
+
+按照电路图，把 PA11 接到 USB 转 5pin 的 D-，把 PA12 以及 5V 串上电阻接到 D+，根据代码中的判断条件还需要把 PB6 和 PB7 接地。然后插到电脑上，会周期性把 flag1 `THUCTF{B4D_USB_H1D_KEYB04RD_!!}` 以键盘的方式输入到电脑上，而设备的名称是 flag2。
+
+![usb-2 flag](usb-2-flag.png)
+
+### SWD
+
+把板子的 RST, SWCLK, SWDIO 连到 ST-LINK 上，然后插到电脑上。
+
+参考 [stlink/doc/tutorial.md](https://github.com/stlink-org/stlink/blob/master/doc/tutorial.md)，通过 `st-util` 启动 GDB server，然后启动 `arm-none-eabi-gdb`，输入 `layout asm` 和 `target extended-remote :4242`，设置断点 `b *0x800069c`，然后 `kill` 再 `run`，在断点观察到汇编如下：
+
+![asm branch](asm-branch.png)
+
+此时 `jump *0x800069e` 即可在串口接收到 flag1。
+
+![uart swd-1 flag](uart-swd-1-flag.png)
+
+查看 `sp` 的值，然后打印栈上的字符串，即可看到 flag2。
+
+![swd-2 flag](swd-2-flag.png)
+
+## 这是你的电路板吗？这就不是！
+
+使用搜索引擎找到 https://www.altium.com/viewer/ ，用它打开附件中的 `Hi3861.zip`，可以看到 flag 的后半部分。再在 layers 中设置只查看 top / bottom overlay 就可以看到整个 flag。
+
+![top overlay](pcb-top-overlay.png)
+
+![bottom overlay](pcb-bottom-overlay.png)
+
+## Harmony - Turn up the light!
+
+查看电路图得到答案是 GPIO02。
+
+![led gpio](led-gpio.png)
