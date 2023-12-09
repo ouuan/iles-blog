@@ -12,8 +12,8 @@ jobs:
           version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'pnpm'
+          node-version: 20
+          cache: pnpm
       - name: Setup checker
         run: |
           git clone https://github.com/ouuan/quotation-checker
