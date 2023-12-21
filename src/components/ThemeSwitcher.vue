@@ -9,7 +9,7 @@
       aria-haspopup="menu"
       aria-controls="__theme-switcher"
       :aria-expanded="showMenu"
-      @click="showMenu = !showMenu"
+      @mousedown="showMenu = !showMenu"
     >
       <span class="i-mdi-theme-light-dark text-xl" />
     </button>
