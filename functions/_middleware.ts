@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import isbot from 'isbot';
+import { isbotMatches } from 'isbot';
 
 const domain = 'feed.ouuan.moe';
 const plausibleUrl = 'https://plausible.ouuan.moe';
@@ -19,7 +19,7 @@ async function trackFeeds(request: Request) {
   const ua = request.headers.get('User-Agent') || 'Unknown UA';
   const ip = request.headers.get('CF-Connecting-IP') || 'Unknown IP';
   const hash = await sha1(`${ua}-${ip}`);
-  const bot = isbot.find(ua);
+  const bot = isbotMatches(ua).join(' ');
 
   async function trackEvent(name: string, props?: object) {
     try {
