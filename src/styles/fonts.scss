@@ -1,6 +1,20 @@
 @font-face {
-  font-family: "Monospace Unicode Fallback";
+  font-family: "Monospace SC Fallback";
   src: local("Noto Sans Mono CJK SC"),
+       local("Source Han Mono SC"),
+       local("Noto Sans CJK SC"),
+       local("Source Han Sans SC"),
+       local("Microsoft YaHei");
+  unicode-range: U+1000-fffff;
+}
+
+@font-face {
+  font-family: "Monospace JP Fallback";
+  src: local("Noto Sans Mono CJK JP"),
+       local("Source Han Mono JP"),
+       local("Noto Sans CJK JP"),
+       local("Source Han Sans JP"),
+       local("Noto Sans Mono CJK SC"),
        local("Source Han Mono SC"),
        local("Noto Sans CJK SC"),
        local("Source Han Sans SC"),
@@ -29,12 +43,22 @@
 }
 
 :root {
-  --default-serif-font: "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, var(--default-emoji-font);
-  --default-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK SC", "Source Han Sans SC", 思源黑体, "Noto Sans CJK TC", "Source Han Sans TC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
-  --default-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace Unicode Fallback", monospace, var(--default-emoji-font);
-  --default-kai-font: "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
+  --zh-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK SC", "Source Han Sans SC", 思源黑体, "Noto Sans CJK TC", "Source Han Sans TC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
+  --ja-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK JP", "Source Han Sans JP", "Noto Sans CJK TC", "Source Han Sans TC", 思源黑体, "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
+
+  --zh-serif-font: "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, var(--default-emoji-font);
+  --ja-serif-font: "Noto Serif JP Web Font", "Noto Serif JP", "Noto Serif CJK JP", "Source Han Serif JP", var(--zh-serif-font);
+
+  --zh-kai-font: "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
+  --ja-kai-font: "Klee One Web Font", "Klee One", var(--zh-kai-font);
+
+  --zh-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace SC Fallback", monospace, var(--default-emoji-font);
+  --ja-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace JP Fallback", monospace, var(--default-emoji-font);
+
+  --zh-latin-font: "Noto Serif", Georgia, "Times New Roman", Times, serif;
+  --ja-latin-font: var(--zh-latin-font);
+
   --default-emoji-font: "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --default-latin-font: "Noto Serif", Georgia, "Times New Roman", Times, serif;
 
   code,
   kbd,
@@ -42,4 +66,22 @@
   pre {
     @apply font-mono;
   }
+}
+
+[lang] {
+  font-family: var(--zh-font);
+  --default-sans-font:  var(--zh-sans-font);
+  --default-serif-font: var(--zh-serif-font);
+  --default-kai-font:   var(--zh-kai-font);
+  --default-mono-font:  var(--zh-mono-font);
+  --default-latin-font: var(--zh-latin-font);
+}
+
+[lang^=ja] {
+  font-family: var(--ja-font);
+  --default-sans-font:  var(--ja-sans-font);
+  --default-serif-font: var(--ja-serif-font);
+  --default-kai-font:   var(--ja-kai-font);
+  --default-mono-font:  var(--ja-mono-font);
+  --default-latin-font: var(--ja-latin-font);
 }

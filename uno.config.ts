@@ -14,8 +14,12 @@ export default defineConfig({
   blocklist: [cssProperty[0]?.[0] as RegExp],
   rules: [
     [
-      /^font-(serif|sans|mono|kai|latin)$/,
-      ([, type]) => ({ 'font-family': `var(--default-${type}-font)` }),
+      /^font-(sans|serif|kai|mono|latin)$/,
+      ([, type]) => ({
+        'font-family': `var(--default-${type}-font)`,
+        '--ja-font': `var(--ja-${type}-font)`,
+        '--zh-font': `var(--zh-${type}-font)`,
+      }),
     ],
     ['break-anywhere', { 'overflow-wrap': 'anywhere' }],
   ],

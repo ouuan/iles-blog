@@ -47,44 +47,81 @@ export default async function generateFonts(pages: RouteToRender[]) {
   const previewServer = await preview();
 
   const pagesInfo: PageInfo[] = pages.filter((page) => page.outputFilename.endsWith('.html')).map((page) => ({
-    url: new URL(page.path, previewServer.resolvedUrls.local?.[0]?.replace('localhost', '127.0.0.1') || 'http://127.0.0.1:4173').href,
+    url: new URL(page.path, previewServer.resolvedUrls.local?.[0]).href,
     filePath: resolve(rootPath, 'dist', page.outputFilename),
     probability: ((visitorMap.get(page.path) || 0) + 1) / (maxVisitor + 2),
   }));
 
-  const fonts: FontInfo[] = [{
-    fontFamily: '"Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    webFontName: 'Noto Serif SC Web Font',
-    variants: [{
-      fontWeight: 400,
-      fontDisplay: 'swap',
-      fontStyle: 'normal',
-      outputFileName: 'NotoSerifSC-Regular',
-      originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Regular.otf'),
-    }, {
-      fontWeight: 700,
-      fontDisplay: 'swap',
-      fontStyle: 'normal',
-      outputFileName: 'NotoSerifSC-Bold',
-      originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Bold.otf'),
-    }],
-  }, {
-    fontFamily: '"XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
-    webFontName: 'LXGW WenKai Web Font',
-    variants: [{
-      fontWeight: 400,
-      fontDisplay: 'swap',
-      fontStyle: 'normal',
-      outputFileName: 'LXGWWenKai-Regular',
-      originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Regular.ttf'),
-    }, {
-      fontWeight: 700,
-      fontDisplay: 'swap',
-      fontStyle: 'normal',
-      outputFileName: 'LXGWWenKai-Bold',
-      originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Bold.ttf'),
-    }],
-  }];
+  const fonts: FontInfo[] = [
+    {
+      fontFamily: '"Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      webFontName: 'Noto Serif SC Web Font',
+      variants: [{
+        fontWeight: 400,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'NotoSerifSC-Regular',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Regular.otf'),
+      }, {
+        fontWeight: 700,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'NotoSerifSC-Bold',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Bold.otf'),
+      }],
+    },
+    {
+      fontFamily: '"XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      webFontName: 'LXGW WenKai Web Font',
+      variants: [{
+        fontWeight: 400,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'LXGWWenKai-Regular',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Regular.ttf'),
+      }, {
+        fontWeight: 700,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'LXGWWenKai-Bold',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Bold.ttf'),
+      }],
+    },
+    {
+      fontFamily: '"Noto Serif JP Web Font", "Noto Serif JP", "Noto Serif CJK JP", "Source Han Serif JP", "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      webFontName: 'Noto Serif JP Web Font',
+      variants: [{
+        fontWeight: 400,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'NotoSerifJP-Regular',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifJP-Regular.otf'),
+      }, {
+        fontWeight: 700,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'NotoSerifJP-Bold',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifJP-Bold.otf'),
+      }],
+    },
+    {
+      fontFamily: '"Klee One Web Font", "Klee One", "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      webFontName: 'Klee One Web Font',
+      variants: [{
+        fontWeight: 400,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'KleeOne-Regular',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne-Regular.ttf'),
+      }, {
+        fontWeight: 600,
+        fontDisplay: 'swap',
+        fontStyle: 'normal',
+        outputFileName: 'KleeOne-SemiBold',
+        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne-SemiBold.ttf'),
+      }],
+    },
+  ];
 
   await glyphSegregator({
     pages: pagesInfo,
