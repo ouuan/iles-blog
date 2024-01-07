@@ -182,3 +182,15 @@ CSS 实现标点挤压有两种方式：
   --default-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace Unicode Fallback", monospace, var(--default-emoji-font);
 }
 ```
+
+## 为不同语言设置不同字体
+
+其实我感觉我的做法有点丑（，还好有 UnoCSS 稍微强一点（
+
+-   为每个样式（例如宋/<span class="font-kai">楷</span>）和每个语言分别用一个 CSS 变量记录当前字体。
+-   改变样式时修改 `font-family` 为这个样式的字体，修改每个语言的字体为这个样式。
+-   改变语言时修改 `font-family` 为这个语言的字体，修改每个样式的字体为这个语言。
+
+语言通过 `lang` 属性标识。
+
+详见 [commit](https://github.com/ouuan/iles-blog/commit/e8df882f4a550bfd5db50f837f0a9ab376262dc4)。
