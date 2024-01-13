@@ -40,7 +40,7 @@
     "unist-util-visit": "5.0.0",
     "unocss": "0.58.3",
     "vite": "4.1.4",
-    "vue": "3.3.13",
+    "vue": "3.4.13",
     "xml-formatter": "3.6.0"
   },
   "devDependencies": {
@@ -57,7 +57,7 @@
     "@types/node": "18.19.6",
     "@unocss/eslint-config": "0.58.3",
     "@unocss/transformer-directives": "0.58.3",
-    "@vue/runtime-core": "3.3.13",
+    "@vue/runtime-core": "3.4.13",
     "eslint": "8.56.0",
     "got": "14.0.0",
     "mdast-util-mdx": "2.0.1",
