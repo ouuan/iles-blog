@@ -113,3 +113,13 @@ date: 2024-01-01T21:50:00+08:00
 ODE 好快的出分，虽然很低但部分分比预期高，很不错了（
 
 ~~网原是不可能学整整三天的（~~，本来还说可以写个 DHCP，突然意识到直接 SLAAC 就行，去学习了一下，（能通就行）非常简单，直接写好了（
+
+## 1.18
+
+3 狮 17 卷看完了，寒假可以二周目动画了（，只不过也有好多别的番想补来着（
+
+昨天写好支持 SLAAC 之后一直在想正常的 interface identifier 太难记了，很难说生成出这样的地址是方便还是不方便。今天查到了 [Tokenised IPv6 Identifiers](https://datatracker.ietf.org/doc/html/draft-chown-6man-tokenised-ipv6-identifiers-02)（可以用 Network Manager 配 `ipv6.addr-gen-mode=eui64`、`ipv6.token=::1234`，或者也可以启用 `/proc/sys/net/ipv6/conf/<if>/accept_ra` 然后 `ip token set ::1234 dev <if>`），特别好（
+
+课上（Tanenbaum 上）讲的 Go Back N 以及 Selective Repeat 怎么都和 CNATDA 不一样，尤其是 SR 基本上完全就不是一个东西吧，小崩溃（，大概是看懂了，明天还得去拟合一下题目（
+
+本来以为今天能把课件过完，但是寄（，只不过网络层传输层应用层讲的少我又比较熟，应该可以速通吧，~~这课为什么全是链路层，还有那么多物理层（~~
