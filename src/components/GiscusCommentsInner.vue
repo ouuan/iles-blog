@@ -33,7 +33,7 @@
     emit-metadata="1"
     input-position="top"
     :theme="theme"
-    lang="zh-CN"
+    :lang="lang"
     loading="lazy"
     strict="1"
   />
@@ -50,9 +50,12 @@ const repo: `${string}/${string}` = import.meta.env.DEV ? 'ouuan/giscus-test' : 
 const repoId = import.meta.env.DEV ? 'R_kgDOHsXSjg' : site.giscusRepoId;
 const categoryId = import.meta.env.DEV ? 'DIC_kwDOHsXSjs4CQWK2' : site.giscusCategoryId;
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   term: string;
-}>();
+  lang?: string;
+}>(), {
+  lang: 'zh-CN',
+});
 
 const searchParam = new URLSearchParams({ discussions_q: props.term });
 

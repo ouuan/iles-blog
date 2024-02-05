@@ -8,6 +8,7 @@
     <giscus-comments-inner
       client:only
       :term="page.frontmatter.title"
+      :lang="page.frontmatter.lang"
     />
   </div>
 </template>
