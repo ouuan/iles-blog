@@ -17,6 +17,7 @@
         <section
           class="article-style"
           itemprop="articleBody"
+          :lang="page.frontmatter.lang"
         >
           <slot />
           <Card
