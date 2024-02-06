@@ -12,6 +12,7 @@ import got from 'got';
 import { all as m2hAll } from 'mdast-util-to-hast';
 import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
 
+import remarkMermaid from './src/remark/remarkMermaid';
 import remarkShiki from './src/remark/remarkShiki';
 import addHeadingForCard from './src/remark/addHeadingForCard';
 import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
@@ -104,6 +105,7 @@ export default defineConfig({
       checkRelativeLinks,
       remarkMojikumi,
       // the following order matters!
+      remarkMermaid,
       remarkShiki,
       setHeadingLevels,
       addHeadingForCard,

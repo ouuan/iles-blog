@@ -1,0 +1,53 @@
+diff --git a/dist-types/src/index.d.ts b/dist-types/src/index.d.ts
+index ff1f67845db00ec306084a86582cfc4e29e290c3..df1e857aa3e0849d1ec5b99654812ef2fb220c31 100644
+--- a/dist-types/src/index.d.ts
++++ b/dist-types/src/index.d.ts
+@@ -22,6 +22,8 @@ export type ParseMDDOptions = {
+      * - If set, scale PDF to fit chart.
+      */
+     pdfFit?: boolean | undefined;
++
++    id?: string;
+ };
+ /**
+  * Markdown image properties
+diff --git a/src/index.js b/src/index.js
+index 5a3e0b46bcd0d307c482ec8069f4536f6448d522..d317e0e8c95b960e7abca2ee7d2b581cd1502681 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -229,7 +229,7 @@ async function parseMMD (browser, definition, outputFormat, opt) {
+  * @returns {Promise<{title: string | null, desc: string | null, data: Buffer}>} The output file in bytes,
+  * with optional metadata.
+  */
+-async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit } = {}) {
++async function renderMermaid (browser, definition, outputFormat, { viewport, backgroundColor = 'white', mermaidConfig = {}, myCSS, pdfFit, id } = {}) {
+   const page = await browser.newPage()
+   page.on('console', (msg) => {
+     console.log(msg.text())
+@@ -243,7 +243,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
+     await page.$eval('body', (body, backgroundColor) => {
+       body.style.background = backgroundColor
+     }, backgroundColor)
+-    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor) => {
++    const metadata = await page.$eval('#container', async (container, definition, mermaidConfig, myCSS, backgroundColor, id) => {
+       /**
+        * @typedef {Object} GlobalThisWithMermaid
+        * We've already imported these modules in our `index.html` file, so that they
+@@ -256,7 +256,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
+       await mermaid.registerExternalDiagrams([zenuml])
+       mermaid.initialize({ startOnLoad: false, ...mermaidConfig })
+       // should throw an error if mmd diagram is invalid
+-      const { svg: svgText } = await mermaid.render('my-svg', definition, container)
++      const { svg: svgText } = await mermaid.render(id, definition, container)
+       container.innerHTML = svgText
+ 
+       const svg = container.getElementsByTagName?.('svg')?.[0]
+@@ -292,7 +292,7 @@ async function renderMermaid (browser, definition, outputFormat, { viewport, bac
+       return {
+         title, desc
+       }
+-    }, definition, mermaidConfig, myCSS, backgroundColor)
++    }, definition, mermaidConfig, myCSS, backgroundColor, id)
+ 
+     if (outputFormat === 'svg') {
+       const svgXML = await page.$eval('svg', (svg) => {

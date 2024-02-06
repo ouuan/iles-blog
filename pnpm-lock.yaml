@@ -6,6 +6,7 @@ settings:
 
 overrides:
   vite-plugin-image-presets: ^0.3.4
+  puppeteer: '*'
 
 packageExtensionsChecksum: 796752960ba14a41e00e80ce0386e4e9
 
@@ -13,11 +14,17 @@ patchedDependencies:
   '@islands/headings@0.8.2':
     hash: j5vhtyk5hysulswi2ekrqmqpcq
     path: patches/@islands__headings@0.8.2.patch
+  '@mermaid-js/mermaid-cli@10.7.0':
+    hash: pa3doymxzs42nsdz6ksw443nyq
+    path: patches/@mermaid-js__mermaid-cli@10.7.0.patch
 
 dependencies:
   '@giscus/vue':
     specifier: 2.4.0
     version: 2.4.0(vue@3.3.13)
+  '@mermaid-js/mermaid-cli':
+    specifier: 10.7.0
+    version: 10.7.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3)
   '@sniptt/guards':
     specifier: 0.2.0
     version: 0.2.0
@@ -54,6 +61,9 @@ dependencies:
   plausible-tracker:
     specifier: 0.3.8
     version: 0.3.8
+  puppeteer:
+    specifier: '*'
+    version: 21.7.0(typescript@5.3.3)
   rehype-plugin-image-native-lazy-loading:
     specifier: 1.2.0
     version: 1.2.0
@@ -1298,6 +1308,23 @@ packages:
       vfile: 5.3.6
     transitivePeerDependencies:
       - supports-color
+
+  /@mermaid-js/mermaid-cli@10.7.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3):
+    resolution: {integrity: sha512-b1kHdzSStWaxoNdU5KnzXJ/OQzYqFo4mZsHobX44l6gb2s1O6DzD0g801VzxUmcJ+5OWt6piDL1Ug//cQUsrZg==}
+    engines: {node: ^14.13 || >=16.0}
+    hasBin: true
+    dependencies:
+      chalk: 5.3.0
+      commander: 10.0.1
+      puppeteer: 21.7.0(typescript@5.3.3)
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
+    patched: true
 
   /@nodelib/fs.scandir@2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2743,6 +2770,11 @@ packages:
       supports-color: 7.2.0
     dev: true
 
+  /chalk@5.3.0:
+    resolution: {integrity: sha512-dLitG79d+GV1Nb/VYcCDFivJeK1hiukt9QjRNVOsUtTy1rR1YJsmpGGTZ3qJos+uw7WmWF4wUwBd9jxjocFC2w==}
+    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
+    dev: false
+
   /character-entities-html4@2.1.0:
     resolution: {integrity: sha512-1v7fgQRj6hnSwFpq1Eu0ynr/CDEw0rXo2B61qXrLNdHZmPKgb7fqS1a2JwF0rISo9q77jDI8VMEHoApn8qDoZA==}
 
@@ -2839,6 +2871,11 @@ packages:
 
   /comma-separated-tokens@2.0.3:
     resolution: {integrity: sha512-Fu4hJdvzeylCfQPp9SGWidpzrMs7tTrlu6Vb8XGaRGck8QSNZJJp538Wrb60Lax4fPwR64ViY468OIUTbRlGZg==}
+
+  /commander@10.0.1:
+    resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
+    engines: {node: '>=14'}
+    dev: false
 
   /commander@4.1.1:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
@@ -5923,7 +5960,7 @@ packages:
   /puppeteer-cluster@0.23.0(puppeteer@21.7.0):
     resolution: {integrity: sha512-108terIWDzPrQopmoYSPd5yDoy3FGJ2dNnoGMkGYPs6xtkdhgaECwpfZkzaRToMQPZibUOz0/dSSGgPEdXEhkQ==}
     peerDependencies:
-      puppeteer: '>=1.5.0'
+      puppeteer: '*'
     dependencies:
       debug: 4.3.4
       puppeteer: 21.7.0(typescript@5.3.3)
