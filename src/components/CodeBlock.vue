@@ -24,14 +24,14 @@
       <copy-button client:visible />
     </div>
     <div
-      class="light:hidden"
+      class="dark:hidden"
       :itemprop="isCodeAnd('text')"
-      v-html="darkHtml"
+      v-html="lightHtml"
     />
     <div
-      class="light:important-block"
+      class="dark:important-block"
       style="display:none;"
-      v-html="lightHtml"
+      v-html="darkHtml"
     />
   </section>
 </template>
