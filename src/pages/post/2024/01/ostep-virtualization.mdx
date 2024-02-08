@@ -76,3 +76,48 @@ user program 需要通过 *system call* 来进入 kernel mode，由 OS 执行相
 在一个 process 占用着 CPU 时，OS 没有运行，自然无法实现 control，所以需要 user program 把 control 交给 OS。这有两种方式，一种是 cooperative approach，即调用 system call；一种是 non-cooperative approach，即使用 timer interrupt，每隔一段时间就把 control 强制交给 OS，以避免单个 process 连续运行过长时间甚至进入死循环而只能重启。
 
 决定了要切换 process 时，OS 会进行 *context switch*，主要操作是从 process A 的 registers 和 kernel stack 切换到 process B 的 registers 和 kernel stack，之后 return-from-trap 时就会返回到 process B 之前离开的地方。
+
+## Scheduling: Introduction
+
+OS scheduler 需要决定 schedule 到哪个 process，这表现为 *scheduling policy* (*discipline*)。
+
+### Workload Assumptions
+
+在这一部分，我们先对 *workload*，即需要运行的 processes（即 jobs），作一些（不切实际的）assumption 以简化问题，后面再逐步丢弃这些 assumption：
+
+1.  每个 job 用时相同。
+2.  每个 job 同时 arrive。
+3.  每个 job 一旦开始就一直运行到结束，不被打断。
+4.  每个 job 都只使用 CPU，不使用 I/O（没有 system call，不会 blocked）。
+5.  每个 job 的用时是已知的。
+
+其中，4 和 5 是最不切实际的：没有 I/O 的 program 运行了没有任何意义；scheduler 无法预知 job 要运行多久（连是否停机都无法预知）。
+
+### Turnaround Time
+
+*turnaround time* 是一个 *scheduling metric*，它指的是一个 job 从 arrival 到 completion 的用时，用来衡量总体性能。
+
+FIFO (first in first out / FCFS, first come first served) 是一种最简单的 scheduling policy。在所有 5 个 assumption 下，任何 scheduling policy 都是一样的，FIFO 就可以达到最优。
+
+如果丢弃 assumption 1 而继续使用 FIFO，当排在最前的 job 用时很长时，会造成 *convoy effect*，堵住后面用时短的其他 job，使得 turnaround time 变得很大。此时，可以采用 SJF (shortest job first) 达到最优解。
+
+如果进一步丢弃 assumption 2，有可能最长的 job 最先到，短的 job 紧随其后，SJF 就失效了。此时，需要再丢弃 assumption 3，来允许 scheduler *preempt* 一个 job 而 schedule 到另一个（不这样做的 scheduler 被称作 *non-preemptive* scheduler），然后就可以采用 STCF (shortest time-to-completion first / PSJF, preemptive shortest job first) 达到最优解：在新 job arrive 时，如果它的总用时比当前 job 的剩余用时还短，可以 schedule 到新 job。
+
+### Response Time
+
+为了让用户在交互中获得更好的体验，turnaround time 是不够的，还需要引入新的 metric，*response time*，它可以用一个 job 从 arrival 到 first run 的用时衡量。
+
+上面提到的各种 scheduling policy，例如 STCF，response time 都很差，被排到后面运行的 job 需要等待很久。
+
+Round-Robin (RR) policy 会让每个 job 执行一个 *time slice* (*scheduling quantum*)，然后切换到下一个 job，所以 RR 也被称作 *time-slicing*。time slice 越小 response time 也就越小，但如果 time slice 过小，context switching（包括存储/恢复 register，以及 cache miss penalty）在用时中的占比就会过大，从而显著影响性能，所以需要一定大小的 time slice 来 *amortize* 掉 context switching cost。RR 的 response time 较小，但 turnaround time 很大，比 FIFO 还大。
+
+一般来说，如果一个 policy 是 *fair* 的，均等地将 CPU 分配给各个 job，就会有较差的 turnaround time 和较好的 response time；如果一个 policy unfair，就可以有较好的 turnaround time，但 response time 会较大。这是一个固有的 trade-off：鱼与熊掌，不可兼得。[^cake]
+
+[^cake]: 作者推荐阅读：[You can't have your cake and eat it - Wikipedia](https://en.wikipedia.org/wiki/You_can%27t_have_your_cake_and_eat_it)  
+         “The best part of this page is reading all the similar idioms from other languages.”
+
+### Incorporating I/O
+
+如果进一步丢弃 assumption 4，即允许 job 进行 I/O，则需要处理 blocked 的情况。
+
+一般来说，可以将一个 job 视作被 I/O 分割成的多个 sub-job，然后按照之前的 policy 进行 schedule。例如，使用 STCF 时，在 sub-job 的视角下，会优先执行 I/O 密集的 job，这可以达成 *overlap*，让 CPU 和 I/O 同时工作，更加充分地利用系统资源。
