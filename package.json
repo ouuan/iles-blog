@@ -90,7 +90,7 @@
     },
     "patchedDependencies": {
       "@islands/headings@0.8.2": "patches/@islands__headings@0.8.2.patch",
-      "@mermaid-js/mermaid-cli@10.7.0": "patches/@mermaid-js__mermaid-cli@10.7.0.patch"
+      "@mermaid-js/mermaid-cli@10.8.0": "patches/@mermaid-js__mermaid-cli@10.7.0.patch"
     }
   }
 }
