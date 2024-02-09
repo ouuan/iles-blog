@@ -32,7 +32,7 @@ jobs:
           MEILI_URL: ${{ secrets.MEILI_URL }}
           MEILI_SEARCH_KEY: ${{ secrets.MEILI_SEARCH_KEY }}
       - name: Download muffet
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@v3
         with:
           timeout_minutes: 1
           max_attempts: 5
