@@ -14,7 +14,7 @@ patchedDependencies:
   '@islands/headings@0.8.2':
     hash: j5vhtyk5hysulswi2ekrqmqpcq
     path: patches/@islands__headings@0.8.2.patch
-  '@mermaid-js/mermaid-cli@10.7.0':
+  '@mermaid-js/mermaid-cli@10.8.0':
     hash: pa3doymxzs42nsdz6ksw443nyq
     path: patches/@mermaid-js__mermaid-cli@10.7.0.patch
 
@@ -23,8 +23,8 @@ dependencies:
     specifier: 2.4.0
     version: 2.4.0(vue@3.3.13)
   '@mermaid-js/mermaid-cli':
-    specifier: 10.7.0
-    version: 10.7.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3)
+    specifier: 10.8.0
+    version: 10.8.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3)
   '@sniptt/guards':
     specifier: 0.2.0
     version: 0.2.0
@@ -1309,8 +1309,8 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /@mermaid-js/mermaid-cli@10.7.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3):
-    resolution: {integrity: sha512-b1kHdzSStWaxoNdU5KnzXJ/OQzYqFo4mZsHobX44l6gb2s1O6DzD0g801VzxUmcJ+5OWt6piDL1Ug//cQUsrZg==}
+  /@mermaid-js/mermaid-cli@10.8.0(patch_hash=pa3doymxzs42nsdz6ksw443nyq)(typescript@5.3.3):
+    resolution: {integrity: sha512-xZsGR88RsP72SAXyvjU23HzsKHsq6b7/kbnmQrEuIcPrJGPOckFiP9nzHvPh3Z04MjvpDJVjtbIspt2ZQwUzzA==}
     engines: {node: ^14.13 || >=16.0}
     hasBin: true
     dependencies:
