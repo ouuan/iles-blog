@@ -32,7 +32,7 @@
     "katex": "0.16.9",
     "mdast-util-to-hast": "12.3.0",
     "plausible-tracker": "0.3.8",
-    "puppeteer": "*",
+    "puppeteer": "22.0.0",
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
     "shiki": "0.14.7",
     "simple-git": "3.22.0",
@@ -79,7 +79,7 @@
   "pnpm": {
     "overrides": {
       "vite-plugin-image-presets": "^0.3.4",
-      "puppeteer": "*"
+      "puppeteer": "$puppeteer"
     },
     "packageExtensions": {
       "rollup-plugin-analyzer": {

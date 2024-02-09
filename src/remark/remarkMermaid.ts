@@ -26,7 +26,6 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
   const hash = await digestMessage(value);
 
   const browser = await puppeteer.launch({
-    headless: 'new',
     args: [
       '--no-sandbox',
       '--no-zygote',
