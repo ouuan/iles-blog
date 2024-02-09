@@ -25,14 +25,14 @@
     "@vueuse/components": "10.7.2",
     "@vueuse/core": "10.7.2",
     "date-fns": "3.3.1",
-    "glyph-segregator": "0.6.4",
+    "glyph-segregator": "0.6.5",
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
     "isbot": "4.4.0",
     "katex": "0.16.9",
     "mdast-util-to-hast": "12.3.0",
     "plausible-tracker": "0.3.8",
-    "puppeteer": "*",
+    "puppeteer": "22.0.0",
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
     "shiki": "0.14.7",
     "simple-git": "3.22.0",
@@ -79,7 +79,7 @@
   "pnpm": {
     "overrides": {
       "vite-plugin-image-presets": "^0.3.4",
-      "puppeteer": "*"
+      "puppeteer": "$puppeteer"
     },
     "packageExtensions": {
       "rollup-plugin-analyzer": {
