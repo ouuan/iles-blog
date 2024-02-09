@@ -109,7 +109,7 @@ FIFO (first in first out / FCFS, first come first served) 是一种最简单的 
 
 上面提到的各种 scheduling policy，例如 STCF，response time 都很差，被排到后面运行的 job 需要等待很久。
 
-Round-Robin (RR) policy 会让每个 job 执行一个 *time slice* (*scheduling quantum*)，然后切换到下一个 job，所以 RR 也被称作 *time-slicing*。time slice 越小 response time 也就越小，但如果 time slice 过小，context switching（包括存储/恢复 register，以及 cache miss penalty）在用时中的占比就会过大，从而显著影响性能，所以需要一定大小的 time slice 来 *amortize* 掉 context switching cost。RR 的 response time 较小，但 turnaround time 很大，比 FIFO 还大。
+Round-Robin (RR) policy 会让每个 job 运行一个 *time slice* (*scheduling quantum*)，然后切换到下一个 job，所以 RR 也被称作 *time-slicing*。time slice 越小 response time 也就越小，但如果 time slice 过小，context switching（包括存储/恢复 register，以及 cache miss penalty）在用时中的占比就会过大，从而显著影响性能，所以需要一定大小的 time slice 来 *amortize* 掉 context switching cost。RR 的 response time 较小，但 turnaround time 很大，比 FIFO 还大。
 
 一般来说，如果一个 policy 是 *fair* 的，均等地将 CPU 分配给各个 job，就会有较差的 turnaround time 和较好的 response time；如果一个 policy unfair，就可以有较好的 turnaround time，但 response time 会较大。这是一个固有的 trade-off：鱼与熊掌，不可兼得。[^cake]
 
@@ -120,4 +120,81 @@ Round-Robin (RR) policy 会让每个 job 执行一个 *time slice* (*scheduling 
 
 如果进一步丢弃 assumption 4，即允许 job 进行 I/O，则需要处理 blocked 的情况。
 
-一般来说，可以将一个 job 视作被 I/O 分割成的多个 sub-job，然后按照之前的 policy 进行 schedule。例如，使用 STCF 时，在 sub-job 的视角下，会优先执行 I/O 密集的 job，这可以达成 *overlap*，让 CPU 和 I/O 同时工作，更加充分地利用系统资源。
+一般来说，可以将一个 job 视作被 I/O 分割成的多个 sub-job，然后按照之前的 policy 进行 schedule。例如，使用 STCF 时，在 sub-job 的视角下，会优先运行 I/O 密集的 job，这可以达成 *overlap*，让 CPU 和 I/O 同时工作，更加充分地利用系统资源。
+
+## Scheduling: The Multi-Level Feedback Queue
+
+之前这些简单的 scheduling policy 面临两大问题，一是 turnaround time 和 response time 之间的矛盾，二是 SJF/STCF 对 perfect knowledge（assumption 5）的依赖。
+
+Multi-level Feed-back Queue (MLFQ) 是目前被广泛使用的一种 scheduling policy，同时解决了这两大问题。
+
+### Basic Rules
+
+MLFQ 的基本思路是，workload 可以分为两类，一类是 short-running interactive job（被 I/O 切成了小块），一类是 long-running CPU-intensive job。interactive job 更需要优先运行，这既是 SJF/STCF 的基本思想，同时也是因为 interactive job 对 response time 的要求更高。
+
+MLFQ 的基本运行规则为：有多个不同 priority 的 job queue，每次会选择 priority 最高的 queue，在同一个 queue 内使用 RR。
+
+理想情况下，interactive job 的 priority 会更高，从而逼近 STCF。
+
+### Priority Adjustment
+
+因为 scheduler 无法预先知道 job 的类型，priority 是根据程序的运行情况动态设置的。
+
+job arrive 时会先放在 priority 最高的 queue，如果运行太久就会降低 priority。具体来说，一个 job 在每一级 queue 会获得一段 *time allotment*，在这一级 queue 的累计运行时长如果超过 allotment 就会降低 priority 到下一级 queue。
+
+在这样的机制下，会有两个问题：
+
+-   CPU 可能被几个 interactive job 占满，导致 priority 低的 long-running job 一点 CPU 都拿不到（这被称作 *starvation*）。
+-   一个 job 的行为可能随时间变化，如果经过一段 CPU-intensive 后 priority 到了最低，然后变为 interactive，priority 无法恢复。
+
+为了解决这两个问题，可以每隔一段时间进行 *priority boost*，将所有 job 的 priority 设为最高。
+
+<Card title="Game the scheduler">
+
+如果 allotment 不是计算累计用时，而是每次运行时单独判断这次有没有到一个 threshold，没达到就不降低甚至提高 priority，是否可以达到同样的效果，甚至自动检测到 long-running 转变为 short-running 而提升 priority？
+
+答案是，这样会允许一个 program 恶意地 *game the scheduler*，每次都恰好在 threshold 之前一点点执行 I/O，从而在长时间占用 CPU 的同时维持最高的 priority，最终达到接近独占 CPU 的效果。这在多个用户共享 CPU 时（例如在云服务器上）可能造成安全问题。
+
+</Card>
+
+### Tuning MLFQ
+
+MLFQ 有很多可以设置的参数：queue (level) 的数量，每个 level 的 time slice 和 allotment，多久进行一次 priority boost。一般来说，priority 越高，time slice 和 allotment 越长。
+
+MLFQ 不一定真的要实现为多个 queue，也可以统计每个 job 的 CPU usage，根据 usage 计算出 priority，而让 usage 随时间 *decay* 来代替 priority boost，这称作 *decay-usage* scheduling。
+
+priority 不一定要完全基于 feedback，也可以参考由用户提供的 *advice*，例如使用 `nice` 命令可以设置 *niceness* 来影响 job priority。
+
+## Scheduling: Proportional Share
+
+这章讨论的是一种不同的 scheduler，它的主要目标是按一定的比例将 CPU 分配给各个 job。例如，在 virtualized data center / cloud 中，可以将 CPU 均等地分配给各个用户。
+
+### Lottery Scheduling
+
+在 *lottery scheduling* 中，每个 job 被分配了一定数量的 *ticket*，每个 time slice 结束时随机选择一个 winning ticket，schedule 到对应的 job，时间久了之后会趋近于按 ticket 数量的 CPU 分配。
+
+lottery scheduling 还会提供一些 ticket mechanism：
+
+-   可以给每个 user 一些 ticket，每个 user 再将 ticket 分给各个 job。
+-   一个 job 可以将自己的 ticket transfer 给其他 job。
+-   如果各个 job 之间互相信任，可以进行 ticket inflation，一个 job 需要更多 CPU 时直接给自己更多 ticket 即可，不需要和其他 job 沟通。
+
+### Stride Scheduling
+
+stride scheduling 不依赖于随机，可以确定性地达到设定的比例。
+
+用一个大数除以每个 job 的 ticket value 得到每个 job 的 *stride*，对每个 job 维护一个 *pass*，每次运行一个 job 后将 pass 加上 stride，schedule 到 pass 最低的 job。每个循环内都会精确地达到设定的比例。
+
+stride scheduling 的一个劣势是新加入的 job 的 pass 不好设定，而 lottery scheduling 不需要维护状态，可以轻松地添加新的 job。
+
+### The Linux Completely Fair Scheduler (CFS)
+
+Linux 的 Completely Fair Scheduler (CFS) 高效而 scalable 地实现了 fair-share scheduling。
+
+CFS 会记录每个 job 的 *virtual runtime* (`vruntime`)，每次运行后加上这次运行的时长，schedule 到 `vruntime` 最低的 job。time slice 是不固定的，由 `sched_latency` 除以 job 数量决定，并会与 `min_granularity` 取较大值，防止 time slice 过小导致 context switching 过多。time slice 可能不是 timer interrupt 的整数倍，但 `vruntime` 会精确记录实际用时。
+
+可以通过设置 `niceness` 调整一个 job 的 `weight`，`niceness` 越低 `weight` 越高，呈指数降低的关系。设置了 `niceness` 后，time slice 会按照 `weight` 分配，而 `vruntime` 每次增加的值会再调整回来，即 `weight` 大的会获得更大的 time slice 而增长同样多的 `vruntime`。
+
+CFS 使用 red-black tree 维护各个 job 的 `vruntime` 以快速取出最小值。一个 job blocked 时会从树上移除，而再插入到树上时其 `vruntime` 会设为此时树上的最小值，以避免一个长期 blocked 的 job 恢复后独占 CPU，但这样会导致 I/O 频繁或长期 sleep 的 job 实际上没有拿到 fair share。
+
+作为一个得到了广泛实际应用的 scheduler，CFS 还有很多其他 feature，例如通过一些手段优化了 cache performance，可以高效处理有多个 CPU 的情形，可以将多个 process 视作一个 group 而不是对每单个 process 进行 schedule。
