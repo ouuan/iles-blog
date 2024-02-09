@@ -41,8 +41,8 @@ dependencies:
     specifier: 3.3.1
     version: 3.3.1
   glyph-segregator:
-    specifier: 0.6.4
-    version: 0.6.4(typescript@5.3.3)
+    specifier: 0.6.5
+    version: 0.6.5(typescript@5.3.3)
   hast-util-select:
     specifier: 5.0.5
     version: 5.0.5
@@ -3953,11 +3953,11 @@ packages:
       slash: 3.0.0
     dev: true
 
-  /glyph-segregator@0.6.4(typescript@5.3.3):
-    resolution: {integrity: sha512-FhpNygz/SHB6mtpBnO3tx7eyZtEhS8XnaCgbsiC2hNZf7fynTcPl2C/+IJzHZU9KOVATvIC/bJVwwL91qhuulw==}
+  /glyph-segregator@0.6.5(typescript@5.3.3):
+    resolution: {integrity: sha512-PTZja2TSHfEHaxoxWEGtpW/BOAqqz7hlKKqf349xlCXenUM35z2SzGYQopTb4kiTlq2cSm3aO6sFZhztwYJ23A==}
     dependencies:
       consola: 3.2.3
-      jsdom: 23.1.0
+      jsdom: 24.0.0
       puppeteer: 21.7.0(typescript@5.3.3)
       puppeteer-cluster: 0.23.0(puppeteer@21.7.0)
       subset-font: 2.1.0
@@ -4646,8 +4646,8 @@ packages:
     dependencies:
       argparse: 2.0.1
 
-  /jsdom@23.1.0:
-    resolution: {integrity: sha512-wRscu8dBFxi7O65Cvi0jFRDv0Qa7XEHPix8Qg/vlXHLAMQsRWV1EDeQHBermzXf4Dt7JtFgBLbva3iTcBZDXEQ==}
+  /jsdom@24.0.0:
+    resolution: {integrity: sha512-UDS2NayCvmXSXVP6mpTj+73JnNQadZlr9N68189xib2tx5Mls7swlTNao26IoHv46BZJFvXygyRtyXd1feAk1A==}
     engines: {node: '>=18'}
     peerDependencies:
       canvas: ^2.11.2
@@ -5948,14 +5948,9 @@ packages:
       end-of-stream: 1.4.4
       once: 1.4.0
 
-  /punycode@2.3.0:
-    resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
-    engines: {node: '>=6'}
-
   /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
-    dev: false
 
   /puppeteer-cluster@0.23.0(puppeteer@21.7.0):
     resolution: {integrity: sha512-108terIWDzPrQopmoYSPd5yDoy3FGJ2dNnoGMkGYPs6xtkdhgaECwpfZkzaRToMQPZibUOz0/dSSGgPEdXEhkQ==}
@@ -6669,7 +6664,7 @@ packages:
     engines: {node: '>=6'}
     dependencies:
       psl: 1.9.0
-      punycode: 2.3.0
+      punycode: 2.3.1
       universalify: 0.2.0
       url-parse: 1.5.10
     dev: false
@@ -6681,7 +6676,7 @@ packages:
   /tr46@1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
     dependencies:
-      punycode: 2.3.0
+      punycode: 2.3.1
     dev: true
 
   /tr46@5.0.0:
@@ -7092,7 +7087,7 @@ packages:
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
     dependencies:
-      punycode: 2.3.0
+      punycode: 2.3.1
     dev: true
 
   /url-parse@1.5.10:
