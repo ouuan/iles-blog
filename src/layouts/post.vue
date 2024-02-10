@@ -54,7 +54,7 @@ import { computed } from 'vue';
 import { isString } from '@sniptt/guards';
 
 const page = usePage();
-page.frontmatter.description ||= page.meta.excerpt;
+page.frontmatter.description ||= page.meta.excerpt?.trim();
 
 if (page.frontmatter.description.length < 32) {
   throw new Error(`${page.meta.href}: Description too short.`);
