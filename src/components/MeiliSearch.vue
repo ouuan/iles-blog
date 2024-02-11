@@ -82,7 +82,7 @@ const searchResult = shallowRef<SearchResult | null>();
 const pending = ref(false);
 
 async function search() {
-  return fetch(`${import.meta.env.MEILI_URL}/indexes/blog-posts/search`, {
+  return fetch(new URL('/indexes/blog-posts/search', import.meta.env.MEILI_URL), {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${import.meta.env.MEILI_SEARCH_KEY}`,
