@@ -198,3 +198,25 @@ CFS 会记录每个 job 的 *virtual runtime* (`vruntime`)，每次运行后加�
 CFS 使用 red-black tree 维护各个 job 的 `vruntime` 以快速取出最小值。一个 job blocked 时会从树上移除，而再插入到树上时其 `vruntime` 会设为此时树上的最小值，以避免一个长期 blocked 的 job 恢复后独占 CPU，但这样会导致 I/O 频繁或长期 sleep 的 job 实际上没有拿到 fair share。
 
 作为一个得到了广泛实际应用的 scheduler，CFS 还有很多其他 feature，例如通过一些手段优化了 cache performance，可以高效处理有多个 CPU 的情形，可以将多个 process 视作一个 group 而不是对每单个 process 进行 schedule。
+
+## Multiprocessor Scheduling
+
+<Card type="wip">
+
+> As this topic is relatively advanced, it may be best to cover it after you have studied the topic of concurrency in some detail (i.e., the second major “easy piece” of the book).
+
+</Card>
+
+## The Abstraction: Address Spaces
+
+为了支持 time sharing，需要在 physical memory 中同时存放多个 process 的 memory。为了便于使用，OS 需要将 physical memory virtualize，提供称作 *address space* 的 abstraction。
+
+一个 process 的 address space 包括 code、stack、heap、data 等部分，各个部分一般有较为固定的 layout，但其对应的 physical memory address 是不固定的。
+
+virtual memory (VM) 需要达到若干个目标：
+
+-   transparency: process 感受不到 VM 的存在，像是独占了整个巨大的 physical memory。
+-   efficiency: time 和 space 两方面的 overhead 都不能太大，需要 hardware 的配合。
+-   protection / isolation: 每个 process 只能访问自己的 address space，不能访问其他 process 或者 OS 自身的 memory。
+
+user-level program 使用的所有 address 都是 virtual address，只有 OS（以及 hardware）能接触到 physical address。
