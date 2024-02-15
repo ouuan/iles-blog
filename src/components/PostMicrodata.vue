@@ -1,6 +1,10 @@
 <template>
   <author-microdata itemprop="author" />
   <meta
+    itemprop="inLanguage"
+    :content="post.frontmatter.lang || 'zh-CN'"
+  >
+  <meta
     itemprop="mainEntityOfPage"
     :content="url"
   >

@@ -20,6 +20,7 @@
         <section
           class="article-style my-6"
           itemprop="abstract"
+          :lang="post.frontmatter.lang"
         >
           <component
             :is="post"

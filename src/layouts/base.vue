@@ -12,8 +12,4 @@
   <back-to-top client:idle />
   <plausible-trigger />
   <text-justify-fix />
-  <meta
-    itemprop="inLanguage"
-    content="zh-CN"
-  >
 </template>
