@@ -220,3 +220,100 @@ virtual memory (VM) 需要达到若干个目标：
 -   protection / isolation: 每个 process 只能访问自己的 address space，不能访问其他 process 或者 OS 自身的 memory。
 
 user-level program 使用的所有 address 都是 virtual address，只有 OS（以及 hardware）能接触到 physical address。
+
+## Interlude: Memory API
+
+C program 可以使用 stack memory 或 heap memory。
+
+stack memory 的 allocation 和 deallocation 都是 implicit 的，又称作 *automatic* memory。
+
+heap memory 需要使用 `malloc()` allocate，使用 `free()` deallocate，例如：
+
+-   `double *d = (double *) malloc(sizeof(double))`
+-   `int *x = malloc(10 * sizeof(int))`
+-   `char *s = (char *) malloc(strlen(buf) + 1)`
+-   `free(x)`
+
+heap memory 的使用很容易出错，例如：
+
+null pointer dereference
+:   使用前没有 allocate
+
+uninitialized read
+:   没有初始化内容就读取（以为内容会是 0）
+
+buffer overflow
+:   allocate 的 memory 不够大，例如字符串没有在长度的基础上加一
+
+memory leak
+:   long-running program 的 heap memory 使用完毕后没有 free
+
+use after free
+:   在 free 之后继续使用 *dangling pointer*
+
+double free
+:   free 之后再次 free
+
+<Card type="info" title="Tip: if it compiles it works" fold>
+
+>   Just because a program compiled(!) or even ran once or many times correctly does not mean the program is correct.
+
+>   Get to work and debug it before you blame those other components.
+
+~~这边建议您用 Rust（~~
+
+</Card>
+
+`malloc()` 和 `free()` 不是 system call，而是 library call。malloc library 使用 system call `brk`/`sbrk` 设置 program 的 *break*（heap 末尾的 address）来获取 memory，进而分配给用户。
+
+另外还有 `calloc` 可以用来初始化 malloc 得到的 memory，`realloc` 可以用来调整一块已分配的 heap memory 的大小。
+
+可以用 `mmap` 进行 memory mapping，例如可以 map 到 anonymous file 来获取一块 memory。
+
+## Mechanism: Address Translation
+
+为了高效且灵活地 virtualize memory，基本思想是 *(hardware-based) address translation*，将 memory access 从 virtual address 翻译为 physical address。OS 会管理 memory，配置 hardware，最终由 hardware 高效地进行 address translation。
+
+我们先做一些简化，假设每个 process 的 address space 都映射到了 physical memory 中连续的[^contiguous]一段，且各个 process 的 address space 都一样大（比 physical memory 小）。
+
+[^contiguous]: 注意是 “contiguous” 而不是 “continuous”，~~discrete topology 下随便 map 都 continuous（~~
+
+<Card title="Software-based Relocation">
+
+在早期还没有 hardware support 时，有的系统使用了一种 software-based relocation，其原理是在 load program 时进行 address translation。
+
+这样做不能提供 protection（没有限制可以访问的 address），而且很难再次 relocate（移动 address space 对应的 physical memory），所以后来被抛弃了。
+
+</Card>
+
+### Base and Bounds
+
+在 1950’s，当时的计算机使用了被称作 *base and bounds*[^bounds] / *dynamic relocation* 的技术实现简单高效且能提供 protection 的 VM。
+
+[^bounds]: **bound** noun (formal) 蹦跳；跳跃  
+           **bounds** noun [pl.] 限制范围；极限 
+
+CPU 中添加两个 register，*base* 和 *bounds*。base 即 virtual address 0 对应的 physical address，在 access memory 时进行 address translation，用 base 加上 virtual address 计算 physical address。bounds 是 address space 的大小，会检查 virtual address 不超过 bounds。
+
+### Hardware Support
+
+为了实现 base and bounds，需要若干 hardware support：
+
+-   支持 kernel mode 和 user mode。
+-   在 *memory management unit* (MMU) 中提供 base register 和 bounds register。
+-   提供特殊的 privileged instruction 来修改 base 和 bounds，只有 OS 能修改它们，否则一个 user process 将可以 wreak havoc[^wreak]。
+-   在 memory access 超出 bounds 时 generate exception，调用 exception handler。
+
+[^wreak]:   “Is there anything other than “havoc” that can be ‘wreaked’?”  
+            我想作者可能需要一本牛津词典或者 http://www.just-the-word.com/ （
+
+### Operating System Issues
+
+OS 需要做的工作有：
+
+-   在 create process 时为其分配 memory。
+-   在 terminate process 时回收 memory。
+-   在 context switch 时存储、设置 base 和 bounds。此时可以进行 relocate，将 base 修改为与上次 schedule 到这个 process 时不同的位置。
+-   提供 out-of-bounds memory access 的 exception handler，一般会 kill 掉这个 process。
+
+在我们简单的假设下，可以使用一个 *free list* 维护空闲的 memory slots。
