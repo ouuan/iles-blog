@@ -304,7 +304,7 @@ CPU 中添加两个 register，*base* 和 *bounds*。base 即 virtual address 0 
 -   提供特殊的 privileged instruction 来修改 base 和 bounds，只有 OS 能修改它们，否则一个 user process 将可以 wreak havoc[^wreak]。
 -   在 memory access 超出 bounds 时 generate exception，调用 exception handler。
 
-[^wreak]:   “Is there anything other than “havoc” that can be ‘wreaked’?”  
+[^wreak]:   “Is there anything other than ‘havoc’ that can be ‘wreaked’?”  
             我想作者可能需要一本牛津词典或者 http://www.just-the-word.com/ （
 
 ### Operating System Issues
