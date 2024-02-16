@@ -1,5 +1,14 @@
 {
   "extends": [
     "github>ouuan/renovate-config:app"
+  ],
+  "packageRules": [
+    {
+      "extends": "monorepo:vue",
+      "matchPackageNames": [
+        "vite"
+      ],
+      "dependencyDashboardApproval": true
+    }
   ]
 }
