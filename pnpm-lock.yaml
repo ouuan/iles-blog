@@ -59,8 +59,8 @@ dependencies:
     specifier: 0.9.5
     version: 0.9.5(@types/node@18.19.15)(esbuild@0.19.8)(sass@1.70.0)(typescript@5.3.3)
   isbot:
-    specifier: 4.4.0
-    version: 4.4.0
+    specifier: 5.0.0
+    version: 5.0.0
   katex:
     specifier: 0.16.9
     version: 0.16.9
@@ -1237,7 +1237,7 @@ packages:
       vue: ^3.2.37
     dependencies:
       debug: 4.3.4
-      deep-equal: /@nolyfill/deep-equal@1.0.24
+      deep-equal: /@nolyfill/deep-equal@1.0.29
       fast-glob: 3.3.2
       gray-matter: 4.0.3
       pathe: 0.2.0
@@ -1393,14 +1393,14 @@ packages:
       '@nolyfill/object.assign': 1.0.24
     dev: true
 
-  /@nolyfill/deep-equal@1.0.24:
-    resolution: {integrity: sha512-UBAkOHujrD+hh4D9kVE2dMRR5kf4XVm8adVSBkGz9lcELqLBYdVujQ+QlU73yziJN5wnIB+CtZ4HTKXI4yijdA==}
+  /@nolyfill/deep-equal@1.0.29:
+    resolution: {integrity: sha512-EtrJBbOXHhVz8Y1gMYolKgPqh2u96UPqkZMHR0lcjn3y4TC4R7GuN3E4kEhDIpyK3q1+y7HHPHHkt5fGvW1crQ==}
     engines: {node: '>=12.4.0'}
     dependencies:
       dequal: 2.0.3
 
-  /@nolyfill/has@1.0.25:
-    resolution: {integrity: sha512-hCBNzNlKW7317HwAFq+J4kMpm89bukHsTK6BOM379ORxZPY44WVGZALerlgJ4gyyECqjVj2hI9xuTMabYjK3DA==}
+  /@nolyfill/has@1.0.29:
+    resolution: {integrity: sha512-ltmZUR/0EIR6Nuu23qFTc4ImOF3JVx8Kt7MI9xwS0NDHLnWoGsNQVX4tXPFeqd/CjqlBCFEA6Cy9XA+EgZtJTQ==}
     engines: {node: '>=12.4.0'}
 
   /@nolyfill/is-nan@1.0.24:
@@ -3394,7 +3394,7 @@ packages:
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.7
       eslint-module-utils: 2.7.4(@typescript-eslint/parser@5.56.0)(eslint-import-resolver-node@0.3.7)(eslint@8.56.0)
-      has: /@nolyfill/has@1.0.25
+      has: /@nolyfill/has@1.0.29
       is-core-module: 2.11.0
       is-glob: 4.0.3
       minimatch: 3.1.2
@@ -4211,7 +4211,7 @@ packages:
       '@vue/server-renderer': 3.2.47(vue@3.3.13)
       '@vueuse/head': 1.0.24(vue@3.3.13)
       debug: 4.3.4
-      deep-equal: /@nolyfill/deep-equal@1.0.24
+      deep-equal: /@nolyfill/deep-equal@1.0.29
       es-module-lexer: 0.7.1
       fast-glob: 3.2.12
       local-pkg: 0.4.3
@@ -4310,7 +4310,7 @@ packages:
   /is-core-module@2.11.0:
     resolution: {integrity: sha512-RRjxlvLDkD1YJwDbroBHMb+cukurkDWNyHx7D3oNB5x9rb5ogcksMC5wHCadcXoo67gVr/+3GFySh3134zi6rw==}
     dependencies:
-      has: /@nolyfill/has@1.0.25
+      has: /@nolyfill/has@1.0.29
 
   /is-decimal@2.0.1:
     resolution: {integrity: sha512-AAB9hiomQs5DXWcRB1rqsxGUstbRroFOPPVAomNk/3XHR5JyEZChOyTWe2oayKnsSsr/kcGqF+z6yuH6HHpN0A==}
@@ -4368,8 +4368,8 @@ packages:
     resolution: {integrity: sha512-hFoiJiTl63nn+kstHGBtewWSKnQLpyb155KHheA1l39uvtO9nWIop1p3udqPcUd/xbF1VLMO4n7OI6p7RbngDg==}
     engines: {node: '>=8'}
 
-  /isbot@4.4.0:
-    resolution: {integrity: sha512-8ZvOWUA68kyJO4hHJdWjyreq7TYNWTS9y15IzeqVdKxR9pPr3P/3r9AHcoIv9M0Rllkao5qWz2v1lmcyKIVCzQ==}
+  /isbot@5.0.0:
+    resolution: {integrity: sha512-QAVCp3qqlkzoYlmvbzefdT6oMsRG9+AptTG8QJChyrWMnrnorwqqeSBAh1CvJen28+S470wfGZPMMPuUSj88ww==}
     engines: {node: '>=18'}
     dev: false
 
