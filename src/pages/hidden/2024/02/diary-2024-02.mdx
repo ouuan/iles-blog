@@ -117,6 +117,12 @@ Quotation Check 难得 [fail 了一次](https://github.com/ouuan/iles-blog/actio
 
 之前都是听说带上高铁几个小时需要自备保温袋 + 冰袋才比较稳，今天下载了小红书搜了一下，发现挂了的都是点的堂食配方的，用外卖配方的都说好（，那是不是也不用自备保温袋了，我本来还在想要不要我自己先点一杯喝，观测一下外卖袋有多大，买个更大的保温袋（；小红书看起来确实还蛮好用的，~~天天听两三个 gn 室友在那聊，不知道的还真以为 xhs 是孙吧性转（（~~
 
+给 CP Editor 发了 v7.0，闲得去翻了一下，发现 Windows 打包了 libQt5Svg，但是在我的 Arch 上 build 的 `ldd` 出来没有 SVG 这个，但是 `/proc/$(pidof cpeditor)/maps` 里有一堆库，删个什么 QML 的库就会挂，感觉很神秘。于是想找个干净的环境测试，去试用了一下 X11 over SSH，还挺简单的，在 server 上开 `sshd_config` 的 `X11Forwarding`，安装 `xauth`，然后 `ssh -XC <server>` 就行，~~感觉有点好玩（？~~，测试结果是那些乱七八糟的库在干净的环境下都不需要。
+
 在 StackOverflow 没有 reputation 不能 vote 一直很不爽，今天终于想着要去水一些 reputation 来（，结果是，感觉好浪费时间啊，好多人收到回答没响应，~~而且好多问题都好蠢（~~；但是发现了比 15 reputation 才能 vote 更烦的是 50 reputation 才能 comment，感觉有点逆天（，真的很想把该发 comment 的发到 answer，但是又更想水到 50 reputation 了（；结果最后是一个应该发到 comment 的 answer 先被 upvote 了，还是吐槽题主乱写不安全的加解密，唉（（
 
 感觉非常完蛋，必须得去读论文了，OSTEP 到底能看多少（
+
+## 2.18
+
+~~家人们谁懂啊，StackOverflow 也能上瘾（~~
