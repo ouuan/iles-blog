@@ -229,9 +229,9 @@ stack memory 的 allocation 和 deallocation 都是 implicit 的，又称作 *au
 
 heap memory 需要使用 `malloc()` allocate，使用 `free()` deallocate，例如：
 
--   `double *d = (double *) malloc(sizeof(double))`
--   `int *x = malloc(10 * sizeof(int))`
--   `char *s = (char *) malloc(strlen(buf) + 1)`
+-   `double *d = malloc(sizeof(*d))`
+-   `int *x = malloc(sizeof(*x) * 10)`
+-   `char *s = malloc(strlen(buf) + 1)`
 -   `free(x)`
 
 heap memory 的使用很容易出错，例如：
@@ -264,7 +264,7 @@ double free
 
 </Card>
 
-`malloc()` 和 `free()` 不是 system call，而是 library call。malloc library 使用 system call `brk`/`sbrk` 设置 program 的 *break*（heap 末尾的 address）来获取 memory，进而分配给用户。
+`malloc()` 和 `free()` 不是 system call，而是 library call。malloc library 使用 system call `brk()`/`sbrk()` 设置 program 的 *break*（heap 末尾的 address）来获取 memory，进而分配给用户。
 
 另外还有 `calloc` 可以用来初始化 malloc 得到的 memory，`realloc` 可以用来调整一块已分配的 heap memory 的大小。
 
@@ -313,7 +313,44 @@ OS 需要做的工作有：
 
 -   在 create process 时为其分配 memory。
 -   在 terminate process 时回收 memory。
--   在 context switch 时存储、设置 base 和 bounds。此时可以进行 relocate，将 base 修改为与上次 schedule 到这个 process 时不同的位置。
+-   在 context switch 时存储、设置 base 和 bounds。此时可以进行 relocate：将 base 修改为与上次 schedule 到这个 process 时不同的位置，并将数据复制过去。
 -   提供 out-of-bounds memory access 的 exception handler，一般会 kill 掉这个 process。
 
 在我们简单的假设下，可以使用一个 *free list* 维护空闲的 memory slots。
+
+## Segmentation
+
+在 Base and Bounds 中，heap 和 stack 之间的空位一般不会用满，但没有使用的空间也会占用 physical memory，这会造成严重的浪费（*internal fragmentation*）。并且，Base and Bounds 不支持运行 address space 比 physical memory 大的 program。所以我们需要更灵活高效的机制来支持 large address space。
+
+我们可以使用 *segmentation*，将 memory space 划分成多个 *segment*，例如 code、stack 和 heap，每个 segment 是连续的，但整体不必连续，从而可以更加灵活地进行分配，减少 internal fragmentation。
+
+### Hardware Support
+
+为了支持 segmentation，需要将整体的一对 base and bounds register 变成每个 segment 各一对。
+
+在进行 address translation 时，需要先识别一个 address 属于哪个 segment。explicit approach 通过 address 的最高几位作为 segment 标识，而 implicit approach 通过地址的生成方式（是否来自 PC / stack pointer）判断 segment。
+
+stack 是 grow backwards 的，需要特殊支持。可以在 hardware 中添加表示 grow 方向的 flag bit，对于 grow backwards 的 segment，其 base 是这段 address 的上界，offset 是负数，越界判断也有所不同。
+
+为了支持 shared memory，尤其是 code sharing，需要添加 protection bits，表示一个 segment 是否可以 read / write / execute。进行 code sharing 时，可以将权限设为 read-execute，禁止修改，从而既能 share 又能 isolate。这也能避免 stack / heap 被执行，一定程度上避免一些攻击。
+
+只分成 code、stack、heap 等少量几个 segment 被称作 *coarse-grained* segmentation。有的系统支持成百上千个 segment，称作 *fine-grained* segmentation，这需要存储 *segment table*。
+
+### OS Support
+
+为了支持 segmentation，OS 需要做的事情有：
+
+-   在 context switch 时存储、切换 segment registers
+-   管理 physical memory 的 free space，从而支持：
+    -   创建新的 address space 
+    -   segment grow，例如 `sbrk()`
+
+由于 segment 的 size 是不固定的，physical memory 中各个 segment 之间可能会出现很多空洞，这被称作 *external fragmentation*，导致 free space management 非常困难。
+
+一种解决方式是进行 *compact*，通过挪移 segment 来消除 external fragmentation，但这需要频繁移动大量数据，非常 expensive，效率很低。所以，一般不会进行 compact，而是会使用其他方式尽量减少 internal fragmentation。
+
+## Free-Space Management
+
+如果 memory 被分成了 fixed-size units，以 unit 为分配的基本单位，则 free-space management 会比较容易。如果分配出的每一块 memory 大小各异，则容易造成 external fragmentation，需要一些机制来优化。
+
+参见 [CS:APP 第九章 Dynamic Memory Allocation](/post/2022/11/csapp-9#dynamic-memory-allocation)。
