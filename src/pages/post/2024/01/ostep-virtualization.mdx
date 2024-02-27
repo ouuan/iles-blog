@@ -354,3 +354,113 @@ stack 是 grow backwards 的，需要特殊支持。可以在 hardware 中添加
 如果 memory 被分成了 fixed-size units，以 unit 为分配的基本单位，则 free-space management 会比较容易。如果分配出的每一块 memory 大小各异，则容易造成 external fragmentation，需要一些机制来优化。
 
 参见 [CS:APP 第九章 Dynamic Memory Allocation](/post/2022/11/csapp-9#dynamic-memory-allocation)。
+
+## Paging: Introduction
+
+将 memory 分成 variable-sized pieces 会使 free-space management 比较困难，所以，在 virtual memory 中，一般实际上会分成 fixed-size units，address space 中的每个 unit 称作一个 *page*，对应的 physical memory 称作 *page frame*，这个做法称作 *paging*。
+
+paging 可以避免 external fragmentation，并且更加 flexible，可以支持 sparse address space，也不需要对 program 如何使用 address space 进行假定，例如不需要对 stack 的 grow 方向进行特殊处理。
+
+*page table* 用来记录 virtual page 和 physical frame 的对应关系，用于 address translation。每个 process 都各有自己的 page table，context switch 时需要切换 page table。
+
+在进行 address translation 时，需要将 address 分成 *virtual page number* (VPN) 和 *offset* 两部分，其中 offset 位于低位，位数对应一个 page 的大小。VPN 作为 page table 的索引来访问对应的 *page table entry* (PTE)，从而得到 *physical frame number* (PFN, or PPN)，再将 PFN 和 offset 拼接就可以得到最终的 physical address。
+
+page table 比较大，不像 base and bounds 可以存在专门的 hardware 里，而是要存在 physical memory 中。
+
+page table 可以使用各种数据结构存储，最简单的是 *linear page table*，就是一个一维数组，以 VPN 作为下标。但无论如何，page table 的基本数据单位是 PTE。
+
+一个简化的 PTE 需要存储 PFN、valid bit 和 protection bits。其中，valid bit 表示有的 page 是 invalid 的，没有分配 physical frame，可以节约 memory。另外，实际的 PTE 还会有 present bit、dirty bit、reference bit 用于 swapping。根据具体实现可能还会存一些别的信息。
+
+在现在这个简单的 page table 设计下，每次 memory access 都需要访问两次 physical memory（先访问 page table 再访问实际目标），而且 address space 较大时 page table 也会很大，也就是说它的 time 和 space overhead 都很大，需要进一步优化。
+
+## Paging: Faster Translations (TLBs)
+
+为了解决 page table 的 time overhead，需要 hardware 的帮助，即使用 *translation lookaside buffer* (TLB)[^tlb] 来加速 page table access。
+
+[^tlb]: “lookaside buffer” 是 cache 的历史名称，后来 “lookaside buffer” 被 “cache” 取代，但 “TLB” 保留了下来。现在看来一个更合理的名称或许应当是 “address-translation cache”。
+
+TLB 中存储了少量 PTE，进行 address translation 时，首先查找 TLB，找到了称作 TLB hit，否则称作 TLB miss，需要再读取 page table，返回结果并更新 TLB。TLB miss 代价高昂，需要尽可能避免。
+
+### Locality: Why is TLB Hit Rate High?
+
+TLB 利用了 program 的 *spatial locality*，即一小段时间内访问的 address 一般是邻近的，很多 address 位于同一个 page，从而可以 TLB hit；也利用了 *temporal locality*，即一小段时间内同一个 address 可能被多次访问，从而可以 TLB hit。
+
+locality 是 program 的性质，不同 program 有着不一样的 locality，这会影响其性能。如果 program 短时间内访问的 page 数量超过了 TLB 的容量，就可能产生大量 TLB miss，这称作 exceeding the *TLB coverage*。有的 program 由于其特殊性就是需要随机大范围访问 memory，例如使用了复杂数据结构的 DBMS，可以为它们设置更大的 page size，来缓解这一问题。
+
+### Who Handles The TLB Miss?
+
+TLB miss 可以由 hardware 或 software 处理。
+
+在 hardware-managed TLB 中，page table 有固定的格式，OS 需要设置 page table base register，由 hardware 进行 TLB miss 的处理（page table 的访问）。
+
+在 software-managed TLB 中，TLB miss 会触发 trap，由 OS 提供的 trap handler 进行处理，使用特殊的 privileged instruction 修改 TLB。这样 OS 可以灵活设计 page table，不受 hardware 的限制。这个 trap handler 有两点需要注意：
+
+-   返回到 user program 时，要返回到触发 trap 的那条 instruction，而非像 system call 一样返回到下一条 instruction。
+-   trap handler 自身不能再触发 TLB miss，要么 trap handler 直接访问 physical memory 绕开 TLB，要么在 TLB 中设置一些 *wired* translation，永久保留在 TLB 中不被清除。
+
+### TLB Contents: What’s In There?
+
+TLB entry 的内容一般包括：
+
+-   PTE 的信息：PFN、protection bits、dirty bit 等
+-   VPN：TLB 一般是 [fully associative](/post/2022/12/csapp-6#cache-的分类) 的，需要存储 VPN 作为 cache tag
+-   valid bit：表示这个 TLB entry 存储的信息是否 valid，和 page table 的 valid bit 不同
+-   wired：表示这个 entry 永远 valid，不被清除/替换
+-   [ASID](#tlb-issue-context-switches)
+
+### TLB Issue: Context Switches
+
+由于每个 process 的 page table 不同，context switch 时需要处理 TLB 的更新。
+
+一种方法是在 context switch 时完全清空 TLB（将 valid bit 全部置 0），但这样的话每次 context switch 后都会 TLB miss，性能较差。
+
+另一种方法是在 TLB 中存储 *address space identifier* (ASID)，它与 PID 类似，用来表示这个 TLB entry 对应于哪个 address space。查找 TLB 时，需要同时比较 VPN 和 ASID。这样既保证了不同 process 访问到不同的 page table，又不至于在 context switch 时完全损失掉 TLB。
+
+### Issue: Replacement Policy
+
+如果 TLB 满了，添加新的 entry 时需要替换掉一个旧的，需要根据 replacement policy 进行选择。
+
+[讨论 swapping 的 replacement policy 时](#beyond-physical-memory-policies) 会再深入探讨。这里简单介绍两种 policy：
+
+-   *least-recently-used* (LRU): 认为越久没使用的未来也越不会使用，基于此进行替换。
+-   random: 随机替换，更加容易实现，而且可以避免在 corner case 下挂掉。例如，如果循环访问 $n+1$ 个 page，而 TLB size 是 $n$，则 LRU 会产生大量 miss，而 random 不会。
+
+## Paging: Smaller Tables
+
+接下来还需要优化 page table 的 space overhead，即减小 page table 自身占用的 memory。在优化前，一个 32-bit address space 在 page size 为 4KB、PTE 占用 4B 时需要占用 4MB 的空间。
+
+### Simple Solution: Bigger Pages
+
+增大 page size 可以让 PTE 数量变少，从而减小 page table 占用的空间。但更大的 page size 可能导致严重的 internal fragmentation，所以不能盲目扩大。
+
+有的 OS 确实支持更大的 page size，但其目的是降低 TLB 的占用，提升 TLB hit rate，而非减小 page table size。
+
+### Hybrid Approach: Paging and Segments
+
+可以尝试将 paging 和 segmentation 的优点结合起来：整体进行 segmentation，在 segment 内部使用 paging，每个 segment 各有一个 page table，base 和 bounds 指向 page table。这样的话，address space 中不属于任何一个 segment 的部分无需占用 page table 的空间。
+
+然而，这种做法依然有很多问题：
+
+-   需要 segmentation，损失了一些 flexibility。
+-   一个 segment 的内部如果太 sparse，其 page table 依然会很大。
+-   虽然分配给 program 的 memory 是以 page 为单位的，但现在 page table 变成了 variable-sized，为 page table 分配空间又变得困难，会产生 external fragmentation。
+
+### Multi-level Page Tables
+
+很多 modern system 使用的都是 multi-level page table：将 page table 分成多级形成树状结构，上一级 PTE 在 valid 时指向下一级 page table，访问上一级使用的 index 是对应的下一级的 index 的公共前缀。
+
+这样做既省下了大量 invalid PTE 占用的空间，又避免了上述 hybrid approach 的缺点。一个 page table 的 size 可以控制在一个 page，这也使得为 page table 自身分配 memory 更加容易。
+
+但它也有一些缺点：在 TLB miss 时，需要访问多个 level 的 page table，即多次 memory access，开销更大；实现起来更复杂。
+
+### Inverted Page Tables
+
+普通的 page table 是对每个 VPN 有一个 entry 存 PFN，而 inverted page table 则是对每个 PFN 有一个 entry 存 VPN，并且所有 process 共用一张 inverted page table，每个 entry 还会记录对应的 process。为了快速查询，需要用一些数据结构维护这张 table，例如 hash table。
+
+### Swapping the Page Tables to Disk
+
+实际上，page table 不一定放在 physical memory 中，也可能它自身就使用 virtual memory，这使得 page table 自身可以被 swap 到 disk 上，避免 physical memory 放不下 page table。
+
+## Beyond Physical Memory: Mechanisms
+
+## Beyond Physical Memory: Policies
