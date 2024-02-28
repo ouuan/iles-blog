@@ -274,7 +274,11 @@ double free
 
 为了高效且灵活地 virtualize memory，基本思想是 *(hardware-based) address translation*，将 memory access 从 virtual address 翻译为 physical address。OS 会管理 memory，配置 hardware，最终由 hardware 高效地进行 address translation。
 
-我们先做一些简化，假设每个 process 的 address space 都映射到了 physical memory 中连续的[^contiguous]一段，且各个 process 的 address space 都一样大（比 physical memory 小）。
+我们先做一些简化，假设：
+
+-   每个 process 的 address space 都映射到了 physical memory 中连续的[^contiguous]一段
+-   各个 process 的 address space size 相同
+-   physical memory 足够大，能装下所有 process 的 address space
 
 [^contiguous]: 注意是 “contiguous” 而不是 “continuous”，~~discrete topology 下随便 map 都 continuous（~~
 
@@ -462,5 +466,11 @@ TLB entry 的内容一般包括：
 实际上，page table 不一定放在 physical memory 中，也可能它自身就使用 virtual memory，这使得 page table 自身可以被 swap 到 disk 上，避免 physical memory 放不下 page table。
 
 ## Beyond Physical Memory: Mechanisms
+
+<Card title="“an array stored on disk and cached in memory”">
+
+CS:APP 将 virtual memory 称作 “an array stored on disk and cached in memory”，导致我一直都没完全理解（，感觉还是 OSTEP 好（
+
+</Card>
 
 ## Beyond Physical Memory: Policies
