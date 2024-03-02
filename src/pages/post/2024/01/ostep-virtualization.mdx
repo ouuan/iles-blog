@@ -274,7 +274,11 @@ double free
 
 为了高效且灵活地 virtualize memory，基本思想是 *(hardware-based) address translation*，将 memory access 从 virtual address 翻译为 physical address。OS 会管理 memory，配置 hardware，最终由 hardware 高效地进行 address translation。
 
-我们先做一些简化，假设每个 process 的 address space 都映射到了 physical memory 中连续的[^contiguous]一段，且各个 process 的 address space 都一样大（比 physical memory 小）。
+我们先做一些简化，假设：
+
+-   每个 process 的 address space 都映射到了 physical memory 中连续的[^contiguous]一段
+-   各个 process 的 address space size 相同
+-   physical memory 足够大，能装下所有 process 的 address space
 
 [^contiguous]: 注意是 “contiguous” 而不是 “continuous”，~~discrete topology 下随便 map 都 continuous（~~
 
@@ -418,12 +422,7 @@ TLB entry 的内容一般包括：
 
 ### Issue: Replacement Policy
 
-如果 TLB 满了，添加新的 entry 时需要替换掉一个旧的，需要根据 replacement policy 进行选择。
-
-[讨论 swapping 的 replacement policy 时](#beyond-physical-memory-policies) 会再深入探讨。这里简单介绍两种 policy：
-
--   *least-recently-used* (LRU): 认为越久没使用的未来也越不会使用，基于此进行替换。
--   random: 随机替换，更加容易实现，而且可以避免在 corner case 下挂掉。例如，如果循环访问 $n+1$ 个 page，而 TLB size 是 $n$，则 LRU 会产生大量 miss，而 random 不会。
+如果 TLB 满了，添加新的 entry 时需要替换掉一个旧的，需要根据 [replacement policy](#beyond-physical-memory-policies) 进行选择。
 
 ## Paging: Smaller Tables
 
@@ -463,4 +462,86 @@ TLB entry 的内容一般包括：
 
 ## Beyond Physical Memory: Mechanisms
 
+physical memory 可能装不下整个 virtual memory（所有 process 的 address space），这时可以将一部分 page 存在 disk 上。支持更大的 virtual memory，一方面可以让 programmer 无需考虑 memory 不够用要怎么办，另一方面可以在 physical memory 有限的情况下支持更多 process 同时运行。
+
+### Swap Space
+
+为了将 page 存储在 disk 上，需要在 disk 上预留出一块 *swap space*。OS 可以通过 disk address 读写 swap space。
+
+只不过，swap space 并不是 swapping 在 disk 上唯一的数据来源，例如，program 存储在 disk 上，所以可以从 disk 上 load，无需再保存到 swap space。
+
+### Page Fault
+
+为了支持 swapping，需要在 PTE 中增加 *present bit*，表示这个 page 是否在 physical memory 中。如果访问了不在 physical memory 中的 page，则会触发 *page fault*[^page-fault]。
+
+[^page-fault]: page fault 虽然叫做 “fault”，但它其实是 legal access，称它为 “page miss” 或许会更好。只不过，hardware 需要将这作为一种异常情况交给 OS 处理，和其他 illegal action 类似，所以称它是 “fault”。另外，有时人们也会将 illegal memory access 一并统称为 “page fault”，可能会将 “page fault” 分成几类，其中一类是 page miss，需要根据上下文进行判断。
+
+无论使用 software-managed TLB 还是 hardware-managed TLB，page fault 都是由 OS 提供的 page fault handler 处理的。这是因为 page fault 不适合由 hardware 处理：一方面，disk 速度慢，访问耗时长；另一方面，这涉及到 swap space 的使用以及 disk I/O 的处理，流程复杂。
+
+在进行 disk I/O 的过程中，process 会处于 blocked state，此时 OS 可以运行其他 process。
+
+### When memory is full
+
+在 *page in* 的时候，如果 physical memory 满了，则需要先 *page out* 一些 page，OS 通过 [*page-replacement policy*](#beyond-physical-memory-policies) 选择这些 page。
+
+只不过，一般并不会等到 physical memory 完全耗尽才进行 page out，而是会在剩余的 physical memory 不多时就在 background 运行 *swap daemon*，evict 掉一些 page，来保持 physical memory 有一定量的空余。这样一方面可以批量处理，效率更高（尤其是 disk I/O），另一方面，在 background 运行可以更好地利用 idle time。
+
 ## Beyond Physical Memory: Policies
+
+由于 disk 访问速度非常慢，page hit rate 略微提高一点，average memory access time 就可以下降很多，所以使用一个好的 replacement policy 非常重要。
+
+（当然，为了获得更好的性能，也可以选择增大 physical memory。）
+
+### Replacement Policies
+
+为了衡量 replacement policy 的优劣，由于 hit rate 受到具体 sample 的影响，光看 hit rate 会缺少一些 context，可以和 optimal policy (OPT) 进行比较。假设可以预知未来，可以证明，最优的 policy 是 *furthest in the future*，即每次 evict 掉最远会被再次访问的 page。当然，实际上是无法预知未来的，所以需要使用其他尽量优的 policy。
+
+FIFO 和 random 是两种简单的 policy，他们实现简单，但比较笨，容易 evict 掉频繁访问的 important page。
+
+和 [scheduling policy](#scheduling-introduction) 一样，可以基于历史预测未来，来逼近最优。replacement policy 主要关注 page 的 *frequency* 和 *recency*，其原理是 program 的 locality。有 *least-frequently-used* (LFU)、*least-recently-used* (LRU)，以及相反的 MFU、MRU 等 policy，其中 LRU 是最常用，效果较好的，实现相对简单的。
+
+### Workload Examples
+
+完全随机访问，没有 locality：FIFO、random、LRU 表现相同，hit rate 和 cache size 成正比。
+
+![Figure 22.6: The No-Locality Workload](ostep-fig-22.6.png)
+
+80% 的访问集中在 20% 的 “hot” page：LRU 的性能介于 FIFO/random 和 OPT 之间。
+
+![Figure 22.7: The 80-20 Workload](ostep-fig-22.7.png)
+
+循环访问若干个 page：在 cache size 足够大时各种 policy 都是 100% hit，在 cache size 较小时，LRU 和 FIFO 会退化至 100% miss，random 仍有合理的性能。
+
+![Figure 22.8: The Looping Workload](ostep-fig-22.8.png)
+
+也就是说，LRU 虽然一般性能较好，但在 corner case 下性能会很差。现在的 OS 一般会采取一些额外的措施来做到 *scan resistant*，避免 worst-case behavior。
+
+### Implementing LRU
+
+LRU 的实现需要记录每一次 memory access，精确实现比较 expensive，所以一般只是取近似。
+
+在 page table 中会为每个 page 存一个 *reference bit*，访问一个 page 时 hardware 会将 reference bit 置为 1。
+
+OS 可以用各种方式使用 reference bit 来逼近 LRU，例如 *clock algorithm*：循环扫描所有 page，如果 reference bit 为 1 则置为 0 然后继续扫描，直到 reference bit 为 0，选择这个 page。也不一定要循环扫描，可以随机选择。
+
+![Figure 22.9: The 80-20 Workload With Clock](ostep-fig-22.9.png)
+
+### Considering Dirty Pages
+
+page replacement 还需要考虑一个 page 是否 *dirty*，即是否被修改过。dirty page 被 evict 时需要将数据写回到 disk 上，clean page 则不需要。所以 evict dirty page 更加 expensive，replacement policy 一般会考虑优先选择 clean page。例如在 clock algorithm 中可以先扫描一轮 clean page，没找到再扫描 dirty page。
+
+### Other VM Policies
+
+除了 replacement policy，OS 还需要考虑何时将一个 page 放进 physical memory。普通的做法是 *demand paging*，即等到真的使用的时候才 page in。有时也可以进行 *prefetch*，例如在使用一个 page 的同时 load 相邻的下一个 page，或者在 program 提供 hint 时进行 prefetch。
+
+另一个 policy 是何时将 page 写回到 disk 上，可以进行 *clustering* (*grouping*)，进行少次多量的 disk write，性能更好。
+
+### Thrashing
+
+如果 running processes 的 *working set*（正在使用的 page）太大，physical memory 装不下，就会出现 *thrashing*，会一直进行 paging，极大影响系统性能。
+
+早期的系统 physical memory 较小，出现这种情况比较正常，可以使用 *admission control*，暂停一部分 process 的运行，以减小 working set。
+
+现在的系统则一般会使用 *out-of-memory killer*，在 memory 占用过高时 kill 掉一些 process。
+
+## Complete Virtual Memory Systems
