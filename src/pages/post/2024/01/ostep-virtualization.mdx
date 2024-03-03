@@ -5,7 +5,6 @@ image: virtual-peach.jpg
 tags:
 -   ostep
 -   学习笔记
--   WIP
 ---
 
 [《Operating Systems: Three Easy Pieces》](https://pages.cs.wisc.edu/~remzi/OSTEP/)第一部分 Virtualization 的学习笔记。
@@ -545,3 +544,56 @@ page replacement 还需要考虑一个 page 是否 *dirty*，即是否被修改�
 现在的系统则一般会使用 *out-of-memory killer*，在 memory 占用过高时 kill 掉一些 process。
 
 ## Complete Virtual Memory Systems
+
+### VAX/VMS Virtual Memory
+
+VAX/VMS 是 1970/80 年代的系统，有很多 idea 延续至今。
+
+address space 被分成 *process space* 和 *system space* 两部分。process space 又被分成 *P0* 用来放 code 和 heap，以及 *P1* 用来放 stack，而 system space *(S)* 用来放 OS code 和 data，在 protection bits 中设置了更高的 privilege level。
+
+page size 只有 512B，因此优化 page table 占用的空间非常重要。它使用的是 [hybrid of paging and segmentation](#hybrid-approach-paging-and-segments)，并且 page table 放在 kernel virtual memory 中，可以 swap 到 disk 上。
+
+code segment 的 address 并非从 0 开始，从而可以检测到 null-pointer access。
+
+kernel address space 是 user address space 的一部分，在 context switch 时只更改 P0 和 P1 的 base and bounds，不更改 S。为 kernel 使用 virtual address 便于 swap page table to disk，也便于在 kernel 和 user program 之间 copy data。
+
+VAX 的 hardware 不维护 reference bit，VMS 实现的也不是 LRU，而是 *segmented FIFO*：
+
+-   每个 process 有自己的 FIFO list，另有 global 的 clean page list 和 dirty page list。
+-   对每个 process 限制了 *resident set size* (RSS)，以防止单个 process 占用过多 memory。
+-   一个 process 使用的 page 数量超过 RSS 之后，会将 process FIFO list 里的 page 移到 global list（保留在 physical memory 中不 evict）。
+-   需要进行 page replacement 时从 global clean page list 取。
+-   如果 access 了一个在 global list 的 page，则将其移回 process FIFO list。
+-   定期将 dirty page list 批量写回到 disk，然后移动到 clean page list。
+
+有两个 lazy optimization：
+
+demand zeroing
+:   request 一个 page 时，为了 security 需要将其内容清空，但不需要立即清空，而是可以等到真正被使用了再清空，如果最后没被使用就不用清空了。
+
+copy-on-write
+:   复制 page 时先将两边都设为 read-only 并指向相同的 physical memory，写入时会触发 trap，然后再真的进行 copy 并设为 writable。这对 `fork()` 尤其有用。
+
+### The Linux Virtual Memory System
+
+Linux address space 分为 user portion 和 kernel portion。
+
+kernel virtual address 分为两种：
+
+-   *kernel logical address*，使用 `kmalloc` 获取，不能 swap to disk，和 physical address 是相差固定 offset 的简单对应关系，所以对应的 physical address 是连续的，适用于 direct memory access 等场景。
+-   *kernel virtual address*，使用 `vmalloc` 获取，更容易分配大块的 memory，对应的 physical address 不一定是连续的。
+
+Linux 支持 *huge page*。以前需要 program 主动请求使用 huge page，后来又有了 *transparent huge page*，可以自动使用更大的 page size，以在 working set 很大时减少 TLB miss。只不过更大的 page size 也可能造成更严重的 internal fragmentation。
+
+Linux 中有两种 memory mapping：memory-mapped file 和 anonymous memory。前者可以 map file to memory，常用于 load program 以及 shared library，从而一个 page 等到真正使用才会从 disk 读取，称作 *depand paging*；后者用于 heap 和 stack。
+
+Linux 使用 *2Q* replacement policy，以解决 LRU 的 worst-case behavior：
+
+-   有两个 queue，*inactive list* 和 *active list*，分别近似 LRU
+-   首次访问 page 会进入 inactive list，再次访问则进入 active list
+-   定期将一些 page 从 active list 移入 inactive list
+-   evict 时优先选择 inactive list
+
+这样的话，inactive page 就不会将 active page 挤出 physical memory。
+
+为了缓解 buffer overflow attack，permission bits 中需要添加 *NX bit* (no-execute)，并且使用 *address space layout randomization* (ASLR)。
