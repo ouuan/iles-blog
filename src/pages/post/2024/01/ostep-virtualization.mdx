@@ -597,3 +597,5 @@ Linux 使用 *2Q* replacement policy，以解决 LRU 的 worst-case behavior：
 这样的话，inactive page 就不会将 active page 挤出 physical memory。
 
 为了缓解 buffer overflow attack，permission bits 中需要添加 *NX bit* (no-execute)，并且使用 *address space layout randomization* (ASLR)。
+
+为了缓解 [Meltdown/Spectre attack](https://spectreattack.com)，可以创建单独的 kernel address space，称作 *kernel page-table isolation* (KPTI)，在切换到 kernel mode 时需要切换 page table，这对性能有一定的影响。
