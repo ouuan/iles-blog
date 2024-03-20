@@ -158,7 +158,7 @@ job arrive 时会先放在 priority 最高的 queue，如果运行太久就会�
 
 ### Tuning MLFQ
 
-MLFQ 有很多可以设置的参数：queue (level) 的数量，每个 level 的 time slice 和 allotment，多久进行一次 priority boost。一般来说，priority 越高，time slice 和 allotment 越长。
+MLFQ 有很多可以设置的参数：queue (level) 的数量，每个 level 的 time slice 和 allotment，多久进行一次 priority boost。一般来说，priority 越高，time slice 和 allotment 越短。
 
 MLFQ 不一定真的要实现为多个 queue，也可以统计每个 job 的 CPU usage，根据 usage 计算出 priority，而让 usage 随时间 *decay* 来代替 priority boost，这称作 *decay-usage* scheduling。
 
