@@ -18,7 +18,7 @@
     "typecheck": "vue-tsc --noEmit && tsc -p functions --noEmit"
   },
   "dependencies": {
-    "@giscus/vue": "2.4.0",
+    "@giscus/vue": "3.0.0",
     "@mermaid-js/mermaid-cli": "10.8.0",
     "@sniptt/guards": "0.2.0",
     "@unocss/reset": "0.58.6",
