@@ -21,7 +21,6 @@ export default defineConfig({
         '--zh-font': `var(--zh-${type}-font)`,
       }),
     ],
-    ['break-anywhere', { 'overflow-wrap': 'anywhere' }],
   ],
   theme: {
     breakpoints: {
