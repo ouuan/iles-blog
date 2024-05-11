@@ -6,7 +6,7 @@ settings:
 
 overrides:
   vite-plugin-image-presets: 0.3.4
-  puppeteer: 22.7.1
+  puppeteer: 22.8.0
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
@@ -74,8 +74,8 @@ importers:
         specifier: 0.3.8
         version: 0.3.8
       puppeteer:
-        specifier: 22.7.1
-        version: 22.7.1(typescript@5.4.5)
+        specifier: 22.8.0
+        version: 22.8.0(typescript@5.4.5)
       rehype-plugin-image-native-lazy-loading:
         specifier: 1.2.0
         version: 1.2.0
@@ -3181,14 +3181,14 @@ packages:
   puppeteer-cluster@0.23.0:
     resolution: {integrity: sha512-108terIWDzPrQopmoYSPd5yDoy3FGJ2dNnoGMkGYPs6xtkdhgaECwpfZkzaRToMQPZibUOz0/dSSGgPEdXEhkQ==}
     peerDependencies:
-      puppeteer: 22.7.1
+      puppeteer: 22.8.0
 
-  puppeteer-core@22.7.1:
-    resolution: {integrity: sha512-jD7T7yN7PWGuJmNT0TAEboA26s0VVnvbgCxqgQIF+eNQW2u71ENaV2JwzSJiCHO+e72H4Ue6AgKD9USQ8xAcOQ==}
+  puppeteer-core@22.8.0:
+    resolution: {integrity: sha512-S5bWx3g/fNuyFxjZX9TkZMN07CEH47+9Zm6IiTl1QfqI9pnVaShbwrD9kRe5vmz/XPp/jLGhhxRUj1sY4wObnA==}
     engines: {node: '>=18'}
 
-  puppeteer@22.7.1:
-    resolution: {integrity: sha512-JBCBCwQ9+dyPp5haqeecgv0N0vgWFx44woUeKJaPeJT8CU3RXrd8F/tqJQbuAmcWlbMhYJSlTJkIFrwVAs6BNA==}
+  puppeteer@22.8.0:
+    resolution: {integrity: sha512-Z616wyTr0d7KpxmfcBG22rAkzuo/xzHJ3ycpu4KiJ3dZNHn/C1CpqcCwPlpiIIsmPojTAfWjo6EMR7M+AaC0Ww==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3948,6 +3948,18 @@ packages:
       utf-8-validate:
         optional: true
 
+  ws@8.17.0:
+    resolution: {integrity: sha512-uJq6108EgZMAl20KagGkzCKfMEjxmKvZHG7Tlq0Z6nOky7YF7aq4mOx6xK8TJ/i1LeK4Qus7INktacctDgY8Ow==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
   xml-formatter@3.6.2:
     resolution: {integrity: sha512-enWhevZNOwffZFUhzl1WMcha8lFLZUgJ7NzFs5Ug4ZOFCoNheGYXz1J9Iz/e+cTn9rCkuT1GwTacz+YlmFHOGw==}
     engines: {node: '>= 14'}
@@ -4620,7 +4632,7 @@ snapshots:
     dependencies:
       chalk: 5.3.0
       commander: 10.0.1
-      puppeteer: 22.7.1(typescript@5.4.5)
+      puppeteer: 22.8.0(typescript@5.4.5)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -6286,8 +6298,8 @@ snapshots:
     dependencies:
       consola: 3.2.3
       jsdom: 24.0.0
-      puppeteer: 22.7.1(typescript@5.4.5)
-      puppeteer-cluster: 0.23.0(puppeteer@22.7.1(typescript@5.4.5))
+      puppeteer: 22.8.0(typescript@5.4.5)
+      puppeteer-cluster: 0.23.0(puppeteer@22.8.0(typescript@5.4.5))
       subset-font: 2.1.0
       zod: 3.22.4
     transitivePeerDependencies:
@@ -7577,31 +7589,31 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-cluster@0.23.0(puppeteer@22.7.1(typescript@5.4.5)):
+  puppeteer-cluster@0.23.0(puppeteer@22.8.0(typescript@5.4.5)):
     dependencies:
       debug: 4.3.4
-      puppeteer: 22.7.1(typescript@5.4.5)
+      puppeteer: 22.8.0(typescript@5.4.5)
     transitivePeerDependencies:
       - supports-color
 
-  puppeteer-core@22.7.1:
+  puppeteer-core@22.8.0:
     dependencies:
       '@puppeteer/browsers': 2.2.3
       chromium-bidi: 0.5.19(devtools-protocol@0.0.1273771)
       debug: 4.3.4
       devtools-protocol: 0.0.1273771
-      ws: 8.16.0
+      ws: 8.17.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  puppeteer@22.7.1(typescript@5.4.5):
+  puppeteer@22.8.0(typescript@5.4.5):
     dependencies:
       '@puppeteer/browsers': 2.2.3
       cosmiconfig: 9.0.0(typescript@5.4.5)
       devtools-protocol: 0.0.1273771
-      puppeteer-core: 22.7.1
+      puppeteer-core: 22.8.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8464,6 +8476,8 @@ snapshots:
   wrappy@1.0.2: {}
 
   ws@8.16.0: {}
+
+  ws@8.17.0: {}
 
   xml-formatter@3.6.2:
     dependencies:
