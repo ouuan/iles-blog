@@ -36,7 +36,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
     const { data } = await renderMermaid(browser, value, 'svg', {
       backgroundColor: 'transparent',
       mermaidConfig: { theme },
-      id: `__mermaid-${theme}-${hash.slice(0, 5)}`,
+      svgId: `__mermaid-${theme}-${hash.slice(0, 5)}`,
     });
     return data.toString();
   }
