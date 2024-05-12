@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@giscus/vue": "3.0.0",
-    "@mermaid-js/mermaid-cli": "10.8.0",
+    "@mermaid-js/mermaid-cli": "10.9.0",
     "@sniptt/guards": "0.2.0",
     "@unocss/reset": "0.60.1",
     "@vueuse/components": "10.9.0",
@@ -98,8 +98,7 @@
       }
     },
     "patchedDependencies": {
-      "@islands/headings@0.8.2": "patches/@islands__headings@0.8.2.patch",
-      "@mermaid-js/mermaid-cli@10.8.0": "patches/@mermaid-js__mermaid-cli@10.7.0.patch"
+      "@islands/headings@0.8.2": "patches/@islands__headings@0.8.2.patch"
     }
   }
 }
