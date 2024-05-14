@@ -55,7 +55,7 @@ async function trackFeeds(request: Request) {
 export const onRequestGet: PagesFunction = (context) => {
   const { request } = context;
 
-  if (/\/feed\.(xml|atom|json)\/*$/.test(new URL(request.url).pathname)) {
+  if (/\/feed\.(?:xml|atom|json)\/*$/.test(new URL(request.url).pathname)) {
     context.waitUntil(trackFeeds(request));
   }
 
