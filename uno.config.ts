@@ -82,7 +82,7 @@ export default defineConfig({
     heimu: 'bg-text hover:text-card',
     'standard-card': 'bg-card rd-2 px-6 md:px-12 overflow-auto md:py-3 shadow',
   }, [
-    /^contrast-(.+?)(?:-(.+))?$/,
+    /^contrast-(\w+)(?:-(\w+))?$/,
     ([, color, lightColor]) => [
       `light:text-${lightColor || 'text'}`,
       'light:drop-shadow',
