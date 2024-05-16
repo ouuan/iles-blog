@@ -39,6 +39,7 @@ import { trackEvent } from '~/misc/plausible';
 export function onLoad() {
   trackEvent('404', {
     props: {
+      path: window.location.pathname,
       href: window.location.href,
     },
   });
