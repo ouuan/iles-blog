@@ -75,13 +75,13 @@
           :key="tag"
           :title="`标签: ${tag}`"
           class="flex items-center"
-          itemprop="keywords"
         >
           <span class="i-mdi-tag-outline mr-1" />
           <span class="sr-only">标签</span>
           <a
             :href="`/tag/${removeDelimiter(tag)}`"
             class="hover:underline"
+            itemprop="keywords"
           >
             <search-result-highlight
               :text="tag"

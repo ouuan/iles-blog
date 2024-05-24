@@ -2,7 +2,7 @@ import type { FeedItem, FeedOptions } from '@islands/feed';
 import { h } from 'vue';
 import { isString } from '@sniptt/guards';
 
-import useCopyrightYear from './useCopyrightYear';
+import { useCopyrightYearString } from './useCopyrightYear';
 import { usePosts } from './usePosts';
 import { useTagFilter } from './useTags';
 
@@ -15,7 +15,7 @@ export default function useFeed(tag?: string) {
     title,
     description,
   } = site;
-  const yearString = useCopyrightYear();
+  const yearString = useCopyrightYearString();
 
   const link = tag ? new URL(`/tag/${tag}`, url).href : url;
 

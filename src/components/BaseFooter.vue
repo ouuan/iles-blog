@@ -5,7 +5,10 @@
     itemscope
     itemtype="https://schema.org/WPFooter"
   >
-    <div class="flex flex-wrap items-center justify-center gap-x-1">
+    <div
+      class="flex flex-wrap items-center justify-center gap-x-1"
+      itemprop="copyrightNotice"
+    >
       <span>Copyright ©</span>
       <span>{{ yearString }}</span>
       <a
@@ -50,16 +53,18 @@
     </div>
   </footer>
   <meta
+    v-for="year of yearRange"
+    :key="year"
     itemprop="copyrightYear"
-    :content="yearString"
+    :content="`${year}`"
   >
   <author-microdata itemprop="copyrightHolder" />
 </template>
 
 <script setup lang="ts">
-import useCopyrightYear from '~/composables/useCopyrightYear';
+import { useCopyrightYearString, useCopyrightYearRange } from '~/composables/useCopyrightYear';
 
-const { site } = usePage();
-const { author } = site;
-const yearString = useCopyrightYear();
+const { author } = usePage().site;
+const yearString = useCopyrightYearString();
+const yearRange = useCopyrightYearRange();
 </script>
