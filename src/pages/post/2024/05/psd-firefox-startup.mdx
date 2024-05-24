@@ -1,0 +1,80 @@
+---
+title: 解决使用 profile-sync-daemon 时 Firefox 开机启动报错
+date: 2024-05-24T17:40:34+08:00
+image: firefox-already-running.png
+description: 解决使用 profile-sync-daemon 时开机报错 "Firefox is already running, but is not responding"
+tags:
+-   firefox
+-   Arch Linux
+-   问题解决记录
+---
+
+为了提升性能，更好地利用 RAM，我一直在使用 [profile-sync-daemon](https://github.com/graysky2/profile-sync-daemon)，也经常在开机时遇到下面这个报错：
+
+> Firefox is already running, but is not responding. To use Firefox, you must first close the existing Firefox process, restart your device, or use a different profile.
+
+之前都是把弹窗关掉手动重启一下，最近终于去研究了一下把它修了。
+
+<Excerpt />
+
+## profile-sync-daemon
+
+[profile-sync-daemon](https://github.com/graysky2/profile-sync-daemon) 就是在启动时把 browser profile 从硬盘复制到内存盘，然后创建 symlink 到内存盘，并且在需要的时候写回硬盘，在浏览器运行过程中主要都是访问内存，从而减少硬盘访问，理论上可以提升性能、降低硬盘损耗。
+
+总之如果内存用不完的话，用这个东西看起来不亏（其实我一开始就是因为有 32G 内存用不完去搜了一下如何利用内存才知道有这个工具（
+
+## 探寻报错原因
+
+在用了 profile-sync-daemon 后，在开机时我经常遇到下面这个报错：
+
+![弹窗：Firefox is already running, but is not responding. To use Firefox, you must first close the existing Firefox process, restart your device, or use a different profile.](firefox-already-running.png)
+
+单次处理这个问题非常简单，关掉弹窗重启 Firefox 即可。但每次都遇到还是很烦，时间久了我还是去研究了一下。
+
+根据错误提示以及搜索结果，刚开机时又肯定不会有其他 Firefox 进程在跑，我一开始主要怀疑是 profile-sync-daemon 在关机前备份时出了问题，导致有 lock 之类的没有释放掉就备份了。
+
+由于我手动处理的时候都是重启一下 Firefox，所以我尝试修复的时候一开始先是写了个脚本自动重启 Firefox，发现直接重启不行，又尝试用 `xdotool` / `wmctrl` 等待报错弹窗出现后再重启，发现成功与否不太稳定。而进一步地，我发现重启这个过程是不必要的，重点其实在于，要多等待一会儿。
+
+于是我去观察了一下刚开机时 profile 的状态，终于发现了问题。刚开机时 profile directory 会被设为到 `/dev/null` 的 symlink，而在整个 profile 都复制到内存盘后才会替换为正确的 symlink，我的 profile 比较大（3GB），就需要好几秒。只不过 Firefox 给的错误提示非常具有误导性，它其实是无法从 `/dev/null` 正常读取 profile，这和 “already running” 完全不沾边。
+
+## 问题修复
+
+我的解决方案是写了个启动脚本，等待 profile directory 变成正确的 symlink 再启动 Firefox：
+
+```sh
+#!/bin/bash
+
+# Fix "Firefox is already running" at startup when using profile-sync-daemon
+
+set -euo pipefail
+
+while [[ "$(readlink -n ~/.mozilla/firefox/*.default-release)" == /dev/null ]]; do
+    sleep 1
+done
+
+firefox &
+```
+
+然后根据 Copilot 的建议改成了非轮询，使用 `inotifywait`（意义不大，主要是学多（
+
+```sh
+#!/bin/bash
+
+# Fix "Firefox is already running" at startup when using profile-sync-daemon
+
+set -euo pipefail
+
+profile="$(ls -d ~/.mozilla/firefox/*.default-release)"
+
+while [[ "$(readlink -n "$profile")" == /dev/null ]]; do
+    inotifywait -P "$profile"
+done
+
+firefox &
+```
+
+我是开机时有一个启动脚本启动一堆东西，在那里面调用这个 Firefox 启动脚本。（如果是手动启动可以写个 `~/.local/share/applications/firefox.desktop`）
+
+## 误导性的报错
+
+后来去搜了一下，发现这个误导性的报错历史悠久，20 年前 profile directory 不存在就会报这个：[Bugzilla #278860 - confusing "profile in use"/"already running" error when profile is missing (not found)](https://bugzilla.mozilla.org/show_bug.cgi?id=278860)。后来路径不存在的情况修了，但 read-only 等 permission error 还是没修：[Bugzilla #381139 - Need different warning for profile RO, in use and missing……](https://bugzilla.mozilla.org/show_bug.cgi?id=381139)。
