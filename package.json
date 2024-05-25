@@ -36,7 +36,7 @@
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
     "shiki": "0.14.7",
     "simple-git": "3.24.0",
-    "sitemap": "7.1.1",
+    "sitemap": "7.1.2",
     "ts-exhaustive-check": "1.0.0",
     "unified": "10.1.2",
     "unist-util-visit": "5.0.0",
