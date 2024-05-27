@@ -81,11 +81,11 @@
           <a
             :href="`/tag/${removeDelimiter(tag)}`"
             class="hover:underline"
-            itemprop="keywords"
           >
             <search-result-highlight
               :text="tag"
               :delimiter="highlightDelimiter"
+              itemprop="keywords"
             />
           </a>
         </span>
