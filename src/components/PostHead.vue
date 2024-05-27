@@ -73,7 +73,7 @@
         <span
           v-for="tag of frontmatter.tags"
           :key="tag"
-          :title="`标签: ${tag}`"
+          :title="`标签: ${removeDelimiter(tag)}`"
           class="flex items-center"
         >
           <span class="i-mdi-tag-outline mr-1" />
