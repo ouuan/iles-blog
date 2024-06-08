@@ -68,8 +68,8 @@ importers:
         specifier: 12.3.0
         version: 12.3.0
       plausible-tracker:
-        specifier: 0.3.8
-        version: 0.3.8
+        specifier: 0.3.9
+        version: 0.3.9
       puppeteer:
         specifier: 22.10.0
         version: 22.10.0(typescript@5.4.5)
@@ -3469,8 +3469,8 @@ packages:
   pkg-types@1.1.1:
     resolution: {integrity: sha512-ko14TjmDuQJ14zsotODv7dBlwxKhUKQEhuhmbqo1uCi9BB0Z2alo/wAXg6q1dTR5TyuqYyWhjtfe/Tsh+X28jQ==}
 
-  plausible-tracker@0.3.8:
-    resolution: {integrity: sha512-lmOWYQ7s9KOUJ1R+YTOR3HrjdbxIS2Z4de0P/Jx2dQPteznJl2eX3tXxKClpvbfyGP59B5bbhW8ftN59HbbFSg==}
+  plausible-tracker@0.3.9:
+    resolution: {integrity: sha512-hMhneYm3GCPyQon88SZrVJx+LlqhM1kZFQbuAgXPoh/Az2YvO1B6bitT9qlhpiTdJlsT5lsr3gPmzoVjb5CDXA==}
     engines: {node: '>=10'}
 
   possible-typed-array-names@1.0.0:
@@ -8430,7 +8430,7 @@ snapshots:
       mlly: 1.7.0
       pathe: 1.1.2
 
-  plausible-tracker@0.3.8: {}
+  plausible-tracker@0.3.9: {}
 
   possible-typed-array-names@1.0.0: {}
 
