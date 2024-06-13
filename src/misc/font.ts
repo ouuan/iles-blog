@@ -44,8 +44,8 @@ export default async function generateFonts(pages: RouteToRender[]) {
     return map;
   }, new Map<string, number>());
 
-  const previewServer = await preview();
-  const host = previewServer.resolvedUrls.local?.[0]?.replace('localhost', '127.0.0.1');
+  const previewServer = await preview({ server: { host: '127.0.0.1' } });
+  const host = previewServer.resolvedUrls.local?.[0];
 
   const pagesInfo: PageInfo[] = pages.filter((page) => page.outputFilename.endsWith('.html')).map((page) => ({
     url: new URL(page.path, host).href,
