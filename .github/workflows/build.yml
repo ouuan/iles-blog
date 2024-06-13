@@ -51,9 +51,9 @@ jobs:
             tar xf muffet_linux_amd64.tar.gz -C muffet
       - name: Check links
         run: |
-          npm exec iles preview &
+          npm exec -- iles preview --host 127.0.0.1 &
           sleep 10
-          muffet/muffet http://localhost:4173 -i 'http://localhost'
+          muffet/muffet http://127.0.0.1:4173 -i 'http://127.0.0.1'
       - name: Get deploy commit message
         id: deploy-commit-message
         run: |
