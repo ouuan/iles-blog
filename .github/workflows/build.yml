@@ -34,7 +34,7 @@ jobs:
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
       - uses: mxschmitt/action-tmate@v3
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate }}
       - run: npx pnpm build
         env:
           MEILI_URL: ${{ secrets.MEILI_URL }}
