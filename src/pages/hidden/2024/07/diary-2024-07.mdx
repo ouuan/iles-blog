@@ -22,3 +22,23 @@ date: 2024-07-01T10:50:00+08:00
 在去上班的大巴上似乎想明白了 PERFECT BLUE 的剧情，二周目小急（；晚上又感觉可能还是没想明白，也没那么急（？
 
 好摸，好摆，好累（（
+
+## 7.3
+
+群友们吐槽 360 食堂，我不理解，然后看到说“小优清芬，大输紫荆，甚至不如桃李”，好吧（；虽然我觉得可能也有窗口选择的问题，有看到同学去神秘窗口吃到神秘纯素麻辣烫之类的（
+
+又去看了眼 node ip，发现 maintainer 突然活过来了想 dispute[^dispute-toot]，但不仅对 SSRF 一无所知，以为检查的是 incoming request 的 IP 地址，甚至自己失联这么久之后反过来抱怨说报漏洞不跟他说一声，最精彩的是，在 Mastodon 上有人跟他说明白之后，他回复称还是不应该 CVE，而是应该“say that the library is not intended to be used for security purposes”（
+
+[^dispute-toot]: https://fosstodon.org/@indutny/112678415251316597
+
+于是看了下这个人的其他项目，他也不是不关注安全，star 最高的还是个“Fast Elliptic Curve Cryptography in plain javascript”，随便搜了下：
+
+> It's really sad that cryptography- and security-related packages are done in this way - no release notes, no severity assessment, NOTHING.[^elliptic-251]
+
+[^elliptic-251]: https://github.com/indutny/elliptic/issues/251
+
+> I'm always trying to keep security in mind, but it doesn't look like there is a way to mitigate timing attacks in this library without sacrificing the performance. JS implementation is about 10x-20x times slower than C already, and I don't want to make it even slower than this.[^elliptic-128]
+
+[^elliptic-128]: https://github.com/indutny/elliptic/issues/128
+
+我能说什么呢，可能这个人写的东西真的不太适合 be used for security purposes 吧（；但他是 software engineer at Signal，好可怕（（
