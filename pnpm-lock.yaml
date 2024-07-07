@@ -6,7 +6,7 @@ settings:
 
 overrides:
   vite-plugin-image-presets: 0.3.4
-  puppeteer: 22.12.0
+  puppeteer: 22.12.1
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
@@ -71,8 +71,8 @@ importers:
         specifier: 0.3.9
         version: 0.3.9
       puppeteer:
-        specifier: 22.12.0
-        version: 22.12.0(typescript@5.5.2)
+        specifier: 22.12.1
+        version: 22.12.1(typescript@5.5.2)
       rehype-plugin-image-native-lazy-loading:
         specifier: 1.2.0
         version: 1.2.0
@@ -3550,14 +3550,14 @@ packages:
   puppeteer-cluster@0.23.0:
     resolution: {integrity: sha512-108terIWDzPrQopmoYSPd5yDoy3FGJ2dNnoGMkGYPs6xtkdhgaECwpfZkzaRToMQPZibUOz0/dSSGgPEdXEhkQ==}
     peerDependencies:
-      puppeteer: 22.12.0
+      puppeteer: 22.12.1
 
-  puppeteer-core@22.12.0:
-    resolution: {integrity: sha512-9gY+JwBW/Fp3/x9+cOGK7ZcwqjvtvY2xjqRqsAA0B3ZFMzBauVTSZ26iWTmvOQX2sk78TN/rd5rnetxVxmK5CQ==}
+  puppeteer-core@22.12.1:
+    resolution: {integrity: sha512-XmqeDPVdC5/3nGJys1jbgeoZ02wP0WV1GBlPtr/ULRbGXJFuqgXMcKQ3eeNtFpBzGRbpeoCGWHge1ZWKWl0Exw==}
     engines: {node: '>=18'}
 
-  puppeteer@22.12.0:
-    resolution: {integrity: sha512-kyUYI12SyJIjf9UGTnHfhNMYv4oVK321Jb9QZDBiGVNx5453SplvbdKI7UrF+S//3RtCneuUFCyHxnvQXQjpxg==}
+  puppeteer@22.12.1:
+    resolution: {integrity: sha512-1GxY8dnEnHr1SLzdSDr0FCjM6JQfAh2E2I/EqzeF8a58DbGVk9oVjj4lFdqNoVbpgFSpAbz7VER9St7S1wDpNg==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -5120,7 +5120,7 @@ snapshots:
       chalk: 5.3.0
       commander: 10.0.1
       mermaid: 10.9.0
-      puppeteer: 22.12.0(typescript@5.5.2)
+      puppeteer: 22.12.1(typescript@5.5.2)
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -7094,8 +7094,8 @@ snapshots:
     dependencies:
       consola: 3.2.3
       jsdom: 24.0.0
-      puppeteer: 22.12.0(typescript@5.5.2)
-      puppeteer-cluster: 0.23.0(puppeteer@22.12.0(typescript@5.5.2))
+      puppeteer: 22.12.1(typescript@5.5.2)
+      puppeteer-cluster: 0.23.0(puppeteer@22.12.1(typescript@5.5.2))
       subset-font: 2.1.0
       zod: 3.22.4
     transitivePeerDependencies:
@@ -8546,14 +8546,14 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-cluster@0.23.0(puppeteer@22.12.0(typescript@5.5.2)):
+  puppeteer-cluster@0.23.0(puppeteer@22.12.1(typescript@5.5.2)):
     dependencies:
       debug: 4.3.4
-      puppeteer: 22.12.0(typescript@5.5.2)
+      puppeteer: 22.12.1(typescript@5.5.2)
     transitivePeerDependencies:
       - supports-color
 
-  puppeteer-core@22.12.0:
+  puppeteer-core@22.12.1:
     dependencies:
       '@puppeteer/browsers': 2.2.3
       chromium-bidi: 0.5.24(devtools-protocol@0.0.1299070)
@@ -8565,12 +8565,12 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@22.12.0(typescript@5.5.2):
+  puppeteer@22.12.1(typescript@5.5.2):
     dependencies:
       '@puppeteer/browsers': 2.2.3
       cosmiconfig: 9.0.0(typescript@5.5.2)
       devtools-protocol: 0.0.1299070
-      puppeteer-core: 22.12.0
+      puppeteer-core: 22.12.1
     transitivePeerDependencies:
       - bufferutil
       - supports-color
