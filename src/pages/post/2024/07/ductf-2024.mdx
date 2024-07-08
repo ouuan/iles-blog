@@ -253,6 +253,8 @@ Find the security notice in the release note of the next version: [Release 8.1.0
 
 Then check the commit log to find the patch: [fix(chromium): better default deny list regexp · gotenberg/gotenberg@ad152e6](https://github.com/gotenberg/gotenberg/commit/ad152e62e5124b673099a9103eb6e7f933771794).
 
+The vulnerable API path can be found in [the documentation](https://gotenberg.dev/docs/routes#convert-with-chromium): `POST /forms/chromium/convert/url`
+
 The URL is first resolved and then checked against the regular expression, so we cannot use `/tmp/../` to bypass it. However, we can use any one of `t`, `m`, `p` as the first letter, so we can use `file:///proc/self/root/etc/flag.txt`.
 
 ### i am confusion (113 solves)
