@@ -104,8 +104,8 @@ importers:
         specifier: 3.3.13
         version: 3.3.13(typescript@5.5.3)
       xml-formatter:
-        specifier: 3.6.2
-        version: 3.6.2
+        specifier: 3.6.3
+        version: 3.6.3
     devDependencies:
       '@cloudflare/workers-types':
         specifier: 4.20240620.0
@@ -4430,9 +4430,9 @@ packages:
       utf-8-validate:
         optional: true
 
-  xml-formatter@3.6.2:
-    resolution: {integrity: sha512-enWhevZNOwffZFUhzl1WMcha8lFLZUgJ7NzFs5Ug4ZOFCoNheGYXz1J9Iz/e+cTn9rCkuT1GwTacz+YlmFHOGw==}
-    engines: {node: '>= 14'}
+  xml-formatter@3.6.3:
+    resolution: {integrity: sha512-++x1TlRO1FRlQ82AZ4WnoCSufaI/PT/sycn4K8nRl4gnrNC1uYY2VV/67aALZ2m0Q4Q/BLj/L69K360Itw9NNg==}
+    engines: {node: '>= 16'}
 
   xml-js@1.6.11:
     resolution: {integrity: sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==}
@@ -4446,9 +4446,9 @@ packages:
     resolution: {integrity: sha512-EvGK8EJ3DhaHfbRlETOWAS5pO9MZITeauHKJyb8wyajUfQUenkIg2MvLDTZ4T/TgIcm3HU0TFBgWWboAZ30UHg==}
     engines: {node: '>=18'}
 
-  xml-parser-xo@4.1.0:
-    resolution: {integrity: sha512-9mQMLmq8J++XlQH9WF57oQxFVbR3YM6dPPtTuV+++aMe2gRoRU/kj819/6IptUmfhC1d2DSFiYxEcpkoLabeJw==}
-    engines: {node: '>= 14'}
+  xml-parser-xo@4.1.2:
+    resolution: {integrity: sha512-Z/DRB0ZAKj5vAQg++XsfQQKfT73Vfj5n5lKIVXobBDQEva6NHWUTxOA6OohJmEcpoy8AEqBmSGkXXAnFwt5qAA==}
+    engines: {node: '>= 16'}
 
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
@@ -9587,9 +9587,9 @@ snapshots:
 
   ws@8.17.1: {}
 
-  xml-formatter@3.6.2:
+  xml-formatter@3.6.3:
     dependencies:
-      xml-parser-xo: 4.1.0
+      xml-parser-xo: 4.1.2
 
   xml-js@1.6.11:
     dependencies:
@@ -9599,7 +9599,7 @@ snapshots:
 
   xml-name-validator@5.0.0: {}
 
-  xml-parser-xo@4.1.0: {}
+  xml-parser-xo@4.1.2: {}
 
   xmlchars@2.2.0: {}
 
