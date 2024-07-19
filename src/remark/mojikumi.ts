@@ -15,7 +15,7 @@ const space = ' ';
 const asciiPauseOrStop = '.,:;?!';
 const leftSingleQuote = '‘';
 const rightSingleQuote = '’';
-const latin = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const alphaNum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
 const leftRules = [
   [halfWidthPauseOrStop, closingBrackets],
@@ -26,13 +26,13 @@ const leftRules = [
   [closingBrackets, middleDots],
   [halfWidthPauseOrStop, space],
   [closingBrackets, space],
-  [rightSingleQuote, latin],
+  [rightSingleQuote, alphaNum],
   [closingBrackets, asciiPauseOrStop],
 ] as const;
 
 const leftNarrowRules = [
   [rightSingleQuote, space],
-  [rightSingleQuote, latin],
+  [rightSingleQuote, alphaNum],
 ] as const;
 
 const leftWbrRules = [
