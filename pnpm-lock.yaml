@@ -108,8 +108,8 @@ importers:
         version: 3.6.3
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: 4.20240712.0
-        version: 4.20240712.0
+        specifier: 4.20240718.0
+        version: 4.20240718.0
       '@iconify-json/mdi':
         specifier: 1.1.67
         version: 1.1.67
@@ -414,8 +414,8 @@ packages:
   '@braintree/sanitize-url@6.0.4':
     resolution: {integrity: sha512-s3jaWicZd0pkP0jf5ysyHUI/RE7MHos6qlToFcGWXVp+ykHOy77OUMrfbgJ9it2C5bow7OIQwYYaHjk9XlBQ2A==}
 
-  '@cloudflare/workers-types@4.20240712.0':
-    resolution: {integrity: sha512-C+C0ZnkRrxR2tPkZKAXwBsWEse7bWaA7iMbaG6IKaxaPTo/5ilx7Ei3BkI2izxmOJMsC05VS1eFUf95urXzhmw==}
+  '@cloudflare/workers-types@4.20240718.0':
+    resolution: {integrity: sha512-7RqxXIM9HyhjfZ9ztXjITuc7mL0w4s+zXgypqKmMuvuObC3DgXutJ3bOYbQ+Ss5QbywrzWSNMlmGdL/ldg/yZg==}
 
   '@esbuild/aix-ppc64@0.23.0':
     resolution: {integrity: sha512-3sG8Zwa5fMcA9bgqB8AfWPQ+HFke6uD3h1s3RIwUNK8EG7a4buxvuFTs3j1IMs2NXAk9F30C/FF4vxRgQCcmoQ==}
@@ -4937,7 +4937,7 @@ snapshots:
 
   '@braintree/sanitize-url@6.0.4': {}
 
-  '@cloudflare/workers-types@4.20240712.0': {}
+  '@cloudflare/workers-types@4.20240718.0': {}
 
   '@esbuild/aix-ppc64@0.23.0':
     optional: true
