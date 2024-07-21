@@ -27,7 +27,7 @@ for i, path in enumerate(path_iter):
         noext = os.path.splitext(path)[0]
         doc = {
             "id": i,
-            "href": f"/{noext}",
+            "href": f"/{noext.lower()}",
             "filename": f"src/pages/{path}",
             "basename": os.path.basename(noext),
             "title": meta["title"],
