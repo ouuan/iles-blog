@@ -144,3 +144,45 @@ yysy 训 GPT 还是有点好玩的，不是科研的话（；只不过其实新�
 cy 让我们准备一下 OS 比赛第一阶段提交，看来我还能混个参赛（，但是还得写一点文档之类的，而且不会还要去现场吧，它为什么有一周，我还以为两天完事呢，不想去（（
 
 晚上本来想一口气看完<span lang="ja">『昭和元禄落語心中』</span>，结果正看到最关键的回收第一集伏笔的地方，室友开始 go，不是，开始 cs 了；又是想逃离这个破地方的一天（
+
+## 7.26
+
+猜猜我今天没读论文没科研没工作在干什么，在调色配 `delta`（；之前感觉它默认长得不好看，今天才想着来配一下（，结合了 GitHub 的 diff 和 gruvbox 配色。
+
+主要是发现 `tiny-code-action.nvim` 可以用 delta，试了一下感觉不如 `actions-preview.nvim`，然后再一看，原来 `actions-preview.nvim` 也可以 delta。太典了，新发现的 plugin 作用是更新旧 plugin 的 config（
+
+```ini
+[delta]
+    dark = true
+    navigate = true
+    side-by-side = true
+    syntax-theme = gruvbox-dark
+
+    file-added-label = 🟩🟩
+    file-copied-label = 📋
+    file-modified-label = 🟥🟩
+    file-removed-label = 🟥🟥
+    file-renamed-label = ➡️
+    file-decoration-style = ul ol "#fff1d6"
+    file-style = "#ffdd99"
+
+    hunk-header-decoration-style = box "#484848"
+    hunk-header-file-style = italic "#928374"
+    hunk-header-style = file syntax italic
+
+    line-numbers = true
+    line-numbers-left-format = "{nm:^5}"
+    line-numbers-right-format = "{np:^5}"
+    line-numbers-zero-style = "#928374"
+    line-numbers-plus-style = "#fbf1c7" "#2a4c30"
+    line-numbers-minus-style = "#fbf1c7" "#663432"
+
+    zero-style = syntax
+    plus-style = syntax "#293a2c"
+    minus-style = syntax "#472e2d"
+    plus-emph-style = "#fbf1c7" "#2b6436"
+    minus-emph-style = "#fbf1c7" "#903c38"
+    map-styles = bold purple => syntax "#4c2a4c", bold cyan => syntax "#34345a"
+```
+
+之前感觉两三天从零开始肝出一个训练 GPT 来解密有点意思的，但下午和企业导师交流的时候就有点口胡，晚上组会导师问到也就随便口胡了一下，不知道是不愿承认自己在搞 AI 还是感觉花了太多时间太摸了（，现在感觉花时间在实习上才是真正的摸鱼，急（
