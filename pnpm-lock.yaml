@@ -57,7 +57,7 @@ importers:
         version: 5.0.5
       iles:
         specifier: 0.9.5
-        version: 0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.78.0)(typescript@5.5.4)
+        version: 0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.79.3)(typescript@5.5.4)
       isbot:
         specifier: 5.1.17
         version: 5.1.17
@@ -96,10 +96,10 @@ importers:
         version: 5.0.0
       unocss:
         specifier: 0.62.4
-        version: 0.62.4(postcss@8.4.32)(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))
+        version: 0.62.4(postcss@8.4.32)(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))
       vite:
         specifier: 4.1.4
-        version: 4.1.4(@types/node@20.16.5)(sass@1.78.0)
+        version: 4.1.4(@types/node@20.16.5)(sass@1.79.3)
       vue:
         specifier: 3.3.13
         version: 3.3.13(typescript@5.5.4)
@@ -118,7 +118,7 @@ importers:
         version: 0.9.0
       '@islands/feed':
         specifier: 0.8.1
-        version: 0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.78.0)(typescript@5.5.4))(vue@3.3.13(typescript@5.5.4))
+        version: 0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.79.3)(typescript@5.5.4))(vue@3.3.13(typescript@5.5.4))
       '@islands/headings':
         specifier: 0.8.2
         version: 0.8.2(patch_hash=j5vhtyk5hysulswi2ekrqmqpcq)
@@ -180,8 +180,8 @@ importers:
         specifier: 4.0.0
         version: 4.0.0
       sass:
-        specifier: 1.78.0
-        version: 1.78.0
+        specifier: 1.79.3
+        version: 1.79.3
       tsup:
         specifier: 8.2.4
         version: 8.2.4(jiti@1.21.0)(postcss@8.4.32)(tsx@4.17.0)(typescript@5.5.4)
@@ -190,7 +190,7 @@ importers:
         version: 5.5.4
       vite-plugin-compression:
         specifier: 0.5.1
-        version: 0.5.1(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))
+        version: 0.5.1(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))
       vue-tsc:
         specifier: 2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -1606,6 +1606,10 @@ packages:
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
+
+  chokidar@4.0.0:
+    resolution: {integrity: sha512-mxIojEAQcuEvT/lyXq+jf/3cO/KoA6z4CeNDGGevTybECPOMFCnQy3OPahluUkbqgPNGw5Bi78UC7Po6Lhy+NA==}
+    engines: {node: '>= 14.16.0'}
 
   chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
@@ -3537,6 +3541,10 @@ packages:
     resolution: {integrity: sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==}
     engines: {node: '>=8.10.0'}
 
+  readdirp@4.0.1:
+    resolution: {integrity: sha512-GkMg9uOTpIWWKbSsgwb5fA4EavTR+SG/PMPoAY8hkhHfEEY0/vqljY+XHqtDf2cr2IJtoNRDbrrEpZUiZCkYRw==}
+    engines: {node: '>= 14.16.0'}
+
   refa@0.12.1:
     resolution: {integrity: sha512-J8rn6v4DBb2nnFqkqwy6/NnTYMcgLA+sLr0iIO41qpv0n+ngb7ksag2tMRl0inb1bbO/esUwzW1vbJi7K0sI0g==}
     engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
@@ -3670,8 +3678,8 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  sass@1.78.0:
-    resolution: {integrity: sha512-AaIqGSrjo5lA2Yg7RvFZrlXDBCp3nV4XP73GrLGvdRWWwk+8H3l0SDvq/5bA4eF+0RFPLuWUk3E+P1U/YqnpsQ==}
+  sass@1.79.3:
+    resolution: {integrity: sha512-m7dZxh0W9EZ3cw50Me5GOuYm/tVAJAn91SUnohLRo9cXBixGUOdvmryN+dXpwR831bhoY3Zv7rEFt85PUwTmzA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -4805,10 +4813,10 @@ snapshots:
       estree-walker: 3.0.2
       hast-util-to-string: 2.0.0
 
-  '@islands/feed@0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.78.0)(typescript@5.5.4))(vue@3.3.13(typescript@5.5.4))':
+  '@islands/feed@0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.79.3)(typescript@5.5.4))(vue@3.3.13(typescript@5.5.4))':
     dependencies:
       feed: 4.2.2
-      iles: 0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.78.0)(typescript@5.5.4)
+      iles: 0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.79.3)(typescript@5.5.4)
       pathe: 0.2.0
       vue: 3.3.13(typescript@5.5.4)
 
@@ -5331,13 +5339,13 @@ snapshots:
       hookable: 5.4.2
       vue: 3.3.13(typescript@5.5.4)
 
-  '@unocss/astro@0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))':
+  '@unocss/astro@0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))':
     dependencies:
       '@unocss/core': 0.62.4
       '@unocss/reset': 0.62.4
-      '@unocss/vite': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))
+      '@unocss/vite': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))
     optionalDependencies:
-      vite: 4.1.4(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.1.4(@types/node@20.16.5)(sass@1.79.3)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -5482,7 +5490,7 @@ snapshots:
     dependencies:
       '@unocss/core': 0.62.4
 
-  '@unocss/vite@0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))':
+  '@unocss/vite@0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@rollup/pluginutils': 5.1.0
@@ -5492,14 +5500,14 @@ snapshots:
       chokidar: 3.6.0
       magic-string: 0.30.11
       tinyglobby: 0.2.6
-      vite: 4.1.4(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.1.4(@types/node@20.16.5)(sass@1.79.3)
     transitivePeerDependencies:
       - rollup
       - supports-color
 
-  '@vitejs/plugin-vue@4.0.0(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0))(vue@3.3.13(typescript@5.5.4))':
+  '@vitejs/plugin-vue@4.0.0(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3))(vue@3.3.13(typescript@5.5.4))':
     dependencies:
-      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3)
       vue: 3.3.13(typescript@5.5.4)
 
   '@volar/language-core@2.4.2':
@@ -5900,6 +5908,10 @@ snapshots:
       readdirp: 3.6.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  chokidar@4.0.0:
+    dependencies:
+      readdirp: 4.0.1
 
   chownr@1.1.4: {}
 
@@ -7189,7 +7201,7 @@ snapshots:
 
   ignore@5.2.4: {}
 
-  iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.78.0)(typescript@5.5.4):
+  iles@0.9.5(@babel/parser@7.25.3)(@types/node@20.16.5)(esbuild@0.23.0)(sass@1.79.3)(typescript@5.5.4):
     dependencies:
       '@antfu/install-pkg': 0.1.1
       '@islands/hydration': 0.8.2
@@ -7197,7 +7209,7 @@ snapshots:
       '@islands/pages': 0.8.1(vue@3.3.13(typescript@5.5.4))
       '@islands/prerender': 0.8.1
       '@nuxt/devalue': 2.0.0
-      '@vitejs/plugin-vue': 4.0.0(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0))(vue@3.3.13(typescript@5.5.4))
+      '@vitejs/plugin-vue': 4.0.0(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3))(vue@3.3.13(typescript@5.5.4))
       '@vue/devtools-api': 6.4.5
       '@vue/server-renderer': 3.2.47(vue@3.3.13(typescript@5.5.4))
       '@vueuse/head': 1.0.24(vue@3.3.13(typescript@5.5.4))
@@ -7212,8 +7224,8 @@ snapshots:
       pathe: 0.2.0
       picocolors: 1.0.0
       unist-util-visit: 4.1.2
-      unplugin-vue-components: 0.21.2(@babel/parser@7.25.3)(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0))(vue@3.3.13(typescript@5.5.4))
-      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0)
+      unplugin-vue-components: 0.21.2(@babel/parser@7.25.3)(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3))(vue@3.3.13(typescript@5.5.4))
+      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3)
       vue: 3.3.13(typescript@5.5.4)
       vue-router: 4.1.6(vue@3.3.13(typescript@5.5.4))
     transitivePeerDependencies:
@@ -8454,6 +8466,8 @@ snapshots:
     dependencies:
       picomatch: 2.3.1
 
+  readdirp@4.0.1: {}
+
   refa@0.12.1:
     dependencies:
       '@eslint-community/regexpp': 4.10.0
@@ -8638,9 +8652,9 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  sass@1.78.0:
+  sass@1.79.3:
     dependencies:
-      chokidar: 3.6.0
+      chokidar: 4.0.0
       immutable: 4.2.2
       source-map-js: 1.0.2
 
@@ -9201,9 +9215,9 @@ snapshots:
 
   universalify@2.0.0: {}
 
-  unocss@0.62.4(postcss@8.4.32)(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0)):
+  unocss@0.62.4(postcss@8.4.32)(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3)):
     dependencies:
-      '@unocss/astro': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))
+      '@unocss/astro': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))
       '@unocss/cli': 0.62.4
       '@unocss/core': 0.62.4
       '@unocss/postcss': 0.62.4(postcss@8.4.32)
@@ -9219,15 +9233,15 @@ snapshots:
       '@unocss/transformer-compile-class': 0.62.4
       '@unocss/transformer-directives': 0.62.4
       '@unocss/transformer-variant-group': 0.62.4
-      '@unocss/vite': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0))
+      '@unocss/vite': 0.62.4(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3))
     optionalDependencies:
-      vite: 4.1.4(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.1.4(@types/node@20.16.5)(sass@1.79.3)
     transitivePeerDependencies:
       - postcss
       - rollup
       - supports-color
 
-  unplugin-vue-components@0.21.2(@babel/parser@7.25.3)(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0))(vue@3.3.13(typescript@5.5.4)):
+  unplugin-vue-components@0.21.2(@babel/parser@7.25.3)(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3))(vue@3.3.13(typescript@5.5.4)):
     dependencies:
       '@antfu/utils': 0.5.2
       '@rollup/pluginutils': 4.2.1
@@ -9238,7 +9252,7 @@ snapshots:
       magic-string: 0.26.7
       minimatch: 5.1.2
       resolve: 1.22.1
-      unplugin: 0.7.2(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0))
+      unplugin: 0.7.2(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3))
       vue: 3.3.13(typescript@5.5.4)
     optionalDependencies:
       '@babel/parser': 7.25.3
@@ -9249,7 +9263,7 @@ snapshots:
       - vite
       - webpack
 
-  unplugin@0.7.2(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0)):
+  unplugin@0.7.2(esbuild@0.23.0)(vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3)):
     dependencies:
       acorn: 8.11.3
       chokidar: 3.6.0
@@ -9257,7 +9271,7 @@ snapshots:
       webpack-virtual-modules: 0.4.6
     optionalDependencies:
       esbuild: 0.23.0
-      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3)
 
   uri-js@4.4.1:
     dependencies:
@@ -9310,12 +9324,12 @@ snapshots:
       unist-util-stringify-position: 3.0.2
       vfile-message: 3.1.3
 
-  vite-plugin-compression@0.5.1(vite@4.1.4(@types/node@20.16.5)(sass@1.78.0)):
+  vite-plugin-compression@0.5.1(vite@4.1.4(@types/node@20.16.5)(sass@1.79.3)):
     dependencies:
       chalk: 4.1.2
       debug: 4.3.4
       fs-extra: 10.1.0
-      vite: 4.1.4(@types/node@20.16.5)(sass@1.78.0)
+      vite: 4.1.4(@types/node@20.16.5)(sass@1.79.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -9328,7 +9342,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite@4.1.4(@types/node@20.16.5)(sass@1.78.0):
+  vite@4.1.4(@types/node@20.16.5)(sass@1.79.3):
     dependencies:
       esbuild: 0.16.17
       postcss: 8.4.31
@@ -9337,9 +9351,9 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.16.5
       fsevents: 2.3.2
-      sass: 1.78.0
+      sass: 1.79.3
 
-  vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.78.0):
+  vite@4.3.0-beta.3(@types/node@20.16.5)(sass@1.79.3):
     dependencies:
       esbuild: 0.17.7
       postcss: 8.4.32
@@ -9347,7 +9361,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.16.5
       fsevents: 2.3.2
-      sass: 1.78.0
+      sass: 1.79.3
 
   vscode-oniguruma@1.7.0: {}
 
