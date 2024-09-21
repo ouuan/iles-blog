@@ -129,8 +129,8 @@ importers:
         specifier: 1.3.0
         version: 1.3.0(eslint@8.57.1)(typescript@5.5.4)
       '@ouuan/tsconfig-vue':
-        specifier: 1.0.0
-        version: 1.0.0
+        specifier: 1.3.0
+        version: 1.3.0
       '@total-typescript/ts-reset':
         specifier: 0.6.1
         version: 0.6.1
@@ -873,11 +873,11 @@ packages:
       eslint: '>=8'
       typescript: '>=4'
 
-  '@ouuan/tsconfig-base@1.0.0':
-    resolution: {integrity: sha512-3bws2mlzmdrz7A3En+Q8j/vhPkTKedLWhdz/uVOP0XVJB6rBWHCIX3AW/o2zHULk7WKT5B0xZRHXVki7CjqNIA==}
+  '@ouuan/tsconfig-base@1.3.0':
+    resolution: {integrity: sha512-2p4Cr2w7MNkVKwUnkby9POQbh8yziCPZQkHCU01cAX1zvwV5UXNwsPV67RnPbA0BJkdxsTa6de0P/uSwORP7UQ==}
 
-  '@ouuan/tsconfig-vue@1.0.0':
-    resolution: {integrity: sha512-Wecift0AaoF7tN5Y5TamT3YW9IrWv3xsOGWS54i/COa97LhkB65s5jrsc5vEYWsF4DuHztroO1m5dSUnSVYdDA==}
+  '@ouuan/tsconfig-vue@1.3.0':
+    resolution: {integrity: sha512-PEWMiAljAZ1YqvFa4d46CycgJ/PNoaCzRhzYat7EYwpw0a733mu4eA4ZnebglU5tW9Y5wqmv4DV8XMhvshXgXg==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1009,9 +1009,15 @@ packages:
   '@total-typescript/ts-reset@0.6.1':
     resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
 
-  '@tsconfig/node-lts-strictest-esm@18.12.1':
-    resolution: {integrity: sha512-LvBLmaC6Q/txTddLc11OeMHF9XjJFzlilkETJuvBlUvHy9pPiMsoH3nxWZM1FMSO53zp4mJP6gzOzxKEq0me7Q==}
-    deprecated: TypeScript 5.0 supports combining TSConfigs using array syntax in extends
+  '@tsconfig/esm@1.0.5':
+    resolution: {integrity: sha512-JzoZ0h299JRLPfV5VBsMq1TuMy+OmU9bdV/7NcjfRojL0eIcA1k5ESrtjWrDwJRJnk9B0QmgR0rq04LERbdfWw==}
+    deprecated: this package has been deprecated
+
+  '@tsconfig/node-lts@20.1.3':
+    resolution: {integrity: sha512-m3b7EP2U+h5tNSpaBMfcTuHmHn04wrgRPQQrfKt75YIPq6kPs2153/KfPHdqkEWGx5pEBvS6rnvToT+yTtC1iw==}
+
+  '@tsconfig/strictest@2.0.5':
+    resolution: {integrity: sha512-ec4tjL2Rr0pkZ5hww65c+EEPYwxOi4Ryv+0MtjeaSQRJyq322Q27eOQiFbuNgw2hpL4hB1/W/HBGk3VKS43osg==}
 
   '@types/acorn@4.0.6':
     resolution: {integrity: sha512-veQTnWP+1D/xbxVrPC3zHnCZRjSrKfhbMUlEA43iMZLu7EsnTtkJklIuwrCPbOi8YkvDQAiW05VQQFvvz9oieQ==}
@@ -5012,13 +5018,15 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  '@ouuan/tsconfig-base@1.0.0':
+  '@ouuan/tsconfig-base@1.3.0':
     dependencies:
-      '@tsconfig/node-lts-strictest-esm': 18.12.1
+      '@tsconfig/esm': 1.0.5
+      '@tsconfig/node-lts': 20.1.3
+      '@tsconfig/strictest': 2.0.5
 
-  '@ouuan/tsconfig-vue@1.0.0':
+  '@ouuan/tsconfig-vue@1.3.0':
     dependencies:
-      '@ouuan/tsconfig-base': 1.0.0
+      '@ouuan/tsconfig-base': 1.3.0
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -5113,7 +5121,11 @@ snapshots:
 
   '@total-typescript/ts-reset@0.6.1': {}
 
-  '@tsconfig/node-lts-strictest-esm@18.12.1': {}
+  '@tsconfig/esm@1.0.5': {}
+
+  '@tsconfig/node-lts@20.1.3': {}
+
+  '@tsconfig/strictest@2.0.5': {}
 
   '@types/acorn@4.0.6':
     dependencies:
