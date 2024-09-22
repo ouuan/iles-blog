@@ -32,7 +32,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
     ],
   });
 
-  async function render(theme: string) {
+  async function render(theme: 'default' | 'dark') {
     const { data } = await renderMermaid(browser, value, 'svg', {
       backgroundColor: 'transparent',
       mermaidConfig: { theme },
