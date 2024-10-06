@@ -72,7 +72,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
       }],
     },
     {
-      fontFamily: '"XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      fontFamily: '"LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'LXGW WenKai Web Font',
       variants: [{
         fontWeight: 400,
@@ -106,7 +106,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
       }],
     },
     {
-      fontFamily: '"Klee One Web Font", "Klee One", "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
+      fontFamily: '"Klee One Web Font", "Klee One", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'Klee One Web Font',
       variants: [{
         fontWeight: 400,

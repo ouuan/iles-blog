@@ -22,26 +22,6 @@
   unicode-range: U+1000-fffff;
 }
 
-@font-face {
-  font-family: "XiaWu Punctuations";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/assets/fonts/XiaWu-Punctuations-Regular.dbbbfeeb.woff2") format("woff2"),
-       url("/assets/fonts/XiaWu-Punctuations-Regular.e7ac084a.woff") format("woff");
-  unicode-range: u+20,u+2018,u+2019,u+201c,u+201d,u+3001,u+3002,u+3008-3011,u+3016,u+3017,u+30fb,u+ff08,u+ff09,u+ff0c,u+ff0e,u+ff1a,u+ff1b;
-}
-
-@font-face {
-  font-family: "XiaWu Punctuations";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/assets/fonts/XiaWu-Punctuations-Bold.9db84ab8.woff2") format("woff2"),
-       url("/assets/fonts/XiaWu-Punctuations-Bold.6533d2f2.woff") format("woff");
-  unicode-range: u+20,u+2018,u+2019,u+201c,u+201d,u+3001,u+3002,u+3008-3011,u+3016,u+3017,u+30fb,u+ff08,u+ff09,u+ff0c,u+ff0e,u+ff1a,u+ff1b;
-}
-
 :root {
   --zh-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK SC", "Source Han Sans SC", 思源黑体, "Noto Sans CJK TC", "Source Han Sans TC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
   --ja-sans-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans CJK JP", "Source Han Sans JP", "Noto Sans CJK TC", "Source Han Sans TC", 思源黑体, "Noto Sans CJK SC", "Source Han Sans SC", "Noto Sans", "Segoe UI", "Microsoft YaHei", Roboto, "Helvetica Neue", Arial, sans-serif, var(--default-emoji-font);
@@ -49,7 +29,7 @@
   --zh-serif-font: "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, var(--default-emoji-font);
   --ja-serif-font: "Noto Serif JP Web Font", "Noto Serif JP", "Noto Serif CJK JP", "Source Han Serif JP", var(--zh-serif-font);
 
-  --zh-kai-font: "XiaWu Punctuations", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
+  --zh-kai-font: "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, var(--default-emoji-font);
   --ja-kai-font: "Klee One Web Font", "Klee One", var(--zh-kai-font);
 
   --zh-mono-font: ui-monospace, DejaVu Sans Mono, Noto Sans Mono, SFMono-Regular, Menlo, Monaco, Consolas, "Monospace SC Fallback", monospace, var(--default-emoji-font);
