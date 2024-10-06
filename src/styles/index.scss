@@ -6,19 +6,40 @@ html:root {
   @apply text-text font-sans bg-bg motion-safe:scroll-smooth;
 }
 
+.heimu,
+.heimu:not(:hover) * {
+  @apply important-text-text;
+}
+
 :root.dark {
   @include dark;
+
+  .heimu {
+    @apply bg-light-1;
+
+    &:hover {
+      @include light;
+    }
+  }
 }
 
 :root.light {
   @include light;
+
+  .heimu {
+    @apply bg-dark-5;
+
+    &:hover {
+      @include dark;
+    }
+  }
 }
 
 * {
   text-underline-offset: 0.2em;
 }
 
-.flex > [class*="i-mdi-"] {
+.flex>[class*="i-mdi-"] {
   @apply shrink-0;
 }
 
@@ -26,7 +47,7 @@ span[class*="i-mdi-"] {
   @apply inline-block;
 }
 
-.flex > ile-root {
+.flex>ile-root {
   @apply flex;
 }
 

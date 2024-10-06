@@ -79,7 +79,6 @@ export default defineConfig({
     'btn-normal': 'bg-card bghover',
     'btn-invert': 'text-card bg-gray-11 hover:bg-gray-11 dark:bg-gray-3 dark:hover:bg-gray-3',
     disabled: 'cursor-not-allowed opacity-50',
-    heimu: 'bg-text hover:text-card',
     'standard-card': 'bg-card rd-2 px-6 md:px-12 overflow-auto md:py-3 shadow',
   }, [
     /^contrast-(\w+)(?:-(\w+))?$/,
