@@ -4,3 +4,6 @@
 [submodule "third_party/vscode-caddyfile"]
 	path = third_party/vscode-caddyfile
 	url = https://github.com/caddyserver/vscode-caddyfile
+[submodule "third_party/fonts"]
+	path = third_party/fonts
+	url = https://github.com/ouuan/fonts

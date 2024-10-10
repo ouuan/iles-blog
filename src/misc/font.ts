@@ -62,13 +62,13 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifSC-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Regular.otf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifSC-Regular.otf'),
       }, {
         fontWeight: 700,
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifSC-Bold',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifSC-Bold.otf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifSC-Bold.otf'),
       }],
     },
     {
@@ -79,13 +79,13 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'LXGWWenKai-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Regular.ttf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai/LXGWWenKai-Regular.ttf'),
       }, {
         fontWeight: 700,
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'LXGWWenKai-Medium',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai-Medium.ttf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/LXGWWenKai/LXGWWenKai-Medium.ttf'),
       }],
     },
     {
@@ -96,13 +96,13 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifJP-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifJP-Regular.otf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifJP-Regular.otf'),
       }, {
         fontWeight: 700,
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifJP-Bold',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifJP-Bold.otf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifJP-Bold.otf'),
       }],
     },
     {
@@ -113,13 +113,13 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'KleeOne-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne-Regular.ttf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne/KleeOne-Regular.ttf'),
       }, {
         fontWeight: 600,
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'KleeOne-SemiBold',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne-SemiBold.ttf'),
+        originalFontPath: resolve(rootPath, 'third_party/fonts/KleeOne/KleeOne-SemiBold.ttf'),
       }],
     },
   ];
