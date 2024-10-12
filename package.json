@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@giscus/vue": "3.0.0",
-    "@mermaid-js/mermaid-cli": "11.2.0",
+    "@mermaid-js/mermaid-cli": "11.2.1",
     "@sniptt/guards": "0.2.0",
     "@unocss/reset": "0.62.4",
     "@vueuse/components": "10.11.1",

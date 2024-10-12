@@ -32,8 +32,8 @@ importers:
         specifier: 3.0.0
         version: 3.0.0(vue@3.3.13(typescript@5.6.2))
       '@mermaid-js/mermaid-cli':
-        specifier: 11.2.0
-        version: 11.2.0(puppeteer@23.4.0(typescript@5.6.2))
+        specifier: 11.2.1
+        version: 11.2.1(puppeteer@23.4.0(typescript@5.6.2))
       '@sniptt/guards':
         specifier: 0.2.0
         version: 0.2.0
@@ -799,8 +799,8 @@ packages:
   '@mdx-js/mdx@2.1.5':
     resolution: {integrity: sha512-zEG0lt+Bl/r5U6e0TOS7qDbsXICtemfAPquxWFsMbdzrvlWaqMGemLl+sjVpqlyaaiCiGVQBSGdCk0t1qXjkQg==}
 
-  '@mermaid-js/mermaid-cli@11.2.0':
-    resolution: {integrity: sha512-TNJw6t9w0JMk0jSj5EKsw5WtF5jsCLmvq+1Uo66IwG5jN75WVjb1b/6RWjEZEF/zKFBakzle/WUmGFSg774gig==}
+  '@mermaid-js/mermaid-cli@11.2.1':
+    resolution: {integrity: sha512-jzjTxQ9CVeFfH5uHNTGxn4ToRdXcw9TIdOHBTinGh8fEJ8flaxgeLRXoaAyyyDYA+WZLwhOfXCZhQIcIqFyMdA==}
     engines: {node: ^18.19 || >=20.0}
     hasBin: true
     peerDependencies:
@@ -4986,7 +4986,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mermaid-js/mermaid-cli@11.2.0(puppeteer@23.4.0(typescript@5.6.2))':
+  '@mermaid-js/mermaid-cli@11.2.1(puppeteer@23.4.0(typescript@5.6.2))':
     dependencies:
       chalk: 5.3.0
       commander: 12.1.0
