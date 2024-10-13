@@ -3771,13 +3771,8 @@ packages:
     resolution: {integrity: sha512-LL9GEt3bkXp6Wa19SNR5MWcvHNMvuTFYg+eYBZN2OIFhSWN+pEJUQXEKu5BsOeABob3x9PDaLKW7w5iOJnsESQ==}
     engines: {node: '>=8.0.0'}
 
-  rollup@3.13.0:
-    resolution: {integrity: sha512-HJwQtrXAc0AmyDohTJ/2c+Bx/sWPScJLlAUJ1kuD7rAkCro8Cr2SnVB2gVYBiSLxpgD2kZ24jbyXtG++GumrYQ==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-
-  rollup@3.20.2:
-    resolution: {integrity: sha512-3zwkBQl7Ai7MFYQE0y1MeQ15+9jsi7XxfrqwTb/9EK8D9C9+//EBR4M+CuA1KODRaNbFez/lWxA5vhEGZp4MUg==}
+  rollup@3.29.5:
+    resolution: {integrity: sha512-GVsDdsbJzzy4S/v3dqWPJ7EfvZJfCHiDqe80IyrF59LYuP+e6U1LJoUqeuqRbwAWoMNoXivMNeNAOf5E22VA1w==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
 
@@ -8854,13 +8849,9 @@ snapshots:
 
   rollup-plugin-analyzer@4.0.0:
     dependencies:
-      rollup: 3.13.0
+      rollup: 3.29.5
 
-  rollup@3.13.0:
-    optionalDependencies:
-      fsevents: 2.3.2
-
-  rollup@3.20.2:
+  rollup@3.29.5:
     optionalDependencies:
       fsevents: 2.3.3
 
@@ -9627,7 +9618,7 @@ snapshots:
       esbuild: 0.16.17
       postcss: 8.4.31
       resolve: 1.22.1
-      rollup: 3.13.0
+      rollup: 3.29.5
     optionalDependencies:
       '@types/node': 20.16.11
       fsevents: 2.3.2
@@ -9637,10 +9628,10 @@ snapshots:
     dependencies:
       esbuild: 0.17.7
       postcss: 8.4.32
-      rollup: 3.20.2
+      rollup: 3.29.5
     optionalDependencies:
       '@types/node': 20.16.11
-      fsevents: 2.3.2
+      fsevents: 2.3.3
       sass: 1.79.5
 
   vscode-jsonrpc@8.2.0: {}
