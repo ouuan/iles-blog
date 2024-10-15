@@ -1,0 +1,142 @@
+---
+title: 在 i3 中使用多显示器
+date: 2024-10-03T20:33:41+08:00
+image: monitors.png
+description: 在 Arch Linux 和 i3 wm 中使用多显示器的基础配置和问题修复
+tags:
+-   i3
+-   Arch Linux
+-   经验分享
+---
+
+之前我以为大家用多屏都是因为没有 tiling window manager 不会切屏，用了才知道竖屏好（
+
+<Excerpt />
+
+但两个横屏的话确实就那样吧（其实之前看室友也基本上就用一个屏幕然后另一个放壁纸），请买旋转升降支架，~~学习使用 tiling window manager（~~
+
+## xrandr 屏幕布局配置
+
+可以使用 arandr 在 GUI 中调整屏幕布局，设置坐标和方向比较方便，但它调不了帧率之类的，可以保存为脚本之后手动修改，在相应的 `--output HDMI-0` 之后加上 `--rate 120` 就行。
+
+我配置了 vertical、horizontal、single 三种模式，用脚本切换：
+
+```bash
+#!/bin/bash
+
+set -euo pipefail
+
+hdmi="HDMI-0"
+
+if xrandr | grep "$hdmi connected 1080x1920"; then
+    # already vertical, switch to horizontal
+    "$HOME"/.screenlayout/horizontal.sh
+elif xrandr | grep "$hdmi connected"; then
+    # startup or currently horizontal, switch to vertical
+    "$HOME"/.screenlayout/vertical.sh
+else
+    # HDMI not connected, switch to single
+    "$HOME"/.screenlayout/single.sh
+fi
+```
+
+在启动时调用脚本进行初始化，在 i3 中可以配置快捷键调用脚本切换布局。
+
+## i3 多显示器配置
+
+可以参考 [Multiple monitors - i3 User’s Guide](https://i3wm.org/docs/userguide.html#multi_monitor) 的说明。配置中用 `primary` / `nonprimary` 会比直接写具体的显示器名称更加通用，需要在 `xrandr` 配置中设置 `--primary`。
+
+默认给各个显示器分配 workspace：`workspace $ws1 output primary`、`workspace $ws2 output nonprimary`。
+
+bar 可以只在一个显示器显示（`bar { output primary }`），或者在每个显示器都显示，配置托盘图标显示在哪：`bar { tray_output primary }`。
+
+绑快捷键：
+
+-   focus 到另一个显示器：`focus output next`
+-   移动当前 workspace 到另一个显示器：`move workspace to output next`
+
+我之前一直设的 `workspace_auto_back_and_forth yes`（切换 workspace 时如果目标就是当前所在的 workspace，就会回到之前所在的 workspace），但是之前就觉得有时候会有些混乱，在多显示器时更是容易搞不清当前在哪个 workspace，所以把它关了。
+
+## picom 高亮当前窗口
+
+即使是单显示器，高亮当前窗口也是有用的，多显示器时尤其有用，有助于提示当前在哪个显示器。
+
+旧版 picom 使用 `inactive-dim` 选项，现在推荐使用更加灵活的 window rule：
+
+```
+rules = (
+    { match = "window_type = 'normal' && window_type != 'popup_menu' && !_NET_WM_STATE && !(focused || group_focused)"; dim = 0.2; },
+)
+```
+
+（这里 `window_type != 'popup_menu'` 主要是为了 konsole 的菜单，它同时是 `popup_menu` 和 `normal`；`_NET_WM_STATE` 主要是为了 `rofi`，它没设 window type，但有 `_NET_WM_STATE_ABOVE`。）
+
+## 调整 DPI 修复字体和光标大小
+
+由于不同显示器 DPI 不同，字体大小之类的可能出问题。
+
+在 Xorg 启动后、i3 启动前，使用 `xrandr --dpi` 调整 DPI 可以改变 i3 窗口标题和 bar 的字体大小，例如 `xrandr --dpi 144` / `xrandr --dpi DP-2`。
+
+调整 DPI 似乎并不能修复光标大小，可以在 `~/.Xresources` 中设置 `Xcursor.size: 24`，然后在启动时加载 `xrdb -merge ~/.Xresources`。[^xcursor-size]
+
+[^xcursor-size]: [How can I change the mouse cursor size : r/i3wm](https://www.reddit.com/r/i3wm/comments/8ix88z/how_can_i_change_the_mouse_cursor_size/)
+
+fcitx5 会根据各个屏幕的 DPI 分别调整字体大小，可以在 classic user interface 的设置中禁用 “use per screen DPI”。
+
+## i3lock 布局配置
+
+position 是基于整个 screen 而非单个 display，所以需要分别加上 `x` 和 `y`：
+
+>   -   `x` - x position of the current display.
+>       Corresponds to the leftmost column of pixels on that display.
+>
+>   -   `y` - y position of the current display.
+>       Corresponds to the topmost row of pixels on that display.
+
+坐标计算可以基于 `w` 和 `h` 来同时适配横屏和竖屏，例如：
+
+```bash
+    --ind-pos "x+w/2:y+h/2-35" \
+    --greeter-pos "ix:iy+h/6+160" \
+    --time-pos "ix:iy+h/8+100" \
+```
+
+## 背景图片适配修复
+
+为了同时适配横屏和竖屏，如果（`i3lock`、`konsole`、`feh` 等）背景图片是少量元素 + 大片背景，可以上下扩展背景编辑成竖屏，再用 centered / crop 显示，横屏时上下背景被截掉就可以正好显示中间的元素。其中 konsole 还可以设置 anchor 的位置，就不一定要放正中间，例如可以放最下面（<span class="heimu">我用的背景 [78468574](https://www.pixiv.net/artworks/78468574) 就很适合放下面</span>）。
+
+屏幕布局（旋转方向）发生改变时，使用 `feh` 设置的桌面背景可能会乱掉，可以在每次布局改变后重新调用 `feh` 设置背景，放在调整屏幕布局的脚本里即可；也可以为横竖屏设置不同的背景。
+
+## 为不同显示器设置不同壁纸
+
+给 `feh` 传多个文件名参数就可以依次为各个显示器设置不同的壁纸。使用 `xrandr --listmonitors` 查看显示器的顺序。
+
+## 禁用 HDMI 音频输出
+
+在连接到外部显示器后我的 pulseaudio 会自动切换到 HDMI 音频输出，手动修改 default sink 也没有用，在 xrandr 中禁用 HDMI output 就可以恢复正常。
+
+单次修复可以手动在 `pavucontrol` 的 “Configuration” 中将外部输出的 profile 设为 “Off”，自动修复可以在启动时执行 `pactl set-card-profile <card> off`，其中 card 名称可以通过 `pactl list cards` 得到。[^pulseaudio-hdmi]
+
+[^pulseaudio-hdmi]: [How to remove Nvidia HDMI audio output in PulseAudio? - Ask Ubuntu](https://askubuntu.com/questions/15497/how-to-remove-nvidia-hdmi-audio-output-in-pulseaudio/)
+
+另外还有一种更粗暴的方法是禁用 `snd_hda_codec_hdmi`，只不过我这里 blacklist 不管用，要执行 `rmmod -f snd_hda_codec_hdmi` 才行。[^rmmod-hdmi]
+
+[^rmmod-hdmi]: [\[SOLVED\] How to disable nvidia hdmi audio? / Kernel & Hardware / Arch Linux Forums](https://bbs.archlinux.org/viewtopic.php?id=253258)
+
+## 限制鼠标跨屏移动
+
+多显示器时鼠标光标可以通过屏幕边缘在各个显示器之间移动，这在一般的 window manager 中是必不可少的功能，但在 i3 中就没必要了，反而容易带来麻烦，导致移动光标到屏幕边缘更加困难。
+
+如果将屏幕布局设置为两个显示器角对角只有一个像素相交，从一个显示器移动到另一个显示器就只能在这一个像素进行，能一定程度上缓解问题。但实际上，由于光标会卡在屏幕边缘，角落的这一个像素其实很容易移动到，还是很容易意外滑到另一个显示器。另外，虽然空出来的大量屏幕空间不会显示出来，但仍然会占用显存，也可能导致神秘渲染问题[^pointer-barrier]。
+
+更好的解决方法是使用 `xpointerbarrier`，可以在 AUR 安装，运行 `xpointerbarrier 0 0 0 0` 即可。[^pointer-barrier]（我实测这个 barrier 并不 100% 靠谱，大力多晃几次鼠标可以越过去，但实际使用中效果还行。）
+
+[^pointer-barrier]: [\[SOLVED\]Multihead: is there a way to forbid mouse from leaving screen? / Applications & Desktop Environments / Arch Linux Forums](https://bbs.archlinux.org/viewtopic.php?id=258091)
+
+但 `xpointerbarrier` 只是限制了光标，在 i3 中 focus / move 时依然可以跨屏，不会 wrap around（循环），设置为对角布局可以解决这个问题。对于 focus，还有一种办法是设置 `focus_wrapping workspace` 来避免 focus 到另一个显示器，但 move 并没有类似的设置，倒是影响不大。
+
+只不过，如果不设置为对角布局，光标跨屏显示可能会令人困惑，而且也有小概率不小心越过 barrier，所以设置对角布局也有其好处（如果不缺显存的话）。
+
+## dunst 通知跟随当前显示器
+
+在 `~/.config/dunst/dunstrc` 中可以修改通知显示在哪个显示器，其中 `follow` 选项可以根据当前的 focus 改变通知显示的位置。
