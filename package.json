@@ -25,7 +25,7 @@
     "@vueuse/components": "10.11.1",
     "@vueuse/core": "10.11.1",
     "date-fns": "3.6.0",
-    "glyph-segregator": "0.6.5",
+    "glyph-segregator": "0.6.6",
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
     "isbot": "5.1.17",
