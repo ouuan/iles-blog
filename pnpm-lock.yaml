@@ -108,8 +108,8 @@ importers:
         version: 3.6.3
     devDependencies:
       '@cloudflare/workers-types':
-        specifier: 4.20241011.0
-        version: 4.20241011.0
+        specifier: 4.20241022.0
+        version: 4.20241022.0
       '@iconify-json/mdi':
         specifier: 1.2.1
         version: 1.2.1
@@ -277,8 +277,8 @@ packages:
   '@chevrotain/utils@11.0.3':
     resolution: {integrity: sha512-YslZMgtJUyuMbZ+aKvfF3x1f5liK4mWNxghFRv7jqRR9C3R3fAOGTTKvxXDa2Y1s9zSbcpuO0cAxDYsc9SrXoQ==}
 
-  '@cloudflare/workers-types@4.20241011.0':
-    resolution: {integrity: sha512-emwBnuFB/2lS1z6NXAeBqrSL8Xwnr7YpgdLuchOmgu/igqBsLLNPBb4Qmgh3neFWUe9wbzQyx030836YF3c3Xw==}
+  '@cloudflare/workers-types@4.20241022.0':
+    resolution: {integrity: sha512-1zOAw5QIDKItzGatzCrEpfLOB1AuMTwVqKmbw9B9eBfCUGRFNfJYMrJxIwcse9EmKahsQt2GruqU00pY/GyXgg==}
 
   '@esbuild/aix-ppc64@0.23.0':
     resolution: {integrity: sha512-3sG8Zwa5fMcA9bgqB8AfWPQ+HFke6uD3h1s3RIwUNK8EG7a4buxvuFTs3j1IMs2NXAk9F30C/FF4vxRgQCcmoQ==}
@@ -4865,7 +4865,7 @@ snapshots:
 
   '@chevrotain/utils@11.0.3': {}
 
-  '@cloudflare/workers-types@4.20241011.0': {}
+  '@cloudflare/workers-types@4.20241022.0': {}
 
   '@esbuild/aix-ppc64@0.23.0':
     optional: true
