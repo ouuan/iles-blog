@@ -39,7 +39,19 @@
       <div class="sm:basis-full" />
       <ul class="flex">
         <li class="flex">
-          <search-bar client:load />
+          <div class="flex items-stretch lg:hidden">
+            <a
+              class="flex items-center p-2 bghover"
+              href="/search"
+              title="站内搜索"
+            >
+              <span class="i-mdi-magnify text-xl" />
+            </a>
+          </div>
+          <search-bar
+            class="hidden lg:flex"
+            client:load
+          />
         </li>
         <li class="flex items-stretch">
           <a

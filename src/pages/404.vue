@@ -29,6 +29,7 @@ title: 404 Not Found
         <span class="mx-1">返回首页</span>
       </a>
     </div>
+    <not-found-search client:load />
   </div>
 </template>
 

@@ -1,31 +1,22 @@
 <template>
-  <div class="flex items-stretch lg:hidden">
-    <a
-      class="flex items-center p-2 bghover"
-      href="/search"
-      title="全站搜索"
-    >
-      <span class="i-mdi-magnify text-xl" />
-    </a>
-  </div>
   <form
     role="search"
-    class="hidden items-stretch justify-center lg:flex"
+    class="items-stretch justify-center"
   >
     <div class="flex items-center">
       <input
         v-model="pattern"
         class="w-48 rd-full bg-area px-3 py-1"
         type="search"
-        placeholder="关键词"
-        aria-label="全站搜索"
+        placeholder="站内搜索"
+        aria-label="站内搜索"
         @keypress="onKeyPress"
       >
     </div>
     <a
       class="flex items-center p-2 bghover"
       :href="href"
-      title="全站搜索"
+      title="搜索"
     >
       <span class="i-mdi-magnify text-xl" />
     </a>
@@ -35,7 +26,13 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
-const pattern = ref('');
+const props = withDefaults(defineProps<{
+  initialPattern?: string;
+}>(), {
+  initialPattern: '',
+});
+
+const pattern = ref(props.initialPattern);
 const href = computed(() => `/search?${new URLSearchParams({ q: pattern.value })}`);
 
 function onKeyPress(e: KeyboardEvent) {

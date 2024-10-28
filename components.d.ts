@@ -25,6 +25,7 @@ declare module '@vue/runtime-core' {
     Mermaid: typeof import('./src/components/Mermaid.vue')['default']
     NavBar: typeof import('./src/components/NavBar.vue')['default']
     NavBarItem: typeof import('./src/components/NavBarItem.vue')['default']
+    NotFoundSearch: typeof import('./src/components/NotFoundSearch.vue')['default']
     PaginationBar: typeof import('./src/components/PaginationBar.vue')['default']
     Picture: typeof import('./node_modules/.pnpm/@islands+images@0.8.2/node_modules/@islands/images/src/Picture.vue')['default']
     PlausibleTrigger: typeof import('./src/components/PlausibleTrigger.vue')['default']
