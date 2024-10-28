@@ -21,7 +21,7 @@
       aria-label="暗色模式选项"
     >
       <li
-        v-for="key of ['auto', 'light', 'dark'] as const"
+        v-for="key of themes"
         :key="key"
         class="bghover"
         role="menuitemradio"
@@ -46,10 +46,12 @@ import useTheme from '~/composables/useTheme';
 
 const { store: theme } = useTheme();
 
+const themes = ['auto', 'light', 'dark'] as const;
+
 const name = {
   auto: '跟随系统',
-  dark: '总是暗色',
   light: '总是亮色',
+  dark: '总是暗色',
 } as const;
 
 const icon = {
