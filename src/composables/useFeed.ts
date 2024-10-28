@@ -6,7 +6,7 @@ import { useCopyrightYearString } from './useCopyrightYear';
 import { usePosts } from './usePosts';
 import { useTagFilter } from './useTags';
 
-export default function useFeed(tag?: string) {
+export default function useFeed({ tag, min }: { tag?: string, min?: boolean } = {}) {
   const { site } = usePage();
   const {
     author,
@@ -17,7 +17,10 @@ export default function useFeed(tag?: string) {
   } = site;
   const yearString = useCopyrightYearString();
 
-  const link = tag ? new URL(`/tag/${tag}`, url).href : url;
+  const tagPath = tag ? `/tag/${tag}` : '';
+  const minSuffix = min ? '.min' : '';
+
+  const link = new URL(tagPath, url).href;
 
   const options: FeedOptions = {
     title: tag ? `${title}: 标签: ${tag}` : title,
@@ -29,9 +32,9 @@ export default function useFeed(tag?: string) {
     copyright: `Copyright © ${yearString} ${site.author}
 Licensed under CC BY-SA 4.0`,
     feedLinks: {
-      atom: new URL(`${tag ? `/tag/${tag}` : ''}/feed.atom`, url).href,
-      rss: new URL(`${tag ? `/tag/${tag}` : ''}/feed.xml`, url).href,
-      json: new URL(`${tag ? `/tag/${tag}` : ''}/feed.json`, url).href,
+      atom: new URL(`${tagPath}/feed${minSuffix}.atom`, url).href,
+      rss: new URL(`${tagPath}/feed${minSuffix}.xml`, url).href,
+      json: new URL(`${tagPath}/feed${minSuffix}.json`, url).href,
     },
     author: {
       name: author,
@@ -42,6 +45,7 @@ Licensed under CC BY-SA 4.0`,
   const items = usePosts({
     filter: tag ? useTagFilter(tag) : () => true,
     pageIndex: 1,
+    perPage: min ? 5 : undefined,
   }).value.map<FeedItem>((post) => {
     let category: FeedItem['category'];
     if (Array.isArray(post.frontmatter.tags)) {
@@ -58,9 +62,9 @@ Licensed under CC BY-SA 4.0`,
       id: new URL(post.href, url).href,
       link: new URL(post.href, url).href,
       description: h(post, { excerpt: true }),
-      content: post,
       date: post.frontmatter.published,
       category,
+      ...(min ? {} : { content: post }),
     };
   }).sort((lhs, rhs) => rhs.date.valueOf() - lhs.date.valueOf());
 

@@ -18,10 +18,18 @@ const tags = useTags();
 
 export default definePageComponent({
   getStaticPaths() {
-    return ['rss', 'atom', 'json'].flatMap((format) => tags.value.map((tag) => ({
-      params: { tag, filename: format === 'rss' ? 'feed.xml' : `feed.${format}` },
-      props: { tag, format },
-    })));
+    return ['rss', 'atom', 'json'].flatMap(
+      (format) => [true, false].flatMap(
+        (min) => tags.value.map((tag) => {
+          const suffix = format === 'rss' ? 'xml' : format;
+          const filename = min ? `feed.min.${suffix}` : `feed.${suffix}`;
+          return {
+            params: { tag, filename },
+            props: { tag, format, min },
+          };
+        }),
+      ),
+    );
   },
 });
 </script>
@@ -30,7 +38,8 @@ export default definePageComponent({
 const props = defineProps<{
   tag: string;
   format: 'rss' | 'atom' | 'json';
+  min: boolean;
 }>();
 
-const { options, items } = useFeed(props.tag);
+const { options, items } = useFeed(props);
 </script>

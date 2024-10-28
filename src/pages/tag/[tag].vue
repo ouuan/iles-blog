@@ -57,6 +57,24 @@ useHead({
       href: `/tag/${props.tag}/feed.json`,
       title: `JSON Feed - ${title}`,
     },
+    {
+      rel: 'alternate',
+      type: 'application/rss+xml',
+      href: `/tag/${props.tag}/feed.min.xml`,
+      title: `RSS Feed (no full text) - ${title}`,
+    },
+    {
+      rel: 'alternate',
+      type: 'application/atom+xml',
+      href: `/tag/${props.tag}/feed.min.atom`,
+      title: `Atom Feed (no full text) - ${title}`,
+    },
+    {
+      rel: 'alternate',
+      type: 'application/json',
+      href: `/tag/${props.tag}/feed.min.json`,
+      title: `JSON Feed (no full text) - ${title}`,
+    },
   ],
 });
 </script>
