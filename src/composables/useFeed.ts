@@ -45,7 +45,7 @@ Licensed under CC BY-SA 4.0`,
   const items = usePosts({
     filter: tag ? useTagFilter(tag) : () => true,
     pageIndex: 1,
-    perPage: min ? 5 : undefined,
+    perPage: 5,
   }).value.map<FeedItem>((post) => {
     let category: FeedItem['category'];
     if (Array.isArray(post.frontmatter.tags)) {
