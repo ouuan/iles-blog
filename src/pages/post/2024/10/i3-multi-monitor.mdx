@@ -140,3 +140,9 @@ position 是基于整个 screen 而非单个 display，所以需要分别加上 
 ## dunst 通知跟随当前显示器
 
 在 `~/.config/dunst/dunstrc` 中可以修改通知显示在哪个显示器，其中 `follow` 选项可以根据当前的 focus 改变通知显示的位置。
+
+## 解决运行时连接显示器导致黑屏
+
+我观察到如果开机后再连接显示器，切换布局后会黑屏。后来确认是 picom 使用 glx / egl backend 时的问题，使用 xrender 就不会这样。关闭 / 重启 picom 就可以恢复显示，但 Firefox 也会卡一会儿，应该也是 OpenGL 相关问题。暂不清楚具体原因以及彻底修复的方法，目前我的 workaround 是在切换布局的脚本中重启 picom。
+
+log 里观察到大量 `Duplicate vblank event found with msc`，可能和 https://github.com/yshui/picom/issues/1265 相关，下个版本看看会不会好。
