@@ -32,7 +32,7 @@
     "katex": "0.16.11",
     "mdast-util-to-hast": "12.3.0",
     "plausible-tracker": "0.3.9",
-    "puppeteer": "23.6.0",
+    "puppeteer": "23.7.1",
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
     "shiki": "0.14.7",
     "simple-git": "3.27.0",
