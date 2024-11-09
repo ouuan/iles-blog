@@ -4,7 +4,9 @@
   ],
   "packageRules": [
     {
-      "extends": "monorepo:vue",
+      "extends": [
+        "monorepo:vue"
+      ],
       "matchPackageNames": [
         "vite"
       ],
