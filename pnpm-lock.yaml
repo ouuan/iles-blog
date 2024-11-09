@@ -6,7 +6,7 @@ settings:
 
 overrides:
   vite-plugin-image-presets: 0.3.4
-  puppeteer: 23.6.0
+  puppeteer: 23.7.1
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
   array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
@@ -33,7 +33,7 @@ importers:
         version: 3.0.0(vue@3.3.13(typescript@5.6.3))
       '@mermaid-js/mermaid-cli':
         specifier: 11.4.0
-        version: 11.4.0(puppeteer@23.6.0(typescript@5.6.3))
+        version: 11.4.0(puppeteer@23.7.1(typescript@5.6.3))
       '@sniptt/guards':
         specifier: 0.2.0
         version: 0.2.0
@@ -71,8 +71,8 @@ importers:
         specifier: 0.3.9
         version: 0.3.9
       puppeteer:
-        specifier: 23.6.0
-        version: 23.6.0(typescript@5.6.3)
+        specifier: 23.7.1
+        version: 23.7.1(typescript@5.6.3)
       rehype-plugin-image-native-lazy-loading:
         specifier: 1.2.0
         version: 1.2.0
@@ -948,7 +948,7 @@ packages:
     engines: {node: ^18.19 || >=20.0}
     hasBin: true
     peerDependencies:
-      puppeteer: 23.6.0
+      puppeteer: 23.7.1
 
   '@mermaid-js/parser@0.3.0':
     resolution: {integrity: sha512-HsvL6zgE5sUPGgkIDlmAWR1HTNHz2Iy11BAWPTa4Jjabkpguy4Ze2gzfLrg6pdRuBvFwgUYyxiaNqZwrEEXepA==}
@@ -1127,8 +1127,8 @@ packages:
   '@polka/url@1.0.0-next.24':
     resolution: {integrity: sha512-2LuNTFBIO0m7kKIQvvPHN6UE63VjpmL9rnEEaOOaiSPbZK+zUOYIzBAWcED+3XYzhYsd/0mD57VdxAEqqV52CQ==}
 
-  '@puppeteer/browsers@2.4.0':
-    resolution: {integrity: sha512-x8J1csfIygOwf6D6qUAZ0ASk3z63zPb7wkNeHRerCMh82qWKUrOgkuP005AJC8lDL6/evtXETGEJVcwykKT4/g==}
+  '@puppeteer/browsers@2.4.1':
+    resolution: {integrity: sha512-0kdAbmic3J09I6dT8e9vE2JOCSt13wHCW5x/ly8TSt2bDtuIWe2TgLZZDHdcziw9AVCzflMAXCrVyRIhIs44Ng==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -3790,14 +3790,14 @@ packages:
   puppeteer-cluster@0.24.0:
     resolution: {integrity: sha512-zHPoNsrwkFLKFtgJJv2aC13EbMASQsE048uZd7CyikEXcl+sc1Nf6PMFb9kMoZI7/zMYxvuP658o2mw079ZZyQ==}
     peerDependencies:
-      puppeteer: 23.6.0
+      puppeteer: 23.7.1
 
-  puppeteer-core@23.6.0:
-    resolution: {integrity: sha512-se1bhgUpR9C529SgHGr/eyT92mYyQPAhA2S9pGtGrVG2xob9qE6Pbp7TlqiSPlnnY1lINqhn6/67EwkdzOmKqQ==}
+  puppeteer-core@23.7.1:
+    resolution: {integrity: sha512-Om/qCZhd+HLoAr7GltrRAZpS3uOXwHu7tXAoDbNcJADHjG2zeAlDArgyIPXYGG4QB/EQUHk13Q6RklNxGM73Pg==}
     engines: {node: '>=18'}
 
-  puppeteer@23.6.0:
-    resolution: {integrity: sha512-l+Fgo8SVFSd51STtq2crz8t1Y3VXowsuR4zfR64qDOn6oggz7YIZauWiNR4IJjczQ6nvFs3S4cgng55/nesxTQ==}
+  puppeteer@23.7.1:
+    resolution: {integrity: sha512-jS6XehagMvxQ12etwY/4EOYZ0Sm8GAsrtGhdQn4AqpJAyHc3RYl7tGd4QYh/MmShDw8sF9FWYQqGidhoXaqokQ==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -5291,12 +5291,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mermaid-js/mermaid-cli@11.4.0(puppeteer@23.6.0(typescript@5.6.3))':
+  '@mermaid-js/mermaid-cli@11.4.0(puppeteer@23.7.1(typescript@5.6.3))':
     dependencies:
       chalk: 5.3.0
       commander: 12.1.0
       mermaid: 11.2.1
-      puppeteer: 23.6.0(typescript@5.6.3)
+      puppeteer: 23.7.1(typescript@5.6.3)
     transitivePeerDependencies:
       - supports-color
 
@@ -5468,7 +5468,7 @@ snapshots:
 
   '@polka/url@1.0.0-next.24': {}
 
-  '@puppeteer/browsers@2.4.0':
+  '@puppeteer/browsers@2.4.1':
     dependencies:
       debug: 4.3.7
       extract-zip: 2.0.1
@@ -7451,8 +7451,8 @@ snapshots:
     dependencies:
       consola: 3.2.3
       jsdom: 25.0.1
-      puppeteer: 23.6.0(typescript@5.6.3)
-      puppeteer-cluster: 0.24.0(puppeteer@23.6.0(typescript@5.6.3))
+      puppeteer: 23.7.1(typescript@5.6.3)
+      puppeteer-cluster: 0.24.0(puppeteer@23.7.1(typescript@5.6.3))
       subset-font: 2.4.0
       zod: 3.23.8
     transitivePeerDependencies:
@@ -8927,16 +8927,16 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  puppeteer-cluster@0.24.0(puppeteer@23.6.0(typescript@5.6.3)):
+  puppeteer-cluster@0.24.0(puppeteer@23.7.1(typescript@5.6.3)):
     dependencies:
       debug: 4.3.7
-      puppeteer: 23.6.0(typescript@5.6.3)
+      puppeteer: 23.7.1(typescript@5.6.3)
     transitivePeerDependencies:
       - supports-color
 
-  puppeteer-core@23.6.0:
+  puppeteer-core@23.7.1:
     dependencies:
-      '@puppeteer/browsers': 2.4.0
+      '@puppeteer/browsers': 2.4.1
       chromium-bidi: 0.8.0(devtools-protocol@0.0.1354347)
       debug: 4.3.7
       devtools-protocol: 0.0.1354347
@@ -8947,13 +8947,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  puppeteer@23.6.0(typescript@5.6.3):
+  puppeteer@23.7.1(typescript@5.6.3):
     dependencies:
-      '@puppeteer/browsers': 2.4.0
+      '@puppeteer/browsers': 2.4.1
       chromium-bidi: 0.8.0(devtools-protocol@0.0.1354347)
       cosmiconfig: 9.0.0(typescript@5.6.3)
       devtools-protocol: 0.0.1354347
-      puppeteer-core: 23.6.0
+      puppeteer-core: 23.7.1
       typed-query-selector: 2.12.0
     transitivePeerDependencies:
       - bufferutil
