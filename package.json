@@ -61,7 +61,7 @@
     "@unocss/transformer-directives": "0.64.1",
     "@vue/runtime-core": "3.3.13",
     "eslint": "8.57.1",
-    "got": "14.4.4",
+    "got": "14.4.5",
     "mdast-util-mdx": "2.0.1",
     "micromark": "3.2.0",
     "rehype-katex": "6.0.3",
