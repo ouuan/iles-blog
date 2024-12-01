@@ -23,7 +23,7 @@
         class="flex items-center"
         :title="`创建于 ${format(frontmatter.date, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
-        <span class="i-mdi-folder-plus-outline mr-1" />
+        <span class="i-mdi-clock-plus-outline mr-1" />
         <span class="sr-only">创建于</span>
         <a
           class="hover:underline"
@@ -41,7 +41,7 @@
         class="flex items-center"
         :title="`修改于 ${format(frontmatter.lastUpdated, 'yyyy-MM-dd HH:mm:ss O')}`"
       >
-        <span class="i-mdi-update mr-1" />
+        <span class="i-mdi-clock-edit-outline mr-1" />
         <span class="sr-only">修改于</span>
         <a
           class="hover:underline"
@@ -59,7 +59,7 @@
         class="flex items-center"
         title="访问量"
       >
-        <span class="i-mdi-eye-outline mr-1" />
+        <span class="i-mdi-account-eye-outline mr-1" />
         <span class="sr-only">访问量</span>
         <visitor-count
           :href="href"
