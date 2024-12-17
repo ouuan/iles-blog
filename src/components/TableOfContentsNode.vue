@@ -20,7 +20,7 @@
         :class="['transition-color ease-out', node.current && 'text-link']"
         :href="`#${node.slug}`"
       >
-        <span v-html="node.title" />
+        <span>{{ node.title }}</span>
       </a>
       <div
         v-if="(node.open || showAll) && node.children.length > 0"
