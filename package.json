@@ -58,7 +58,7 @@
     "@total-typescript/ts-reset": "0.6.1",
     "@types/hast": "2.3.10",
     "@types/jsdom": "21.1.7",
-    "@types/node": "20.17.10",
+    "@types/node": "22.10.2",
     "@unocss/eslint-config": "0.65.2",
     "@unocss/transformer-directives": "0.65.2",
     "@vue/runtime-core": "3.3.13",
