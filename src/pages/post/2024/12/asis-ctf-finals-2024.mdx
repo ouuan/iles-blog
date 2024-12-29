@@ -61,7 +61,7 @@ GIT_AUTHOR_EMAIL='[core]' git commit --allow-empty -m nothing
 
 ### Approaches that do not work
 
--   `core.fsmonitor`: Does not work in bare repository.
+-   `core.fsmonitor`: It's on GTFOArgs but it's not triggered by `git log`.
 -   `core.pager`: The output pipes into the `check_output` function without an interactive tty, so Git does not use a pager.
 -   `core.alternateRefsCommand`: Need a known path to an `objects` directory that is not the current repository.
 -   `diff.external` / `diff.<driver>.command`: Need both `-p` and `--ext-diff` but we can only inject a single option.
