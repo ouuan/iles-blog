@@ -26,7 +26,7 @@
           <span class="article-style">
             <a
               rel="license"
-              href="http://creativecommons.org/licenses/by-sa/4.0/deed.zh"
+              :href="licenseLink"
               class="font-sans"
               itemprop="license"
             >CC BY-SA 4.0</a>
@@ -56,4 +56,15 @@ import { computed } from 'vue';
 const page = usePage();
 const url = computed(() => new URL(page.meta.href, page.site.url).href);
 const notice = computed(() => page.frontmatter.copyrightNotice);
+
+const ccLangMapping: Record<string, string> = {
+  en: '',
+  zh: 'deed.zh-hans',
+};
+
+const licenseLink = computed(() => {
+  const lang = page.frontmatter.lang || 'zh';
+  const suffix = ccLangMapping[lang] ?? `deed.${lang}`;
+  return `http://creativecommons.org/licenses/by-sa/4.0/${suffix}`;
+});
 </script>
