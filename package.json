@@ -76,7 +76,7 @@
     "tsup": "8.3.5",
     "typescript": "5.6.3",
     "vite-plugin-compression": "0.5.1",
-    "vue-tsc": "2.1.10"
+    "vue-tsc": "2.2.0"
   },
   "pnpm": {
     "overrides": {
