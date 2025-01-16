@@ -11,4 +11,6 @@ export default {
   branch: 'master',
   giscusRepoId: 'R_kgDOHrOQ9g',
   giscusCategoryId: 'DIC_kwDOHrOQ9s4CQSIu',
+  mastodonAccount: 'ouuan',
+  mastodonDomain: 'mastodon.online',
 } as const;

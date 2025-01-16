@@ -37,5 +37,8 @@ useHead({
     { property: 'profile:gender', content: site.gender },
     { property: 'article:modified_time', content: page.frontmatter.lastUpdated.toISOString() },
   ],
+  link: [
+    { rel: 'me', href: `https://${site.mastodonDomain}/@${site.mastodonAccount}` },
+  ],
 });
 </script>
