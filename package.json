@@ -101,6 +101,14 @@
     },
     "patchedDependencies": {
       "@islands/headings@0.8.2": "patches/@islands__headings@0.8.2.patch"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "vue-demi"
+    ],
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "puppeteer"
+    ]
   }
 }
