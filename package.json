@@ -44,7 +44,7 @@
     "unocss": "65.4.0",
     "vite": "4.1.4",
     "vue": "3.3.13",
-    "xml-formatter": "3.6.3"
+    "xml-formatter": "3.6.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20250109.0",
