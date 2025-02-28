@@ -7,3 +7,6 @@
 [submodule "third_party/fonts"]
 	path = third_party/fonts
 	url = https://github.com/ouuan/fonts
+[submodule "src/images"]
+	path = src/images
+	url = https://github.com/ouuan/blog-images.git
