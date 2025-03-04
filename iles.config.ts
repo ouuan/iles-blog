@@ -36,7 +36,6 @@ export default defineConfig({
       normal: formatPreset({
         formats: {
           webp: { quality: 80 },
-          original: {},
         },
         inferDimensions: true,
       }),
