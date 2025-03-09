@@ -74,7 +74,7 @@
     "rollup-plugin-analyzer": "4.0.0",
     "sass": "1.85.1",
     "tsup": "8.4.0",
-    "typescript": "5.7.3",
+    "typescript": "5.8.2",
     "vite-plugin-compression": "0.5.1",
     "vue-tsc": "2.2.8"
   },
