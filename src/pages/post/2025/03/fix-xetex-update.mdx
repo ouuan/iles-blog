@@ -1,0 +1,206 @@
+---
+title: 修复 XeTeX 更新导致编译错误
+date: 2025-03-20T21:47:21+08:00
+description: 通过安装 texlive-xetex 解决 Arch Linux 上显示 xetex.fmt 版本错误无法编译文档的问题。
+image: 
+tags:
+-   Arch Linux
+-   问题解决记录
+---
+
+毕设又咕了几周，今天一看编译出错（
+
+<Excerpt />
+
+```
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025/Arch Linux) (preloaded format=xetex)
+ restricted \write18 enabled.
+---! /var/lib/texmf/web2c/xetex/xetex.fmt made by different executable version, strings are different
+(Fatal format file error; I'm stymied)
+```
+
+## tl;dr
+
+`sudo pacman -S texlive-xetex`
+
+## 问 GPT
+
+先去问了下 GPT，它让我 `sudo rm /var/lib/texmf/web2c/xetex/xetex.fmt` 然后 `sudo fmtutil-sys --all` 或者 `sudo fmtutil-sys --byfmt xetex`。当然是没用的，因为此时我没有安装 `texlive-xetex`（
+
+后来我自己发现问题了，但如果再告诉 GPT `Did not find entry for byfmt=xetex skipped` 应该可以省几分钟。
+
+## 问题分析
+
+首先是在 2023 年，Arch Linux 把 TeX Live 拆包了：[TeX Live package reorganization](https://archlinux.org/news/tex-live-package-reorganization/)。此事在我的 `/var/log/pacman.log` 中记载如下：
+
+```
+[2023-06-18T19:25:40+0800] [PACMAN] Running 'pacman -S texlive-binextra'
+[2023-06-18T19:25:47+0800] [ALPM] transaction started
+[2023-06-18T19:25:47+0800] [ALPM] installed texlive-binextra (2023.66594-11)
+[2023-06-18T19:25:47+0800] [ALPM] transaction completed
+[2023-06-18T19:25:47+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:25:47+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:25:48+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:25:48+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:36:40+0800] [PACMAN] Running 'pacman --noconfirm --color=always -Sy'
+[2023-06-18T19:36:40+0800] [PACMAN] synchronizing package lists
+[2023-06-18T19:36:42+0800] [PACMAN] Running 'pacman --color=always -Su'
+[2023-06-18T19:36:42+0800] [PACMAN] starting full system upgrade
+[2023-06-18T19:36:45+0800] [PACMAN] Running 'pacman -S texlive-xetex'
+[2023-06-18T19:37:14+0800] [ALPM] transaction started
+[2023-06-18T19:37:14+0800] [ALPM] installed texlive-xetex (2023.66594-11)
+[2023-06-18T19:37:14+0800] [ALPM] transaction completed
+[2023-06-18T19:37:14+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:37:14+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:37:14+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:37:15+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:38:30+0800] [PACMAN] Running 'pacman -Rns texlive-xetex'
+[2023-06-18T19:38:31+0800] [ALPM] transaction started
+[2023-06-18T19:38:31+0800] [ALPM] removed texlive-xetex (2023.66594-11)
+[2023-06-18T19:38:32+0800] [ALPM] transaction completed
+[2023-06-18T19:38:32+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:38:32+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:38:32+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:38:32+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:50:37+0800] [PACMAN] Running 'pacman --noconfirm --color=always -Sy'
+[2023-06-18T19:50:37+0800] [PACMAN] synchronizing package lists
+[2023-06-18T19:50:40+0800] [PACMAN] Running 'pacman --color=always -Su'
+[2023-06-18T19:50:40+0800] [PACMAN] starting full system upgrade
+[2023-06-18T19:50:43+0800] [PACMAN] Running 'pacman -S texlive-meta'
+[2023-06-18T19:51:29+0800] [ALPM] transaction started
+[2023-06-18T19:51:29+0800] [ALPM] installed texlive-bibtexextra (2023.66594-11)
+[2023-06-18T19:51:29+0800] [ALPM] installed texlive-context (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-fontsextra (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-fontutils (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-formatsextra (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-games (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-humanities (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-luatex (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-metapost (2023.66594-11)
+[2023-06-18T19:51:37+0800] [ALPM] installed texlive-music (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] installed texlive-plaingeneric (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] installed texlive-pstricks (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] installed texlive-publishers (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] installed texlive-xetex (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] installed texlive-meta (2023.66594-11)
+[2023-06-18T19:51:38+0800] [ALPM] transaction completed
+[2023-06-18T19:51:40+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:51:40+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:51:42+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:51:43+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:53:03+0800] [ALPM] running '73-texlive-updmap.hook'...
+[2023-06-18T19:53:03+0800] [ALPM-SCRIPTLET] updmap [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:54:14+0800] [PACMAN] Running 'pacman -Rns texlive-meta'
+[2023-06-18T19:54:15+0800] [ALPM] transaction started
+[2023-06-18T19:54:15+0800] [ALPM] removed texlive-meta (2023.66594-11)
+[2023-06-18T19:54:16+0800] [ALPM] removed texlive-xetex (2023.66594-11)
+[2023-06-18T19:54:16+0800] [ALPM] removed texlive-publishers (2023.66594-11)
+[2023-06-18T19:54:16+0800] [ALPM] removed texlive-pstricks (2023.66594-11)
+[2023-06-18T19:54:17+0800] [ALPM] removed texlive-plaingeneric (2023.66594-11)
+[2023-06-18T19:54:17+0800] [ALPM] removed texlive-music (2023.66594-11)
+[2023-06-18T19:54:17+0800] [ALPM] removed texlive-metapost (2023.66594-11)
+[2023-06-18T19:54:17+0800] [ALPM] removed texlive-luatex (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-latexextra (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-latexrecommended (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-humanities (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-games (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-formatsextra (2023.66594-11)
+[2023-06-18T19:54:18+0800] [ALPM] removed texlive-fontutils (2023.66594-11)
+[2023-06-18T19:54:21+0800] [ALPM] removed texlive-fontsextra (2023.66594-11)
+[2023-06-18T19:54:22+0800] [ALPM] removed texlive-context (2023.66594-11)
+[2023-06-18T19:54:22+0800] [ALPM] removed texlive-bibtexextra (2023.66594-11)
+[2023-06-18T19:54:22+0800] [ALPM] transaction completed
+[2023-06-18T19:54:24+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:54:24+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:54:24+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:54:24+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:54:46+0800] [ALPM] running '73-texlive-updmap.hook'...
+[2023-06-18T19:54:46+0800] [ALPM-SCRIPTLET] updmap [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:55:28+0800] [PACMAN] Running 'pacman --noconfirm --color=always -Sy'
+[2023-06-18T19:55:28+0800] [PACMAN] synchronizing package lists
+[2023-06-18T19:55:30+0800] [PACMAN] Running 'pacman --color=always -Su'
+[2023-06-18T19:55:30+0800] [PACMAN] starting full system upgrade
+[2023-06-18T19:55:33+0800] [PACMAN] Running 'pacman -S texlive-latexrecommended'
+[2023-06-18T19:55:34+0800] [ALPM] transaction started
+[2023-06-18T19:55:34+0800] [ALPM] installed texlive-latexrecommended (2023.66594-11)
+[2023-06-18T19:55:34+0800] [ALPM] transaction completed
+[2023-06-18T19:55:34+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:55:34+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:55:43+0800] [PACMAN] Running 'pacman --noconfirm --color=always -Sy'
+[2023-06-18T19:55:43+0800] [PACMAN] synchronizing package lists
+[2023-06-18T19:55:46+0800] [PACMAN] Running 'pacman --color=always -Su'
+[2023-06-18T19:55:46+0800] [PACMAN] starting full system upgrade
+[2023-06-18T19:55:48+0800] [PACMAN] Running 'pacman -S texlive-latexextra'
+[2023-06-18T19:55:49+0800] [ALPM] transaction started
+[2023-06-18T19:55:50+0800] [ALPM] installed texlive-latexextra (2023.66594-11)
+[2023-06-18T19:55:50+0800] [ALPM] transaction completed
+[2023-06-18T19:55:50+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-18T19:55:50+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-18T19:55:50+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-18T19:55:51+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-18T19:56:31+0800] [ALPM] running '73-texlive-updmap.hook'...
+```
+
+总之，拆包之后，我想看看需要装什么。发现有 `texlive-xetex` 就装了，之后又换成 `texlive-meta`，感觉太 bloat 了又卸了（
+
+之后又安装卸载过两次：
+
+```
+[2023-06-22T21:28:40+0800] [PACMAN] Running 'pacman -S texlive-xetex'
+[2023-06-22T21:32:05+0800] [ALPM] transaction started
+[2023-06-22T21:32:05+0800] [ALPM] installed texlive-xetex (2023.66594-14)
+[2023-06-22T21:32:06+0800] [ALPM] transaction completed
+[2023-06-22T21:32:06+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-22T21:32:06+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-22T21:32:06+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-22T21:32:06+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2023-06-22T21:34:41+0800] [PACMAN] Running 'pacman -Rns texlive-xetex'
+[2023-06-22T21:34:41+0800] [ALPM] transaction started
+[2023-06-22T21:34:41+0800] [ALPM] removed texlive-xetex (2023.66594-14)
+[2023-06-22T21:34:42+0800] [ALPM] transaction completed
+[2023-06-22T21:34:42+0800] [ALPM] running '30-systemd-update.hook'...
+[2023-06-22T21:34:42+0800] [ALPM] running '70-mktexlsr.hook'...
+[2023-06-22T21:34:42+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2023-06-22T21:34:42+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+```
+
+```
+[2024-03-28T20:11:14+0800] [PACMAN] Running 'pacman --noconfirm --color=always -Sy'
+[2024-03-28T20:11:14+0800] [PACMAN] synchronizing package lists
+[2024-03-28T20:11:27+0800] [PACMAN] Running 'pacman --color=always -Su'
+[2024-03-28T20:11:27+0800] [PACMAN] starting full system upgrade
+[2024-03-28T20:11:32+0800] [PACMAN] Running 'pacman -S texlive-xetex'
+[2024-03-28T20:13:11+0800] [ALPM] transaction started
+[2024-03-28T20:13:11+0800] [ALPM] installed texlive-xetex (2024.0-3)
+[2024-03-28T20:13:11+0800] [ALPM] transaction completed
+[2024-03-28T20:13:11+0800] [ALPM] running '30-systemd-update.hook'...
+[2024-03-28T20:13:11+0800] [ALPM] running '70-mktexlsr.hook'...
+[2024-03-28T20:13:13+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2024-03-28T20:13:13+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+[2024-03-29T00:30:55+0800] [PACMAN] Running 'pacman -Rns texlive-xetex'
+[2024-03-29T00:30:55+0800] [ALPM] transaction started
+[2024-03-29T00:30:56+0800] [ALPM] removed texlive-xetex (2024.0-3)
+[2024-03-29T00:30:57+0800] [ALPM] transaction completed
+[2024-03-29T00:30:57+0800] [ALPM] running '30-systemd-update.hook'...
+[2024-03-29T00:30:57+0800] [ALPM] running '70-mktexlsr.hook'...
+[2024-03-29T00:30:59+0800] [ALPM] running '72-texlive-fmtutil.hook'...
+[2024-03-29T00:31:00+0800] [ALPM-SCRIPTLET] fmtutil [WARNING]: resetting $HOME value (was /home/ouuan) to root's actual home (/root).
+```
+
+我印象中我曾经意外发现 `/usr/bin/xetex` 是 `texlive-bin` 里的，而 `texlive-xetex` 里是 `/usr/bin/xetex-unsafe` 和一些其他东西，而且 `texlive-xetex` 卸载掉之后当时还能正常使用，于是就卸掉了（
+
+而在 [texlive-source/texk/web2c/xetexdir/NEWS](https://github.com/TeX-Live/texlive-source/blob/trunk/texk/web2c/xetexdir/NEWS) 中可以看到 XeTeX 的版本历史：
+
+>   -   XeTeX 0.999997 (7 March 2025)
+>   -   XeTeX 0.999996 (February 2024)
+>   -   XeTeX 0.999995 (February 2023)
+
+于是我正好在 0.999996 发布的时候重新安装了一次 XeTeX，不知道是巧合还是当时也遇到了类似的问题，不记得了。
+
+`pacman -Qo /var/lib/texmf/web2c` 可以发现，这个目录（以及里面的文件）并不属于任何包，实际上是由 `72-texlive-fmtutil.hook` 生成的。安装了 `texlive-xetex` 后就会生成出 `/var/lib/texmf/web2c/xetex/xetex.fmt` 等文件，然后即使卸载掉也可以使用 `xetex`，但不会更新，等到需要更新就挂了。
+
+所以不要随便 unbloat（就像 [BLAFS](https://github.com/negativa-ai/BLAFS) 那样（
+
+最后让我们再来欣赏一下这个版本号（
+
+> 3.141592653-2.6-0.999997
