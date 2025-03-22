@@ -28,7 +28,7 @@
     "glyph-segregator": "0.6.6",
     "hast-util-select": "5.0.5",
     "iles": "0.9.5",
-    "isbot": "5.1.23",
+    "isbot": "5.1.25",
     "jsdom": "26.0.0",
     "katex": "0.16.21",
     "mdast-util-to-hast": "12.3.0",
