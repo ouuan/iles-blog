@@ -107,8 +107,8 @@ importers:
         specifier: 3.3.13
         version: 3.3.13(typescript@5.8.2)
       xml-formatter:
-        specifier: 3.6.4
-        version: 3.6.4
+        specifier: 3.6.5
+        version: 3.6.5
     devDependencies:
       '@cloudflare/workers-types':
         specifier: 4.20250303.0
@@ -5109,8 +5109,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  xml-formatter@3.6.4:
-    resolution: {integrity: sha512-vkvTNw4u9mp72lMmJHw771NE9EJLX0kfwIcP+ZEo9eJ6HmotX23vmykyROyIQ9Y3a+ckdUdhxIE2ZO66rYuPrg==}
+  xml-formatter@3.6.5:
+    resolution: {integrity: sha512-5Dvux87y+abquO3Om8zRyOUdYkc22BnSS3zMhL2UgeCC+3lz9FbSBpAhzxmk+/qfTO3ypLRwTxJvByoG+FjTMA==}
     engines: {node: '>= 16'}
 
   xml-js@1.6.11:
@@ -10857,7 +10857,7 @@ snapshots:
 
   ws@8.18.1: {}
 
-  xml-formatter@3.6.4:
+  xml-formatter@3.6.5:
     dependencies:
       xml-parser-xo: 4.1.2
 
