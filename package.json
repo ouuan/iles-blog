@@ -47,7 +47,7 @@
     "xml-formatter": "3.6.5"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20250303.0",
+    "@cloudflare/workers-types": "4.20250321.0",
     "@iconify-json/mdi": "1.2.3",
     "@islands/excerpt": "0.9.0",
     "@islands/feed": "0.8.1",
