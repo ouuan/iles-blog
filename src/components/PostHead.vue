@@ -1,7 +1,7 @@
 <template>
   <header>
     <h1
-      class="mb-3 mt-6 text-center text-8"
+      class="mb-3 mt-6 text-center text-balance text-8"
       itemprop="headline"
     >
       <component
