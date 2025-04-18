@@ -24,6 +24,7 @@ import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
 
 import generateFonts from './src/misc/font';
 import generateSitemap from './src/misc/sitemap';
+import injectXsltCss from './src/misc/xsltCss';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -138,6 +139,7 @@ export default defineConfig({
       await Promise.all([
         generateFonts(pages),
         generateSitemap(pages),
+        injectXsltCss(),
       ]);
     },
   },

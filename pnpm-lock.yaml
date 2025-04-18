@@ -20,6 +20,9 @@ overrides:
 packageExtensionsChecksum: sha256-H3xWhA/JpymzTVC4ohzfZScCcoYoioMzOyE0nKpjgKw=
 
 patchedDependencies:
+  '@islands/feed':
+    hash: f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904
+    path: patches/@islands__feed.patch
   '@islands/headings@0.8.2':
     hash: 626e38f39d4cc8ead3dafa1e86ea3e1f19f37f36683baebcc6735a001c8e2cd0
     path: patches/@islands__headings@0.8.2.patch
@@ -116,12 +119,15 @@ importers:
       '@iconify-json/mdi':
         specifier: 1.2.3
         version: 1.2.3
+      '@iconify-json/simple-icons':
+        specifier: 1.2.32
+        version: 1.2.32
       '@islands/excerpt':
         specifier: 0.9.0
         version: 0.9.0
       '@islands/feed':
         specifier: 0.8.1
-        version: 0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.14.1)(esbuild@0.25.0)(sass@1.86.3)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))
+        version: 0.8.1(patch_hash=f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.14.1)(esbuild@0.25.0)(sass@1.86.3)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))
       '@islands/headings':
         specifier: 0.8.2
         version: 0.8.2(patch_hash=626e38f39d4cc8ead3dafa1e86ea3e1f19f37f36683baebcc6735a001c8e2cd0)
@@ -825,6 +831,9 @@ packages:
 
   '@iconify-json/mdi@1.2.3':
     resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
+
+  '@iconify-json/simple-icons@1.2.32':
+    resolution: {integrity: sha512-gxgLq0raip7SJaeJ0302vwhsqupQttS21B93Ci1kA/++B+hIgGw71HzTOWQoUhwjlrdWcoVUxSvpPJoMs7oURg==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -5415,6 +5424,10 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
+  '@iconify-json/simple-icons@1.2.32':
+    dependencies:
+      '@iconify/types': 2.0.0
+
   '@iconify/types@2.0.0': {}
 
   '@iconify/utils@2.1.33':
@@ -5456,7 +5469,7 @@ snapshots:
       estree-walker: 3.0.2
       hast-util-to-string: 2.0.0
 
-  '@islands/feed@0.8.1(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.14.1)(esbuild@0.25.0)(sass@1.86.3)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))':
+  '@islands/feed@0.8.1(patch_hash=f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.14.1)(esbuild@0.25.0)(sass@1.86.3)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))':
     dependencies:
       feed: 4.2.2
       iles: 0.9.5(@babel/parser@7.25.3)(@types/node@22.14.1)(esbuild@0.25.0)(sass@1.86.3)(typescript@5.8.3)

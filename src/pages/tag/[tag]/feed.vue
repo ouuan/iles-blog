@@ -7,12 +7,14 @@ path: /tag/[tag]/[filename]
     :format="format"
     :options="options"
     :items="items"
+    :xml-prelude="xmlPrelude"
   />
 </template>
 
 <script lang="ts">
 import { useTags } from '~/composables/useTags';
 import useFeed from '~/composables/useFeed';
+import xsl from '~/styles/rss.xsl?url'; // TODO: use `?no-inline` after upgrading Vite
 
 const tags = useTags();
 
@@ -42,4 +44,6 @@ const props = defineProps<{
 }>();
 
 const { options, items } = useFeed(props);
+
+const xmlPrelude = props.format === 'rss' && !props.min ? `<?xml-stylesheet type="text/xsl" href="${xsl}"?>` : '';
 </script>

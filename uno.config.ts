@@ -38,9 +38,7 @@ export default defineConfig({
       light: ['#F7F9FB', '#EFF3F7', '#E6EDF2', '#DEE6EE', '#D6E0EA', '#CEDAE6', '#C6D4E2', '#BECEDD', '#B5C8D9', '#ADC2D5'],
       primary: ['#A2C6F0', '#8BB8EC', '#74AAE8', '#5D9CE5', '#468EE1', '#2E80DD', '#2272CF', '#1E66B8', '#1A59A0', '#164C89'],
       gray: ['#F0F0F3', '#E1E2E8', '#D2D3DC', '#C3C5D1', '#B4B6C5', '#A5A7BA', '#9699AE', '#878AA2', '#787B97', '#6A6E8A', '#5F627B', '#53566C', '#474A5D', '#3C3E4E', '#2F313D'],
-      // utility colors
-      success: '#3DA83A',
-      error: '#B7404C',
+      // utility variables
       text: 'var(--text-color)',
       bg: 'var(--bg-color)',
       card: 'var(--card-color)',
@@ -52,7 +50,11 @@ export default defineConfig({
       footer: 'var(--footer-color)',
       area: 'var(--area-color)',
       nested: 'var(--nested-color)',
-      // LoveLive! colors
+      // misc
+      success: '#3DA83A',
+      error: '#B7404C',
+      rss: '#F26522',
+      // LoveLive!
       muse: '#E50080',
       honoka: '#FFAE00',
       aqours: '#19B1F6',
@@ -91,5 +93,14 @@ export default defineConfig({
   ]],
   transformers: [
     transformerDirective(),
+  ],
+  safelist: [
+    // for rss.xsl
+    'i-mdi-clock-check-outline',
+    'i-simple-icons-feedly',
+    'i-simple-icons-inoreader',
+    'i-mdi-information-variant-circle',
+    'b-rss',
+    'text-rss',
   ],
 });

@@ -5,7 +5,7 @@ export default {
   lastName: 'You',
   gender: 'male',
   title: "ouuan's blog",
-  description: 'ouuan 的博客。',
+  description: 'ouuan 的博客',
   startedAt: new Date('2022-07-20T08:00:00Z'),
   repo: 'ouuan/iles-blog',
   branch: 'master',

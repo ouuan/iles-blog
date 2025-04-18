@@ -1,0 +1,52 @@
+diff --git a/dist/render-feed.d.ts b/dist/render-feed.d.ts
+index d7697c74921c5a95c3260f39693db4fc58cab3ab..54b8b800a6ccad60799017d0a07c462de4efcee7 100644
+--- a/dist/render-feed.d.ts
++++ b/dist/render-feed.d.ts
+@@ -12,6 +12,7 @@ interface FeedProps<T = FeedItem> {
+     categories?: string[];
+     contributors?: Author[];
+     extensions?: Extension[];
++    xmlPrelude?: string;
+ }
+ declare const RenderFeed: vue.DefineComponent<{
+     format: {
+@@ -65,6 +66,10 @@ declare const RenderFeed: vue.DefineComponent<{
+         type: PropType<Extension[]>;
+         default: undefined;
+     };
++    xmlPrelude: {
++        type: String;
++        default: '';
++    };
+ }>>, {
+     extensions: Extension[];
+     items: MaybeAsync<FeedItem>[];
+diff --git a/dist/render-feed.js b/dist/render-feed.js
+index ff2056a3579f0e4a79571e0b88300a56abd5e016..f726dad1f4cfcff570287a5e4c16e48af4d29cf7 100644
+--- a/dist/render-feed.js
++++ b/dist/render-feed.js
+@@ -16,7 +16,8 @@ var RenderFeed = defineComponent({
+     items: { type: Array, default: void 0 },
+     categories: { type: Array, default: void 0 },
+     contributors: { type: Array, default: void 0 },
+-    extensions: { type: Array, default: void 0 }
++    extensions: { type: Array, default: void 0 },
++    xmlPrelude: { type: String, default: "" },
+   },
+   setup(props) {
+     const renderContent = useVueRenderer();
+@@ -49,7 +50,13 @@ async function renderFeed(format, { options, ...props }) {
+   (_a = props.categories) == null ? void 0 : _a.forEach(feed.addCategory);
+   (_b = props.contributors) == null ? void 0 : _b.forEach(feed.addContributor);
+   (_c = props.extensions) == null ? void 0 : _c.forEach(feed.addExtension);
+-  return createStaticVNode(feed[format](), 1);
++  let content = feed[format]();
++  if (format === 'rss2' || format === 'atom1') {
++    const xmlDeclMatch = content.match(/^.*?<\?xml.*?\?>/);
++    const xmlDecl = xmlDeclMatch?.[0] ?? '';
++    content = `${xmlDecl}${props.xmlPrelude}${content.slice(xmlDecl.length)}`;
++  }
++  return createStaticVNode(content, 1);
+ }
+ function renderRaw(_format, { options, ...props }) {
+   const json = JSON.stringify({ ...options, ...props }, null, 2);

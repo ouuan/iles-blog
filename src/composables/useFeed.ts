@@ -23,8 +23,8 @@ export default function useFeed({ tag, min }: { tag?: string, min?: boolean } = 
   const link = new URL(tagPath, url).href;
 
   const options: FeedOptions = {
-    title: tag ? `${title}: 标签: ${tag}` : title,
-    description: tag ? `标签: ${tag} - ${description}` : description,
+    title: tag ? `标签: ${tag} - ${title}` : title,
+    description: tag ? `标签为 ${tag} 的文章 - ${description}` : description,
     id: link,
     link,
     language: 'zh-CN',
