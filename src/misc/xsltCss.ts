@@ -1,4 +1,5 @@
 import { readdir, readFile, writeFile } from 'fs/promises';
+import { join } from 'path';
 
 export default async function injectXsltCss() {
   const homepage = await readFile('dist/index.html', 'utf-8');
@@ -7,13 +8,14 @@ export default async function injectXsltCss() {
   if (!cssUrl || !noscriptStyle) {
     throw new Error('Failed to find CSS URL in index.html');
   }
-  process.chdir('dist/assets');
-  const files = await readdir('.');
+  const assets = 'dist/assets';
+  const files = await readdir(assets);
   await Promise.all(files.map(async (file) => {
     if (file.endsWith('.xsl')) {
-      const content = await readFile(file, 'utf-8');
+      const path = join(assets, file);
+      const content = await readFile(path, 'utf-8');
       const withCss = content.replace('%CSS_URL%', () => cssUrl).replace('%NOSCRIPT_STYLE%', () => noscriptStyle);
-      await writeFile(file, withCss);
+      await writeFile(path, withCss);
     }
   }));
 }
