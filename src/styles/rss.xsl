@@ -64,7 +64,7 @@
                 </a>
               </li>
               <li class="flex items-stretch">
-                <a class="flex items-center p-2 bghover" href="https://aboutfeeds.com/" title="About Feeds">
+                <a class="flex items-center p-2 bghover" href="https://taxodium.ink/about-feeds.html" title="About Feeds">
                   <span class="i-mdi-information-variant-circle text-lg"></span>
                 </a>
               </li>
