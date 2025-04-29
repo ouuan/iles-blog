@@ -1,9 +1,8 @@
-/* eslint-disable import/prefer-default-export */
-
 import { isbotMatches } from 'isbot';
 
 const domain = 'feed.ouuan.moe';
 const plausibleUrl = 'https://plausible.ouuan.moe';
+const BOT_UA = 'Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0';
 
 // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#converting_a_digest_to_a_hex_string
 async function sha1(message: string) {
@@ -27,7 +26,7 @@ async function trackFeeds(request: Request) {
         method: 'POST',
         headers: {
           // Plausible requires a normal UA
-          'User-Agent': `${bot ? 'Mozilla/5.0 (X11; Linux x86_64; rv:107.0) Gecko/20100101 Firefox/107.0' : ua} (${hash})`,
+          'User-Agent': `${bot ? BOT_UA : ua} (${hash})`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

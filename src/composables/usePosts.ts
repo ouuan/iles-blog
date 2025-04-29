@@ -7,7 +7,6 @@ const posts = useDocuments<unknown>('~/pages/post/**/*.md{,x}');
 const postTitleSet = new Set(posts.value.map((post) => post.frontmatter.title));
 if (postTitleSet.size !== posts.value.length) {
   if (typeof alert === 'function') {
-    // eslint-disable-next-line no-alert
     alert('Duplicate post title');
   } else {
     throw new Error('Duplicate post title');
@@ -34,13 +33,13 @@ export function usePosts({
       switch (unrefedSort) {
         case 'created-desc':
           return rhs.frontmatter.date - lhs.frontmatter.date
-              || rhs.frontmatter.lastUpdated - lhs.frontmatter.lastUpdated;
+            || rhs.frontmatter.lastUpdated - lhs.frontmatter.lastUpdated;
         case 'updated-desc':
           return rhs.frontmatter.lastUpdated - lhs.frontmatter.lastUpdated
-              || rhs.frontmatter.date - lhs.frontmatter.date;
+            || rhs.frontmatter.date - lhs.frontmatter.date;
         case 'visitor-desc':
           return (rhs.frontmatter.visitor || 0) - (lhs.frontmatter.visitor || 0)
-              || rhs.frontmatter.date - lhs.frontmatter.date;
+            || rhs.frontmatter.date - lhs.frontmatter.date;
         default:
           return exhaustiveCheck(unrefedSort);
       }
@@ -55,7 +54,9 @@ export function usePosts({
   });
 }
 
-export function usePostCount(filter: MaybeRef<(post: (typeof posts)['value'][number]) => boolean> = () => true) {
+export function usePostCount(
+  filter: MaybeRef<(post: (typeof posts)['value'][number]) => boolean> = () => true,
+) {
   return computed(() => posts.value.filter(unref(filter)).length);
 }
 

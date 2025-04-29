@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import { stat } from 'fs/promises';
 import { defineConfig } from 'iles';
 import excerpt from '@islands/excerpt';
@@ -50,7 +48,8 @@ export default defineConfig({
     }
 
     frontmatter.tags = frontmatter.tags?.length
-      ? Array.from(new Set(frontmatter.tags)).filter((tag) => tag) : null;
+      ? Array.from(new Set(frontmatter.tags)).filter((tag) => tag)
+      : null;
 
     const { image } = frontmatter;
     if (typeof image === 'string' && image && !image.includes('/')) {
@@ -83,7 +82,7 @@ export default defineConfig({
           `/api/visitors/${encodeURIComponent(postHref)}`,
           'https://blog-visitor-count.ouuan.moe',
         ).href,
-      ).json<{ visitors: number; }>();
+      ).json<{ visitors: number }>();
       frontmatter.visitor = data.visitors;
     } else {
       frontmatter.visitor = 0;
@@ -91,10 +90,12 @@ export default defineConfig({
   },
   markdown: {
     withImageSrc(src, file) {
-      const prefix = /^[@~]/.test(src) ? '' : file.path
-        .replace(__dirname, '')
-        .replace(/\/src\/pages\/(post|hidden)\//, '@/images/')
-        .replace(/[^/]+$/, '');
+      const prefix = /^[@~]/.test(src)
+        ? ''
+        : file.path
+            .replace(__dirname, '')
+            .replace(/\/src\/pages\/(?:post|hidden)\//, '@/images/')
+            .replace(/[^/]+$/, '');
       const suffix = src.includes('?') ? '' : '?preset=normal';
       return `${prefix}${src}${suffix}`;
     },

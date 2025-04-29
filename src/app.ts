@@ -22,7 +22,9 @@ export default defineApp({
         itemscope: '',
         itemtype: computed(() => `https://schema.org/${pageType(route.path)}Page`),
       },
-      title: computed(() => `${frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title}`),
+      title: computed(() => {
+        return frontmatter.title ? `${frontmatter.title} - ${site.title}` : site.title;
+      }),
       style: [{
         // hide when theme not set & CSS not loaded
         children: `html:not(.dark):not(.light) {
@@ -64,7 +66,10 @@ export default defineApp({
           href: '/favicon-16x16.png',
         },
         { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'canonical', href: computed(() => new URL(frontmatter.canonical || route.path, site.url).href) },
+        {
+          rel: 'canonical',
+          href: computed(() => new URL(frontmatter.canonical || route.path, site.url).href),
+        },
         {
           rel: 'alternate',
           type: 'application/rss+xml',

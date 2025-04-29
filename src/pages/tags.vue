@@ -59,5 +59,7 @@ const tagsSortedWithCount = computed(
 );
 
 const page = usePage();
-page.frontmatter.description = computed(() => `标签列表：${tagsSortedWithCount.value.slice(0, 20).map(({ tag }) => tag).join('，')}……`);
+page.frontmatter.description = computed(
+  () => `标签列表：${tagsSortedWithCount.value.slice(0, 20).map(({ tag }) => tag).join('，')}……`,
+);
 </script>

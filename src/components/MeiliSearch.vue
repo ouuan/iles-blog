@@ -85,7 +85,7 @@ async function search() {
   return fetch(new URL('/indexes/blog-posts/search', import.meta.env.MEILI_URL), {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${import.meta.env.MEILI_SEARCH_KEY}`,
+      'Authorization': `Bearer ${import.meta.env.MEILI_SEARCH_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -112,7 +112,7 @@ watchDebounced(pattern, async () => {
     if (!response.ok) {
       throw new Error();
     }
-    searchResult.value = await response.json() as any;
+    searchResult.value = await response.json();
   } catch {
     searchResult.value = null;
   }
@@ -134,9 +134,9 @@ const hint = computed(() => {
 
 function hitToFrontmatter(hit: SearchResultHit) {
   return {
-    // eslint-disable-next-line no-underscore-dangle
+
     title: hit._formatted.title,
-    // eslint-disable-next-line no-underscore-dangle
+
     tags: hit._formatted.tags,
     date: new Date(hit.date),
     lastUpdated: new Date(hit.lastUpdated),

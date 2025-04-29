@@ -12,10 +12,10 @@ export default function useDescription({
   page,
   dateType,
 }: {
-  posts: MaybeRef<Post[]>,
-  lead: MaybeRef<string>,
-  page?: MaybeRef<number>,
-  dateType: MaybeRef<'date' | 'lastUpdated'>,
+  posts: MaybeRef<Post[]>;
+  lead: MaybeRef<string>;
+  page?: MaybeRef<number>;
+  dateType: MaybeRef<'date' | 'lastUpdated'>;
 }) {
   return computed(
     () => {
@@ -24,7 +24,8 @@ export default function useDescription({
       const list = [];
       let totalLength = fullLead.length + 2;
       for (const post of unref(posts)) {
-        const item = `${format(post.frontmatter[unref(dateType)], 'yyyy-MM-dd')}《${post.frontmatter.title}》`;
+        const date = format(post.frontmatter[unref(dateType)], 'yyyy-MM-dd');
+        const item = `${date}《${post.frontmatter.title}》`;
         totalLength += item.length + 1;
         if (list.length > 0 && totalLength >= MAX_LENGTH) break;
         list.push(item);

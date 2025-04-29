@@ -36,7 +36,6 @@ title: 404 Not Found
 <script client:idle lang="ts">
 import { trackEvent } from '~/misc/plausible';
 
-// eslint-disable-next-line import/prefer-default-export
 export function onLoad() {
   trackEvent('404', {
     props: {

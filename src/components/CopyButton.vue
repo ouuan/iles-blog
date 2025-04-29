@@ -59,7 +59,9 @@ async function copy() {
     state.value = 'success';
   } catch (e) {
     state.value = 'error';
-    alert(`复制失败: ${e}`);
+    // eslint-disable-next-line no-console
+    console.error(e);
+    alert('复制失败');
   } finally {
     clearTimeout(timeout);
     timeout = setTimeout(() => {

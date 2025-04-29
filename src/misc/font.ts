@@ -15,46 +15,53 @@ export default async function generateFonts(pages: RouteToRender[]) {
   const now = new Date();
   const fromDate = subDate(now, { days: 90 }).toISOString().slice(0, 10);
   const nowDate = now.toISOString().slice(0, 10);
+  const token = process.env.PLAUSIBLE_TOKEN;
 
-  const breakdown = updateCommonGlyphs ? await got.get(
-    `https://plausible.ouuan.moe/api/v1/stats/breakdown?${[
-      'site_id=ouuan.moe',
-      'property=event:page',
-      'period=custom',
-      `date=${fromDate},${nowDate}`,
-      'limit=1000',
-    ].join('&')}`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.PLAUSIBLE_TOKEN}`,
+  const breakdown = updateCommonGlyphs
+    ? await got.get(
+      `https://plausible.ouuan.moe/api/v1/stats/breakdown?${[
+        'site_id=ouuan.moe',
+        'property=event:page',
+        'period=custom',
+        `date=${fromDate},${nowDate}`,
+        'limit=1000',
+      ].join('&')}`,
+      {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       },
-    },
-  ).json<{
-    results: {
-      page: string;
-      visitors: number;
-    }[]
-  }>() : { results: [] };
+    ).json<{
+      results: {
+        page: string;
+        visitors: number;
+      }[];
+    }>()
+    : { results: [] };
+
   let maxVisitor = 0;
   const visitorMap = breakdown.results.reduce((map, result) => {
     const path = new URL(result.page, 'https://ouuan.moe').pathname;
-    const visitor = (map.get(path) || 0) + result.visitors;
+    const visitor = (map.get(path) ?? 0) + result.visitors;
     maxVisitor = Math.max(maxVisitor, visitor);
     map.set(path, visitor);
     return map;
   }, new Map<string, number>());
 
   const previewServer = await preview({ server: { host: '127.0.0.1' } });
-  const host = previewServer.resolvedUrls.local?.[0];
+  const host = previewServer.resolvedUrls.local[0];
 
-  const pagesInfo: PageInfo[] = pages.filter((page) => page.outputFilename.endsWith('.html')).map((page) => ({
+  const pagesInfo: PageInfo[] = pages.filter(
+    (page) => page.outputFilename.endsWith('.html'),
+  ).map((page) => ({
     url: new URL(page.path, host).href,
     filePath: resolve(rootPath, 'dist', page.outputFilename),
-    probability: ((visitorMap.get(page.path) || 0) + 1) / (maxVisitor + 2),
+    probability: ((visitorMap.get(page.path) ?? 0) + 1) / (maxVisitor + 2),
   }));
 
   const fonts: FontInfo[] = [
     {
+      // eslint-disable-next-line @stylistic/max-len
       fontFamily: '"Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'Noto Serif SC Web Font',
       variants: [{
@@ -62,7 +69,10 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifSC-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifSC-Regular.otf'),
+        originalFontPath: resolve(
+          rootPath,
+          'third_party/fonts/NotoSerifCJK/NotoSerifSC-Regular.otf',
+        ),
       }, {
         fontWeight: 700,
         fontDisplay: 'swap',
@@ -72,6 +82,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
       }],
     },
     {
+      // eslint-disable-next-line @stylistic/max-len
       fontFamily: '"LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'LXGW WenKai Web Font',
       variants: [{
@@ -89,6 +100,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
       }],
     },
     {
+      // eslint-disable-next-line @stylistic/max-len
       fontFamily: '"Noto Serif JP Web Font", "Noto Serif JP", "Noto Serif CJK JP", "Source Han Serif JP", "Noto Serif SC Web Font", "Noto Serif SC", "Noto Serif CJK SC", "Source Han Serif SC", "Source Han Serif CN", 思源宋体, "Noto Serif CJK TC", "Source Han Serif TC", "Source Han Serif TW", "Noto Serif", Georgia, "Times New Roman", Times, STSong, SimSun, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'Noto Serif JP Web Font',
       variants: [{
@@ -96,7 +108,10 @@ export default async function generateFonts(pages: RouteToRender[]) {
         fontDisplay: 'swap',
         fontStyle: 'normal',
         outputFileName: 'NotoSerifJP-Regular',
-        originalFontPath: resolve(rootPath, 'third_party/fonts/NotoSerifCJK/NotoSerifJP-Regular.otf'),
+        originalFontPath: resolve(
+          rootPath,
+          'third_party/fonts/NotoSerifCJK/NotoSerifJP-Regular.otf',
+        ),
       }, {
         fontWeight: 700,
         fontDisplay: 'swap',
@@ -106,6 +121,7 @@ export default async function generateFonts(pages: RouteToRender[]) {
       }],
     },
     {
+      // eslint-disable-next-line @stylistic/max-len
       fontFamily: '"Klee One Web Font", "Klee One", "LXGW WenKai Web Font", "LXGW WenKai", "LXGW WenKai Lite", 霞鹜文楷, STKaiti, KaiTi, serif, "Apple Color Emoji", "Noto Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"',
       webFontName: 'Klee One Web Font',
       variants: [{

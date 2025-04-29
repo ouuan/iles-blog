@@ -27,9 +27,9 @@ const emit = defineEmits<{
 
 const show = useVModel(props, 'showToc', emit);
 
-function display() {
+async function display() {
   show.value = true;
-  nextTick(() => {
+  await nextTick(() => {
     document.getElementById('__toc-close')?.focus();
   });
 }

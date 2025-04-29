@@ -6,7 +6,7 @@ import { useCopyrightYearString } from './useCopyrightYear';
 import { usePosts } from './usePosts';
 import { useTagFilter } from './useTags';
 
-export default function useFeed({ tag, min }: { tag?: string, min?: boolean } = {}) {
+export default function useFeed({ tag, min }: { tag?: string; min?: boolean } = {}) {
   const { site } = usePage();
   const {
     author,

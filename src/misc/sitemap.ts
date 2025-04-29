@@ -22,13 +22,17 @@ export default async function generateSitemap(pages: RouteToRender[]) {
     const canonicalPath = new URL(canonical).pathname;
     return canonicalPath === page.path;
   }).map<SitemapItemLoose>((page) => {
-    const lastmod = page.rendered.match(/<meta property="article:modified_time" content="(.+?)">/)?.[1];
+    const LASTMOD_REGEX = /<meta property="article:modified_time" content="(.+?)">/;
+    const lastmod = page.rendered.match(LASTMOD_REGEX)?.[1];
 
     let priority;
     if (page.path === '/') priority = 1;
     else if (page.path === '/about') priority = 0.9;
     else if (page.path.startsWith('/post/')) {
-      priority = Math.max(0.3, 0.8 - (new Date().valueOf() - new Date(lastmod || '2020').valueOf()) / 5e11);
+      priority = Math.max(
+        0.3,
+        0.8 - (new Date().valueOf() - new Date(lastmod || '2020').valueOf()) / 5e11,
+      );
     } else if (page.path.startsWith('/page/')) priority = 0.7;
     else if (page.path === '/sponsor') priority = 0.6;
     else if (page.path.startsWith('/tag/')) priority = 0.5;

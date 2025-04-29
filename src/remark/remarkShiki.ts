@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import type { Plugin } from 'unified';
 import type { Content, Root } from 'mdast';
 import { fileURLToPath } from 'url';
@@ -14,9 +12,9 @@ import {
   getHighlighter,
   renderToHtml,
 } from 'shiki';
-// eslint-disable-next-line import/no-relative-packages
+// eslint-disable-next-line @stylistic/max-len
 import darkThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
-// eslint-disable-next-line import/no-relative-packages
+// eslint-disable-next-line @stylistic/max-len
 import lightThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-Light-color-theme-noitalic.json';
 
 const darkTheme = {
@@ -47,15 +45,21 @@ const CUSTOM_LANGUAGES = {
     id: 'hcl-csapp',
     scopeName: 'source.hcl.csapp',
     displayName: 'HCL (CS:APP)',
-    path: resolve(fileURLToPath(import.meta.url), '../../../third_party/hcl-syntax-highlight/hcl.tmLanguage.json'),
+    path: resolve(
+      fileURLToPath(import.meta.url),
+      '../../../third_party/hcl-syntax-highlight/hcl.tmLanguage.json',
+    ),
   },
-  caddyfile: {
+  'caddyfile': {
     id: 'caddyfile',
     scopeName: 'source.Caddyfile',
     displayName: 'Caddyfile',
-    path: resolve(fileURLToPath(import.meta.url), '../../../third_party/vscode-caddyfile/syntaxes/caddyfile.tmLanguage.json'),
+    path: resolve(
+      fileURLToPath(import.meta.url),
+      '../../../third_party/vscode-caddyfile/syntaxes/caddyfile.tmLanguage.json',
+    ),
   },
-} as { [id: string]: ILanguageRegistration | undefined };
+} as Record<string, ILanguageRegistration | undefined>;
 
 function getBundledLanguage(name: string) {
   return BUNDLED_LANGUAGES.find((lang) => lang.id === name || lang.aliases?.includes(name));
@@ -65,8 +69,17 @@ function isBundledLanguage(name: string): name is Lang {
   return getBundledLanguage(name) !== undefined;
 }
 
-function highlightWithTheme(highlighter: Highlighter, code: string, lang: string, theme: 'dark' | 'light', from: number, to: number) {
-  const tokens = lang === 'plain' ? code.split('\n').map((line) => [{ content: line }]) : highlighter.codeToThemedTokens(code, lang, theme);
+function highlightWithTheme(
+  highlighter: Highlighter,
+  code: string,
+  lang: string,
+  theme: 'dark' | 'light',
+  from: number,
+  to: number,
+) {
+  const tokens = lang === 'plain'
+    ? code.split('\n').map((line) => [{ content: line }])
+    : highlighter.codeToThemedTokens(code, lang, theme);
 
   const themeConfig = theme === 'dark' ? darkTheme : lightTheme;
 

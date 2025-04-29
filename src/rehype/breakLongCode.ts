@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import type { Plugin } from 'unified';
 import type { Root } from 'hast';
 import { selectAll } from 'hast-util-select';
@@ -34,9 +32,12 @@ const breakLongCode: Plugin<[], Root> = () => (root) => {
       });
       node.children.pop();
     } else {
-      if (!node.properties) node.properties = {};
-      if (!node.properties.className) node.properties.className = 'break-all';
-      else node.properties.className += ' break-all';
+      node.properties ??= {};
+      const props = node.properties;
+      const CLASS = 'break-all';
+      if (Array.isArray(props.className)) props.className.push(CLASS);
+      else if (!props.className || typeof props.className !== 'string') props.className = CLASS;
+      else props.className += ` ${CLASS}`;
     }
   });
 };

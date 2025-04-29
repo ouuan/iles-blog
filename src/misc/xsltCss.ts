@@ -14,7 +14,9 @@ export default async function injectXsltCss() {
     if (file.endsWith('.xsl')) {
       const path = join(assets, file);
       const content = await readFile(path, 'utf-8');
-      const withCss = content.replace('%CSS_URL%', () => cssUrl).replace('%NOSCRIPT_STYLE%', () => noscriptStyle);
+      const withCss = content
+        .replace('%CSS_URL%', () => cssUrl)
+        .replace('%NOSCRIPT_STYLE%', () => noscriptStyle);
       await writeFile(path, withCss);
     }
   }));

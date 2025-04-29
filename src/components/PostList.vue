@@ -35,13 +35,20 @@
       </li>
       <li>
         <a
-          class="group relative flex items-center gap-3 b-b-2 b-area b-dotted py-1 pl-4 transition-colors ease-out hover:b-footer"
+          :class="[
+            'group relative flex items-center gap-3',
+            'b-b-2 b-area b-dotted py-1 pl-4',
+            'transition-colors ease-out hover:b-footer',
+          ]"
           :href="post.meta.href"
           itemscope
           itemtype="https://schema.org/BlogPosting"
         >
           <span
-            class="absolute left--5px h-6px w-6px rd-3px bg-gray-5 transition-colors ease-out dark:bg-gray-10 group-hover:bg-text"
+            :class="[
+              'absolute left--5px h-6px w-6px rd-3px bg-gray-5',
+              'transition-colors ease-out dark:bg-gray-10 group-hover:bg-text',
+            ]"
           />
           <post-microdata :post="post" />
           <time
@@ -132,7 +139,7 @@ function isPostNewYear(index: number) {
   const current = posts.value[index];
   const previous = posts.value[index - 1];
   return current && previous
-     && current.frontmatter[props.displayTime].getYear()
+    && current.frontmatter[props.displayTime].getYear()
     !== previous.frontmatter[props.displayTime].getYear();
 }
 

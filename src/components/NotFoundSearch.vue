@@ -12,5 +12,7 @@ import { computed } from 'vue';
 import { useBrowserLocation } from '@vueuse/core';
 
 const location = useBrowserLocation();
-const searchPattern = computed(() => location.value.pathname?.match(/\/posts?\/[^a-z]+\/([^/]+)/)?.[1]);
+const searchPattern = computed(
+  () => location.value.pathname?.match(/\/posts?\/[^a-z]+\/([^/]+)/)?.[1],
+);
 </script>

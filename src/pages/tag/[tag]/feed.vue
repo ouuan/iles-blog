@@ -45,5 +45,6 @@ const props = defineProps<{
 
 const { options, items } = useFeed(props);
 
-const xmlPrelude = props.format === 'rss' && !props.min ? `<?xml-stylesheet type="text/xsl" href="${xsl}"?>` : '';
+const withStyle = props.format === 'rss' && !props.min;
+const xmlPrelude = withStyle ? `<?xml-stylesheet type="text/xsl" href="${xsl}"?>` : '';
 </script>

@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import type { Plugin } from 'unified';
 import type { Content, Root } from 'mdast';
 import puppeteer from 'puppeteer';

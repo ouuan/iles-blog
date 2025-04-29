@@ -52,12 +52,12 @@ const props = defineProps<{
   headings: Heading[];
 }>();
 const emit = defineEmits<{
-  (e: 'close'): void,
+  (e: 'close'): void;
 }>();
 
-function close() {
+async function close() {
   emit('close');
-  nextTick(() => {
+  await nextTick(() => {
     document.getElementById('__toc-open')?.focus();
   });
 }
@@ -67,7 +67,7 @@ const { height: windowHeight } = useWindowSize();
 
 const showAll = ref(false);
 
-const tocRoot = ref<any>();
+const tocRoot = ref<HTMLDivElement>();
 const isPlain = ref(true);
 const lastCurrentSlug = ref('');
 

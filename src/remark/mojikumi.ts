@@ -82,12 +82,12 @@ function dfs(u: Parent) {
           }
 
           children.push({
-            type: lineStartRule.includes(c) ? 'mojikumi-line-start' : 'mojikumi-line-end',
+            type: lineStartRule.includes(c) ? 'mojikumi-line-start' : 'mojikumi-line-end' as any,
             children: [{
               type: 'text',
               value: c,
             }],
-          } as any);
+          });
 
           lastIndex = index + 1;
         }
@@ -99,7 +99,7 @@ function dfs(u: Parent) {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const r = s[i]!;
 
-        function matches(rule: ReadonlyArray<Readonly<[string, string]>>) {
+        function matches(rule: readonly (readonly[string, string])[]) {
           return rule.some(([a, b]) => a.includes(l) && b.includes(r));
         }
 
@@ -127,12 +127,13 @@ function dfs(u: Parent) {
           else if (matches(rightNarrowRules)) type = 'mojikumi-narrow-right';
 
           children.push({
-            type,
+            type: type as any,
             children: [{
               type: 'text',
-              value: s[i - 1],
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              value: s[i - 1]!,
             }],
-          } as any);
+          });
 
           if (leftRuleMatched && matches(leftWbrRules)) {
             children.push({
@@ -161,7 +162,6 @@ function dfs(u: Parent) {
     }
   }
 
-  // eslint-disable-next-line no-param-reassign
   u.children = children;
 }
 
