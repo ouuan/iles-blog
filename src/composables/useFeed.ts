@@ -1,6 +1,6 @@
 import type { FeedItem, FeedOptions } from '@islands/feed';
-import { h } from 'vue';
 import { isString } from '@sniptt/guards';
+import { h } from 'vue';
 
 import { useCopyrightYearString } from './useCopyrightYear';
 import { usePosts } from './usePosts';

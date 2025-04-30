@@ -1,3 +1,5 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
+
 import { readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 

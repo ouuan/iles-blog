@@ -1,28 +1,27 @@
 import { stat } from 'fs/promises';
-import { defineConfig } from 'iles';
 import excerpt from '@islands/excerpt';
 import feed from '@islands/feed';
 import headings from '@islands/headings';
 import images, { formatPreset } from '@islands/images';
-import { simpleGit } from 'simple-git';
 import got from 'got';
-
+import { defineConfig } from 'iles';
 import { all as m2hAll } from 'mdast-util-to-hast';
 import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
-
-import remarkMermaid from './src/remark/remarkMermaid';
-import remarkShiki from './src/remark/remarkShiki';
-import addHeadingForCard from './src/remark/addHeadingForCard';
-import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
-import setHeadingLevels from './src/remark/setHeadingLevels';
-import checkRelativeLinks from './src/remark/checkRelativeLinks';
-
-import breakLongCode from './src/rehype/breakLongCode';
-import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
+import { simpleGit } from 'simple-git';
 
 import generateFonts from './src/misc/font';
 import generateSitemap from './src/misc/sitemap';
 import injectXsltCss from './src/misc/xsltCss';
+
+import breakLongCode from './src/rehype/breakLongCode';
+import wrapTableOverflowAuto from './src/rehype/wrapTableOverflowAuto';
+
+import addHeadingForCard from './src/remark/addHeadingForCard';
+import checkRelativeLinks from './src/remark/checkRelativeLinks';
+import { remarkMojikumi, remarkRehypeMojikumi } from './src/remark/mojikumi';
+import remarkMermaid from './src/remark/remarkMermaid';
+import remarkShiki from './src/remark/remarkShiki';
+import setHeadingLevels from './src/remark/setHeadingLevels';
 
 export default defineConfig({
   siteUrl: 'https://ouuan.moe/',
@@ -70,6 +69,7 @@ export default defineConfig({
       frontmatter.lastUpdated = new Date(latestCommit.date);
       frontmatter.published = new Date(firstCommit.date);
     } else {
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const { birthtime, mtime } = await stat(filename);
       frontmatter.lastUpdated = mtime;
       frontmatter.published = birthtime;

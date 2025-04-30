@@ -64,6 +64,8 @@ const theme = useTheme();
 const loading = ref(true);
 const positiveReacted = ref(false);
 
+const POSITIVE_REACTIONS = ['THUMBS_UP', 'LAUGH', 'HOORAY', 'HEART', 'ROCKET'];
+
 window.addEventListener('message', (event) => {
   if (event.origin !== 'https://giscus.app') return;
   const giscus = event.data?.giscus;
@@ -71,13 +73,9 @@ window.addEventListener('message', (event) => {
   loading.value = false;
   const reactions = giscus.discussion?.reactions;
   if (typeof reactions === 'object') {
-    positiveReacted.value = Boolean([
-      'THUMBS_UP',
-      'LAUGH',
-      'HOORAY',
-      'HEART',
-      'ROCKET',
-    ].find((reaction) => reactions[reaction].viewerHasReacted));
+    positiveReacted.value = Boolean(POSITIVE_REACTIONS.some(
+      (reaction) => reactions[reaction].viewerHasReacted,
+    ));
   }
 });
 </script>

@@ -21,6 +21,12 @@ export default [
         registeredComponentsOnly: false,
         ignores: ['Picture', 'Head', 'Card'],
       }],
+      'vuejs-accessibility/heading-has-content': ['error', {
+        accessibleChildren: ['SearchResultHighlight'],
+      }],
+      'vuejs-accessibility/anchor-has-content': ['error', {
+        accessibleChildren: ['SearchResultHighlight'],
+      }],
     },
   },
 ];

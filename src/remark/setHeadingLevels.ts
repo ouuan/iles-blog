@@ -1,7 +1,7 @@
 // set heading levels for (nested) <Card> and <CodeBlock>
 
-import type { Plugin } from 'unified';
 import type { Content, Root } from 'mdast';
+import type { Plugin } from 'unified';
 
 function dfs(u: Content, level: number) {
   let childLevel = level;

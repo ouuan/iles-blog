@@ -1,6 +1,6 @@
-import type { Plugin } from 'unified';
-import type { Root } from 'mdast';
 import { JSDOM } from 'jsdom';
+import type { Root } from 'mdast';
+import type { Plugin } from 'unified';
 
 const addHeadingForCard: Plugin<[], Root> = () => (root: Root) => {
   let hasH2 = false;

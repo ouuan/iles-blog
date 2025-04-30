@@ -1,5 +1,5 @@
-import { computed } from 'vue';
 import { isString } from '@sniptt/guards';
+import { computed } from 'vue';
 import type { Post } from './usePosts';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.{md,mdx}');

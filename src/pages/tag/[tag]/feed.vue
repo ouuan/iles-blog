@@ -12,8 +12,8 @@ path: /tag/[tag]/[filename]
 </template>
 
 <script lang="ts">
-import { useTags } from '~/composables/useTags';
 import useFeed from '~/composables/useFeed';
+import { useTags } from '~/composables/useTags';
 import xsl from '~/styles/rss.xsl?url'; // TODO: use `?no-inline` after upgrading Vite
 
 const tags = useTags();

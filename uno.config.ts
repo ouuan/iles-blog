@@ -1,10 +1,10 @@
+import { cssProperty } from '@unocss/preset-mini/rules';
+import transformerDirective from '@unocss/transformer-directives';
 import {
   defineConfig,
   presetIcons,
   presetUno,
 } from 'unocss';
-import { cssProperty } from '@unocss/preset-mini/rules';
-import transformerDirective from '@unocss/transformer-directives';
 
 export default defineConfig({
   presets: [
@@ -133,9 +133,9 @@ export default defineConfig({
     'disabled': 'cursor-not-allowed opacity-50',
     'standard-card': 'bg-card rd-2 px-6 md:px-12 overflow-auto md:py-3 shadow',
   }, [
-    /^contrast-(\w+)(?:-(\w+))?$/,
-    ([, color, lightColor]) => color && [
-      `light:text-${lightColor || 'text'}`,
+    /^contrast-(\w+)-(\w+)$/,
+    ([, color, lightColor]) => color && lightColor && [
+      `light:text-${lightColor}`,
       'light:drop-shadow',
       `light:drop-shadow-color-${color}`,
       `dark:text-${color}`,

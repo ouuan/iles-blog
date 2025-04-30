@@ -16,9 +16,13 @@
       </button>
     </div>
     <div v-if="!isPlain">
-      <label class="ml-auto flex items-center gap-1">
+      <label
+        for="__toc_expand"
+        class="ml-auto flex items-center gap-1"
+      >
         <span>展开全部</span>
         <input
+          id="__toc_expand"
           v-model="showAll"
           type="checkbox"
         >
@@ -39,13 +43,13 @@
 
 <script setup lang="ts">
 import type { Heading } from '@islands/headings';
-import { nextTick, ref } from 'vue';
 import {
   useWindowScroll,
   useWindowSize,
   watchDebounced,
   watchThrottled,
 } from '@vueuse/core';
+import { nextTick, ref } from 'vue';
 import type TOCNode from '~/types/TOCNode';
 
 const props = defineProps<{

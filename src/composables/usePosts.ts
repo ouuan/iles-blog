@@ -1,6 +1,6 @@
+import type { MaybeRef } from '@vueuse/core';
 import { exhaustiveCheck } from 'ts-exhaustive-check';
 import { computed, unref } from 'vue';
-import type { MaybeRef } from '@vueuse/core';
 
 const posts = useDocuments<unknown>('~/pages/post/**/*.md{,x}');
 

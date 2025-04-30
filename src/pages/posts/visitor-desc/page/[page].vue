@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts">
-import { computed } from 'vue';
 import { format } from 'date-fns';
+import { computed } from 'vue';
 import { usePageCount } from '~/composables/usePosts';
 
 const pageCount = usePageCount({ perPage: 20 });

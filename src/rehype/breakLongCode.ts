@@ -1,6 +1,6 @@
-import type { Plugin } from 'unified';
 import type { Root } from 'hast';
 import { selectAll } from 'hast-util-select';
+import type { Plugin } from 'unified';
 
 function maxPartLength(parts: string[]) {
   return parts.reduce((max, part) => Math.max(max, part.length), 0);

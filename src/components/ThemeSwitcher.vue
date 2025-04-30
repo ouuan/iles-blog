@@ -40,8 +40,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import { vOnClickOutside } from '@vueuse/components';
+import { ref } from 'vue';
 import useTheme from '~/composables/useTheme';
 
 const { store: theme } = useTheme();

@@ -1,7 +1,7 @@
-import type { Plugin } from 'unified';
+import { renderMermaid } from '@mermaid-js/mermaid-cli';
 import type { Content, Root } from 'mdast';
 import puppeteer from 'puppeteer';
-import { renderMermaid } from '@mermaid-js/mermaid-cli';
+import type { Plugin } from 'unified';
 
 async function digestMessage(message: string) {
   const msgUint8 = new TextEncoder().encode(message);

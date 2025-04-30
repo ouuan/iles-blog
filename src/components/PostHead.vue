@@ -8,7 +8,7 @@
         :is="titleLink ? 'a' : 'span'"
         :class="[
           'inline-block font-serif break-anywhere',
-          titleLink && 'relative post-title'
+          titleLink && 'relative post-title',
         ]"
         :href="titleLink ? href : undefined"
       >
@@ -111,7 +111,7 @@ const props = withDefaults(defineProps<{
 
 function removeDelimiter(str: string) {
   if (!props.highlightDelimiter) return str;
-  return str.replace(new RegExp(props.highlightDelimiter, 'g'), '');
+  return str.split(props.highlightDelimiter).join('');
 }
 </script>
 

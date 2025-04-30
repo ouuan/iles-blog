@@ -1,6 +1,6 @@
-import { computed, unref } from 'vue';
-import { format } from 'date-fns';
 import type { MaybeRef } from '@vueuse/core';
+import { format } from 'date-fns';
+import { computed, unref } from 'vue';
 
 import type { Post } from './usePosts';
 

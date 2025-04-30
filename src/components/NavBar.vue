@@ -46,6 +46,7 @@
               title="站内搜索"
             >
               <span class="i-mdi-magnify text-xl" />
+              <span class="sr-only">站内搜索</span>
             </a>
           </div>
           <search-bar
@@ -60,6 +61,7 @@
             title="RSS 订阅"
           >
             <span class="i-mdi-rss text-xl" />
+            <span class="sr-only">RSS 订阅</span>
           </a>
         </li>
         <li class="flex">

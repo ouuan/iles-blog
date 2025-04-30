@@ -1,3 +1,8 @@
+<!--
+eslint-disable vuejs-accessibility/no-redundant-roles
+https://github.com/vue-a11y/eslint-plugin-vuejs-accessibility/issues/1321
+-->
+
 <template>
   <nav
     v-if="pageCount > 1"
@@ -33,8 +38,8 @@
         :aria-hidden="item.type === 'gap'"
         :class="[
           'flex items-center',
-          item.type==='page' && item.largeOnly && 'sm:hidden lg:flex',
-          item.type==='gap' && item.smallOnly && 'lg:hidden'
+          item.type === 'page' && item.largeOnly && 'sm:hidden lg:flex',
+          item.type === 'gap' && item.smallOnly && 'lg:hidden',
         ]"
       >
         <a

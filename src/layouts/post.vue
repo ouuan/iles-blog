@@ -50,8 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { isString } from '@sniptt/guards';
+import { computed } from 'vue';
 
 const page = usePage();
 page.frontmatter.description ||= page.meta.excerpt?.trim();

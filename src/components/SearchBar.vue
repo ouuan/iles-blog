@@ -19,6 +19,7 @@
       title="搜索"
     >
       <span class="i-mdi-magnify text-xl" />
+      <span class="sr-only">搜索</span>
     </a>
   </form>
 </template>

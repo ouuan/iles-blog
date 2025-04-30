@@ -1,5 +1,5 @@
-import type { Plugin } from 'unified';
 import type { Root } from 'mdast';
+import type { Plugin } from 'unified';
 import { visit } from 'unist-util-visit';
 
 const checkRelativeLinks: Plugin<[], Root> = () => (root: Root) => {

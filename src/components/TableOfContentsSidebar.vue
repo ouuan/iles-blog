@@ -18,8 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import type { Heading } from '@islands/headings';
+import { ref } from 'vue';
 
 defineProps<{
   headings: Heading[];

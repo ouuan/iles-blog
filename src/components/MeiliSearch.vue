@@ -51,8 +51,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, shallowRef } from 'vue';
 import { useUrlSearchParams, watchDebounced } from '@vueuse/core';
+import { computed, ref, shallowRef } from 'vue';
 
 interface SearchResultHit {
   _formatted: {

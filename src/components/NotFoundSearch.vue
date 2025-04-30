@@ -8,8 +8,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useBrowserLocation } from '@vueuse/core';
+import { computed } from 'vue';
 
 const location = useBrowserLocation();
 const searchPattern = computed(

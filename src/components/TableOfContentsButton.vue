@@ -14,8 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick } from 'vue';
 import { useVModel } from '@vueuse/core';
+import { nextTick } from 'vue';
 
 const props = defineProps<{
   showToc: boolean;

@@ -1,7 +1,6 @@
-import type { Plugin } from 'unified';
-import type { Content, Root } from 'mdast';
-import { fileURLToPath } from 'url';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+import type { Content, Root } from 'mdast';
 import type {
   Highlighter,
   ILanguageRegistration,
@@ -12,10 +11,12 @@ import {
   getHighlighter,
   renderToHtml,
 } from 'shiki';
-// eslint-disable-next-line @stylistic/max-len
-import darkThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
+import type { Plugin } from 'unified';
+
 // eslint-disable-next-line @stylistic/max-len
 import lightThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-Light-color-theme-noitalic.json';
+// eslint-disable-next-line @stylistic/max-len
+import darkThemeJson from '../../third_party/night-owl-vscode-theme/themes/Night Owl-color-theme-noitalic.json';
 
 const darkTheme = {
   name: 'dark',

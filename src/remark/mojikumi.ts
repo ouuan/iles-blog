@@ -1,6 +1,6 @@
-import type { Plugin } from 'unified';
 import type { Content, Parent, Root } from 'mdast';
 import { all, type Handlers } from 'mdast-util-to-hast';
+import type { Plugin } from 'unified';
 
 // https://www.w3.org/TR/jlreq/#positioning_of_consecutive_opening_brackets_closing_brackets_comma_full_stops_and_middle_dots
 

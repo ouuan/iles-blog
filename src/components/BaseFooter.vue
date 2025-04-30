@@ -17,6 +17,7 @@
         title="赞赏支持"
       >
         <span class="i-mdi-heart text-red dark:text-red-7" />
+        <span class="sr-only">赞赏支持</span>
       </a>
       <span>{{ author }}</span>
     </div>

@@ -1,8 +1,8 @@
+import analyze from 'rollup-plugin-analyzer';
+import unocss from 'unocss/vite';
 import { defineConfig } from 'vite';
 
-import unocss from 'unocss/vite';
 import viteCompression from 'vite-plugin-compression';
-import analyze from 'rollup-plugin-analyzer';
 
 export default defineConfig({
   plugins: [

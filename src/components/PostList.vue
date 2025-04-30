@@ -13,10 +13,13 @@
       <span>共 {{ postCount }} 篇文章</span>
       <a
         v-if="feed"
-        class="i-mdi-rss text-5"
         title="RSS 订阅"
+        class="flex items-center"
         :href="feed"
-      />
+      >
+        <span class="i-mdi-rss text-5" />
+        <span class="sr-only">RSS 订阅</span>
+      </a>
     </div>
   </div>
   <ol class="my-6 flex flex-col gap-4 b-l-4 b-area">
@@ -54,7 +57,7 @@
           <time
             :class="[
               'text-footer shrink-0 tabular-nums',
-              displayVisitor && 'hidden sm:inline-block'
+              displayVisitor && 'hidden sm:inline-block',
             ]"
             :datetime="formatISO(post.frontmatter[displayTime])"
             :title="`${displayTime === 'date' ? '创建' : '修改'}于 ${
@@ -97,8 +100,8 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs } from 'vue';
 import { format, formatISO } from 'date-fns';
+import { toRefs } from 'vue';
 import useDescription from '~/composables/useDescription';
 import {
   usePageCount,

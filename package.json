@@ -54,7 +54,7 @@
     "@islands/feed": "0.8.1",
     "@islands/headings": "0.8.2",
     "@islands/images": "0.8.2",
-    "@ouuan/eslint-config-vue": "2.0.0-beta.3",
+    "@ouuan/eslint-config-vue": "2.0.0-beta.5",
     "@ouuan/tsconfig-vue": "1.0.0",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/hast": "2.3.10",

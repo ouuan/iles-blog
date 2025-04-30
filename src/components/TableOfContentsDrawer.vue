@@ -25,9 +25,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { onKeyStroke } from '@vueuse/core';
 import type { Heading } from '@islands/headings';
+import { onKeyStroke } from '@vueuse/core';
+import { computed, ref } from 'vue';
 
 defineProps<{
   headings: Heading[];

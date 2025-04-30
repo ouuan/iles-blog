@@ -1,15 +1,15 @@
-import type { RouteToRender } from 'iles';
+import { writeFile } from 'fs/promises';
 import { dirname, resolve } from 'path';
+import { Readable } from 'stream';
 import { fileURLToPath } from 'url';
+import type { RouteToRender } from 'iles';
 import {
   ErrorLevel,
   SitemapStream,
   streamToPromise,
   type SitemapItemLoose,
 } from 'sitemap';
-import { Readable } from 'stream';
 import xmlFormat from 'xml-formatter';
-import { writeFile } from 'fs/promises';
 
 const rootPath = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
