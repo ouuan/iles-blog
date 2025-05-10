@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue';
 import useDescription from '~/composables/useDescription';
-import { usePosts, usePageCount } from '~/composables/usePosts';
+import { usePageCount, usePosts } from '~/composables/usePosts';
 
 const props = defineProps<{
   pageIndex: number;

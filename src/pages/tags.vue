@@ -42,7 +42,7 @@ title: 标签列表
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useTags, useTagCountMap } from '~/composables/useTags';
+import { useTagCountMap, useTags } from '~/composables/useTags';
 
 const tags = useTags();
 const tagCountMap = useTagCountMap();
