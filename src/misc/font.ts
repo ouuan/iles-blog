@@ -1,7 +1,7 @@
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { sub as subDate } from 'date-fns';
-import type { PageInfo, FontInfo } from 'glyph-segregator';
+import type { FontInfo, PageInfo } from 'glyph-segregator';
 import { glyphSegregator } from 'glyph-segregator';
 import got from 'got';
 import type { RouteToRender } from 'iles';

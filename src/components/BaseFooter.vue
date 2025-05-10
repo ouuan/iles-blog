@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCopyrightYearString, useCopyrightYearRange } from '~/composables/useCopyrightYear';
+import { useCopyrightYearRange, useCopyrightYearString } from '~/composables/useCopyrightYear';
 
 const { author } = usePage().site;
 const yearString = useCopyrightYearString();

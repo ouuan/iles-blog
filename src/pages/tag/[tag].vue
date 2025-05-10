@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { useTags, useTagFilter } from '~/composables/useTags';
+import { useTagFilter, useTags } from '~/composables/useTags';
 
 const tags = useTags();
 

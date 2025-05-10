@@ -1,6 +1,6 @@
 /* eslint-disable security/detect-non-literal-fs-filename */
 
-import { readdir, readFile, writeFile } from 'fs/promises';
+import { readFile, readdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 export default async function injectXsltCss() {

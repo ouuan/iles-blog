@@ -6,7 +6,7 @@ import images, { formatPreset } from '@islands/images';
 import got from 'got';
 import { defineConfig } from 'iles';
 import { all as m2hAll } from 'mdast-util-to-hast';
-import { remarkDefinitionList, defListHastHandlers } from 'remark-definition-list';
+import { defListHastHandlers, remarkDefinitionList } from 'remark-definition-list';
 import { simpleGit } from 'simple-git';
 
 import generateFonts from './src/misc/font';

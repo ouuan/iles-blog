@@ -13,7 +13,7 @@
 <script lang="ts">
 import { computed } from 'vue';
 import { usePageCount } from '~/composables/usePosts';
-import { useTags, useTagFilter } from '~/composables/useTags';
+import { useTagFilter, useTags } from '~/composables/useTags';
 
 const tags = useTags();
 

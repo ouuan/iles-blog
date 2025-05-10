@@ -39,9 +39,9 @@
 
 <script setup lang="ts">
 import {
-  watchThrottled,
   useWindowScroll,
   useWindowSize,
+  watchThrottled,
 } from '@vueuse/core';
 import { ref } from 'vue';
 
