@@ -36,7 +36,7 @@
     "puppeteer": "24.10.0",
     "rehype-plugin-image-native-lazy-loading": "1.2.0",
     "shiki": "0.14.7",
-    "simple-git": "3.27.0",
+    "simple-git": "3.28.0",
     "sitemap": "8.0.0",
     "ts-exhaustive-check": "1.0.0",
     "unified": "10.1.2",
