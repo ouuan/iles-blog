@@ -97,7 +97,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13.4'
+          python-version: '3.13.5'
       - run: pip install -r meili/requirements.txt
       - run: python meili/update-documents.py
         env:
