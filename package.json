@@ -59,7 +59,7 @@
     "@total-typescript/ts-reset": "0.6.1",
     "@types/hast": "2.3.10",
     "@types/jsdom": "21.1.7",
-    "@types/node": "22.16.3",
+    "@types/node": "22.16.5",
     "@unocss/eslint-config": "65.5.0",
     "@unocss/transformer-directives": "65.5.0",
     "@vue/runtime-core": "3.3.13",
