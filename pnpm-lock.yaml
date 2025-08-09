@@ -120,8 +120,8 @@ importers:
         specifier: 1.2.3
         version: 1.2.3
       '@iconify-json/simple-icons':
-        specifier: 1.2.44
-        version: 1.2.44
+        specifier: 1.2.46
+        version: 1.2.46
       '@islands/excerpt':
         specifier: 0.9.0
         version: 0.9.0
@@ -853,8 +853,8 @@ packages:
   '@iconify-json/mdi@1.2.3':
     resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
 
-  '@iconify-json/simple-icons@1.2.44':
-    resolution: {integrity: sha512-CdWgSPygwDlDbKtDWjvi3NtUefnkoepXv90n3dQxJerqzD9kI+nEJOiWUBM+eOyMYQKtxBpLWFBrgeotF0IZKw==}
+  '@iconify-json/simple-icons@1.2.46':
+    resolution: {integrity: sha512-MJfKQDhOMQD5Fc8PcTtCdFX0oBf/nKVfp69ScdEKIXW0JXELX5V2Ld45EsjShi8aJ6DNhdDtSDZvKuDnkDiKnw==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -4215,6 +4215,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   sourcemap-codec@1.4.8:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
@@ -5380,7 +5381,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/simple-icons@1.2.44':
+  '@iconify-json/simple-icons@1.2.46':
     dependencies:
       '@iconify/types': 2.0.0
 
