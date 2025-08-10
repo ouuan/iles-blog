@@ -12,7 +12,7 @@ jobs:
           version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.19.4
           cache: pnpm
       - name: Setup checker
         run: |
