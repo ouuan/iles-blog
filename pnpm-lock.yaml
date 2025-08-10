@@ -35,8 +35,8 @@ importers:
         specifier: 3.1.1
         version: 3.1.1(vue@3.3.13(typescript@5.8.3))
       '@mermaid-js/mermaid-cli':
-        specifier: 11.6.0
-        version: 11.6.0(puppeteer@24.15.0(typescript@5.8.3))(typescript@5.8.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.8.3)))
+        specifier: 11.9.0
+        version: 11.9.0(puppeteer@24.15.0(typescript@5.8.3))(typescript@5.8.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.8.3)))
       '@sniptt/guards':
         specifier: 0.2.0
         version: 0.2.0
@@ -928,8 +928,8 @@ packages:
   '@mdx-js/mdx@2.1.5':
     resolution: {integrity: sha512-zEG0lt+Bl/r5U6e0TOS7qDbsXICtemfAPquxWFsMbdzrvlWaqMGemLl+sjVpqlyaaiCiGVQBSGdCk0t1qXjkQg==}
 
-  '@mermaid-js/mermaid-cli@11.6.0':
-    resolution: {integrity: sha512-ijidNS6QFZWZA6XYzjLldVB3WgjFnevepdhOAwdGhMrPcg2yNhDCY4CmNj/7r032WWZzeUoONNZ9OYFP/23KaQ==}
+  '@mermaid-js/mermaid-cli@11.9.0':
+    resolution: {integrity: sha512-qDPwzFRbwRrVd8W99iVNaMR2bdOqiBFGwER3k7eT207WADbeRm2suzTH22/Zs9SbhKrejCNDaaDfZ45hFEiovw==}
     engines: {node: ^18.19 || >=20.0}
     hasBin: true
     peerDependencies:
@@ -5515,7 +5515,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mermaid-js/mermaid-cli@11.6.0(puppeteer@24.15.0(typescript@5.8.3))(typescript@5.8.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.8.3)))':
+  '@mermaid-js/mermaid-cli@11.9.0(puppeteer@24.15.0(typescript@5.8.3))(typescript@5.8.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.8.3)))':
     dependencies:
       '@mermaid-js/mermaid-zenuml': 0.2.0(mermaid@11.2.1)(typescript@5.8.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.8.3)))
       chalk: 5.3.0
