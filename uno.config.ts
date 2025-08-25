@@ -163,6 +163,7 @@ export default defineConfig({
     // for rss.xsl
     'i-mdi-clock-check-outline',
     'i-simple-icons-feedly',
+    'i-simple-icons-folo',
     'i-simple-icons-inoreader',
     'i-mdi-information-variant-circle',
     'b-rss',

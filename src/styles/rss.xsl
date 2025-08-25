@@ -69,6 +69,11 @@
                 </a>
               </li>
               <li class="flex items-stretch">
+                <a class="flex items-center p-2 bghover" href="https://app.folo.is/share/feeds/58094016632728586" title="Folo 订阅">
+                  <span class="i-simple-icons-folo mx-1"></span>
+                </a>
+              </li>
+              <li class="flex items-stretch">
                 <a class="flex items-center p-2 bghover" href="https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fouuan.moe%2Ffeed.xml" title="Feedly 订阅">
                   <span class="i-simple-icons-feedly mx-1"></span>
                 </a>
