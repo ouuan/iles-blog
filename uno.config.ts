@@ -168,5 +168,6 @@ export default defineConfig({
     'i-mdi-information-variant-circle',
     'b-rss',
     'text-rss',
+    'w-10',
   ],
 });

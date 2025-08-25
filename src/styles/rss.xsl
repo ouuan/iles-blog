@@ -53,32 +53,32 @@
             </nav>
             <div class="sm:basis-full"></div>
             <ul class="flex">
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="/search" title="搜索">
                   <span class="i-mdi-magnify text-xl"></span>
                 </a>
               </li>
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="/feed.xml" title="RSS 订阅">
                   <span class="i-mdi-rss text-xl"></span>
                 </a>
               </li>
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="https://taxodium.ink/about-feeds.html" title="About Feeds">
-                  <span class="i-mdi-information-variant-circle text-lg"></span>
+                  <span class="i-mdi-information-variant-circle text-xl"></span>
                 </a>
               </li>
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="https://app.folo.is/share/feeds/58094016632728586" title="Folo 订阅">
-                  <span class="i-simple-icons-folo mx-1"></span>
+                  <span class="i-simple-icons-folo"></span>
                 </a>
               </li>
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="https://feedly.com/i/subscription/feed%2Fhttps%3A%2F%2Fouuan.moe%2Ffeed.xml" title="Feedly 订阅">
-                  <span class="i-simple-icons-feedly mx-1"></span>
+                  <span class="i-simple-icons-feedly text-lg"></span>
                 </a>
               </li>
-              <li class="flex items-stretch">
+              <li class="flex justify-center items-stretch w-10">
                 <a class="flex items-center p-2 bghover" href="https://www.inoreader.com/feed/https%3A%2F%2Fouuan.moe%2Ffeed.xml" title="Inoreader 订阅">
                   <span class="i-simple-icons-inoreader"></span>
                 </a>
