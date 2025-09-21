@@ -17,14 +17,14 @@ overrides:
   object.entries: npm:@nolyfill/object.entries@latest
   object.values: npm:@nolyfill/object.values@latest
 
-packageExtensionsChecksum: sha256-H3xWhA/JpymzTVC4ohzfZScCcoYoioMzOyE0nKpjgKw=
+packageExtensionsChecksum: 796752960ba14a41e00e80ce0386e4e9
 
 patchedDependencies:
   '@islands/feed':
-    hash: f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904
+    hash: w7ckedtbomis6tiw3tesaizpee
     path: patches/@islands__feed.patch
   '@islands/headings@0.8.2':
-    hash: 626e38f39d4cc8ead3dafa1e86ea3e1f19f37f36683baebcc6735a001c8e2cd0
+    hash: j5vhtyk5hysulswi2ekrqmqpcq
     path: patches/@islands__headings@0.8.2.patch
 
 importers:
@@ -127,10 +127,10 @@ importers:
         version: 0.9.0
       '@islands/feed':
         specifier: 0.8.1
-        version: 0.8.1(patch_hash=f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.17.2)(esbuild@0.25.0)(sass@1.89.2)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))
+        version: 0.8.1(patch_hash=w7ckedtbomis6tiw3tesaizpee)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.17.2)(esbuild@0.25.0)(sass@1.89.2)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))
       '@islands/headings':
         specifier: 0.8.2
-        version: 0.8.2(patch_hash=626e38f39d4cc8ead3dafa1e86ea3e1f19f37f36683baebcc6735a001c8e2cd0)
+        version: 0.8.2(patch_hash=j5vhtyk5hysulswi2ekrqmqpcq)
       '@islands/images':
         specifier: 0.8.2
         version: 0.8.2
@@ -5425,14 +5425,14 @@ snapshots:
       estree-walker: 3.0.2
       hast-util-to-string: 2.0.0
 
-  '@islands/feed@0.8.1(patch_hash=f2c0db173263a42eb009423c84f4879341354e23abc5fda8e5f0d9beba9ef904)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.17.2)(esbuild@0.25.0)(sass@1.89.2)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))':
+  '@islands/feed@0.8.1(patch_hash=w7ckedtbomis6tiw3tesaizpee)(iles@0.9.5(@babel/parser@7.25.3)(@types/node@22.17.2)(esbuild@0.25.0)(sass@1.89.2)(typescript@5.8.3))(vue@3.3.13(typescript@5.8.3))':
     dependencies:
       feed: 4.2.2
       iles: 0.9.5(@babel/parser@7.25.3)(@types/node@22.17.2)(esbuild@0.25.0)(sass@1.89.2)(typescript@5.8.3)
       pathe: 0.2.0
       vue: 3.3.13(typescript@5.8.3)
 
-  '@islands/headings@0.8.2(patch_hash=626e38f39d4cc8ead3dafa1e86ea3e1f19f37f36683baebcc6735a001c8e2cd0)':
+  '@islands/headings@0.8.2(patch_hash=j5vhtyk5hysulswi2ekrqmqpcq)':
     dependencies:
       hast-util-heading-rank: 2.1.1
       hast-util-to-string: 2.0.0
