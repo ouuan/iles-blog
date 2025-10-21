@@ -1,24 +1,24 @@
 @font-face {
   font-family: "Monospace SC Fallback";
   src: local("Noto Sans Mono CJK SC"),
-       local("Source Han Mono SC"),
-       local("Noto Sans CJK SC"),
-       local("Source Han Sans SC"),
-       local("Microsoft YaHei");
+    local("Source Han Mono SC"),
+    local("Noto Sans CJK SC"),
+    local("Source Han Sans SC"),
+    local("Microsoft YaHei");
   unicode-range: U+1000-fffff;
 }
 
 @font-face {
   font-family: "Monospace JP Fallback";
   src: local("Noto Sans Mono CJK JP"),
-       local("Source Han Mono JP"),
-       local("Noto Sans CJK JP"),
-       local("Source Han Sans JP"),
-       local("Noto Sans Mono CJK SC"),
-       local("Source Han Mono SC"),
-       local("Noto Sans CJK SC"),
-       local("Source Han Sans SC"),
-       local("Microsoft YaHei");
+    local("Source Han Mono JP"),
+    local("Noto Sans CJK JP"),
+    local("Source Han Sans JP"),
+    local("Noto Sans Mono CJK SC"),
+    local("Source Han Mono SC"),
+    local("Noto Sans CJK SC"),
+    local("Source Han Sans SC"),
+    local("Microsoft YaHei");
   unicode-range: U+1000-fffff;
 }
 
@@ -50,18 +50,18 @@
 
 [lang] {
   font-family: var(--zh-font);
-  --default-sans-font:  var(--zh-sans-font);
+  --default-sans-font: var(--zh-sans-font);
   --default-serif-font: var(--zh-serif-font);
-  --default-kai-font:   var(--zh-kai-font);
-  --default-mono-font:  var(--zh-mono-font);
+  --default-kai-font: var(--zh-kai-font);
+  --default-mono-font: var(--zh-mono-font);
   --default-latin-font: var(--zh-latin-font);
 }
 
 [lang^=ja] {
   font-family: var(--ja-font);
-  --default-sans-font:  var(--ja-sans-font);
+  --default-sans-font: var(--ja-sans-font);
   --default-serif-font: var(--ja-serif-font);
-  --default-kai-font:   var(--ja-kai-font);
-  --default-mono-font:  var(--ja-mono-font);
+  --default-kai-font: var(--ja-kai-font);
+  --default-mono-font: var(--ja-mono-font);
   --default-latin-font: var(--ja-latin-font);
 }

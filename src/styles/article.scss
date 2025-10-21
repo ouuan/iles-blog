@@ -8,9 +8,10 @@
   // No text-justify for nested elements on small screens,
   // because nested elements are usually narrow.
   // Set on depth-2 only so that descendants can override it.
-  & > * > * {
+  &>*>* {
     // https://github.com/unocss/unocss/pull/2217
     text-align: initial;
+
     @screen sm {
       text-align: inherit;
     }
@@ -22,9 +23,9 @@
     line-height: 1.25; // avoid affecting serif line height
   }
 
-  & > h2,
-  & > h3,
-  & > h4 {
+  &>h2,
+  &>h3,
+  &>h4 {
     @apply my-6;
     text-align: initial;
   }
@@ -39,22 +40,26 @@
 
   a {
     @apply text-link contrast-more:underline;
+
     &:hover {
       @apply text-hover underline;
     }
+
     &:active {
       @apply text-active;
     }
   }
 
-  & > h2 {
+  &>h2 {
     @apply text-7 font-bold;
     @apply pb-1 b-b-2 b-gray-2 dark:b-gray-9;
   }
-  & > h3 {
+
+  &>h3 {
     @apply text-6 font-bold;
   }
-  & > h4 {
+
+  &>h4 {
     @apply text-5 font-bold;
   }
 
@@ -71,6 +76,7 @@
   ul {
     @apply list-disc-outside;
   }
+
   ol {
     @apply list-decimal-outside;
   }
@@ -80,6 +86,7 @@
     ul {
       @apply list-circle;
     }
+
     ol {
       @apply list-roman;
     }
@@ -89,6 +96,7 @@
       ul {
         @apply list-square;
       }
+
       ol {
         @apply list-alpha;
       }
@@ -117,7 +125,7 @@
     @apply b-t-2 b-t-dashed b-gray-5 dark:b-gray-9;
   }
 
-  :not(pre) > code {
+  :not(pre)>code {
     @apply bg-gray-1 dark:bg-gray-13 rd-1;
   }
 
@@ -125,12 +133,14 @@
     @apply bg-gray-0 dark:bg-gray-14 rd-2 b-2 b-gray-2 dark:b-gray-12 shadow-sm;
   }
 
-  :not(pre) > code,
+  :not(pre)>code,
   kbd {
     @apply whitespace-pre-wrap text-3.5 leading-4.5 px-1 py-0.5;
   }
 
-  pre, code, samp {
+  pre,
+  code,
+  samp {
     text-align: initial;
   }
 
@@ -141,13 +151,16 @@
     td {
       @apply py-1 px-3 b-2 b-light-7 dark:b-dark-0;
     }
+
     th {
       @apply bg-light-4 dark:bg-dark-8;
     }
-    tbody > tr {
+
+    tbody>tr {
       &:nth-child(odd) {
         @apply bg-light-2 dark:bg-dark-6;
       }
+
       &:nth-child(even) {
         @apply bg-light-0 dark:bg-dark-4;
       }
@@ -158,7 +171,7 @@
     @apply opacity-80 hover:opacity-100;
   }
 
-  p > picture:only-child {
+  p>picture:only-child {
     @apply flex justify-center my-6;
 
     img {
@@ -173,6 +186,7 @@
   del {
     background-color: rgba(255, 0, 0, 0.15);
   }
+
   ins {
     background-color: rgba(0, 255, 0, 0.15);
   }
@@ -186,10 +200,12 @@
     ol {
       counter-reset: list;
     }
-    ol > li {
+
+    ol>li {
       counter-increment: list;
     }
-    ol > li::marker {
+
+    ol>li::marker {
       content: "[" counter(list, decimal) "]\a0";
     }
   }

@@ -5,6 +5,7 @@
   @media (prefers-color-scheme: light) {
     @include light;
   }
+
   @media (prefers-color-scheme: dark) {
     @include dark;
   }
