@@ -68,8 +68,8 @@ importers:
         specifier: 26.1.0
         version: 26.1.0
       katex:
-        specifier: 0.16.23
-        version: 0.16.23
+        specifier: 0.16.25
+        version: 0.16.25
       mdast-util-to-hast:
         specifier: 12.3.0
         version: 12.3.0
@@ -3202,8 +3202,8 @@ packages:
     resolution: {integrity: sha512-jZxYuKCma3VS5UuxOx/rFV1QyGSl3Uy/i0kTJF3HgQ5xMinCQVF8Zd4bMY/9aI9b9A2pjIBOsjSSm68ykTAr8w==}
     hasBin: true
 
-  katex@0.16.23:
-    resolution: {integrity: sha512-7VlC1hsEEolL9xNO05v9VjrvWZePkCVBJqj8ruICxYjZfHaHbaU53AlP+PODyFIXEnaEIEWi3wJy7FPZ95JAVg==}
+  katex@0.16.25:
+    resolution: {integrity: sha512-woHRUZ/iF23GBP1dkDQMh1QBad9dmr8/PAwNA54VrSOVYgI12MAcE14TqnDdQOdzyEonGzMepYnqBMYdsoAr8Q==}
     hasBin: true
 
   keyv@4.5.4:
@@ -8320,7 +8320,7 @@ snapshots:
     dependencies:
       commander: 8.3.0
 
-  katex@0.16.23:
+  katex@0.16.25:
     dependencies:
       commander: 8.3.0
 
@@ -8610,7 +8610,7 @@ snapshots:
       dagre-d3-es: 7.0.10
       dayjs: 1.11.11
       dompurify: 3.2.4
-      katex: 0.16.23
+      katex: 0.16.25
       khroma: 2.1.0
       lodash-es: 4.17.21
       marked: 13.0.3
@@ -9397,7 +9397,7 @@ snapshots:
       '@types/katex': 0.14.0
       hast-util-from-html-isomorphic: 1.0.0
       hast-util-to-text: 3.1.2
-      katex: 0.16.23
+      katex: 0.16.25
       unist-util-visit: 4.1.2
 
   rehype-plugin-image-native-lazy-loading@1.2.0:
