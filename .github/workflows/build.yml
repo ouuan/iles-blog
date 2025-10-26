@@ -21,7 +21,7 @@ jobs:
       env:
         TZ: Asia/Shanghai
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -94,7 +94,7 @@ jobs:
     if: github.repository_owner == 'ouuan' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14.0'
