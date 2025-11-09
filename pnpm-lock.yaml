@@ -89,8 +89,8 @@ importers:
         specifier: 3.28.0
         version: 3.28.0
       sitemap:
-        specifier: 8.0.1
-        version: 8.0.1
+        specifier: 8.0.2
+        version: 8.0.2
       ts-exhaustive-check:
         specifier: 1.0.0
         version: 1.0.0
@@ -4140,9 +4140,6 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
-  sax@1.2.4:
-    resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
-
   sax@1.4.1:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
 
@@ -4232,8 +4229,8 @@ packages:
     resolution: {integrity: sha512-BPwJGUeDaDCHihkORDchNyyTvWFhcusy1XMmhEVTQTwGeybFbp8YEmB+njbPnth1FibULBSBVwCQni25XlCUDg==}
     engines: {node: '>=18'}
 
-  sitemap@8.0.1:
-    resolution: {integrity: sha512-4Y8ynSMFAy/DadeAeio8Kx4zfC8/0VcKi7TH0I1SazvBcrU2fpJaGoeWsX1FMRaHoe3VGMA53DqVoLErZrtG9Q==}
+  sitemap@8.0.2:
+    resolution: {integrity: sha512-LwktpJcyZDoa0IL6KT++lQ53pbSrx2c9ge41/SeLTyqy2XUNA6uR4+P9u5IVo5lPeL2arAcOKn1aZAxoYbCKlQ==}
     engines: {node: '>=14.0.0', npm: '>=6.0.0'}
     hasBin: true
 
@@ -9647,8 +9644,6 @@ snapshots:
     optionalDependencies:
       '@parcel/watcher': 2.4.1
 
-  sax@1.2.4: {}
-
   sax@1.4.1: {}
 
   saxes@6.0.0:
@@ -9753,7 +9748,7 @@ snapshots:
       mrmime: 2.0.0
       totalist: 3.0.0
 
-  sitemap@8.0.1:
+  sitemap@8.0.2:
     dependencies:
       '@types/node': 17.0.45
       '@types/sax': 1.2.4
@@ -10595,7 +10590,7 @@ snapshots:
 
   xml-js@1.6.11:
     dependencies:
-      sax: 1.2.4
+      sax: 1.4.1
 
   xml-name-validator@4.0.0: {}
 
