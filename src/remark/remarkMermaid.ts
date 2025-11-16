@@ -23,6 +23,7 @@ async function processNode(child: Content, index: number, siblings: Content[]) {
 
   const hash = await digestMessage(value);
 
+  // eslint-disable-next-line import/no-named-as-default-member
   const browser = await puppeteer.launch({
     args: [
       '--no-sandbox',
