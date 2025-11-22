@@ -74,7 +74,7 @@
     "remark-parse": "10.0.2",
     "rollup-plugin-analyzer": "4.0.0",
     "sass": "1.93.3",
-    "tsup": "8.5.0",
+    "tsup": "8.5.1",
     "typescript": "5.9.3",
     "vite-plugin-compression": "0.5.1",
     "vue-tsc": "2.2.12"
