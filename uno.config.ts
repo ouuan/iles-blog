@@ -120,6 +120,10 @@ export default defineConfig({
       chisato: '#FF6E90',
       sumire: '#74F466',
       ren: '#0000A0',
+      tomari: '#4CD2E2',
+      ikizulive: '#ED6D00',
+      polka: '#CCB12E',
+      shion: '#9B9B9B',
     },
     media: {
       screen: 'screen',
@@ -141,7 +145,7 @@ export default defineConfig({
       /^contrast-(\w+)-(\w+)$/,
       ([, color, lightColor]) => color && lightColor && [
         `light:text-${lightColor}`,
-        'light:drop-shadow',
+        'light:drop-shadow-sm',
         `light:drop-shadow-color-${color}`,
         `dark:text-${color}`,
       ],
