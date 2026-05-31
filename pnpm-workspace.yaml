@@ -1,0 +1,29 @@
+overrides:
+  vite-plugin-image-presets: 0.3.4
+  puppeteer: $puppeteer
+  array-includes: npm:@nolyfill/array-includes@latest
+  array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
+  array.prototype.flatmap: npm:@nolyfill/array.prototype.flatmap@latest
+  assert: npm:@nolyfill/assert@latest
+  deep-equal: npm:@nolyfill/deep-equal@latest
+  has: npm:@nolyfill/has@latest
+  object.assign: npm:@nolyfill/object.assign@latest
+  object.entries: npm:@nolyfill/object.entries@latest
+  object.values: npm:@nolyfill/object.values@latest
+
+packageExtensions:
+  rollup-plugin-analyzer:
+    dependencies:
+      rollup: ^3
+
+patchedDependencies:
+  '@islands/headings@0.8.2': patches/@islands__headings@0.8.2.patch
+  '@islands/feed': patches/@islands__feed.patch
+
+allowBuilds:
+  esbuild: true
+  puppeteer: true
+  sharp: true
+  vue-demi: true
+
+shamefullyHoist: true
