@@ -21,7 +21,7 @@ jobs:
       env:
         TZ: Asia/Shanghai
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v5.0.1
         with:
           fetch-depth: 0
           submodules: recursive
@@ -42,7 +42,7 @@ jobs:
           MEILI_URL: ${{ secrets.MEILI_URL }}
           MEILI_SEARCH_KEY: ${{ secrets.MEILI_SEARCH_KEY }}
       - name: Download muffet
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v3.0.2
         with:
           timeout_minutes: 1
           max_attempts: 5
@@ -68,12 +68,12 @@ jobs:
           https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           " >> "$GITHUB_OUTPUT"
           echo "$delimiter" >> "$GITHUB_OUTPUT"
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v5.0.0
         if: github.event_name == 'pull_request'
         with:
           name: dist
           path: dist
-      - uses: peaceiris/actions-gh-pages@v4
+      - uses: peaceiris/actions-gh-pages@v4.1.0
         if: github.repository_owner == 'ouuan' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         with:
           publish_dir: dist
@@ -85,7 +85,7 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
       - name: Update post list in GitHub profile
         if: github.repository_owner == 'ouuan' && github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: benc-uk/workflow-dispatch@v1
+        uses: benc-uk/workflow-dispatch@v1.3.2
         with:
           workflow: blog-posts.yml
           repo: ouuan/ouuan
@@ -96,8 +96,8 @@ jobs:
     if: github.repository_owner == 'ouuan' && github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@v5.0.1
+      - uses: actions/setup-python@v6.3.0
         with:
           python-version: '3.14.2'
       - run: pip install -r meili/requirements.txt
