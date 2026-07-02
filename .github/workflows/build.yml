@@ -17,7 +17,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: # https://stackoverflow.com/a/74341376
-      image: satantime/puppeteer-node:lts
+      image: node:lts
       env:
         TZ: Asia/Shanghai
     steps:
@@ -33,6 +33,8 @@ jobs:
       - name: Fix file ownerships
         run: chown -R "$(whoami):$(whoami)" .
       - run: npx pnpm i
+      - name: Install Chrome for Puppeteer
+        run: npx pnpm exec puppeteer browsers install chrome --install-deps
       - uses: mxschmitt/action-tmate@v3
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.tmate }}
       - run: npx pnpm build
