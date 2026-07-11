@@ -161,8 +161,8 @@ importers:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.4.2)
       got:
-        specifier: 14.6.5
-        version: 14.6.5
+        specifier: 14.6.6
+        version: 14.6.6
       mdast-util-mdx:
         specifier: 2.0.1
         version: 2.0.1
@@ -2829,8 +2829,8 @@ packages:
   gopd@1.0.1:
     resolution: {integrity: sha512-d65bNlIadxvpb/A2abVdlqKqV563juRnZ1Wtk6s1sIR8uNsXR70xqIzVqxVf1eTqDunwT2MkczEeaezCKTZhwA==}
 
-  got@14.6.5:
-    resolution: {integrity: sha512-Su87c0NNeg97de1sO02gy9I8EmE7DCJ1gzcFLcgGpYeq2PnLg4xz73MWrp6HjqbSsjb6Glf4UBDW6JNyZA6uSg==}
+  got@14.6.6:
+    resolution: {integrity: sha512-QLV1qeYSo5l13mQzWgP/y0LbMr5Plr5fJilgAIwgnwseproEbtNym8xpLsDzeZ6MWXgNE6kdWGBjdh3zT/Qerg==}
     engines: {node: '>=20'}
 
   graceful-fs@4.2.10:
@@ -7853,7 +7853,7 @@ snapshots:
     dependencies:
       get-intrinsic: 1.2.4
 
-  got@14.6.5:
+  got@14.6.6:
     dependencies:
       '@sindresorhus/is': 7.0.1
       byte-counter: 0.1.0
