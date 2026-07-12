@@ -1,5 +1,5 @@
 overrides:
-  vite-plugin-image-presets: 0.3.4
+  vite-plugin-image-presets: 0.3.5
   puppeteer: $puppeteer
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
