@@ -6,7 +6,7 @@ jobs:
   quotation-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.1
+      - uses: actions/checkout@v5.1.0
       - uses: pnpm/action-setup@v3.0.0
         with:
           version: latest

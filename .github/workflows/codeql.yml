@@ -21,7 +21,7 @@ jobs:
         language: [ 'javascript' ]
 
     steps:
-    - uses: actions/checkout@v5.0.1
+    - uses: actions/checkout@v5.1.0
 
     - uses: github/codeql-action/init@v4.36.3
       with:
