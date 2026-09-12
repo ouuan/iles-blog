@@ -85,7 +85,7 @@ jobs:
           user_email: 'github-actions[bot]@users.noreply.github.com'
       - name: Update post list in GitHub profile
         if: github.repository_owner == 'ouuan' && github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: benc-uk/workflow-dispatch@v1.3.2
+        uses: benc-uk/workflow-dispatch@v1.3.3
         with:
           workflow: blog-posts.yml
           repo: ouuan/ouuan
