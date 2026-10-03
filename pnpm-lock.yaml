@@ -58,8 +58,8 @@ importers:
         specifier: 0.9.5
         version: 0.9.5(@babel/parser@7.25.3)(@types/node@24.10.1)(esbuild@0.27.0)(sass@1.94.2)(supports-color@7.2.0)(typescript@5.9.3)
       isbot:
-        specifier: 5.1.32
-        version: 5.1.32
+        specifier: 5.2.2
+        version: 5.2.2
       jsdom:
         specifier: 29.0.1
         version: 29.0.1
@@ -3406,8 +3406,8 @@ packages:
   isarray@2.0.5:
     resolution: {integrity: sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==}
 
-  isbot@5.1.32:
-    resolution: {integrity: sha512-VNfjM73zz2IBZmdShMfAUg10prm6t7HFUQmNAEOAVS4YH92ZrZcvkMcGX6cIgBJAzWDzPent/EeAtYEHNPNPBQ==}
+  isbot@5.2.2:
+    resolution: {integrity: sha512-iQcBXcd+Rv/pkubRyGh2utW2j1oPG5hZY6TUhVPpqK4G+o3IbxpJNx04hgksjc/N7GK5pEorUxDeg31cFgEk/w==}
     engines: {node: '>=18'}
 
   isexe@2.0.0:
@@ -8710,7 +8710,7 @@ snapshots:
 
   isarray@2.0.5: {}
 
-  isbot@5.1.32: {}
+  isbot@5.2.2: {}
 
   isexe@2.0.0: {}
 
