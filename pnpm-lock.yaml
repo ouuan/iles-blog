@@ -31,8 +31,8 @@ importers:
         specifier: 3.1.1
         version: 3.1.1(vue@3.3.13(typescript@5.9.3))
       '@mermaid-js/mermaid-cli':
-        specifier: 11.17.0
-        version: 11.17.0(puppeteer@25.17.0(yauzl@2.10.0))(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.9.3)))
+        specifier: 11.17.1
+        version: 11.17.1(puppeteer@25.17.0(yauzl@2.10.0))(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.9.3)))
       '@sniptt/guards':
         specifier: 0.2.0
         version: 0.2.0
@@ -1122,8 +1122,8 @@ packages:
     peerDependencies:
       mermaid: ^11.0.2
 
-  '@mermaid-js/mermaid-cli@11.17.0':
-    resolution: {integrity: sha512-pxF8rmheBb1gabIN4GFDCNWzIUsOzcEsSp7H5CQoL7gv7X8U8r6FFKtdMzEmZMeHmziNAq2B7J7LG+CDSfIg9w==}
+  '@mermaid-js/mermaid-cli@11.17.1':
+    resolution: {integrity: sha512-rSQHl68EMYp2SDriuAkPL596qKvHx9WzPw1YSSqvDq/bpsoNX44lKnRqIVxJQUf9BWZazWK5zwutiAhiV2t2dA==}
     engines: {node: ^18.19 || >=20.0}
     hasBin: true
     peerDependencies:
@@ -2539,9 +2539,6 @@ packages:
   dom-to-image-more@2.16.0:
     resolution: {integrity: sha512-RyjtkaM/zVy90uJ20lT+/G7MwBZx6l/ePliq5CQOeAnPeew7aUGS6IqRWBkHpstU+POmhaKA8A9H9qf476gisQ==}
 
-  dompurify@3.2.4:
-    resolution: {integrity: sha512-ysFSFEDVduQpyhzAob/kkuJjf5zWkZD8/A9ywSp1byueyuCfHamrCBa14/Oc2iiB0e51B+NpxSl5gmzn+Ms/mg==}
-
   dompurify@3.4.15:
     resolution: {integrity: sha512-EUBjM+B+lkDE41iE82DDSCfkoPGfXx8IxFxPMjNzm/Uk4xDet77rTN9wqlxlVg71kK7XGuUMv6wUxJUwwv+Xyw==}
 
@@ -3146,9 +3143,6 @@ packages:
   import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
-
-  import-meta-resolve@4.1.0:
-    resolution: {integrity: sha512-I6fiaX09Xivtk+THaMfAwnA3MVA5Big1WHF1Dfx9hFuvNIWpXnorlkzhcQf6ehrqQiiZECRt1poOAkPmer3ruw==}
 
   import-meta-resolve@4.2.0:
     resolution: {integrity: sha512-Iqv2fzaTQN28s/FwZAoFq0ZSs/7hMAHJVX+w8PZl3cY19Pxk6jFFalxQoIfW2826i/fDLXv8IiEZRIT0lDuWcg==}
@@ -5743,15 +5737,15 @@ snapshots:
       mermaid: 11.17.2
     optional: true
 
-  '@mermaid-js/mermaid-cli@11.17.0(puppeteer@25.17.0(yauzl@2.10.0))(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.9.3)))':
+  '@mermaid-js/mermaid-cli@11.17.1(puppeteer@25.17.0(yauzl@2.10.0))(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.9.3)))':
     dependencies:
       '@fortawesome/fontawesome-free': 7.3.1
       '@mermaid-js/layout-elk': 0.2.3(mermaid@11.17.2)
       '@mermaid-js/mermaid-zenuml': 0.2.0(mermaid@11.17.2)(typescript@5.9.3)(vue-class-component@7.2.6(vue@3.3.13(typescript@5.9.3)))
       chalk: 5.3.0
       commander: 13.1.0
-      import-meta-resolve: 4.1.0
-      katex: 0.16.27
+      import-meta-resolve: 4.2.0
+      katex: 0.16.47
       mermaid: 11.17.2
       p-limit: 6.2.0
       puppeteer: 25.17.0(yauzl@2.10.0)
@@ -6746,7 +6740,7 @@ snapshots:
       antlr4: 4.11.0
       color-string: 1.9.1
       dom-to-image-more: 2.16.0
-      dompurify: 3.2.4
+      dompurify: 3.4.15
       file-saver: 2.0.5
       highlight.js: 10.7.3
       html-to-image: 1.11.11
@@ -7338,10 +7332,6 @@ snapshots:
       esutils: 2.0.3
 
   dom-to-image-more@2.16.0: {}
-
-  dompurify@3.2.4:
-    optionalDependencies:
-      '@types/trusted-types': 2.0.7
 
   dompurify@3.4.15:
     optionalDependencies:
@@ -8265,8 +8255,6 @@ snapshots:
     dependencies:
       parent-module: 1.0.1
       resolve-from: 4.0.0
-
-  import-meta-resolve@4.1.0: {}
 
   import-meta-resolve@4.2.0: {}
 
@@ -9364,7 +9352,7 @@ snapshots:
 
   postcss-load-config@4.0.2(postcss@8.4.47):
     dependencies:
-      lilconfig: 3.1.3
+      lilconfig: 3.1.5
       yaml: 2.6.1
     optionalDependencies:
       postcss: 8.4.47
@@ -9939,7 +9927,7 @@ snapshots:
       glob-parent: 6.0.2
       is-glob: 4.0.3
       jiti: 1.21.6
-      lilconfig: 3.1.3
+      lilconfig: 3.1.5
       micromatch: 4.0.8
       normalize-path: 3.0.0
       object-hash: 3.0.0
